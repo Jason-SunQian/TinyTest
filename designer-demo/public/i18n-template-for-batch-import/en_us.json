@@ -1,0 +1,10 @@
+{
+  "common": {
+    "index": {
+      "fullName": "zhangsan"
+    }
+  },
+  "other": {
+     "utileName": "getName"
+  }
+}

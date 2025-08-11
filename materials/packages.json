@@ -1,0 +1,36 @@
+{
+  "packages": [
+    {
+      "name": "TinyVue组件库",
+      "package": "@opentiny/vue",
+      "version": "3.20.0",
+      "destructuring": true,
+      "script": "https://registry.npmmirror.com/@opentiny/vue-runtime/~3.20/files/dist3/tiny-vue-pc.mjs",
+      "css": "https://registry.npmmirror.com/@opentiny/vue-theme/~3.20/files/index.css"
+    },
+    {
+      "name": "element-plus组件库",
+      "package": "element-plus",
+      "version": "2.4.2",
+      "destructuring": true,
+      "script": "https://registry.npmmirror.com/element-plus/2.4.2/files/dist/index.full.mjs",
+      "css": "https://registry.npmmirror.com/element-plus/2.4.2/files/dist/index.css"
+    },
+    {
+      "name": "Vant组件库",
+      "package": "vant",
+      "version": "4.8.0",
+      "destructuring": false,
+      "script": "https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js",
+      "css": "https://fastly.jsdelivr.net/npm/vant@4/lib/index.css"
+    },
+    {
+      "name": "自定义Vant组件库",
+      "package": "custom-vant-components",
+      "version": "1.0.0",
+      "destructuring": true,
+      "script": "http://localhost:8090/packages/custom-vant-components/dist/index.mjs",
+      "css": "http://localhost:8090/packages/custom-vant-components/dist/style.css"
+    }
+  ]
+}

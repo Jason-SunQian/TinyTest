@@ -1,0 +1,10 @@
+{
+  "common": {
+    "index": {
+      "fullName": "张三"
+    }
+  },
+  "other": {
+    "utileName": "获取名称"
+  }
+}
