@@ -9,10 +9,14 @@
   "screenshot": "",
   "tags": "",
   "keywords": "",
-  "devMode": "proCode",
-  "npm": {},
+  "dev_mode": "proCode",
+  "npm": {
+    "package": "vant",
+    "exportName": "VantButton",
+    "destructuring": true
+  },
   "group": "component",
-  "category": "html",
+  "category": "custom-vant",
   "priority": 70,
   "schema": {
     "properties": [

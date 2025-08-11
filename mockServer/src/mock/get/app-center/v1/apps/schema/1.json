@@ -1733,6 +1733,13 @@
         "destructuring": true
       },
       {
+        "componentName": "button",
+        "package": "vant",
+        "version": "",
+        "exportName": "VantButton",
+        "destructuring": true
+      },
+      {
         "componentName": "CustomVantButton",
         "package": "custom-vant-components",
         "version": "",
@@ -2031,6 +2038,13 @@
         "package": "@opentiny/vue",
         "version": "",
         "exportName": "Tree",
+        "destructuring": true
+      },
+      {
+        "componentName": "van-button",
+        "package": "vant",
+        "version": "4.8.0",
+        "exportName": "Button",
         "destructuring": true
       }
     ],

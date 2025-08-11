@@ -20,9 +20,9 @@
       "name": "Vant组件库",
       "package": "vant",
       "version": "4.8.0",
-      "destructuring": false,
-      "script": "https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js",
-      "css": "https://fastly.jsdelivr.net/npm/vant@4/lib/index.css"
+      "destructuring": true,
+      "script": "https://esm.sh/vant@4.9.21/es2022/vant.mjs",
+      "css": "https://esm.sh/vant@4/lib/index.css"
     },
     {
       "name": "自定义Vant组件库",

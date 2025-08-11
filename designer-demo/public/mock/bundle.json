@@ -750,8 +750,12 @@
           "screenshot": "",
           "tags": "",
           "keywords": "",
-          "devMode": "proCode",
-          "npm": {},
+          "dev_mode": "proCode",
+          "npm": {
+            "package": "vant",
+            "exportName": "VantButton",
+            "destructuring": true
+          },
           "group": "component",
           "priority": 70,
           "schema": {
@@ -14911,6 +14915,202 @@
           }
         },
         {
+          "id": 1001,
+          "version": "4.8.0",
+          "name": {
+            "zh_CN": "Vant按钮"
+          },
+          "component": "van-button",
+          "icon": "button",
+          "description": "Vant移动端按钮组件",
+          "doc_url": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "dev_mode": "proCode",
+          "npm": {
+            "package": "vant",
+            "exportName": "Button",
+            "version": "4.8.0",
+            "destructuring": true,
+            "script": "https://esm.sh/vant@4.9.21/es2022/vant.mjs",
+            "css": "https://esm.sh/vant@4/lib/index.css"
+          },
+          "group": "基础组件",
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "isPopper": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "shortcuts": {
+              "properties": [
+                "type",
+                "size"
+              ]
+            },
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "invalidity": [
+              ""
+            ],
+            "clickCapture": true,
+            "framework": "Vue"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础属性"
+                },
+                "content": [
+                  {
+                    "property": "type",
+                    "label": {
+                      "text": {
+                        "zh_CN": "按钮类型"
+                      }
+                    },
+                    "description": {
+                      "zh_CN": "按钮类型"
+                    },
+                    "required": true,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "left",
+                    "type": "string",
+                    "defaultValue": "default",
+                    "widget": {
+                      "component": "SelectConfigurator",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "默认按钮",
+                            "value": "default"
+                          },
+                          {
+                            "label": "主要按钮",
+                            "value": "primary"
+                          },
+                          {
+                            "label": "成功按钮",
+                            "value": "success"
+                          },
+                          {
+                            "label": "警告按钮",
+                            "value": "warning"
+                          },
+                          {
+                            "label": "危险按钮",
+                            "value": "danger"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "property": "size",
+                    "label": {
+                      "text": {
+                        "zh_CN": "按钮尺寸"
+                      }
+                    },
+                    "description": {
+                      "zh_CN": "按钮尺寸"
+                    },
+                    "required": true,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "left",
+                    "type": "string",
+                    "defaultValue": "normal",
+                    "widget": {
+                      "component": "SelectConfigurator",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "大号",
+                            "value": "large"
+                          },
+                          {
+                            "label": "普通",
+                            "value": "normal"
+                          },
+                          {
+                            "label": "小号",
+                            "value": "small"
+                          },
+                          {
+                            "label": "迷你",
+                            "value": "mini"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {
+              "onClick": {
+                "label": {
+                  "zh_CN": "点击时触发"
+                },
+                "description": {
+                  "zh_CN": "点击按钮时触发"
+                },
+                "type": "event",
+                "functionInfo": {
+                  "params": [
+                    {
+                      "name": "event",
+                      "type": "Object",
+                      "defaultValue": "",
+                      "description": {
+                        "zh_CN": "点击事件对象"
+                      }
+                    }
+                  ],
+                  "returns": {}
+                },
+                "defaultValue": ""
+              }
+            },
+            "slots": {
+              "default": {
+                "label": {
+                  "zh_CN": "默认插槽"
+                },
+                "description": {
+                  "zh_CN": "按钮文本内容"
+                }
+              }
+            }
+          }
+        },
+        {
           "version": "1.0.0",
           "name": {
             "zh_CN": "视频"
@@ -15126,56 +15326,6 @@
           ]
         },
         {
-          "group": "html",
-          "children": [
-            {
-              "name": {
-                "zh_CN": "标题"
-              },
-              "icon": "h16",
-              "screenshot": "",
-              "snippetName": "h1",
-              "schema": {
-                "componentName": "h1",
-                "props": {},
-                "children": "Heading"
-              },
-              "category": "basic"
-            },
-            {
-              "name": {
-                "zh_CN": "段落"
-              },
-              "icon": "paragraph",
-              "screenshot": "",
-              "snippetName": "p",
-              "schema": {
-                "componentName": "p",
-                "children": "TinyEngine 前端可视化设计器致力于通过友好的用户交互提升业务应用的开发效率。"
-              },
-              "category": "basic"
-            },
-            {
-              "name": {
-                "zh_CN": "视频"
-              },
-              "icon": "video",
-              "screenshot": "",
-              "snippetName": "video",
-              "schema": {
-                "componentName": "video",
-                "props": {
-                  "src": "https://tinyengine-assets.obs.myhuaweicloud.com/files/in-action.mp4#t=1.5",
-                  "width": "200",
-                  "height": "100",
-                  "style": "border:1px solid #ccc"
-                }
-              },
-              "category": "basic"
-            }
-          ]
-        },
-        {
           "group": "element-plus",
           "children": [
             {
@@ -15353,6 +15503,56 @@
           ]
         },
         {
+          "group": "html",
+          "children": [
+            {
+              "name": {
+                "zh_CN": "标题"
+              },
+              "icon": "h16",
+              "screenshot": "",
+              "snippetName": "h1",
+              "schema": {
+                "componentName": "h1",
+                "props": {},
+                "children": "Heading"
+              },
+              "category": "basic"
+            },
+            {
+              "name": {
+                "zh_CN": "段落"
+              },
+              "icon": "paragraph",
+              "screenshot": "",
+              "snippetName": "p",
+              "schema": {
+                "componentName": "p",
+                "children": "TinyEngine 前端可视化设计器致力于通过友好的用户交互提升业务应用的开发效率。"
+              },
+              "category": "basic"
+            },
+            {
+              "name": {
+                "zh_CN": "视频"
+              },
+              "icon": "video",
+              "screenshot": "",
+              "snippetName": "video",
+              "schema": {
+                "componentName": "video",
+                "props": {
+                  "src": "https://tinyengine-assets.obs.myhuaweicloud.com/files/in-action.mp4#t=1.5",
+                  "width": "200",
+                  "height": "100",
+                  "style": "border:1px solid #ccc"
+                }
+              },
+              "category": "basic"
+            }
+          ]
+        },
+        {
           "group": "general",
           "children": [
             {
@@ -15435,6 +15635,10 @@
               "category": "data-display"
             }
           ]
+        },
+        {
+          "group": "vant",
+          "children": []
         }
       ],
       "packages": [
@@ -15458,9 +15662,9 @@
           "name": "Vant组件库",
           "package": "vant",
           "version": "4.8.0",
-          "destructuring": false,
-          "script": "https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js",
-          "css": "https://fastly.jsdelivr.net/npm/vant@4/lib/index.css"
+          "destructuring": true,
+          "script": "https://esm.sh/vant@4.9.21/es2022/vant.mjs",
+          "css": "https://esm.sh/vant@4/lib/index.css"
         },
         {
           "name": "自定义Vant组件库",

@@ -17130,7 +17130,11 @@
       },
       {
         "component": "button",
-        "npm": {}
+        "npm": {
+          "package": "vant",
+          "exportName": "VantButton",
+          "destructuring": true
+        }
       },
       {
         "component": "CustomVantButton",
@@ -17514,6 +17518,17 @@
           "package": "@opentiny/vue",
           "exportName": "Tree",
           "destructuring": true
+        }
+      },
+      {
+        "component": "van-button",
+        "npm": {
+          "package": "vant",
+          "exportName": "Button",
+          "version": "4.8.0",
+          "destructuring": true,
+          "script": "https://esm.sh/vant@4.9.21/es2022/vant.mjs",
+          "css": "https://esm.sh/vant@4/lib/index.css"
         }
       },
       {
