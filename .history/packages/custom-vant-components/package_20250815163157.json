@@ -1,0 +1,24 @@
+{
+  "name": "custom-vant-components",
+  "version": "1.0.0",
+  "description": "基于Vant的自定义组件包",
+  "main": "index.js",
+  "module": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.0.0",
+    "vant": "^4.8.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "@vitejs/plugin-vue": "^5.0.0"
+  },
+  "keywords": ["vue", "components", "vant"],
+  "author": "",
+  "license": "MIT"
+} 

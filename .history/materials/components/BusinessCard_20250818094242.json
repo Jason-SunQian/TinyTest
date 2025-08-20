@@ -1,0 +1,603 @@
+{
+  "id": 3,
+  "version": "1.0.0",
+  "name": {
+    "zh_CN": "业务卡片"
+  },
+  "component": "BusinessCard",
+  "icon": "bem",
+  "description": "业务卡片组件，适用于商品展示、信息卡片等场景",
+  "doc_url": "",
+  "screenshot": "",
+  "tags": "card,business,商品,卡片",
+  "keywords": "card,business,商品卡片,业务组件",
+  "dev_mode": "proCode",
+  "npm": {
+    "package": "custom-vant-components",
+    "version": "1.0.0",
+    "script": "http://localhost:8090/packages/custom-vant-components/dist/index.mjs",
+    "css": "http://localhost:8090/packages/custom-vant-components/dist/style.css",
+    "exportName": "BusinessCard",
+    "destructuring": true
+  },
+  "group": "自定义组件",
+  "category": "custom-vant",
+  "configure": {
+    "loop": true,
+    "condition": true,
+    "styles": true,
+    "isContainer": false,
+    "isModal": false,
+    "isPopper": false,
+    "nestingRule": {
+      "childWhitelist": "",
+      "parentWhitelist": "",
+      "descendantBlacklist": "",
+      "ancestorWhitelist": ""
+    },
+    "isNullNode": false,
+    "isLayout": false,
+    "rootSelector": "",
+    "shortcuts": {
+      "properties": ["title", "price", "buttonText"]
+    },
+    "contextMenu": {
+      "actions": ["copy", "remove", "insert", "updateAttr", "bindEvent", "createBlock"],
+      "disable": []
+    },
+    "invalidity": [""],
+    "clickCapture": true,
+    "framework": "Vue"
+  },
+  "schema": {
+    "properties": [
+      {
+        "name": "0",
+        "label": {
+          "zh_CN": "基础信息"
+        },
+        "content": [
+          {
+            "property": "title",
+            "type": "string",
+            "defaultValue": "商品标题",
+            "label": {
+              "text": {
+                "zh_CN": "商品标题"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "商品标题"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "desc",
+            "type": "string",
+            "defaultValue": "商品描述",
+            "label": {
+              "text": {
+                "zh_CN": "商品描述"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "商品描述"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "thumb",
+            "type": "string",
+            "defaultValue": "",
+            "label": {
+              "text": {
+                "zh_CN": "商品图片"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "商品图片URL"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "price",
+            "type": "string",
+            "defaultValue": "",
+            "label": {
+              "text": {
+                "zh_CN": "商品价格"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "商品价格"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "originPrice",
+            "type": "string",
+            "defaultValue": "",
+            "label": {
+              "text": {
+                "zh_CN": "原价"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "商品原价"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "currency",
+            "type": "string",
+            "defaultValue": "¥",
+            "label": {
+              "text": {
+                "zh_CN": "货币符号"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "货币符号"
+            },
+            "labelPosition": "left"
+          }
+        ],
+        "description": {
+          "zh_CN": "基础信息配置"
+        }
+      },
+      {
+        "name": "1",
+        "label": {
+          "zh_CN": "标签设置"
+        },
+        "content": [
+          {
+            "property": "showTag",
+            "type": "boolean",
+            "defaultValue": true,
+            "label": {
+              "text": {
+                "zh_CN": "显示标签"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "CheckBoxConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "是否显示标签"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "tagText",
+            "type": "string",
+            "defaultValue": "热销",
+            "label": {
+              "text": {
+                "zh_CN": "标签文字"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "标签显示的文字"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "tagType",
+            "type": "select",
+            "defaultValue": "primary",
+            "label": {
+              "text": {
+                "zh_CN": "标签类型"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "SelectConfigurator",
+              "props": {
+                "options": [
+                  {
+                    "label": "默认",
+                    "value": "default"
+                  },
+                  {
+                    "label": "主要",
+                    "value": "primary"
+                  },
+                  {
+                    "label": "成功",
+                    "value": "success"
+                  },
+                  {
+                    "label": "警告",
+                    "value": "warning"
+                  },
+                  {
+                    "label": "危险",
+                    "value": "danger"
+                  }
+                ]
+              }
+            },
+            "description": {
+              "zh_CN": "标签的类型"
+            },
+            "labelPosition": "left"
+          }
+        ],
+        "description": {
+          "zh_CN": "标签相关配置"
+        }
+      },
+      {
+        "name": "2",
+        "label": {
+          "zh_CN": "按钮设置"
+        },
+        "content": [
+          {
+            "property": "showButton",
+            "type": "boolean",
+            "defaultValue": true,
+            "label": {
+              "text": {
+                "zh_CN": "显示按钮"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "CheckBoxConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "是否显示按钮"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "buttonText",
+            "type": "string",
+            "defaultValue": "立即购买",
+            "label": {
+              "text": {
+                "zh_CN": "按钮文字"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "按钮显示的文字"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "buttonType",
+            "type": "select",
+            "defaultValue": "primary",
+            "label": {
+              "text": {
+                "zh_CN": "按钮类型"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "SelectConfigurator",
+              "props": {
+                "options": [
+                  {
+                    "label": "默认",
+                    "value": "default"
+                  },
+                  {
+                    "label": "主要",
+                    "value": "primary"
+                  },
+                  {
+                    "label": "成功",
+                    "value": "success"
+                  },
+                  {
+                    "label": "警告",
+                    "value": "warning"
+                  },
+                  {
+                    "label": "危险",
+                    "value": "danger"
+                  }
+                ]
+              }
+            },
+            "description": {
+              "zh_CN": "按钮的类型"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "buttonSize",
+            "type": "select",
+            "defaultValue": "small",
+            "label": {
+              "text": {
+                "zh_CN": "按钮尺寸"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "SelectConfigurator",
+              "props": {
+                "options": [
+                  {
+                    "label": "大",
+                    "value": "large"
+                  },
+                  {
+                    "label": "正常",
+                    "value": "normal"
+                  },
+                  {
+                    "label": "小",
+                    "value": "small"
+                  },
+                  {
+                    "label": "迷你",
+                    "value": "mini"
+                  }
+                ]
+              }
+            },
+            "description": {
+              "zh_CN": "按钮的尺寸"
+            },
+            "labelPosition": "left"
+          }
+        ],
+        "description": {
+          "zh_CN": "按钮相关配置"
+        }
+      },
+      {
+        "name": "3",
+        "label": {
+          "zh_CN": "底部设置"
+        },
+        "content": [
+          {
+            "property": "showBottom",
+            "type": "boolean",
+            "defaultValue": false,
+            "label": {
+              "text": {
+                "zh_CN": "显示底部"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "CheckBoxConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "是否显示底部信息"
+            },
+            "labelPosition": "left"
+          },
+          {
+            "property": "bottomText",
+            "type": "string",
+            "defaultValue": "底部信息",
+            "label": {
+              "text": {
+                "zh_CN": "底部文字"
+              }
+            },
+            "cols": 12,
+            "hidden": false,
+            "required": false,
+            "readOnly": false,
+            "disabled": false,
+            "widget": {
+              "component": "InputConfigurator",
+              "props": {}
+            },
+            "description": {
+              "zh_CN": "底部显示的文字"
+            },
+            "labelPosition": "left"
+          }
+        ],
+        "description": {
+          "zh_CN": "底部信息配置"
+        }
+      }
+    ],
+    "events": {
+      "click": {
+        "description": {
+          "zh_CN": "点击卡片时触发"
+        }
+      },
+      "click-thumb": {
+        "description": {
+          "zh_CN": "点击图片时触发"
+        }
+      },
+      "click-title": {
+        "description": {
+          "zh_CN": "点击标题时触发"
+        }
+      },
+      "click-price": {
+        "description": {
+          "zh_CN": "点击价格时触发"
+        }
+      },
+      "click-origin-price": {
+        "description": {
+          "zh_CN": "点击原价时触发"
+        }
+      },
+      "click-desc": {
+        "description": {
+          "zh_CN": "点击描述时触发"
+        }
+      },
+      "click-tag": {
+        "description": {
+          "zh_CN": "点击标签时触发"
+        }
+      },
+      "button-click": {
+        "description": {
+          "zh_CN": "点击按钮时触发"
+        }
+      },
+      "click-bottom": {
+        "description": {
+          "zh_CN": "点击底部时触发"
+        }
+      }
+    },
+    "slots": {
+      "tags": {
+        "label": {
+          "zh_CN": "标签插槽"
+        },
+        "description": {
+          "zh_CN": "自定义标签内容"
+        }
+      },
+      "footer": {
+        "label": {
+          "zh_CN": "底部插槽"
+        },
+        "description": {
+          "zh_CN": "自定义底部内容"
+        }
+      },
+      "bottom": {
+        "label": {
+          "zh_CN": "底部信息插槽"
+        },
+        "description": {
+          "zh_CN": "自定义底部信息内容"
+        }
+      }
+    }
+  },
+  "snippets": [
+    {
+      "name": {
+        "zh_CN": "业务卡片"
+      },
+      "icon": "bem",
+      "screenshot": "",
+      "snippetName": "BusinessCard",
+      "schema": {
+        "componentName": "BusinessCard",
+        "props": {
+          "title": "商品标题",
+          "desc": "商品描述",
+          "price": "99.00",
+          "buttonText": "立即购买"
+        }
+      },
+      "category": "custom-vant"
+    }
+  ]
+} 
