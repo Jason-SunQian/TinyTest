@@ -4,8 +4,10 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "pnpm run setup && concurrently 'pnpm:serve:backend' 'pnpm:serve:frontend'",
+    "dev:local": "pnpm run build:plugin && concurrently 'pnpm:serve:backend' 'pnpm:serve:frontend' 'pnpm:watch:packages'",
     "serve:frontend": "pnpm --filter designer-demo dev",
     "serve:backend": "pnpm --filter @opentiny/tiny-engine-mock dev",
+    "watch:packages": "pnpm --filter @opentiny/tiny-engine run dev",
     "build:plugin": "pnpm --filter @opentiny/tiny-engine-* --filter @opentiny/tiny-engine build",
     "build:alpha": "pnpm --filter designer-demo build:alpha",
     "build:prod": "pnpm --filter designer-demo build",

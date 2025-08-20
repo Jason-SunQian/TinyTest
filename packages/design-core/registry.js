@@ -116,7 +116,7 @@ export default {
     themesList: [
       {
         id: 'engine.theme.light',
-        text: '浅色主题',
+        text: '浅色主题123',
         type: 'light',
         icon: 'light',
         oppositeTheme: 'dark'

@@ -12,8 +12,8 @@
     "lowcode",
     "tiny-engine"
   ],
-  "module": "index.js",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "files": [
     "dist",
     "assets"
@@ -25,7 +25,8 @@
   "scripts": {
     "preview": "vite preview",
     "lint": "eslint . --ext .js,.vue,.jsx --fix",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build"
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build --watch"
   },
   "repository": {
     "type": "git",
