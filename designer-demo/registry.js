@@ -16,7 +16,7 @@ import { HttpService } from './src/composable'
 import CustomPage from './src/plugins/custom-page'
 
 export default {
-  [META_APP.Page]: {
+  [META_APP.AppManage]: {
     title: '定制页面插件位置',
     icon: 'bem',
     entry: CustomPage
@@ -26,7 +26,8 @@ export default {
     ...engineConfig
   },
   // 配置 false 隐藏工具栏清空按钮
-  // [META_APP.Clean]: false,
+  [META_APP.Help]: false,
+  [META_APP.Robot]: false,
   // 配置 false 隐藏大纲树，手动配置 tree-shaking 为 false，仍然不会被 tree-shaking
   // #__TINY_ENGINE_TREE_SHAKING__: false
   // [META_APP.OutlineTree]: false,
