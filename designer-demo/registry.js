@@ -16,11 +16,11 @@ import { HttpService } from './src/composable'
 import CustomPage from './src/plugins/custom-page'
 
 export default {
-  [META_APP.AppManage]: {
-    title: '定制页面插件位置',
-    icon: 'bem',
-    entry: CustomPage
-  },
+  // [META_APP.AppManage]: {
+  //   title: '定制页面插件位置',
+  //   icon: 'bem',
+  //   entry: CustomPage
+  // },
   [META_SERVICE.Http]: HttpService,
   'engine.config': {
     ...engineConfig
