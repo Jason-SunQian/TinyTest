@@ -7,17 +7,18 @@
       <component :is="ToolbarMedia" :isCanvas="false" @setViewPort="setViewPort"></component>
     </div>
     <div class="toolbar-right">
-      <span><tiny-switch v-model="debugSwitch"></tiny-switch><span class="toolbar-button-text">调试模式</span></span>
+      <span><tiny-switch v-model="debugSwitch"></tiny-switch><span class="toolbar-button-text">{{ t('designer.preview.debugMode') }}</span></span>
       <component :is="ChangeLang" :langChannel="previewLangChannel" :options="langOptions"></component>
     </div>
   </div>
 </template>
 
 <script lang="jsx">
-import { watch } from 'vue'
+import { watch, inject } from 'vue'
 import { useBreadcrumb, getMergeMeta } from '@opentiny/tiny-engine-meta-register'
 import { Switch as TinySwitch } from '@opentiny/vue'
 import { constants } from '@opentiny/tiny-engine-utils'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { BROADCAST_CHANNEL } from '../src/preview/srcFiles/constant'
 import { injectDebugSwitch } from './preview/debugSwitch'
 import { previewState } from './preview/usePreviewData'
@@ -27,6 +28,10 @@ export default {
     TinySwitch
   },
   setup() {
+    // 获取国际化 t 函数
+    const i18n = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key) => key)
+    
     const debugSwitch = injectDebugSwitch()
     const Breadcrumb = getMergeMeta('engine.toolbars.breadcrumb')?.entry
     const ChangeLang = getMergeMeta('engine.toolbars.lang')?.entry
@@ -63,7 +68,8 @@ export default {
       langOptions,
       ToolbarMedia,
       setViewPort,
-      debugSwitch
+      debugSwitch,
+      t
     }
   }
 }

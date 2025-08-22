@@ -27,9 +27,20 @@ export default {
     const blockApi = getMetaApi('engine.plugins.blockmanage')
 
     // 此处接收画布内部的错误和警告提示
-    const { data } = useBroadcastChannel({ name: BROADCAST_CHANNEL.Notify })
+    const { data: notifyData } = useBroadcastChannel({ name: BROADCAST_CHANNEL.Notify })
 
-    watch(data, (options) => useNotify(options))
+    // 监听语言切换频道
+    const { data: langData } = useBroadcastChannel({ name: BROADCAST_CHANNEL.CanvasLang })
+
+    watch(notifyData, (options) => useNotify(options))
+
+    // 监听语言切换，同步更新设计器语言
+    watch(langData, (newLang) => {
+      if (newLang && window.lowcodeI18n) {
+        window.lowcodeI18n.global.locale.value = newLang
+        console.log('设计器语言已切换到:', newLang)
+      }
+    })
 
     if (isVsCodeEnv) {
       useMessage().subscribe({

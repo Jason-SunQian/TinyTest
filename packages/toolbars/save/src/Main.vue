@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar-save">
     <toolbar-base
-      :content="isLoading ? '保存中' : '保存'"
+      :content="isLoading ? t('designer.toolbar.saving') : t('designer.toolbar.save')"
       :icon="options.icon.default || options.icon"
       :options="{ ...options, showDots: !isSaved() }"
       @click-api="openApi"
@@ -12,15 +12,15 @@
             <svg-icon :name="iconExpand"></svg-icon>
           </template>
           <div class="save-style">
-            <div class="save-setting">保存设置</div>
-            <tiny-checkbox v-model="state.checked" name="tiny-checkbox">自动保存</tiny-checkbox>
+            <div class="save-setting">{{ t('designer.toolbar.saveSetting') }}</div>
+            <tiny-checkbox v-model="state.checked" name="tiny-checkbox">{{ t('designer.toolbar.autoSave') }}</tiny-checkbox>
             <div class="save-time">
-              <div class="save-time-label">保存间隔</div>
+              <div class="save-time-label">{{ t('designer.toolbar.saveInterval') }}</div>
               <tiny-select v-model="state.timeValue" :options="delayOptions" :disabled="!state.checked" autocomplete>
               </tiny-select>
             </div>
             <div class="save-button-group">
-              <tiny-button type="primary" @click="saveConfig">设置并保存</tiny-button>
+              <tiny-button type="primary" @click="saveConfig">{{ t('designer.toolbar.setAndSave') }}</tiny-button>
             </div>
           </div>
         </tiny-popover>
@@ -32,7 +32,7 @@
           :fullscreen="true"
           :append-to-body="true"
           :visible="state.visible"
-          title="Schema 本地与线上差异"
+          :title="t('designer.toolbar.schemaDiff')"
           @update:visible="state.visible = $event"
         >
           <vue-monaco
@@ -45,8 +45,8 @@
             :original="state.originalCode"
           ></vue-monaco>
           <template #footer>
-            <tiny-button @click="close">取 消</tiny-button>
-            <tiny-button type="primary" @click="saveApi">保 存</tiny-button>
+            <tiny-button @click="close">{{ t('designer.common.cancel') }}</tiny-button>
+            <tiny-button type="primary" @click="saveApi">{{ t('designer.common.save') }}</tiny-button>
           </template>
         </tiny-dialog-box>
       </template>
@@ -56,11 +56,12 @@
 
 <script lang="ts">
 /* metaService: engine.toolbars.save.Main */
-import { reactive, ref, onUnmounted, onMounted } from 'vue'
+import { reactive, ref, onUnmounted, onMounted, inject } from 'vue'
 import { VueMonaco } from '@opentiny/tiny-engine-common'
 import { Button, Popover, DialogBox, Checkbox, Select } from '@opentiny/vue'
 import { useCanvas, useMessage } from '@opentiny/tiny-engine-meta-register'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { openCommon, saveCommon } from './js/index'
 import { isLoading, setAutoSaveStatus, getAutoSaveStatus } from './js/index'
 import { constants } from '@opentiny/tiny-engine-utils'
@@ -91,10 +92,14 @@ export default {
     }
   },
   setup() {
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     const delayOptions = [
-      { value: 5, label: '5分钟' },
-      { value: 10, label: '10分钟' },
-      { value: 15, label: '15分钟' }
+      { value: 5, label: t('designer.toolbar.fiveMinutes') },
+      { value: 10, label: t('designer.toolbar.tenMinutes') },
+      { value: 15, label: t('designer.toolbar.fifteenMinutes') }
     ]
     const state = reactive({
       visible: false,
@@ -214,7 +219,8 @@ export default {
       saveApi,
       delayOptions,
       saveConfig,
-      OPEN_DELAY
+      OPEN_DELAY,
+      t
     }
   }
 }

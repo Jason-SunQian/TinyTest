@@ -2,7 +2,7 @@
   <div id="tiny-bottom-panel">
     <div class="content">
       <tiny-steps v-show="data.length > 0" :data="data" @click="(_index, node) => selectFooterNode(node)"></tiny-steps>
-      <div v-show="data.length <= 0" class="tip">没有选中的节点</div>
+      <div v-show="data.length <= 0" class="tip">{{ t('designer.canvas.noSelectedNode') }}</div>
     </div>
   </div>
 </template>
@@ -10,6 +10,8 @@
 <script>
 import { getMetaApi } from '@opentiny/tiny-engine-meta-register'
 import { Steps } from '@opentiny/vue'
+import { inject } from 'vue'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 export default {
   components: {
@@ -23,12 +25,17 @@ export default {
   },
   emits: ['click'],
   setup() {
+    // 获取国际化 t 函数
+    const i18n = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key) => key)
+    
     const { selectNode } = getMetaApi('engine.canvas').canvasApi.value
     const selectFooterNode = ({ node }) => {
       selectNode(node)
     }
     return {
-      selectFooterNode
+      selectFooterNode,
+      t
     }
   }
 }

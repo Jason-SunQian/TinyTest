@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar-save toolbar-helpGuid">
     <toolbar-base
-      content="预览页面"
+      :content="t('designer.toolbar.preview')"
       :icon="options.icon?.default || options?.icon"
       :options="options"
       @click-api="preview"
@@ -16,6 +16,8 @@ import { previewPage } from '@opentiny/tiny-engine-common/js/preview'
 import { useLayout, useNotify, getOptions } from '@opentiny/tiny-engine-meta-register'
 import meta from '../meta'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
+import { inject } from 'vue'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 export default {
   components: {
@@ -28,6 +30,10 @@ export default {
     }
   },
   setup() {
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     const preview = async () => {
       const { beforePreview, previewMethod, afterPreview } = getOptions(meta.id)
 
@@ -53,7 +59,7 @@ export default {
       if (useLayout().isEmptyPage()) {
         useNotify({
           type: 'warning',
-          message: '请先创建页面'
+          message: t('designer.common.createPageFirst')
         })
 
         return
@@ -74,7 +80,8 @@ export default {
     }
 
     return {
-      preview
+      preview,
+      t
     }
   }
 }

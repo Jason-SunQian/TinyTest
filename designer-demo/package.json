@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently 'pnpm:serve:mock' 'pnpm:serve:frontend'",
+    "dev": "concurrently 'pnpm:serve:frontend'",
     "build:alpha": "cross-env NODE_OPTIONS=--max-old-space-size=10240 vite build --mode alpha",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=10240 vite build",
-    "serve:frontend": "cross-env vite",
-    "serve:mock": "node node_modules/@opentiny/tiny-engine-mock/dist/app.js"
+    "serve:frontend": "cross-env vite"
   },
   "dependencies": {
     "@opentiny/tiny-engine": "workspace:*",
@@ -24,7 +23,6 @@
     "vue": "^3.5.0"
   },
   "devDependencies": {
-    "@opentiny/tiny-engine-mock": "workspace:*",
     "@opentiny/tiny-engine-vite-config": "workspace:*",
     "@vitejs/plugin-vue": "^5.1.2",
     "cross-env": "^7.0.3",

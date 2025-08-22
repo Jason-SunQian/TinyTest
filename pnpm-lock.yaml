@@ -113,9 +113,6 @@ importers:
         specifier: ^3.5.0
         version: 3.5.18(typescript@5.4.5)
     devDependencies:
-      '@opentiny/tiny-engine-mock':
-        specifier: workspace:*
-        version: link:../mockServer
       '@opentiny/tiny-engine-vite-config':
         specifier: workspace:*
         version: link:../packages/build/vite-config

@@ -1,19 +1,19 @@
 <template>
   <div class="components-wrap">
-    <tiny-search v-model="state.searchValue" placeholder="请输入关键字搜索" clearable @update:modelValue="change">
+    <tiny-search v-model="state.searchValue" :placeholder="t('designer.leftPanel.searchPlaceholder')" clearable @update:modelValue="change">
       <template #prefix> <icon-search /> </template>
     </tiny-search>
     <tiny-collapse v-model="state.activeName" class="lowcode-scrollbar">
       <tiny-collapse-item
         v-for="(item, index) in state.components"
         :key="item.group"
-        :title="item.label?.[locale] || item.group"
+        :title="getComponentLabel(item)"
         :name="index"
       >
         <ul class="component-group" :style="{ gridTemplateColumns }">
           <template v-for="child in item.children" :key="child.component">
             <canvas-drag-item
-              v-if="!child.hidden && (child.name?.[locale] || child.name)"
+              v-if="!child.hidden && getComponentName(child)"
               :data="generateNode({ component: child.snippetName || child.component })"
               @click="componentClick"
             >
@@ -21,8 +21,8 @@
                 <div class="component-item-component">
                   <svg-icon :name="child?.icon?.toLowerCase() || 'row'"></svg-icon>
                 </div>
-                <span class="component-item-name" :title="child.name?.[locale] || child.name">{{
-                  child.name?.[locale] || child.name
+                <span class="component-item-name" :title="getComponentName(child)">{{
+                  getComponentName(child)
                 }}</span>
               </li>
             </canvas-drag-item>
@@ -39,7 +39,7 @@
 import { inject, onMounted, reactive, ref, watch, watchEffect, computed } from 'vue'
 import { Collapse, CollapseItem, Search } from '@opentiny/vue'
 import { SearchEmpty, CanvasDragItem } from '@opentiny/tiny-engine-common'
-import i18n from '@opentiny/tiny-engine-common/js/i18n'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { iconSearch } from '@opentiny/vue-icon'
 import { useMaterial, useCanvas } from '@opentiny/tiny-engine-meta-register'
 
@@ -57,16 +57,39 @@ export default {
     const SHORTCUT_PANEL_COLUMNS = '1fr 1fr 1fr 1fr 1fr 1fr'
     const { generateNode, materialState, getComponentsByGroup } = useMaterial()
     const gridTemplateColumns = ref(COMPONENT_PANEL_COLUMNS)
+    
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     interface PanelState {
       isShortcutPanel: boolean
       materialGroup: string
       emitEvent: (event: string) => void
     }
     const panelState = inject('panelState', {}) as PanelState
-    const { locale } = i18n.global
+    
     const componentsWithChildren = computed(() => materialState.components.filter((item) => item.children.length))
 
     type Component = typeof componentsWithChildren.value[number]
+
+    // 获取组件标签的国际化文本
+    const getComponentLabel = (component: Component) => {
+      const currentLocale = i18n?.global?.locale?.value || 'zh_CN'
+      if (component.label && typeof component.label === 'object') {
+        return component.label[currentLocale] || component.label.zh_CN || component.group
+      }
+      return component.group
+    }
+
+    // 获取组件名称的国际化文本
+    const getComponentName = (child: any) => {
+      const currentLocale = i18n?.global?.locale?.value || 'zh_CN'
+      if (child.name && typeof child.name === 'object') {
+        return child.name[currentLocale] || child.name.zh_CN || child.name
+      }
+      return child.name
+    }
 
     const fetchComponents = (components: Component[], name: string) => {
       if (!name) {
@@ -74,11 +97,14 @@ export default {
       }
 
       const result: Component[] = []
+      const currentLocale = i18n?.global?.locale?.value || 'zh_CN'
+      
       components.forEach((component) => {
         const children: Component['children'] = []
 
         component.children.forEach((child) => {
-          if ((child.name?.[locale.value as 'zh_CN'] || '')?.toLowerCase().indexOf(name.toLowerCase()) > -1) {
+          const childName = getComponentName(child)
+          if (childName?.toLowerCase().indexOf(name.toLowerCase()) > -1) {
             children.push(child)
           }
         })
@@ -156,12 +182,14 @@ export default {
     })
 
     return {
-      locale,
       gridTemplateColumns,
       state,
       change,
       generateNode,
-      componentClick
+      componentClick,
+      t, // 暴露 t 函数给模板使用
+      getComponentLabel, // 暴露 getComponentLabel 函数给模板使用
+      getComponentName // 暴露 getComponentName 函数给模板使用
     }
   }
 }

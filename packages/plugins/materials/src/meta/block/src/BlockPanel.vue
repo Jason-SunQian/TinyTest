@@ -1,7 +1,7 @@
 <template>
   <div class="blocks-wrap">
     <block-group v-model="state.groups" @changeGroup="changeGroup"></block-group>
-    <tiny-search v-model="state.searchValue" clearable placeholder="请输入关键字搜索">
+    <tiny-search v-model="state.searchValue" clearable :placeholder="t('designer.leftPanel.searchPlaceholder')">
       <template #prefix> <tiny-icon-search /> </template>
     </tiny-search>
     <div class="block-list">
@@ -17,10 +17,11 @@
 
 <script lang="tsx">
 /* metaService: engine.plugins.materials.block.BlockPanel */
-import { onMounted, reactive, watch, provide, computed } from 'vue'
+import { onMounted, reactive, watch, provide, computed, inject } from 'vue'
 import { Search } from '@opentiny/vue'
 import { iconSearch } from '@opentiny/vue-icon'
 import { useBlock, useMaterial, useModal, getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import BlockGroup from './BlockGroup.vue'
 import BlockList from './BlockList.vue'
 import BlockGroupPanel from './BlockGroupPanel.vue'
@@ -46,6 +47,10 @@ export default {
     rightPanelRef: Object
   },
   setup(props) {
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     const { addDefaultGroup, isDefaultGroupId, isAllGroupId, isRefresh, selectedGroup, getGroupList, setGroupList } =
       useBlock()
     const { materialState } = useMaterial()
@@ -169,7 +174,8 @@ export default {
     return {
       state,
       filterBlocks,
-      changeGroup
+      changeGroup,
+      t // 暴露 t 函数给模板使用
     }
   }
 }

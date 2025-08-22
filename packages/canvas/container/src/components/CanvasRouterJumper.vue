@@ -5,7 +5,7 @@
       'jumper-wrapper': true,
       disabled: !state.targetPageId
     }"
-    :title="state.targetPageId ? '路由跳转编辑' : '未绑定路由跳转页面'"
+    :title="state.targetPageId ? t('designer.canvas.routeJumpEdit') : t('designer.canvas.routeJumpNotBound')"
     @click="routerPageJump"
   >
     <div class="jumper">
@@ -15,8 +15,9 @@
 </template>
 
 <script>
-import { reactive, watch } from 'vue'
+import { reactive, watch, inject } from 'vue'
 import { usePage } from '@opentiny/tiny-engine-meta-register'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 const LEGAL_JUMPER_COMPONENT = ['RouterLink']
 
@@ -32,6 +33,10 @@ export default {
     }
   },
   setup(props) {
+    // 获取国际化 t 函数
+    const i18n = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key) => key)
+    
     const switchPage = usePage().switchPageWithConfirm
     const state = reactive({
       showRouterJumper: false,
@@ -68,7 +73,8 @@ export default {
 
     return {
       state,
-      routerPageJump
+      routerPageJump,
+      t
     }
   }
 }

@@ -5,7 +5,7 @@
       v-model="selectedGroup"
       v-bind="{ 'top-create': !isShortcutPanel }"
       class="blocks-header-select"
-      placeholder="请选择"
+      :placeholder="t('designer.common.pleaseSelect')"
       value-key="groupId"
       @change="$emit('changeGroup')"
       @visible-change="handleSelectVisibleChange"
@@ -31,7 +31,7 @@
           @click.stop=""
         >
           <tiny-form-item prop="value" class="edit-form-item">
-            <tiny-input ref="editFormItemRef" v-model="state.groupNameModel.value" placeholder="请输入新的分组名称">
+            <tiny-input ref="editFormItemRef" v-model="state.groupNameModel.value" :placeholder="t('designer.block.enterNewGroupName')">
               <template #suffix>
                 <div class="confirm-btns">
                   <tiny-button
@@ -73,9 +73,9 @@
               @update:modelValue="handleChangeDeletePopoverVisible"
             >
               <div class="popper-confirm" @mousedown.stop="">
-                <div class="popper-confirm-header">删除</div>
+                <div class="popper-confirm-header">{{ t('designer.common.delete') }}</div>
                 <div class="popper-confirm-content">
-                  <span class="title">您确定删除该分组吗？</span>
+                  <span class="title">{{ t('designer.block.confirmDeleteGroup') }}</span>
                 </div>
                 <div class="popper-confirm-footer">
                   <tiny-button
@@ -83,7 +83,7 @@
                     size="small"
                     class="cancel-btn"
                     @click="handleCancelDeleteGroup"
-                    >取消</tiny-button
+                    >{{ t('designer.common.cancel') }}</tiny-button
                   >
                   <tiny-button
                     id="confirmDeleteGroupName"
@@ -92,7 +92,7 @@
                     type="primary"
                     @click="handleConfirmDeleteGroup(item.value)"
                   >
-                    确定
+                    {{ t('designer.common.confirm') }}
                   </tiny-button>
                 </div>
               </div>
@@ -111,15 +111,15 @@
       </tiny-option>
     </tiny-select>
   </div>
-  <tiny-dialog-box v-model:visible="state.showCreateGroupForm" title="新建分组" width="400px" :append-to-body="true">
+  <tiny-dialog-box v-model:visible="state.showCreateGroupForm" :title="t('designer.block.newGroupTitle')" width="400px" :append-to-body="true">
     <tiny-form ref="createGroupForm" :model="state.createGroupForm" :rules="state.newGroupRules" validate-type="text">
-      <tiny-form-item prop="groupName" label="分组名称" :validate-icon="validateIcon" label-width="64px">
-        <tiny-input v-model="state.createGroupForm.groupName" placeholder="请输入分组名称"></tiny-input>
+      <tiny-form-item prop="groupName" :label="t('designer.block.groupName')" :validate-icon="validateIcon" label-width="64px">
+        <tiny-input v-model="state.createGroupForm.groupName" :placeholder="t('designer.block.enterGroupName')"></tiny-input>
       </tiny-form-item>
     </tiny-form>
     <template #footer>
-      <tiny-button id="confirmAddGroup" type="primary" @click="handleConfirmAddGroup">确 定</tiny-button>
-      <tiny-button id="cancelAddGroup" @click="state.showCreateGroupForm = false">取 消</tiny-button>
+      <tiny-button id="confirmAddGroup" type="primary" @click="handleConfirmAddGroup">{{ t('designer.common.confirm') }}</tiny-button>
+      <tiny-button id="cancelAddGroup" @click="state.showCreateGroupForm = false">{{ t('designer.common.cancel') }}</tiny-button>
     </template>
   </tiny-dialog-box>
 </template>
@@ -144,6 +144,7 @@ import { SvgButton } from '@opentiny/tiny-engine-common'
 import { requestCreateGroup, requestDeleteGroup, fetchGroups, requestUpdateGroup } from './http'
 import { setBlockPanelVisible } from './js/usePanel'
 import { REGEXP_GROUP_NAME } from '@opentiny/tiny-engine-common/js/verification'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 export default {
   components: {
@@ -165,6 +166,9 @@ export default {
   },
   emits: ['changeGroup'],
   setup(props) {
+    // 获取国际化 t 函数
+    const i18n = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key) => key)
     const validateIcon = iconError()
     const panelState = inject('panelState', {})
     const { addDefaultGroup, isDefaultGroupId, groupChange, selectedGroup, isAllGroupId } = useBlock()
@@ -178,18 +182,18 @@ export default {
 
     const state = reactive({
       groups: props.modelValue,
-      groupName: '未命名分组',
+      groupName: t('designer.block.unnamedGroup'),
       currentEditId: null,
       groupNameModel: {
         value: ''
       },
       rules: {
-        value: [{ pattern: REGEXP_GROUP_NAME, required: true, message: '只能输入汉字或数字或英文或-符号或_符号' }]
+        value: [{ pattern: REGEXP_GROUP_NAME, required: true, message: t('designer.block.groupNameRule') }]
       },
       newGroupRules: {
         groupName: [
-          { required: true, message: '分组名称必填' },
-          { pattern: REGEXP_GROUP_NAME, message: '只能输入汉字或数字或英文或-符号或_符号' }
+          { required: true, message: t('designer.block.groupNameRequired') },
+          { pattern: REGEXP_GROUP_NAME, message: t('designer.block.groupNameRule') }
         ]
       },
       prevClickGroupId: null,
@@ -309,14 +313,14 @@ export default {
             setBlockPanelVisible(true)
           })
           .catch((error) => {
-            message({ message: `新建区块分组失败: ${error.message || error}`, status: 'error' })
+            message({ message: t('designer.block.createGroupFailed', { error: error.message || error }), status: 'error' })
           })
       })
     }
 
     const handleConfirmDeleteGroup = (group) => {
       const { groupId, groupName } = group
-      const messageSuccess = `${groupName}分组删除成功!`
+      const messageSuccess = t('designer.block.deleteGroupSuccess', { groupName })
       requestDeleteGroup(groupId)
         .then(() => {
           state.currentDeleteGroupId = null
@@ -334,7 +338,7 @@ export default {
           })
         })
         .catch((error) => {
-          message({ message: `删除区块分组失败: ${error.message || error}`, status: 'error' })
+          message({ message: t('designer.block.deleteGroupFailed', { error: error.message || error }), status: 'error' })
         })
     }
 
@@ -386,7 +390,8 @@ export default {
       isAllGroupId,
       validateIcon,
       TinyIconYes,
-      TinyIconClose
+      TinyIconClose,
+      t
     }
   }
 }

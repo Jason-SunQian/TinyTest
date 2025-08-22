@@ -15,7 +15,8 @@ import * as TinyVue from '@opentiny/vue'
 
 import { RenderMain } from '../src/index'
 
-import { I18nInjectionKey, createI18n } from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 window.TinyLowcodeComponent = {}
 

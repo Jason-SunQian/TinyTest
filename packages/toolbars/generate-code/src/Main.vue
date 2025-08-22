@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar-helpGuid">
-    <toolbar-base content="出码" :icon="options.icon.default || options.icon" :options="options" @click-api="generate">
+    <toolbar-base :content="t('designer.toolbar.generateCode')" :icon="options.icon.default || options.icon" :options="options" @click-api="generate">
       <template #default>
         <generate-file-selector
           :visible="state.showDialogbox"
@@ -15,7 +15,7 @@
 
 <script lang="ts">
 /* metaService: engine.toolbars.generate-code.Main */
-import { reactive } from 'vue'
+import { reactive, inject } from 'vue'
 import {
   useBlock,
   useCanvas,
@@ -28,6 +28,7 @@ import {
 } from '@opentiny/tiny-engine-meta-register'
 import { fs } from '@opentiny/tiny-engine-utils'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { fetchMetaData, fetchPageList, fetchBlockSchema } from './http'
 import FileSelector from './FileSelector.vue'
 // @ts-ignore
@@ -43,6 +44,10 @@ export default {
     }
   },
   setup() {
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     const { isBlock, getCurrentPage } = useCanvas()
     const { getCurrentBlock } = useBlock()
 
@@ -201,16 +206,16 @@ export default {
       const { isEmptyPage } = useLayout()
 
       if (isEmptyPage()) {
-        useNotify({ type: 'warning', message: '请先创建页面' })
+        useNotify({ type: 'warning', message: t('designer.common.createPageFirst') })
 
         return
       }
 
       if (state.generating) {
-        useNotify({ type: 'info', title: '代码生成中, 请稍后...' })
+        useNotify({ type: 'info', title: t('designer.toolbar.codeGenerating') })
         return
       } else {
-        useNotify({ type: 'info', title: '代码生成中...' })
+        useNotify({ type: 'info', title: t('designer.toolbar.codeGenerating') })
         state.generating = true
       }
 
@@ -229,24 +234,24 @@ export default {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
-        useNotify({ type: 'error', title: '代码生成失败', message: error?.message || error })
+        useNotify({ type: 'error', title: t('designer.toolbar.codeGenerationFailed'), message: error?.message || error })
         state.generating = false
       }
     }
 
     const confirm = async (saveData) => {
-      useNotify({ type: 'info', title: '代码保存中...' })
+      useNotify({ type: 'info', title: t('designer.toolbar.codeSaving') })
       state.showDialogbox = false
 
       try {
         // 生成代码到本地
         await saveCodeToLocal(saveData)
 
-        useNotify({ type: 'success', title: '代码文件保存成功', message: `已保存${saveData.length}个文件` })
+        useNotify({ type: 'success', title: t('designer.toolbar.codeSaveSuccess'), message: t('designer.toolbar.codeSaveSuccessMessage', { count: saveData.length }) })
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
-        useNotify({ type: 'error', title: '代码保存失败', message: error?.message || error })
+        useNotify({ type: 'error', title: t('designer.toolbar.codeSaveFailed'), message: error?.message || error })
       } finally {
         state.generating = false
       }
@@ -262,7 +267,8 @@ export default {
       state,
       generate,
       confirm,
-      cancel
+      cancel,
+      t
     }
   }
 }

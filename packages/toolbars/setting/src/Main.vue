@@ -1,6 +1,6 @@
 <template>
   <toolbar-base
-    :content="isBlock() ? '区块设置' : '页面设置'"
+    :content="isBlock() ? t('designer.toolbar.blockSetting') : t('designer.toolbar.pageSetting')"
     :icon="options.icon.default || options.icon"
     :options="options"
     @click-api="openSetting"
@@ -13,6 +13,8 @@
 import { useCanvas, useLayout, useBlock, usePage, useModal, useNotify } from '@opentiny/tiny-engine-meta-register'
 import { constants } from '@opentiny/tiny-engine-utils'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
+import { inject } from 'vue'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 const { PAGE_STATUS } = constants
 export default {
@@ -26,6 +28,10 @@ export default {
     }
   },
   setup() {
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     const { pageState, isBlock } = useCanvas()
     const { getCurrentBlock } = useBlock()
     const { initCurrentPageData, isChangePageData } = usePage()
@@ -51,7 +57,7 @@ export default {
       if (pageStatus.state === PAGE_STATUS.Lock) {
         const username = pageStatus.data?.username || ''
         message({
-          message: `您点击的页面被${username}锁定，暂时无法编辑，请联系解锁`
+          message: t('designer.common.pageLocked', { username })
         })
         return
       }
@@ -59,8 +65,8 @@ export default {
       activePlugin(PLUGIN_NAME.AppManage).then((api: any) => {
         if (isChangePageData()) {
           confirm({
-            title: '提示',
-            message: `当前页面尚未保存，是否要继续切换?`,
+            title: t('designer.common.tip'),
+            message: t('designer.common.pageNotSaved'),
             exec: () => {
               openPageAndInit(api)
             }
@@ -73,7 +79,7 @@ export default {
 
     const openSetting = () => {
       if (isEmptyPage()) {
-        useNotify({ type: 'warning', message: '请先创建页面' })
+        useNotify({ type: 'warning', message: t('designer.common.createPageFirst') })
 
         return
       }
@@ -88,7 +94,8 @@ export default {
 
     return {
       openSetting,
-      isBlock
+      isBlock,
+      t
     }
   }
 }

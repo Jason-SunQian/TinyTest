@@ -1,6 +1,6 @@
 <template>
   <plugin-panel
-    title="区块管理"
+    :title="t('designer.leftPanel.blockManagement')"
     class="plugin-block"
     :fixed-name="PLUGIN_NAME.BlockManage"
     :fixedPanels="fixedPanels"
@@ -10,7 +10,7 @@
     @close="close"
   >
     <template #header>
-      <svg-button name="add-page" placement="bottom" tips="新建区块" @click="openBlockAdd"></svg-button>
+      <svg-button name="add-page" placement="bottom" :tips="t('designer.leftPanel.createBlock')" @click="openBlockAdd"></svg-button>
     </template>
     <template #content>
       <div class="app-manage-type">
@@ -53,16 +53,16 @@
                   @update:modelValue="handleChangeDeletePopoverVisible"
                 >
                   <div class="popper-confirm" @mousedown.stop="">
-                    <div class="popper-confirm-header">删除</div>
+                    <div class="popper-confirm-header">{{ t('designer.common.delete') }}</div>
                     <div class="popper-confirm-content">
                       <span class="title">{{ groupLabels.deletePrompt }}</span>
                     </div>
                     <div class="popper-confirm-footer">
                       <tiny-button class="cancel-btn" size="small" @click="handleShowDeleteModal(null)"
-                        >取消</tiny-button
+                        >{{ t('designer.common.cancel') }}</tiny-button
                       >
                       <tiny-button class="confirm-btn" size="small" type="primary" @click="delCategory(item.id)"
-                        >确定</tiny-button
+                        >{{ t('designer.common.confirm') }}</tiny-button
                       >
                     </div>
                   </div>
@@ -82,7 +82,7 @@
         </tiny-select>
       </div>
       <div class="app-manage-search">
-        <tiny-search v-model="state.searchKey" placeholder="搜索">
+        <tiny-search v-model="state.searchKey" :placeholder="t('designer.common.search')">
           <template #prefix>
             <tiny-icon-search />
           </template>
@@ -94,7 +94,7 @@
           :isBlockManage="true"
           :showBlockShot="true"
           :blockStyle="state.layout"
-          default-icon-tip="查看区块"
+          :default-icon-tip="t('designer.leftPanel.viewBlock')"
           :externalBlock="externalBlock"
           @editBlock="editBlock"
           @iconClick="openSettingPanel"
@@ -124,7 +124,7 @@
 
 <script lang="tsx">
 /* metaService: engine.plugins.blockmanage.Main */
-import { ref, reactive, computed, watch, provide } from 'vue'
+import { ref, reactive, computed, watch, provide, inject } from 'vue'
 import {
   Search as TinySearch,
   Select as TinySelect,
@@ -136,6 +136,7 @@ import {
 } from '@opentiny/vue'
 import { IconSearch } from '@opentiny/vue-icon'
 import { PluginPanel, PluginBlockList, SvgButton } from '@opentiny/tiny-engine-common'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import {
   useBlock,
   useModal,
@@ -225,6 +226,10 @@ export default {
   },
   emits: ['close'],
   setup(props, { emit }) {
+    // 获取国际化 t 函数
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
+    
     const docsUrl = useHelp().getDocsUrl('block')
     const docsContent =
       '区块类似于前端开发中的 Component，我们可以将页面中一样的结构（比如Header），构建到区块中，发布后直接拖入页面使用。'
@@ -241,16 +246,16 @@ export default {
       searchKey: '',
       categoryId: '',
       groupValueCache: '',
-      sortTypeLabel: '按时间倒序',
+      sortTypeLabel: t('designer.block.sortByTimeDesc'),
       sortType: 'timeDesc',
       publishFilterType: '',
       sortOptions: [
-        { label: '按时间正序', value: SORT_TYPE.timeAsc },
-        { label: '按时间倒序', value: SORT_TYPE.timeDesc },
-        { label: '按字母正序', value: SORT_TYPE.alphabetAsc },
-        { label: '按字母倒序', value: SORT_TYPE.alphabetDesc },
-        { label: '已发布', value: 'published' },
-        { label: '未发布', value: 'draft' }
+        { label: t('designer.block.sortByTimeAsc'), value: SORT_TYPE.timeAsc },
+        { label: t('designer.block.sortByTimeDesc'), value: SORT_TYPE.timeDesc },
+        { label: t('designer.block.sortByAlphabetAsc'), value: SORT_TYPE.alphabetAsc },
+        { label: t('designer.block.sortByAlphabetDesc'), value: SORT_TYPE.alphabetDesc },
+        { label: t('designer.block.published'), value: 'published' },
+        { label: t('designer.block.draft'), value: 'draft' }
       ],
       editVisible: false,
       groupInitialValue: {},
@@ -258,12 +263,12 @@ export default {
       arrangeList: [
         {
           id: 'default',
-          name: '栅格',
+          name: t('designer.block.grid'),
           svgName: 'grid'
         },
         {
           id: 'mini',
-          name: '列表',
+          name: t('designer.block.list'),
           svgName: 'small-list'
         }
       ],
@@ -438,7 +443,6 @@ export default {
     }
 
     return {
-      PLUGIN_NAME,
       state,
       groupSelect,
       categoryList,
@@ -462,7 +466,8 @@ export default {
       externalBlock,
       docsUrl,
       docsContent,
-      groupLabels
+      groupLabels,
+      t
     }
   }
 }

@@ -36,7 +36,7 @@ const createTinyPopoverSchema = (props: Record<string, any> = {}, content: Node 
     id: utils.guid(),
     props: {
       width: 200,
-      title: '弹框标题',
+      title: '弹框标题', // 这里暂时保持中文，因为这是一个工具函数，不直接渲染
       trigger: 'manual',
       modelValue: true,
       ...props
@@ -61,7 +61,7 @@ const createTinyPopoverSchema = (props: Record<string, any> = {}, content: Node 
             componentName: 'div',
             id: utils.guid(),
             props: {
-              placeholder: '提示内容'
+              placeholder: '提示内容' // 这里暂时保持中文，因为这是一个工具函数，不直接渲染
             }
           }
         ]

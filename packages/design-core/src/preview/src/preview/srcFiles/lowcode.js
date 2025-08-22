@@ -11,7 +11,7 @@
  */
 
 import { getCurrentInstance, nextTick, provide, inject } from 'vue'
-import { I18nInjectionKey } from 'vue-i18n'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import dataSourceMap from './dataSourceMap.js'
 import * as utils from './utils.js'
 import * as bridge from './bridge.js'

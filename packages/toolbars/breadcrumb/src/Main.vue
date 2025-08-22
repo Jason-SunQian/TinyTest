@@ -21,7 +21,7 @@
           @click="publishBlock()"
           type="primary"
           size="small"
-          >发布区块
+          >{{ t('designer.common.publish') }}
         </tiny-button>
       </div>
       <block-deploy-dialog
@@ -35,11 +35,12 @@
 
 <script lang="ts">
 /* metaService: engine.toolbars.breadcrumb.Main */
-import { reactive, computed } from 'vue'
+import { reactive, computed, inject } from 'vue'
 import { Breadcrumb, BreadcrumbItem, Button } from '@opentiny/vue'
 import { useBreadcrumb, useLayout, useBlock } from '@opentiny/tiny-engine-meta-register'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
 import { BlockDeployDialog } from '@opentiny/tiny-engine-common'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 export default {
   components: {
@@ -56,6 +57,8 @@ export default {
     }
   },
   setup() {
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
     const PLUGINS_ID = {
       PAGEID: 'engine.plugins.appmanage',
       BLOCKID: 'engine.plugins.blockmanage'
@@ -75,7 +78,7 @@ export default {
 
     const open = () => {
       if (!plugins) return
-      plugins.render = breadcrumbData.value[0] === CONSTANTS.PAGETEXT ? PLUGINS_ID.PAGEID : PLUGINS_ID.BLOCKID
+      plugins.render = breadcrumbData.value[0] === CONSTANTS.value.PAGETEXT ? PLUGINS_ID.PAGEID : PLUGINS_ID.BLOCKID
     }
 
     const currentBlock = computed(() => useBlock?.()?.getCurrentBlock?.())
@@ -91,7 +94,8 @@ export default {
       CONSTANTS,
       open,
       currentBlock,
-      handleChangeSchema
+      handleChangeSchema,
+      t
     }
   }
 }

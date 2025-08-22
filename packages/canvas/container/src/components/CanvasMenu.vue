@@ -37,6 +37,8 @@ import { canvasState, getConfigure, getController, getCurrent, copyNode, removeN
 import { useLayout, useModal, useCanvas, usePage, getMergeMeta } from '@opentiny/tiny-engine-meta-register'
 import { iconRight } from '@opentiny/vue-icon'
 import { useMultiSelect } from '../composables/useMultiSelect'
+import { inject } from 'vue'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 const menuState = reactive({
   position: null,
@@ -89,6 +91,9 @@ export default {
   },
   setup(props, { emit }) {
     const { multiSelectedStates, areSiblingNodes, batchAddParent, groupAddParent } = useMultiSelect()
+    // 获取国际化 t 函数
+    const i18n = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key) => key)
 
     const menus = ref([
       { name: '修改属性', code: 'config' },
@@ -154,12 +159,12 @@ export default {
     // 通过画布右键快捷新建区块
     const { SaveNewBlock } = getMergeMeta('engine.plugins.blockmanage')?.components || {}
     if (SaveNewBlock) {
-      menus.value.push({ name: '新建区块', code: 'createBlock' })
-      multiSelectMenus.value.push({ name: '新建区块', code: 'createBlock' })
+      menus.value.push({ name: t('designer.canvas.createBlock'), code: 'createBlock' })
+      multiSelectMenus.value.push({ name: t('designer.canvas.createBlock'), code: 'createBlock' })
     }
 
     menus.value.unshift({
-      name: '路由跳转',
+      name: t('designer.canvas.routeJump'),
       code: 'route',
       show: () => getCurrent()?.schema?.componentName === 'RouterLink',
       check: () => {
@@ -234,7 +239,7 @@ export default {
           componentName,
           id: null,
           props: {
-            content: '提示信息'
+            content: t('designer.canvas.tooltipInfo')
           },
           children: [schema]
         }
@@ -244,7 +249,7 @@ export default {
             componentName,
             props: {
               width: 200,
-              title: '弹框标题',
+              title: t('designer.canvas.popupTitle'),
               trigger: 'manual',
               modelValue: true
             },
@@ -265,7 +270,7 @@ export default {
                   {
                     componentName: 'div',
                     props: {
-                      placeholder: '提示内容'
+                      placeholder: t('designer.canvas.tooltipContent')
                     }
                   }
                 ]
@@ -289,7 +294,7 @@ export default {
           boxVisibility.value = true
         } else {
           useModal().message({
-            message: '请先保存当前页面',
+            message: t('designer.common.saveCurrentPageFirst'),
             status: 'error'
           })
         }

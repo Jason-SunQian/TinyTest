@@ -12,14 +12,16 @@
     "lowcode",
     "tiny-engine"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./index.js",
+  "module": "./index.js",
   "files": [
     "dist",
-    "assets"
+    "assets",
+    "index.js",
+    "re-export.js"
   ],
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./index.js",
     "./canvas": "./dist/canvas.js"
   },
   "scripts": {

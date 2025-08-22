@@ -12,7 +12,7 @@
 
 import { createApp } from 'vue'
 import initSvgs from '@opentiny/tiny-engine-svgs'
-import i18n from '@opentiny/tiny-engine-common/js/i18n'
+import i18n, { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { initMonitor } from '@opentiny/tiny-engine-common/js/monitor'
 import { injectGlobalComponents, setGlobalMonacoEditorTheme, Modal, Notify } from '@opentiny/tiny-engine-common'
 import TinyThemeTool from '@opentiny/vue-theme/theme-tool'
@@ -31,8 +31,53 @@ import { utils } from '@opentiny/tiny-engine-utils'
 import App from './App.vue'
 import defaultRegistry from '../registry.js'
 import { registerConfigurators } from './registerConfigurators'
+// 导入设计器界面的国际化配置
+import designerI18n from './i18n'
 
 const { guid } = utils
+
+// 加载设计器界面的国际化配置
+const loadDesignerI18n = () => {
+  try {
+    // 合并英文国际化配置
+    i18n.global.mergeLocaleMessage('en_US', designerI18n.en_US)
+    // 合并中文国际化配置
+    i18n.global.mergeLocaleMessage('zh_CN', designerI18n.zh_CN)
+    console.log('设计器界面国际化配置已加载')
+    
+    // 在开发环境下添加测试功能
+    if (process.env.NODE_ENV === 'development') {
+      // 将测试函数暴露到全局，方便在控制台调试
+      window.testDesignerI18n = () => {
+        console.log('=== 测试设计器界面国际化 ===')
+        console.log('当前语言:', i18n.global.locale.value)
+        console.log('页面:', i18n.global.t('designer.toolbar.page'))
+        console.log('保存:', i18n.global.t('designer.toolbar.save'))
+        console.log('物料:', i18n.global.t('designer.leftPanel.materials'))
+        console.log('中英文切换:', i18n.global.t('designer.toolbar.chineseEnglishSwitch'))
+      }
+      
+      window.switchToEnglish = () => {
+        i18n.global.locale.value = 'en_US'
+        console.log('已切换到英文')
+        window.testDesignerI18n()
+      }
+      
+      window.switchToChinese = () => {
+        i18n.global.locale.value = 'zh_CN'
+        console.log('已切换到中文')
+        window.testDesignerI18n()
+      }
+      
+      console.log('🎯 开发环境国际化测试功能已启用:')
+      console.log('  - testDesignerI18n() - 测试国际化')
+      console.log('  - switchToEnglish() - 切换到英文')
+      console.log('  - switchToChinese() - 切换到中文')
+    }
+  } catch (error) {
+    console.warn('加载设计器界面国际化配置失败:', error)
+  }
+}
 
 const defaultLifeCycles = {
   beforeAppCreate: ({ registry }) => {
@@ -54,9 +99,10 @@ const defaultLifeCycles = {
     initHook(HOOK_NAME.useNotify, Notify, { useDefaultExport: true })
     initHook(HOOK_NAME.useModal, Modal)
 
-    const theme = localStorage.getItem(`tiny-engine-theme-${appId}`) || config.theme || 'light'
+    // 加载设计器界面的国际化配置 - 移到这里确保在组件渲染前加载
+    loadDesignerI18n()
 
-    new TinyThemeTool(defaultThemeList[theme], defaultThemeList[theme]?.id)
+    const theme = config?.theme || 'light'
     document.documentElement?.setAttribute?.('data-theme', theme)
 
     if (import.meta.env.VITE_ERROR_MONITOR === 'true' && import.meta.env.VITE_ERROR_MONITOR_URL) {
@@ -69,6 +115,12 @@ const defaultLifeCycles = {
   appCreated: ({ app }) => {
     initSvgs(app)
     window.lowcodeI18n = i18n
+    
+    // 国际化配置已在 beforeAppCreate 阶段加载，这里不需要重复加载
+    
+    // 提供 I18nInjectionKey 给所有子组件使用
+    app.provide(I18nInjectionKey, i18n)
+    
     app.use(i18n).use(injectGlobalComponents)
 
     const appId = getMetaApi(META_SERVICE.GlobalService).getBaseInfo().id

@@ -11,7 +11,7 @@
  */
 
 import { getCurrentInstance, nextTick, provide, inject, type Ref } from 'vue'
-import { I18nInjectionKey } from 'vue-i18n'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { api } from './RenderMain'
 import { globalNotify } from './canvas-function'
 import { generateFn } from './data-function'

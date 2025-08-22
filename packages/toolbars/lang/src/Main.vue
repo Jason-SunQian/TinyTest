@@ -1,6 +1,6 @@
 <template>
   <toolbar-base
-    content="中英文切换"
+    :content="t('designer.toolbar.chineseEnglishSwitch')"
     :icon="options.icon.default || options.icon"
     :options="options"
     @click-api="changeLang"
@@ -10,9 +10,10 @@
 
 <script lang="ts">
 /* metaService: engine.toolbars.lang.Main */
-import { ref, watch } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { useBroadcastChannel } from '@vueuse/core'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 import { constants } from '@opentiny/tiny-engine-utils'
 
@@ -33,6 +34,8 @@ export default {
     }
   },
   setup(props) {
+    const i18n: any = inject(I18nInjectionKey)
+    const t = i18n?.global?.t || ((key: string) => key)
     const langVal = ref('zh_CN')
     const { post, data } = useBroadcastChannel({ name: props.langChannel })
 
@@ -53,11 +56,13 @@ export default {
     const changeLang = () => {
       langVal.value = langVal.value === langOptions[0].value ? langOptions[1].value : langOptions[0].value
       post(langVal.value)
+      console.log(langVal.value)
     }
     return {
       langOptions,
       langVal,
-      changeLang
+      changeLang,
+      t
     }
   }
 }

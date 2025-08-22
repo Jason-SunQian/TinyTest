@@ -11,26 +11,33 @@
  */
 /* metaService: engine.service.breadcrumb.useBreadcrumb */
 
-import { ref } from 'vue'
+import { ref, computed, inject } from 'vue'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 
 const breadcrumbData = ref<any[]>([])
-const CONSTANTS = {
-  PAGETEXT: '页面',
-  BLOCKTEXT: '区块'
-}
+
+const CONSTANTS = computed(() => {
+  const i18n: any = inject(I18nInjectionKey)
+  const t = i18n?.global?.t || ((key: string) => key)
+  return {
+    PAGETEXT: t('designer.toolbar.page'),
+    BLOCKTEXT: t('designer.leftPanel.blockManagement')
+  }
+})
 
 const setBreadcrumbPage = (value: any) => {
-  breadcrumbData.value = [CONSTANTS.PAGETEXT, ...value]
+  breadcrumbData.value = [CONSTANTS.value.PAGETEXT, ...value]
   sessionStorage.setItem('pageInfo', value)
 }
 
 const setBreadcrumbBlock = (value: any) => {
-  breadcrumbData.value = [CONSTANTS.BLOCKTEXT, ...value]
+  breadcrumbData.value = [CONSTANTS.value.BLOCKTEXT, ...value]
+  sessionStorage.setItem('blockInfo', value)
 }
 
 const getBreadcrumbData = () => breadcrumbData
 
-export default () => {
+export default function useBreadcrumb() {
   return {
     CONSTANTS,
     setBreadcrumbPage,

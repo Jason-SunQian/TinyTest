@@ -4,7 +4,8 @@
 
 <script setup>
 import { provide, watch } from 'vue'
-import { I18nInjectionKey, createI18n } from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { createPinia } from 'pinia'
 import { useBroadcastChannel } from '@vueuse/core'
 import { BROADCAST_CHANNEL, I18N_KEY_MAPS } from './constant.js'
