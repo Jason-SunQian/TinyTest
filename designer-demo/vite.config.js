@@ -2,8 +2,17 @@ import path from 'node:path'
 import { defineConfig, mergeConfig } from 'vite'
 import { useTinyEngineBaseConfig } from '@opentiny/tiny-engine-vite-config'
 import { viteMockServe } from 'vite-plugin-mock'
+import dotenv from 'dotenv'
 
 export default defineConfig((configEnv) => {
+  // 手动加载环境变量
+  dotenv.config({ path: './env/.env.local' })
+  
+  // 如果环境变量仍然未定义，直接设置
+  if (!process.env.VITE_USE_MOCK) {
+    process.env.VITE_USE_MOCK = 'true'
+  }
+  
   // 先加载环境变量
   const useMock = process.env.VITE_USE_MOCK === 'true'
   console.log('VITE_USE_MOCK:', process.env.VITE_USE_MOCK)
