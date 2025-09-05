@@ -443,6 +443,7 @@ export default {
     }
 
     return {
+      PLUGIN_NAME,
       state,
       groupSelect,
       categoryList,
