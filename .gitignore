@@ -3,3 +3,10 @@ node_modules/
 dist/
 **/dist/
 /designer-demo/node_modules/
+/designer-demo/node_modules/@opentiny/
+/designer-demo/node_modules/@vitejs/
+/designer-demo/node_modules/@vueuse/
+/designer-demo/node_modules/concurrently/
+/designer-demo/node_modules/cross-env/
+/designer-demo/node_modules/vite/
+/designer-demo/node_modules/vue/
