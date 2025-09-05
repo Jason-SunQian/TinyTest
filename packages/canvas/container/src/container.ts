@@ -976,7 +976,21 @@ export const setLocales = (messages: any, merge?: boolean) => {
 
   Object.keys(messages).forEach((lang) => {
     const fn = merge ? 'mergeLocaleMessage' : 'setLocaleMessage'
-    i18n.global[fn](lang, messages[lang])
+    const messageData = messages[lang]
+    
+    // 更严格的验证：检查 messageData 是否为有效的非空对象
+    if (messageData && 
+        typeof messageData === 'object' && 
+        !Array.isArray(messageData) && 
+        Object.keys(messageData).length > 0) {
+      try {
+        i18n.global[fn](lang, messageData)
+      } catch (error) {
+        console.error(`[I18n] Error merging locale "${lang}":`, error, 'Data:', messageData)
+      }
+    } else {
+      console.warn(`[I18n] Skipping invalid message data for locale "${lang}":`, messageData)
+    }
   })
 }
 
@@ -987,8 +1001,28 @@ export const setConfigure = (configure: any) => {
 export const setI18n = (data: any) => {
   const messages = data || useTranslate().getData()
   const i18n = getRenderer().getI18n()
+  
+  if (!i18n) {
+    console.warn('[I18n] i18n instance not available')
+    return
+  }
+  
   Object.keys(messages).forEach((lang) => {
-    i18n.global.mergeLocaleMessage(lang, messages[lang])
+    const messageData = messages[lang]
+    
+    // 更严格的验证：检查 messageData 是否为有效的非空对象
+    if (messageData && 
+        typeof messageData === 'object' && 
+        !Array.isArray(messageData) && 
+        Object.keys(messageData).length > 0) {
+      try {
+        i18n.global.mergeLocaleMessage(lang, messageData)
+      } catch (error) {
+        console.error(`[I18n] Error merging locale "${lang}":`, error, 'Data:', messageData)
+      }
+    } else {
+      console.warn(`[I18n] Skipping invalid message data for locale "${lang}":`, messageData)
+    }
   })
 }
 
