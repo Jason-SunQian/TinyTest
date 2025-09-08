@@ -9,13 +9,13 @@ const { BROADCAST_CHANNEL } = constants
 
 const { post: globalNotify } = useBroadcastChannel({ name: BROADCAST_CHANNEL.Notify })
 
-const procession = {
+const procession: any = {
   promiseLogin: null,
   mePromise: {}
 }
-let loginVM = null
+let loginVM: any = null
 
-const showError = (url, message) => {
+const showError = (url?: string, message?: string) => {
   globalNotify({
     type: 'error',
     title: '接口报错',
@@ -23,14 +23,14 @@ const showError = (url, message) => {
   })
 }
 
-const preRequest = (config) => {
+const preRequest = (config: any) => {
   const isDevelopEnv = import.meta.env.MODE?.includes('dev')
 
   if (isDevelopEnv && config.url.match(/\/generate\//)) {
     config.baseURL = ''
   }
 
-  const isVsCodeEnv = window.vscodeBridge
+  const isVsCodeEnv = (window as any).vscodeBridge
 
   if (isVsCodeEnv) {
     config.baseURL = ''
@@ -39,7 +39,7 @@ const preRequest = (config) => {
   return config
 }
 
-const preResponse = (res) => {
+const preResponse = (res: any) => {
   if (res.data?.error) {
     showError(res.config?.url, res?.data?.error?.message)
 
@@ -50,12 +50,12 @@ const preResponse = (res) => {
 }
 
 const openLogin = () => {
-  if (!window.lowcode) {
+  if (!(window as any).lowcode) {
     const loginDom = document.createElement('div')
     document.body.appendChild(loginDom)
     loginVM = createApp(Login).mount(loginDom)
 
-    window.lowcode = {
+    ;(window as any).lowcode = {
       platformCenter: {
         Session: {
           rebuiltCallback: function () {
@@ -73,24 +73,21 @@ const openLogin = () => {
   return new Promise((resolve, reject) => {
     if (!procession.promiseLogin) {
       procession.promiseLogin = loginVM.openLogin(procession, '/api/rebuildSession')
-      procession.promiseLogin.then((response) => {
-        HttpService.apis.request(response.config).then(resolve, reject)
+      procession.promiseLogin.then((response: any) => {
+        HttpService.apis.request(response.config).then(resolve as any, reject as any)
       })
     }
   })
 }
 
-const errorResponse = (error) => {
-  // 用户信息失效时，弹窗提示登录
+const errorResponse = (error: any) => {
   const { response } = error
 
   if (response?.status === LOGIN_EXPIRED_CODE) {
-    // vscode 插件环境弹出输入框提示登录
-    if (window.vscodeBridge) {
+    if ((window as any).vscodeBridge) {
       return Promise.resolve(true)
     }
 
-    // 浏览器环境弹出小窗登录
     if (response?.headers['x-login-url']) {
       return openLogin()
     }
@@ -102,10 +99,8 @@ const errorResponse = (error) => {
 }
 
 const getConfig = (env = import.meta.env) => {
-  const baseURL = env.VITE_ORIGIN
-  // 仅在本地开发时，启用 withCredentials
-  const dev = env.MODE?.includes('dev')
-  // 获取租户 id
+  const baseURL = (env as any).VITE_ORIGIN
+  const dev = (env as any).MODE?.includes('dev')
   const getTenant = () => new URLSearchParams(location.search).get('tenant')
 
   return {
@@ -133,3 +128,5 @@ const customizeHttpService = () => {
 }
 
 export default customizeHttpService()
+
+

@@ -4,7 +4,7 @@
   </tiny-input>
 </template>
 
-<script>
+<script lang="ts">
 import { ref } from 'vue'
 import { Input } from '@opentiny/vue'
 

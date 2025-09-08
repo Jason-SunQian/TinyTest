@@ -24,7 +24,7 @@ export default defineConfig((configEnv) => {
     iconDirs: [path.resolve(__dirname, './node_modules/@opentiny/tiny-engine/assets/')],
     useSourceAlias: false,
     envDir: './env',
-    registryPath: './registry.js'
+    registryPath: './registry.ts'
   })
 
   const customConfig = {
@@ -45,3 +45,4 @@ export default defineConfig((configEnv) => {
 
   return mergeConfig(baseConfig, customConfig)
 })
+
