@@ -14,6 +14,8 @@ import { META_SERVICE, META_APP } from '@opentiny/tiny-engine-meta-register'
 import engineConfig from './engine.config'
 import { HttpService } from './src/composable'
 import CustomPage from './src/plugins/custom-page'
+import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
+import { loadDesignerI18n } from './src/services/i18nService'
 
 export default {
   // [META_APP.AppManage]: {
@@ -25,9 +27,22 @@ export default {
   'engine.config': {
     ...engineConfig
   },
+  // 注册国际化初始化Hook
+  'engine.hooks.i18n': {
+    beforeAppCreate: () => {
+      console.log('🚀 开始初始化designer-demo国际化配置...')
+      loadDesignerI18n()
+    }
+  },
   // 配置 false 隐藏工具栏清空按钮
-  [META_APP.Help]: false,
   [META_APP.Robot]: false,
+  // 替换帮助插件为国际化测试
+  [META_APP.Help]: {
+    id: 'engine.plugins.editorhelp',
+    title: '国际化测试',
+    icon: 'cn-en',
+    entry: SimpleLanguageSwitcher
+  },
   // 配置 false 隐藏大纲树，手动配置 tree-shaking 为 false，仍然不会被 tree-shaking
   // #__TINY_ENGINE_TREE_SHAKING__: false
   // [META_APP.OutlineTree]: false,
@@ -64,7 +79,7 @@ export default {
         },
         [META_APP.Page]: {
           insertBefore: META_APP.Schema
-        },
+        }
       }
     }
   }
