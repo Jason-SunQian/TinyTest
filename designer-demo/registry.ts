@@ -3,6 +3,7 @@ import engineConfig from './engine.config'
 import { HttpService } from './src/composable'
 import CustomPage from './src/plugins/custom-page'
 import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
+import CustomSave from './src/toolbars/save/Main.vue'
 import { loadDesignerI18n } from './src/services/i18nService'
 
 export default {
@@ -22,6 +23,12 @@ export default {
     title: '国际化测试',
     icon: 'cn-en',
     entry: SimpleLanguageSwitcher
+  },
+  [META_APP.Save]: {
+    id: 'engine.toolbars.customSave',
+    title: 'Save',
+    icon: 'save',
+    entry: CustomSave
   },
   [META_APP.Layout]: {
     options: {

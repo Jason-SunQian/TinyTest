@@ -1,11 +1,28 @@
 import designerI18n from '../i18n'
+import { shallowRef, type Ref } from 'vue'
 
+let warned = false
 const getI18nInstance = () => {
-  if ((window as any).lowcodeI18n) {
-    return (window as any).lowcodeI18n
+  const inst = (window as any).lowcodeI18n
+  if (!inst && import.meta.env.DEV && !warned) {
+    warned = true
   }
-  console.warn('i18n实例未找到，等待实例初始化...')
-  return null
+  return inst || null
+}
+
+// 单例：等待 i18n 实例就绪
+let i18nReadyPromise: Promise<any> | null = null
+export const whenI18nReady = (): Promise<any> => {
+  if (i18nReadyPromise) return i18nReadyPromise
+  i18nReadyPromise = new Promise((resolve) => {
+    const tryGet = () => {
+      const inst = getI18nInstance()
+      if (inst) return resolve(inst)
+      setTimeout(tryGet, 50)
+    }
+    tryGet()
+  })
+  return i18nReadyPromise
 }
 
 export const loadDesignerI18n = () => {
@@ -17,6 +34,7 @@ export const loadDesignerI18n = () => {
     }
 
     try {
+      // 合并自定义翻译到TinyEngine的国际化系统中
       instance.global.mergeLocaleMessage('en_US', (designerI18n as any).en_US)
       instance.global.mergeLocaleMessage('zh_CN', (designerI18n as any).zh_CN)
       console.log('✅ 设计器界面国际化配置已加载')
@@ -92,14 +110,41 @@ export const getSupportedLanguages = () => {
   ]
 }
 
-export const t = (key: string, params: Record<string, any> = {}) => {
-  try {
-    const instance: any = getI18nInstance()
-    return instance?.global?.t?.(key, params) || key
-  } catch (error) {
-    console.error('翻译失败:', error)
+// 统一对外：在组件中使用国际化
+export const useDesignerI18n = () => {
+  const instance = getI18nInstance()
+
+  // localeRef 默认先占位，实例就绪后切到真实的 vue-i18n ref
+  const localeRef: Ref<'zh_CN' | 'en_US'> | any = shallowRef<'zh_CN' | 'en_US'>('zh_CN')
+
+  if (instance?.global?.locale) {
+    // 初始化时同步一次当前语言
+    localeRef.value = instance.global.locale.value
+    // 定时同步（避免跨实例 watch 复杂度）
+    setTimeout(() => (localeRef.value = instance.global.locale.value), 0)
+  } else {
+    // 实例未就绪时，等待后同步当前语言
+    whenI18nReady().then((inst) => {
+      localeRef.value = inst.global.locale.value
+    })
+  }
+
+  const t = (key: string, params: Record<string, any> = {}) => {
+    const inst: any = getI18nInstance()
+    const te = inst?.global?.te?.bind(inst?.global)
+    const tt = inst?.global?.t?.bind(inst?.global)
+    if (te && te(key)) return tt ? tt(key, params) : key
     return key
   }
+
+  return { t, locale: localeRef }
 }
 
-
+// 为了兼容现有代码（例如 useI18n.ts）继续提供命名导出 t
+export const t = (key: string, params: Record<string, any> = {}) => {
+  const inst: any = getI18nInstance()
+  const te = inst?.global?.te?.bind(inst?.global)
+  const tt = inst?.global?.t?.bind(inst?.global)
+  if (te && te(key)) return tt ? tt(key, params) : key
+  return key
+}

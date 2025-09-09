@@ -5,5 +5,3 @@ export default {
   zh_CN: zhCN,
   en_US: enUS
 }
-
-
