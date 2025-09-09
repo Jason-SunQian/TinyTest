@@ -5,6 +5,7 @@ import CustomPage from './src/plugins/custom-page'
 import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
 import CustomLang from './src/toolbars/lang/Main.vue'
 import CustomSave from './src/toolbars/save/Main.vue'
+import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import { loadDesignerI18n } from './src/services/i18nService'
 
 export default {
@@ -34,6 +35,16 @@ export default {
     icon: 'cn-en',
     entry: CustomLang
   },
+  // 禁用官方 OutlineTree 并注册自定义版本
+  [META_APP.OutlineTree]: false,
+  'engine.plugins.customOutlineTree': {
+    id: 'engine.plugins.customOutlineTree',
+    title: 'OutlineTree',
+    type: 'plugins',
+    icon: 'plugin-icon-tree',
+    widthResizable: true,
+    entry: CustomOutlineTree
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -51,6 +62,10 @@ export default {
         },
         [META_APP.Schema]: {
           insertBefore: META_APP.Materials
+        },
+        // 放置自定义 OutlineTree 于原位置
+        'engine.plugins.customOutlineTree': {
+          insertAfter: META_APP.Materials
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
