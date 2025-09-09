@@ -3,6 +3,7 @@ import engineConfig from './engine.config'
 import { HttpService } from './src/composable'
 import CustomPage from './src/plugins/custom-page'
 import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
+import CustomLang from './src/toolbars/lang/Main.vue'
 import CustomSave from './src/toolbars/save/Main.vue'
 import { loadDesignerI18n } from './src/services/i18nService'
 
@@ -23,6 +24,15 @@ export default {
     title: '国际化测试',
     icon: 'cn-en',
     entry: SimpleLanguageSwitcher
+  },
+  // 禁用官方Lang插件
+  [META_APP.Lang]: false,
+  // 使用自定义Lang插件
+  'engine.toolbars.customLang': {
+    id: 'engine.toolbars.customLang',
+    title: 'Lang',
+    icon: 'cn-en',
+    entry: CustomLang
   },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
@@ -45,7 +55,7 @@ export default {
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
         },
-        [META_APP.Lang]: {
+        'engine.toolbars.customLang': {
           insertAfter: META_APP.Breadcrumb
         },
         [META_APP.Page]: {
