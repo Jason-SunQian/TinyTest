@@ -1,5 +1,6 @@
 import designerI18n from '../i18n'
 import { shallowRef, type Ref } from 'vue'
+import { getEnabledLanguages, getLanguageByCode, isLanguageSupported, type LanguageConfig } from '../config/languages'
 
 let warned = false
 const getI18nInstance = () => {
@@ -35,8 +36,10 @@ export const loadDesignerI18n = () => {
 
     try {
       // 合并自定义翻译到TinyEngine的国际化系统中
-      instance.global.mergeLocaleMessage('en_US', (designerI18n as any).en_US)
-      instance.global.mergeLocaleMessage('zh_CN', (designerI18n as any).zh_CN)
+      Object.keys(designerI18n).forEach(locale => {
+        instance.global.mergeLocaleMessage(locale, (designerI18n as any)[locale])
+        console.log(`✅ 已加载语言: ${locale}`)
+      })
       console.log('✅ 设计器界面国际化配置已加载')
 
       if (import.meta.env.MODE === 'development') {
@@ -77,12 +80,19 @@ export const loadDesignerI18n = () => {
   return tryLoadI18n()
 }
 
-export const switchLanguage = (locale: 'zh_CN' | 'en_US') => {
+export const switchLanguage = (locale: string) => {
   try {
+    // 检查语言是否支持
+    if (!isLanguageSupported(locale)) {
+      console.warn(`不支持的语言: ${locale}`)
+      return false
+    }
+
     const instance: any = getI18nInstance()
     if (instance?.global?.locale) {
       instance.global.locale.value = locale
-      console.log(`语言已切换到: ${locale}`)
+      const langConfig = getLanguageByCode(locale)
+      console.log(`语言已切换到: ${langConfig?.name || locale}`)
       return true
     }
     console.warn('i18n实例未初始化')
@@ -93,21 +103,19 @@ export const switchLanguage = (locale: 'zh_CN' | 'en_US') => {
   }
 }
 
-export const getCurrentLanguage = (): 'zh_CN' | 'en_US' => {
+export const getCurrentLanguage = (): string => {
   try {
     const instance: any = getI18nInstance()
-    return (instance?.global?.locale?.value as 'zh_CN' | 'en_US') || 'zh_CN'
+    const current = instance?.global?.locale?.value
+    return current && isLanguageSupported(current) ? current : 'zh_CN'
   } catch (error) {
     console.error('获取当前语言失败:', error)
     return 'zh_CN'
   }
 }
 
-export const getSupportedLanguages = () => {
-  return [
-    { code: 'zh_CN', name: '中文', nameEn: 'Chinese' },
-    { code: 'en_US', name: 'English', nameEn: 'English' }
-  ]
+export const getSupportedLanguages = (): LanguageConfig[] => {
+  return getEnabledLanguages()
 }
 
 // 统一对外：在组件中使用国际化
@@ -115,7 +123,7 @@ export const useDesignerI18n = () => {
   const instance = getI18nInstance()
 
   // localeRef 默认先占位，实例就绪后切到真实的 vue-i18n ref
-  const localeRef: Ref<'zh_CN' | 'en_US'> | any = shallowRef<'zh_CN' | 'en_US'>('zh_CN')
+  const localeRef: Ref<string> | any = shallowRef<string>('zh_CN')
 
   if (instance?.global?.locale) {
     // 初始化时同步一次当前语言
@@ -131,9 +139,24 @@ export const useDesignerI18n = () => {
 
   const t = (key: string, params: Record<string, any> = {}) => {
     const inst: any = getI18nInstance()
-    const te = inst?.global?.te?.bind(inst?.global)
-    const tt = inst?.global?.t?.bind(inst?.global)
-    if (te && te(key)) return tt ? tt(key, params) : key
+    if (!inst?.global) return key
+    
+    const te = inst.global.te?.bind(inst.global)
+    const tt = inst.global.t?.bind(inst.global)
+    
+    // 调试信息
+    if (import.meta.env.DEV && key === 'designer.toolbar.save') {
+      console.log('🔍 翻译调试:', {
+        key,
+        currentLocale: inst.global.locale?.value,
+        hasKey: te ? te(key) : false,
+        messages: inst.global.messages
+      })
+    }
+    
+    if (te && te(key)) {
+      return tt ? tt(key, params) : key
+    }
     return key
   }
 
@@ -143,8 +166,13 @@ export const useDesignerI18n = () => {
 // 为了兼容现有代码（例如 useI18n.ts）继续提供命名导出 t
 export const t = (key: string, params: Record<string, any> = {}) => {
   const inst: any = getI18nInstance()
-  const te = inst?.global?.te?.bind(inst?.global)
-  const tt = inst?.global?.t?.bind(inst?.global)
-  if (te && te(key)) return tt ? tt(key, params) : key
+  if (!inst?.global) return key
+  
+  const te = inst.global.te?.bind(inst.global)
+  const tt = inst.global.t?.bind(inst.global)
+  
+  if (te && te(key)) {
+    return tt ? tt(key, params) : key
+  }
   return key
 }
