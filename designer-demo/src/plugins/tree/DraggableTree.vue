@@ -50,7 +50,7 @@
 
 <script lang="ts" setup>
 /* metaService: engine.plugins.outlinetree.custom.DraggableTree */
-import { computed, defineEmits, defineProps, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 const props = defineProps({
   data: { type: Array, default: () => [] },
