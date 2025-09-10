@@ -327,6 +327,31 @@
       "mustNotLessThanZero": "Must not be less than 0",
       "mustNotLessThan": "Must not be less than {min}",
       "getRemoteFields": "Get Remote Fields"
+    },
+    "bridge": {
+      "title": "Resource Management",
+      "docs": "Manage utility functions and npm package references.",
+      "addUtil": "New Utility",
+      "addBridge": "New Bridge Resource",
+      "utilType": "Utility Type",
+      "utilName": "Utility Name",
+      "inputUtilName": "Please enter utility name",
+      "inputNpmName": "Please enter npm package name",
+      "npmExportName": "NPM Export Name",
+      "inputNpmExportName": "Please enter npm export name",
+      "destructNpm": "Destructure npm package",
+      "asInstance": "As instance",
+      "instanceName": "Instance Name",
+      "entryPath": "Entry Path",
+      "version": "Version",
+      "cdnTip": "A production bundle URL directly usable in browser. Ensure it is valid, otherwise preview may fail.",
+      "generatePreview": "Generated utils.js preview",
+      "functionRequired": "Function content is required",
+      "deleteTitle": "Delete Resource",
+      "deleteConfirm": "Deleting a resource in use may break preview. Continue?",
+      "nameExists": "Resource name already exists",
+      "bridge": "Bridge",
+      "util": "Utility"
     }
   }
 }

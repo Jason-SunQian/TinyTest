@@ -8,6 +8,7 @@ import CustomSave from './src/toolbars/save/Main.vue'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import CustomBlockManage from './src/plugins/block/Main.vue'
 import CustomDatasource from './src/plugins/datasource/Main.vue'
+import CustomBridge from './src/plugins/bridge/Main.vue'
 import SaveNewBlock from '../packages/plugins/block/src/SaveNewBlock.vue'
 import { BlockService } from '../packages/plugins/block/src/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
@@ -70,6 +71,15 @@ export default {
     icon: 'plugin-icon-data',
     entry: CustomDatasource
   },
+  // 禁用官方 Bridge 并注册自定义版本
+  [META_APP.Bridge]: false,
+  'engine.plugins.customBridge': {
+    id: 'engine.plugins.customBridge',
+    title: 'Bridge',
+    type: 'plugins',
+    icon: 'plugin-icon-sresources',
+    entry: CustomBridge
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -97,6 +107,9 @@ export default {
         },
         'engine.plugins.customCollections': {
           insertAfter: 'engine.plugins.customBlockManage'
+        },
+        'engine.plugins.customBridge': {
+          insertAfter: 'engine.plugins.customCollections'
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch

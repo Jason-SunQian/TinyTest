@@ -327,6 +327,31 @@
       "mustNotLessThanZero": "必须不小于0",
       "mustNotLessThan": "必须不小于{min}",
       "getRemoteFields": "获取远程字段"
+    },
+    "bridge": {
+      "title": "资源管理",
+      "docs": "资源管理插件提供工具类方法与npm包引用能力。",
+      "addUtil": "新建工具类",
+      "addBridge": "新建桥接源",
+      "utilType": "工具类型",
+      "utilName": "工具名称",
+      "inputUtilName": "请输入工具类名称",
+      "inputNpmName": "请输入npm包名称",
+      "npmExportName": "npm包导出名",
+      "inputNpmExportName": "请输入npm包的导出名称",
+      "destructNpm": "解构npm包",
+      "asInstance": "是否作为实例",
+      "instanceName": "实例名称",
+      "entryPath": "入口路径",
+      "version": "版本号",
+      "cdnTip": "浏览器直接可用的生产包链接，请确保可用，否则可能会造成页面预览失败",
+      "generatePreview": "生成utils.js代码预览",
+      "functionRequired": "function 内容必填",
+      "deleteTitle": "删除资源",
+      "deleteConfirm": "如果删除正在使用的资源，将无法正常预览页面，确认要删除吗？",
+      "nameExists": "资源名称已存在",
+      "bridge": "桥接源",
+      "util": "工具类"
     }
   }
 }
