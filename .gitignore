@@ -3,3 +3,4 @@ node_modules/
 dist/
 **/dist/
 /designer-demo/node_modules/
+/designer-demo/node_modules/
