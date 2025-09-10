@@ -6,6 +6,9 @@ import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
 import CustomLang from './src/toolbars/lang/Main.vue'
 import CustomSave from './src/toolbars/save/Main.vue'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
+import CustomBlockManage from './src/plugins/block/Main.vue'
+import SaveNewBlock from '../packages/plugins/block/src/SaveNewBlock.vue'
+import { BlockService } from '../packages/plugins/block/src/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
 
 export default {
@@ -45,6 +48,18 @@ export default {
     widthResizable: true,
     entry: CustomOutlineTree
   },
+  // 禁用官方 BlockManage 并注册自定义版本
+  [META_APP.BlockManage]: false,
+  'engine.plugins.customBlockManage': {
+    id: 'engine.plugins.customBlockManage',
+    title: 'BlockManage',
+    type: 'plugins',
+    icon: 'plugin-icon-symbol',
+    entry: CustomBlockManage,
+    metas: [BlockService],
+    components: { SaveNewBlock },
+    options: { mergeCategoriesAndGroups: true }
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -66,6 +81,9 @@ export default {
         // 放置自定义 OutlineTree 于原位置
         'engine.plugins.customOutlineTree': {
           insertAfter: META_APP.Materials
+        },
+        'engine.plugins.customBlockManage': {
+          insertAfter: 'engine.plugins.customOutlineTree'
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
