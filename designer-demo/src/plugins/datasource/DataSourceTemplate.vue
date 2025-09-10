@@ -1,0 +1,126 @@
+<template>
+  <div class="right-item">
+    <span class="title">{{ t('designer.datasource.dataSourceTemplate') }}</span>
+    <div class="tips">
+      <span class="blue">{{ t('designer.datasource.blueBoxRepresentsArray') }}</span>
+      <span class="green">{{ t('designer.datasource.greenBoxRepresentsTree') }}</span>
+    </div>
+    <ul class="templates">
+      <li v-for="template in state.templates" :key="template.name">
+        <tiny-button :type="templateType(template.type)" plain @click="selectTemplate(template.id)">{{
+          template.name
+        }}</tiny-button>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script lang="ts">
+/* metaService: engine.plugins.collections.DataSourceTemplate */
+import { reactive, onMounted } from 'vue'
+import { Button } from '@opentiny/vue'
+import { getMergeMeta } from '@opentiny/tiny-engine-meta-register'
+import { fetchTemplates } from './js/http'
+import { useDesignerI18n } from '../../services/i18nService'
+
+export default {
+  components: {
+    TinyButton: Button
+  },
+  emits: ['select'],
+  setup(props, { emit }) {
+    const { t } = useDesignerI18n()
+    
+    const platformId = getMergeMeta('engine.config')?.platformId
+
+    const state = reactive({
+      templates: []
+    })
+
+    const templateType = (type) => (type === 'array' ? 'success' : 'primary')
+
+    const selectTemplate = (templateId) => {
+      emit('select', templateId)
+    }
+
+    onMounted(() => {
+      fetchTemplates(platformId).then((data) => {
+        state.templates = data
+      })
+    })
+
+    return {
+      state,
+      templateType,
+      selectTemplate,
+      t
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.right-item {
+  padding: 16px 12px;
+  color: var(--te-datasource-toolbar-icon-color);
+  border-bottom: 1px solid var(--te-datasource-tabs-border-color);
+
+  .tips {
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--te-datasource-toolbar-breadcrumb-text-color);
+    span {
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 24px;
+        height: 14px;
+        border-radius: 2px;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+      &:last-child {
+        margin-left: 16px;
+      }
+    }
+    .blue::before {
+      border: 1px solid var(--te-datasource-json-border-color);
+    }
+
+    .green::before {
+      border: 1px solid var(--te-datasource-tree-border-color);
+    }
+  }
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .templates {
+    li {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    .tiny-button {
+      color: var(--te-datasource-toolbar-breadcrumb-text-color);
+      &.tiny-button--primary {
+        border-color: var(--te-datasource-common-border-color-primary);
+      }
+
+      &.tiny-button--success {
+        border-color: var(--te-datasource-common-border-color-success);
+      }
+      &:hover {
+        color: var(--te-datasource-toolbar-icon-color);
+        background-color: transparent;
+      }
+    }
+  }
+}
+</style>

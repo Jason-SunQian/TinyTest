@@ -7,6 +7,7 @@ import CustomLang from './src/toolbars/lang/Main.vue'
 import CustomSave from './src/toolbars/save/Main.vue'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import CustomBlockManage from './src/plugins/block/Main.vue'
+import CustomDatasource from './src/plugins/datasource/Main.vue'
 import SaveNewBlock from '../packages/plugins/block/src/SaveNewBlock.vue'
 import { BlockService } from '../packages/plugins/block/src/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
@@ -60,6 +61,15 @@ export default {
     components: { SaveNewBlock },
     options: { mergeCategoriesAndGroups: true }
   },
+  // 禁用官方 Collections 并注册自定义版本
+  [META_APP.Collections]: false,
+  'engine.plugins.customCollections': {
+    id: 'engine.plugins.customCollections',
+    title: 'Collections', // 这个会在 Main.vue 中被 t('designer.datasource.title') 覆盖
+    type: 'plugins',
+    icon: 'plugin-icon-data',
+    entry: CustomDatasource
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -84,6 +94,9 @@ export default {
         },
         'engine.plugins.customBlockManage': {
           insertAfter: 'engine.plugins.customOutlineTree'
+        },
+        'engine.plugins.customCollections': {
+          insertAfter: 'engine.plugins.customBlockManage'
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
