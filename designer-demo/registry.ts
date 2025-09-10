@@ -52,7 +52,7 @@ export default {
   [META_APP.BlockManage]: false,
   'engine.plugins.customBlockManage': {
     id: 'engine.plugins.customBlockManage',
-    title: 'BlockManage',
+    title: 'BlockManage', // 这个会在 MainImpl.vue 中被 t('designer.leftPanel.blockManagement') 覆盖
     type: 'plugins',
     icon: 'plugin-icon-symbol',
     entry: CustomBlockManage,

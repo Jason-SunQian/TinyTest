@@ -4,8 +4,8 @@
       <tiny-form-item :label="groupLabels.nameInput" prop="name">
         <tiny-input v-model="formData.name" :placeholder="groupLabels.nameInputPlaceholder" @change="handleChangeName"></tiny-input>
       </tiny-form-item>
-      <tiny-form-item v-if="!shouldReplaceCategoryWithGroup()" label="分类ID" prop="categoryId">
-        <tiny-input v-model="formData.categoryId" placeholder="请输入分类ID" :disabled="isEdit"></tiny-input>
+      <tiny-form-item v-if="!shouldReplaceCategoryWithGroup()" :label="t('designer.block.categoryId')" prop="categoryId">
+        <tiny-input v-model="formData.categoryId" :placeholder="t('designer.block.enterCategoryId')" :disabled="isEdit"></tiny-input>
       </tiny-form-item>
     </tiny-form>
     <template #footer>

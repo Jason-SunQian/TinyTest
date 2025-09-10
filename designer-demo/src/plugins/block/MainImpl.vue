@@ -157,7 +157,7 @@ export default {
     const t = i18n?.global?.t || ((key: string) => key)
 
     const docsUrl = useHelp().getDocsUrl('block')
-    const docsContent = '区块类似于前端开发中的 Component，我们可以将页面中一样的结构（比如Header），构建到区块中，发布后直接拖入页面使用。'
+    const docsContent = t('designer.block.blockDocsContent')
     const { getBlockList, sort } = useBlock()
     const { isSaved } = useCanvas()
     const { confirm } = useModal()
@@ -223,7 +223,7 @@ export default {
         getMetaApi(META_SERVICE.GlobalService).updateBlockId(block.id)
         useBlock().initBlock(block, {}, isEdit)
       } else {
-        confirm({ message: '当前画布内容尚未保存，是否要继续切换?', exec: async () => { await refreshBlockData(block); useBlock().initBlock(block, {}, isEdit) } })
+        confirm({ message: t('designer.block.canvasNotSavedConfirm'), exec: async () => { await refreshBlockData(block); useBlock().initBlock(block, {}, isEdit) } })
       }
     }
 
@@ -240,7 +240,7 @@ export default {
     const changeCategory = (val) => { setCurrentCategory(val); updateBlockList() }
     const editCategory = (category) => { state.groupInitialValue = category; state.editVisible = true; state.currentDeleteGroupId = null }
     const createCategory = () => { editCategory({}) }
-    const deleteItem = (item) => { confirm({ title: groupLabels.value.deleteTitle, status: 'custom', message: { render() { return (<div>确定要删除<b> {item.name} </b>吗？删掉后不可恢复！</div>) } }, exec() { delCategory(item.id) } }) }
+    const deleteItem = (item) => { confirm({ title: groupLabels.value.deleteTitle, status: 'custom', message: { render() { return (<div>{t('designer.block.confirmDeleteItem', { itemName: item.name })}</div>) } }, exec() { delCategory(item.id) } }) }
     const changeType = ({ itemData }) => {
       const { label, value } = itemData
       state.sortTypeLabel = label

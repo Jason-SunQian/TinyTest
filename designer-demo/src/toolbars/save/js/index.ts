@@ -26,7 +26,7 @@ const state = reactive({
 export const isLoading = ref(false)
 
 const saveBlock = async (pageSchema: any) => {
-  const api = getMetaApi(META_APP.BlockManage)
+  const api = getMetaApi('engine.plugins.customBlockManage')
   const { getCurrentBlock } = useBlock()
   const block = getCurrentBlock()
   block.label = pageSchema.fileName

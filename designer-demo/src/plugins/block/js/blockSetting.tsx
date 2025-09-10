@@ -53,11 +53,22 @@ import {
 } from './http'
 import { constants, utils } from '@opentiny/tiny-engine-utils'
 import { generateBlock } from '@opentiny/tiny-engine-common/js/vscodeGenerateFile'
+import { whenI18nReady, t as i18nServiceT } from '../../../services/i18nService'
 
 const { HOST_TYPE } = constants
 
 const STRING_SLOT = ['Slot', 'slot']
 const currentCategory = ref('')
+
+// 国际化函数
+const t = (key: string, params?: any) => {
+  try {
+    return i18nServiceT(key, params)
+  } catch (error) {
+    console.warn(`i18n key not found: ${key}`)
+    return key
+  }
+}
 
 // 区块暴露属性和事件的类型
 export const META_TYPES = {
@@ -110,7 +121,7 @@ export const DEFAULT_ARRAY_CONFIG = [
     defaultValue: '',
     label: {
       text: {
-        zh_CN: '显示值'
+        zh_CN: t('designer.block.displayValue')
       }
     },
     labelPosition: 'top',
@@ -127,7 +138,7 @@ export const DEFAULT_ARRAY_CONFIG = [
     defaultValue: 'String',
     label: {
       text: {
-        zh_CN: '值类型'
+        zh_CN: t('designer.block.valueType')
       }
     },
     labelPosition: 'top',
@@ -145,7 +156,7 @@ export const DEFAULT_ARRAY_CONFIG = [
     defaultValue: 'InputConfigurator',
     label: {
       text: {
-        zh_CN: '设计器'
+        zh_CN: t('designer.block.designer')
       }
     },
     labelPosition: 'top',
@@ -163,7 +174,7 @@ export const DEFAULT_ARRAY_CONFIG = [
     defaultValue: '{}',
     label: {
       text: {
-        zh_CN: '属性面板组件属性'
+        zh_CN: t('designer.block.propertyPanelComponentProps')
       }
     },
     labelPosition: 'top',
@@ -181,7 +192,7 @@ export const DEFAULT_ARRAY_CONFIG = [
     defaultValue: '',
     label: {
       text: {
-        zh_CN: '缺省值'
+        zh_CN: t('designer.block.defaultValueLabel')
       }
     },
     labelPosition: 'top',
@@ -198,7 +209,7 @@ export const DEFAULT_ARRAY_CONFIG = [
     defaultValue: '',
     label: {
       text: {
-        zh_CN: '描述'
+        zh_CN: t('designer.block.description')
       }
     },
     labelPosition: 'top',
@@ -394,7 +405,7 @@ export const getBlockBase64 = () => {
     .catch((err) => {
       useNotify({
         type: 'error',
-        title: '生成区块截图错误',
+        title: t('designer.block.generateScreenshotError'),
         message: JSON.stringify(err)
       })
 
@@ -427,7 +438,7 @@ export const delBlock = (closePanel) => () => {
       .then(() => {
         // data:后台删除成功返回的是被删除的数据
         remove(getBlockList(), block)
-        message({ message: '删除区块成功！', status: 'success' })
+        message({ message: t('designer.block.deleteBlockSuccess'), status: 'success' })
         updateBlockList()
         useBlock().isRefresh.value = true
         closePanel()
@@ -521,7 +532,7 @@ const validBlockSlotsName = (block) => {
   const slotsTips = configureSlots(block.content)
   if (slotsTips) {
     useModal().confirm({
-      title: '插槽名称不能重复!!!',
+      title: t('designer.block.slotNameDuplicate'),
       message: `${slotsTips.slice(0, -1)}。`
     })
   }
@@ -537,7 +548,7 @@ export const publishBlock = (params) => {
     requestDeployBlock(params)
       .then(() => {
         refreshBlockData(block)
-        useNotify({ message: '区块发布成功!', type: 'success' })
+        useNotify({ message: t('designer.block.publishBlockSuccess'), type: 'success' })
         updateBlockList()
         useBlock().isRefresh.value = true
       })
@@ -589,7 +600,7 @@ const createBlock = (block = {}) => {
       useCanvas().setSaved(true)
       // 新建区块成功后需要同步更新画布上的区块数据ctx上下文环境
       useBlock().initBlock(data, {}, true)
-      useNotify({ message: '新建区块成功！!', type: 'success' })
+      useNotify({ message: t('designer.block.createBlockSuccess'), type: 'success' })
       // 本地生成区块服务
       if (isVsCodeEnv) {
         generateBlock({ schema: data.content, blockPath: data.path })
@@ -657,7 +668,7 @@ const updateBlock = (block = {}) => {
       }
 
       // 弹出保存区块成功
-      useNotify({ message: '保存区块成功！', type: 'success' })
+      useNotify({ message: t('designer.block.saveBlockSuccess'), type: 'success' })
       // 本地生成区块服务
       if (isVsCodeEnv) {
         generateBlock({ schema: data.content, blockPath: data.path })
@@ -803,7 +814,7 @@ export const delCategory = async (id) => {
     getCategories()
     useNotify({
       type: 'success',
-      message: '删除成功'
+        message: t('designer.block.deleteSuccess')
     })
   }
 }
@@ -858,7 +869,7 @@ export const saveArrayConfig = () => {
   property.properties = [
     {
       label: {
-        zh_CN: '默认分组'
+        zh_CN: t('designer.block.defaultGroupLabel')
       },
       content: state.arrayConfig.map?.(({ property, type, component, defaultValue, description, props }) => ({
         property,
