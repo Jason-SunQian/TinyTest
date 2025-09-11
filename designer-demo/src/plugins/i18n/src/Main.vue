@@ -324,8 +324,11 @@ export default {
     }
 
     const downloadFile = () => {
-      const { batchImportTempDownloadUrl, batchImportTempDownMethod } =
-        getMergeMeta('engine.plugins.i18n').options || {}
+      // 使用我们自定义插件的配置
+      const { batchImportTempDownloadUrl, batchImportTempDownMethod } = {
+        batchImportTempDownloadUrl: '',
+        batchImportTempDownMethod: ''
+      }
 
       // 自定义了下载方法，只使用自定义的下载方法
       if (batchImportTempDownMethod && typeof batchImportTempDownMethod === 'function') {
