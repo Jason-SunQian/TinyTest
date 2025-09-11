@@ -8,14 +8,14 @@
     validate-type="text"
     :inline-message="true"
   >
-    <tiny-form-item label="变量名" prop="name" class="var">
+    <tiny-form-item :label="t('designer.state.variableName')" prop="name" class="var">
       <tiny-input
         v-model="state.createData.name"
-        placeholder="只能包含数字字母及下划线"
+        :placeholder="t('designer.state.variableNamePlaceholder')"
         @change="$emit('nameInput', $event)"
       ></tiny-input>
     </tiny-form-item>
-    <tiny-form-item label="初始值类型" class="var-type-item">
+    <tiny-form-item :label="t('designer.state.initialValueType')" class="var-type-item">
       <tiny-radio-group v-model="state.variableType" :options="VAR_TYPES"></tiny-radio-group>
     </tiny-form-item>
     <tiny-collapse v-model="state.activeName">
@@ -98,6 +98,7 @@ import {
   Collapse as TinyCollapse,
   CollapseItem as TinyCollapseItem
 } from '@opentiny/vue'
+import { useDesignerI18n } from '../../../services/i18nService'
 import { MonacoEditor } from '@opentiny/tiny-engine-common'
 import { verifyJsVarName } from '@opentiny/tiny-engine-common/js/verification'
 import { initCompletion } from '@opentiny/tiny-engine-common/js/completion'
@@ -136,7 +137,8 @@ export default {
   },
   emits: ['nameInput', 'close'],
   setup(props, { emit }) {
-    const INIT = '初始值'
+    const { t } = useDesignerI18n()
+    const INIT = computed(() => t('designer.state.initialValue'))
     const GETTER = 'getter'
     const SETTER = 'setter'
     const variableEditor = ref(null)
@@ -163,10 +165,10 @@ export default {
       JSON: 'json',
       JS: 'javascript'
     }
-    const VAR_TYPES = [
-      { text: 'JSON类型', label: LANG_TYPES.JSON },
-      { text: 'JS表达式类型', label: LANG_TYPES.JS }
-    ]
+    const VAR_TYPES = computed(() => [
+      { text: t('designer.state.jsonType'), label: LANG_TYPES.JSON },
+      { text: t('designer.state.jsExpressionType'), label: LANG_TYPES.JS }
+    ])
     const getVarType = () => (props.createData.variable?.type === 'JSExpression' ? LANG_TYPES.JS : LANG_TYPES.JSON)
 
     const state = reactive({
@@ -280,14 +282,14 @@ export default {
       state.errorMessage = ''
 
       if (!name) {
-        state.errorMessage = '输入内容不能为空'
+        state.errorMessage = t('designer.state.inputRequired')
       } else if (!verifyJsVarName(name)) {
-        state.errorMessage = ' state 属性名称只能以字母或下划线开头且仅包含数字字母及下划线'
+        state.errorMessage = t('designer.state.invalidName')
       } else if (
         Object.keys(props.dataSource).includes(name) &&
         (props.flag !== 'update' || name !== props.updateKey)
       ) {
-        state.errorMessage = '已存在同名 state 属性'
+        state.errorMessage = t('designer.state.nameExists')
       }
 
       if (state.errorMessage) {
@@ -404,6 +406,7 @@ export default {
       "function setter() {\r\n  // const [firstName, lastName] = this.state.name.split(' ')\r\n  // this.emit('update:firstName', firstName)\r\n  // this.emit('update:lastName', lastName)\r\n}"
 
     return {
+      t,
       INIT,
       GETTER,
       SETTER,

@@ -1,16 +1,16 @@
 <template>
   <div v-if="props.type === TIPS_TYPE.PAGE" class="tips">
-    <div>字符串:"string"</div>
-    <div>数字:123</div>
-    <div>布尔值:true/false</div>
-    <div>对象:{"name":"xxx"}</div>
-    <div>数组:["1","2"]</div>
-    <div>空值:null</div>
+    <div>{{ t('designer.state.stringExample') }}</div>
+    <div>{{ t('designer.state.numberExample') }}</div>
+    <div>{{ t('designer.state.booleanExample') }}</div>
+    <div>{{ t('designer.state.objectExample') }}</div>
+    <div>{{ t('designer.state.arrayExample') }}</div>
+    <div>{{ t('designer.state.nullExample') }}</div>
     <div>"color":red</div>
     <div>"background":"blue"</div>
   </div>
   <div v-else class="tips app-tips">
-    <div class="tip-note">注意：必须是一个JSON对象 {}</div>
+    <div class="tip-note">{{ t('designer.state.jsonObjectNote') }}</div>
     <pre><code>{
   "app": "TinyEngine",
   "version": "2.0.0",
@@ -24,6 +24,10 @@
   </div>
 </template>
 <script setup>
+import { useDesignerI18n } from '../../../services/i18nService'
+
+const { t } = useDesignerI18n()
+
 const TIPS_TYPE = {
   PAGE: 'page',
   APP: 'app'

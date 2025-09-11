@@ -1,7 +1,7 @@
 <template>
   <plugin-panel
     id="data-source"
-    title="状态管理"
+    :title="t('designer.state.title')"
     class="plugin-state"
     :fixed-name="PLUGIN_NAME.State"
     :fixedPanels="fixedPanels"
@@ -13,13 +13,13 @@
     <template #content>
       <div class="data-source-left-panel">
         <tiny-tabs v-model="activeName" @click="tabClick" tab-style="button-card">
-          <tiny-tab-item :name="STATE.CURRENT_STATE" :title="isBlock ? '区块状态' : '页面状态'"></tiny-tab-item>
-          <tiny-tab-item :name="STATE.GLOBAL_STATE" title="应用状态"></tiny-tab-item>
+          <tiny-tab-item :name="STATE.CURRENT_STATE" :title="isBlock ? t('designer.state.blockState') : t('designer.state.pageState')"></tiny-tab-item>
+          <tiny-tab-item :name="STATE.GLOBAL_STATE" :title="t('designer.state.appState')"></tiny-tab-item>
         </tiny-tabs>
         <tiny-search
           :modelValue="query"
           class="left-filter"
-          placeholder="请输入搜索条件"
+          :placeholder="t('designer.state.searchPlaceholder')"
           clearable
           @update:modelValue="search"
         >
@@ -30,7 +30,7 @@
         <div class="add-btn">
           <tiny-button @click="openPanel(OPTION_TYPE.ADD)">
             <svg-icon name="add" class="add-btn-icon"></svg-icon>
-            <span class="add-btn-text">{{ activeName === STATE.CURRENT_STATE ? '添加变量' : '添加全局变量' }}</span>
+            <span class="add-btn-text">{{ activeName === STATE.CURRENT_STATE ? t('designer.state.addVariable') : t('designer.state.addGlobalVariable') }}</span>
           </tiny-button>
         </div>
         <data-source-list
@@ -47,7 +47,7 @@
         <div class="header">
           <span>{{ addDataSource }}</span>
           <span class="options-wrap">
-            <tiny-button type="primary" @click="confirm">保存</tiny-button>
+            <tiny-button type="primary" @click="confirm">{{ t('designer.state.save') }}</tiny-button>
             <close-icon @close="cancel"></close-icon>
           </span>
         </div>
@@ -96,6 +96,7 @@ import {
 import { getCommentByKey } from '@opentiny/tiny-engine-common/js/comment'
 import { iconSearch } from '@opentiny/vue-icon'
 import { CloseIcon, PluginPanel } from '@opentiny/tiny-engine-common'
+import { useDesignerI18n } from '../../../services/i18nService'
 import DataSourceList from './DataSourceList.vue'
 import CreateVariable from './CreateVariable.vue'
 import CreateStore from './CreateStore.vue'
@@ -122,6 +123,7 @@ export default {
     }
   },
   setup(props, { emit }) {
+    const { t } = useDesignerI18n()
     const variableRef = ref(null)
     const storeRef = ref(null)
     const isPanelShow = ref(false)
@@ -129,13 +131,13 @@ export default {
     const flag = ref('')
     const query = ref('')
     const updateKey = ref('')
-    const addDataSource = ref('添加变量')
+    const addDataSource = ref('')
     const activeName = ref(STATE.CURRENT_STATE)
     const isBlock = computed(() => useCanvas().isBlock())
     const { setSaved } = useCanvas()
     const { openCommon } = getMetaApi(META_APP.Save)
     const docsUrl = useHelp().getDocsUrl('data')
-    const docsContent = '对 state 的响应式变量进行系统管理，包含添加、删除、搜索、编辑 state。'
+    const docsContent = computed(() => t('designer.state.docs'))
     const state = reactive({
       dataSource: {},
       createData: {
@@ -176,15 +178,15 @@ export default {
         state.createData.name = ''
         state.createData.variable = ''
         errorMessage.value = ''
-        addDataSource.value = isCurrent ? '添加变量' : '添加全局变量'
+        addDataSource.value = isCurrent ? t('designer.state.addVariable') : t('designer.state.addGlobalVariable')
       } else if (flagValue === OPTION_TYPE.UPDATE) {
         state.createData.name = key
         state.createData.variable = state.dataSource[key]
-        addDataSource.value = isCurrent ? '修改变量' : '修改全局变量'
+        addDataSource.value = isCurrent ? t('designer.state.modifyVariable') : t('designer.state.modifyGlobalVariable')
       } else {
         state.createData.name = `${key}_copy`
         state.createData.variable = state.dataSource[key]
-        addDataSource.value = isCurrent ? '复制变量' : '复制全局变量'
+        addDataSource.value = isCurrent ? t('designer.state.copyVariable') : t('designer.state.copyGlobalVariable')
       }
 
       isPanelShow.value = true
@@ -214,7 +216,7 @@ export default {
 
     const notifySaveError = (message) => {
       useNotify({
-        title: '保存错误',
+        title: t('designer.state.saveError'),
         type: 'error',
         message
       })
@@ -257,7 +259,7 @@ export default {
         })
       } else {
         storeRef.value.validateForm().then(() => {
-          const validateResult = validateMonacoEditorData(storeRef.value.getEditor(), 'state字段', { required: true })
+          const validateResult = validateMonacoEditorData(storeRef.value.getEditor(), t('designer.state.stateField'), { required: true })
           if (!validateResult.success) {
             notifySaveError(validateResult.message)
             return
@@ -286,7 +288,7 @@ export default {
           updateGlobalState(id, { global_state: storeList }).then((res) => {
             isPanelShow.value = false
             useResource().appSchemaState.globalState = res.global_state || []
-            useNotify({ message: '保存成功!', type: 'success' })
+            useNotify({ message: t('designer.state.saveSuccess'), type: 'success' })
           })
           openCommon()
         })
@@ -380,6 +382,10 @@ export default {
 
         state.dataSource = pageSchema.state || {}
       }
+      
+      // 初始化 addDataSource 的值
+      const isCurrent = activeName.value === STATE.CURRENT_STATE
+      addDataSource.value = isCurrent ? t('designer.state.addVariable') : t('designer.state.addGlobalVariable')
     }
 
     const tabClick = () => {
@@ -399,6 +405,7 @@ export default {
     })
 
     return {
+      t,
       alignStyle,
       firstPanelOffset,
       PLUGIN_NAME,
