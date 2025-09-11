@@ -10,6 +10,7 @@ import CustomBlockManage from './src/plugins/block/Main.vue'
 import CustomDatasource from './src/plugins/datasource/Main.vue'
 import CustomBridge from './src/plugins/bridge/Main.vue'
 import CustomI18n, { TranslateService } from './src/plugins/i18n/index'
+import CustomState from './src/plugins/state/index'
 import SaveNewBlock from '../packages/plugins/block/src/SaveNewBlock.vue'
 import { BlockService } from '../packages/plugins/block/src/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
@@ -91,6 +92,15 @@ export default {
     entry: CustomI18n.entry,
     metas: [TranslateService]
   },
+  // 禁用官方 State 并注册自定义版本
+  [META_APP.State]: false,
+  'engine.plugins.customState': {
+    id: 'engine.plugins.customState',
+    title: 'State',
+    type: 'plugins',
+    icon: 'plugin-icon-var',
+    entry: CustomState.entry
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -124,6 +134,9 @@ export default {
         },
         'engine.plugins.customI18n': {
           insertAfter: 'engine.plugins.customBridge'
+        },
+        'engine.plugins.customState': {
+          insertAfter: 'engine.plugins.customI18n'
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
