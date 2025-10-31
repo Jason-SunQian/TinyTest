@@ -11,8 +11,8 @@ import CustomDatasource from './src/plugins/datasource/Main.vue'
 import CustomBridge from './src/plugins/bridge/Main.vue'
 import CustomI18n, { TranslateService } from './src/plugins/i18n/index'
 import CustomState from './src/plugins/state/index'
-import SaveNewBlock from '../packages/plugins/block/src/SaveNewBlock.vue'
-import { BlockService } from '../packages/plugins/block/src/composable/index'
+import SaveNewBlock from './src/plugins/block/SaveNewBlock.vue'
+import { BlockService } from './src/plugins/block/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
 
 export default {
