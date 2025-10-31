@@ -28,6 +28,7 @@
     "zod": "^3.25.76",
     "axios": "~0.28.0",
     "xlsx": "^0.18.5",
+    "@vue/shared": "^3.3.4",
     "vue": "^3.5.0"
   },
   "devDependencies": {
