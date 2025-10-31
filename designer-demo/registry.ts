@@ -1,7 +1,7 @@
 import { META_SERVICE, META_APP } from '@opentiny/tiny-engine-meta-register'
 import engineConfig from './engine.config'
 import { HttpService } from './src/composable'
-import CustomPage from './src/plugins/custom-page'
+// import CustomPage from './src/plugins/custom-page'
 import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
 import CustomLang from './src/toolbars/lang/Main.vue'
 import CustomSave from './src/toolbars/save/Main.vue'
