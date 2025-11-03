@@ -469,6 +469,15 @@
       "saveSuccess": "Save successful!",
       "tip": "Tip",
       "unsavedChanges": "Changes are not saved, are you sure to save and close?"
+    },
+    "schema": {
+      "title": "Page Schema",
+      "save": "Save",
+      "importSchema": "Import Schema",
+      "tip": "Tip",
+      "unsavedChanges": "Changes are not saved, are you sure to close?",
+      "saveFailed": "Schema save failed",
+      "parseError": "Schema parsing error, please ensure the format is correct"
     }
   }
 }

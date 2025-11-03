@@ -469,6 +469,15 @@
       "saveSuccess": "保存成功！",
       "tip": "提示",
       "unsavedChanges": "有改动未保存，您确定保存并关闭吗？"
+    },
+    "schema": {
+      "title": "页面 Schema",
+      "save": "保存",
+      "importSchema": "导入 Schema",
+      "tip": "提示",
+      "unsavedChanges": "有改动未保存，您确定关闭吗？",
+      "saveFailed": "schema 保存失败",
+      "parseError": "schema 解析异常，请确保格式正确"
     }
   }
 }

@@ -12,6 +12,7 @@ import CustomBridge from './src/plugins/bridge/Main.vue'
 import CustomI18n, { TranslateService } from './src/plugins/i18n/index'
 import CustomState from './src/plugins/state/index'
 import CustomScript, { api as ScriptApi } from './src/plugins/script/Main.vue'
+import CustomSchema from './src/plugins/schema/Main.vue'
 import SaveNewBlock from './src/plugins/block/SaveNewBlock.vue'
 import { BlockService } from './src/plugins/block/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
@@ -102,7 +103,7 @@ export default {
     icon: 'plugin-icon-var',
     entry: CustomState.entry
   },
-  // 禁用官方 Script 并注册自定义版本（按照 block 插件的模式）
+  // 禁用官方 Page(Script) 并注册自定义版本（按照 block 插件的模式）
   [META_APP.Page]: false,
   'engine.plugins.customScript': {
     id: 'engine.plugins.customScript',
@@ -115,6 +116,17 @@ export default {
     entry: CustomScript,
     apis: ScriptApi
   },
+  // 禁用官方 Schema 并注册自定义版本
+  [META_APP.Schema]: false,
+  'engine.plugins.customSchema': {
+    id: 'engine.plugins.customSchema',
+    title: 'Schema',
+    type: 'plugins',
+    icon: 'plugin-icon-page-schema',
+    width: 600,
+    widthResizable: true,
+    entry: CustomSchema
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -124,9 +136,6 @@ export default {
   [META_APP.Layout]: {
     options: {
       relativeLayoutConfig: {
-        // [META_APP.Schema]: {
-        //   insertBefore: META_APP.Materials
-        // },
         // 放置自定义 OutlineTree 于原位置
         'engine.plugins.customOutlineTree': {
           insertAfter: META_APP.Materials
@@ -149,8 +158,11 @@ export default {
         'engine.plugins.customScript': {
           insertAfter: 'engine.plugins.customState'
         },
-        [META_APP.Materials]: {
+        'engine.plugins.customSchema': {
           insertAfter: 'engine.plugins.customScript'
+        },
+        [META_APP.Materials]: {
+          insertAfter: 'engine.plugins.customSchema'
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
