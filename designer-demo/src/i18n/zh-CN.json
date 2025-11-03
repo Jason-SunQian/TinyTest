@@ -459,6 +459,16 @@
       "createEntry": "新建词条",
       "insertEntry": "插入词条",
       "insertI18nTooltip": "插入国际化词条"
+    },
+    "script": {
+      "title": "页面 JS",
+      "save": "保存",
+      "docs": "同一页面/区块的添加事件会统一保存到对应的页面JS中。",
+      "staticCheckError": "代码静态检查有错误：{error}",
+      "staticCheckErrorSave": "代码静态检查有错误，请先修改后再保存",
+      "saveSuccess": "保存成功！",
+      "tip": "提示",
+      "unsavedChanges": "有改动未保存，您确定保存并关闭吗？"
     }
   }
 }

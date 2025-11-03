@@ -459,6 +459,16 @@
       "createEntry": "Create Entry",
       "insertEntry": "Insert Entry",
       "insertI18nTooltip": "Insert internationalization entry"
+    },
+    "script": {
+      "title": "Page JS",
+      "save": "Save",
+      "docs": "Events added to the same page/block will be saved uniformly in the corresponding page JS.",
+      "staticCheckError": "Static code check error: {error}",
+      "staticCheckErrorSave": "Static code check has errors, please fix before saving",
+      "saveSuccess": "Save successful!",
+      "tip": "Tip",
+      "unsavedChanges": "Changes are not saved, are you sure to save and close?"
     }
   }
 }

@@ -11,6 +11,7 @@ import CustomDatasource from './src/plugins/datasource/Main.vue'
 import CustomBridge from './src/plugins/bridge/Main.vue'
 import CustomI18n, { TranslateService } from './src/plugins/i18n/index'
 import CustomState from './src/plugins/state/index'
+import CustomScript, { api as ScriptApi } from './src/plugins/script/Main.vue'
 import SaveNewBlock from './src/plugins/block/SaveNewBlock.vue'
 import { BlockService } from './src/plugins/block/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
@@ -101,6 +102,19 @@ export default {
     icon: 'plugin-icon-var',
     entry: CustomState.entry
   },
+  // 禁用官方 Script 并注册自定义版本（按照 block 插件的模式）
+  [META_APP.Page]: false,
+  'engine.plugins.customScript': {
+    id: 'engine.plugins.customScript',
+    title: 'Script',
+    type: 'plugins',
+    icon: 'plugin-icon-js',
+    width: 600,
+    widthResizable: true,
+    confirm: 'close',
+    entry: CustomScript,
+    apis: ScriptApi
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -110,15 +124,9 @@ export default {
   [META_APP.Layout]: {
     options: {
       relativeLayoutConfig: {
-        [META_APP.Script]: {
-          insertBefore: META_APP.AppManage
-        },
-        [META_APP.Materials]: {
-          insertAfter: META_APP.State
-        },
-        [META_APP.Schema]: {
-          insertBefore: META_APP.Materials
-        },
+        // [META_APP.Schema]: {
+        //   insertBefore: META_APP.Materials
+        // },
         // 放置自定义 OutlineTree 于原位置
         'engine.plugins.customOutlineTree': {
           insertAfter: META_APP.Materials
@@ -138,14 +146,17 @@ export default {
         'engine.plugins.customState': {
           insertAfter: 'engine.plugins.customI18n'
         },
+        'engine.plugins.customScript': {
+          insertAfter: 'engine.plugins.customState'
+        },
+        [META_APP.Materials]: {
+          insertAfter: 'engine.plugins.customScript'
+        },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
         },
         'engine.toolbars.customLang': {
           insertAfter: META_APP.Breadcrumb
-        },
-        [META_APP.Page]: {
-          insertBefore: META_APP.Schema
         }
       }
     }
