@@ -1,6 +1,10 @@
 /.idea/
 node_modules/
+**/node_modules/
 dist/
 **/dist/
-/designer-demo/node_modules/
-/designer-demo/node_modules/
+.vite/
+**/.vite/
+.history/
+**/.history/
+tmp_backup/

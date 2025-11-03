@@ -82,6 +82,9 @@ importers:
       '@opentiny/tiny-engine':
         specifier: workspace:*
         version: link:../packages/design-core
+      '@opentiny/tiny-engine-common':
+        specifier: workspace:*
+        version: link:../packages/common
       '@opentiny/tiny-engine-meta-register':
         specifier: workspace:*
         version: link:../packages/register
@@ -106,12 +109,33 @@ importers:
       '@opentiny/vue-theme':
         specifier: ~3.20.0
         version: 3.20.0
+      '@vue/shared':
+        specifier: ^3.3.4
+        version: 3.4.29
       '@vueuse/core':
         specifier: ^9.6.0
         version: 9.6.0(vue@3.5.18)
+      axios:
+        specifier: ~0.28.0
+        version: 0.28.0
+      html2canvas:
+        specifier: ^1.4.1
+        version: 1.4.1
+      pinyin-pro:
+        specifier: ^3.13.0
+        version: 3.13.0
       vue:
         specifier: ^3.5.0
         version: 3.5.18(typescript@5.9.2)
+      vue-clipboard3:
+        specifier: ^2.0.0
+        version: 2.0.0
+      xlsx:
+        specifier: ^0.18.5
+        version: 0.18.5
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@opentiny/tiny-engine-vite-config':
         specifier: workspace:*
