@@ -13,6 +13,10 @@ import CustomI18n, { TranslateService } from './src/plugins/i18n/index'
 import CustomState from './src/plugins/state/index'
 import CustomScript, { api as ScriptApi } from './src/plugins/script/Main.vue'
 import CustomSchema from './src/plugins/schema/Main.vue'
+import CustomPage, { api as PageApi } from './src/plugins/page/Main.vue'
+import { PageService } from './src/plugins/page/composable/index'
+import PageGeneral from './src/plugins/page/PageGeneral.vue'
+import mcp from './src/plugins/page/mcp'
 import SaveNewBlock from './src/plugins/block/SaveNewBlock.vue'
 import { BlockService } from './src/plugins/block/composable/index'
 import { loadDesignerI18n } from './src/services/i18nService'
@@ -127,6 +131,27 @@ export default {
     widthResizable: true,
     entry: CustomSchema
   },
+  // 禁用官方 AppManage 并注册自定义版本
+  [META_APP.AppManage]: false,
+  'engine.plugins.customAppManage': {
+    id: 'engine.plugins.customAppManage',
+    title: 'Page',
+    type: 'plugins',
+    icon: 'plugin-icon-page',
+    entry: CustomPage,
+    apis: PageApi,
+    options: {
+      pageBaseStyle: {
+        className: 'page-base-style',
+        style: 'padding: 24px;background: #FFFFFF;'
+      }
+    },
+    components: {
+      PageGeneral
+    },
+    metas: [PageService],
+    mcp
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -163,6 +188,9 @@ export default {
         },
         [META_APP.Materials]: {
           insertAfter: 'engine.plugins.customSchema'
+        },
+        'engine.plugins.customAppManage': {
+          insertBefore: 'engine.plugins.customSchema'
         },
         [META_APP.Save]: {
           insertBefore: META_APP.ThemeSwitch
