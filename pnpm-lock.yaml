@@ -82,6 +82,12 @@ importers:
       '@opentiny/tiny-engine':
         specifier: workspace:*
         version: link:../packages/design-core
+      '@opentiny/tiny-engine-block-compiler':
+        specifier: workspace:*
+        version: link:../packages/block-compiler
+      '@opentiny/tiny-engine-builtin-component':
+        specifier: workspace:*
+        version: link:../packages/builtinComponent
       '@opentiny/tiny-engine-common':
         specifier: workspace:*
         version: link:../packages/common

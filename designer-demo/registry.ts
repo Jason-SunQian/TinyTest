@@ -19,6 +19,11 @@ import PageGeneral from './src/plugins/page/PageGeneral.vue'
 import mcp from './src/plugins/page/mcp'
 import SaveNewBlock from './src/plugins/block/SaveNewBlock.vue'
 import { BlockService } from './src/plugins/block/composable/index'
+import CustomMaterials, { ResourceService, MaterialService } from './src/plugins/materials/index'
+import MaterialHeader from './src/plugins/materials/components/header/Main.vue'
+import MaterialLayout from './src/plugins/materials/meta/layout/index'
+import MaterialBlock from './src/plugins/materials/meta/block/index'
+import MaterialComponent from './src/plugins/materials/meta/component/index'
 import { loadDesignerI18n } from './src/services/i18nService'
 
 export default {
@@ -152,6 +157,50 @@ export default {
     metas: [PageService],
     mcp
   },
+  // 禁用官方 Materials 并注册自定义版本
+  [META_APP.Materials]: false,
+  // 注册 Materials 子模块 - Layout
+  'engine.plugins.customMaterials.layout': {
+    ...MaterialLayout
+  },
+  // 注册 Materials 子模块 - Component
+  'engine.plugins.customMaterials.component': {
+    ...MaterialComponent
+  },
+  // 注册 Materials 子模块 - Block
+  'engine.plugins.customMaterials.block': {
+    ...MaterialBlock
+  },
+  // 注册 Materials 主插件
+  'engine.plugins.customMaterials': {
+    id: 'engine.plugins.customMaterials',
+    title: 'Materials',
+    type: 'plugins',
+    icon: 'plugin-icon-materials',
+    entry: CustomMaterials.entry,
+    layout: MaterialLayout,
+    options: {
+      defaultTabId: 'engine.plugins.customMaterials.component',
+      displayComponentIds: ['engine.plugins.customMaterials.component', 'engine.plugins.customMaterials.block'],
+      basePropertyOptions: CustomMaterials.options.basePropertyOptions,
+      useBaseStyle: true,
+      blockBaseStyle: {
+        className: 'block-base-style',
+        style: 'margin: 16px;'
+      },
+      componentBaseStyle: {
+        className: 'component-base-style',
+        style: 'margin: 8px;'
+      },
+      hiddenBuiltinMaterials: []
+    },
+    components: {
+      header: MaterialHeader
+    },
+    apis: CustomMaterials.apis,
+    metas: [ResourceService, MaterialService],
+    mcp: CustomMaterials.mcp
+  },
   [META_APP.Save]: {
     id: 'engine.toolbars.customSave',
     title: 'Save',
@@ -186,7 +235,7 @@ export default {
         'engine.plugins.customSchema': {
           insertAfter: 'engine.plugins.customScript'
         },
-        [META_APP.Materials]: {
+        'engine.plugins.customMaterials': {
           insertAfter: 'engine.plugins.customSchema'
         },
         'engine.plugins.customAppManage': {

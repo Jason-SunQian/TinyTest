@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@opentiny/tiny-engine": "workspace:*",
+    "@opentiny/tiny-engine-block-compiler": "workspace:*",
+    "@opentiny/tiny-engine-builtin-component": "workspace:*",
     "@opentiny/tiny-engine-common": "workspace:*",
     "@opentiny/tiny-engine-meta-register": "workspace:*",
     "@opentiny/tiny-engine-utils": "workspace:*",

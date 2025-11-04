@@ -53,6 +53,28 @@
       "createBlock": "Create Block",
       "viewBlock": "View Block"
     },
+    "materials": {
+      "title": "Materials",
+      "component": "Components",
+      "block": "Blocks",
+      "docs": "Materials plugin for managing and using UI components and blocks in the designer.",
+      "blockList": "Block List",
+      "searchByNameOrId": "Please enter name or ID to search",
+      "byPublicScope": "By Public Scope",
+      "byAuthor": "By Author",
+      "byTag": "By Tag",
+      "addBlockSuccess": "Block added successfully",
+      "addBlockFailed": "Failed to add block",
+      "blockSearchFailed": "Block search failed",
+      "fetchAvailableBlocksFailed": "Failed to fetch available blocks",
+      "publicToAll": "Public to all organizations",
+      "publicToCurrent": "Public to current organization",
+      "deleteGroup": "Delete Group",
+      "confirmDeleteGroup": "Are you sure you want to delete {groupName}?",
+      "viewBlockDetail": "View block details",
+      "defaultBlockGroupName": "Designer Default Block Group",
+      "fetchBlockListFailed": "Failed to fetch block list"
+    },
     "rightPanel": {
       "properties": "Properties",
       "styles": "Styles",
