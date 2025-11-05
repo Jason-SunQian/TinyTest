@@ -44,9 +44,10 @@
 
 <script lang="tsx">
 /* metaService: engine.plugins.appmanage.Main */
-import { reactive, ref, watchEffect, provide } from 'vue'
+import { reactive, ref, watchEffect, provide, computed } from 'vue'
 import { useCanvas, usePage, useHelp, useModal, useNotify, useLayout } from '@opentiny/tiny-engine-meta-register'
-import { PluginPanel, SvgButton } from '@opentiny/tiny-engine-common'
+import { SvgButton } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { extend } from '@opentiny/vue-renderless/common/object'
 import PageSetting, { openPageSettingPanel, closePageSettingPanel } from './PageSetting.vue'
@@ -110,7 +111,7 @@ export default {
     const pageTreeRef = ref(null)
     const ROOT_ID = pageSettingState.ROOT_ID
     const docsUrl = useHelp().getDocsUrl('page')
-    const docsContent = t('designer.page.docs')
+    const docsContent = computed(() => t('designer.page.docs'))
 
     const state = reactive({
       isFolder: false

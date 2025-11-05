@@ -1,0 +1,58 @@
+{
+  "designer": {
+    "common": {
+      "viewDetails": "View Details"
+    },
+    "components": {
+      "searchEmpty": {
+        "noData": "No Data"
+      },
+      "pluginPanel": {
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "pin": "Pin Panel",
+        "unpin": "Unpin Panel"
+      },
+      "pluginSetting": {
+        "save": "Save",
+        "addData": "Add Data",
+        "collapse": "Collapse",
+        "fullscreen": "Full Screen"
+      },
+      "lifeCycles": {
+        "addPageLifecycle": "Add Page Lifecycle",
+        "addBlockLifecycle": "Add Block Lifecycle",
+        "save": "Save",
+        "search": "Search",
+        "tip": "Tip",
+        "deleteConfirm": "Are you sure you want to delete {name}?",
+        "lintError": "Code lint error, please fix it before saving"
+      },
+      "pluginBlockList": {
+        "blockName": "Block Name",
+        "createTime": "Create Time",
+        "creator": "Creator",
+        "addBlock": "Add Block",
+        "unpublished": "Unpublished",
+        "versionList": "Version List",
+        "remove": "Remove",
+        "preview": "Preview"
+      },
+      "metaListItems": {
+        "index": "Index",
+        "selection": "Selection",
+        "radio": "Radio",
+        "expand": "Expand"
+      },
+      "blockHistoryList": {
+        "version": "Version",
+        "publishTime": "Publish Time",
+        "description": "Description",
+        "operation": "Operation",
+        "latest": "Latest",
+        "preview": "Preview",
+        "restore": "Restore"
+      }
+    }
+  }
+}

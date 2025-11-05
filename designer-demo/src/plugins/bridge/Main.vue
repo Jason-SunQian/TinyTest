@@ -4,7 +4,7 @@
     class="plugin-bridge"
     :fixed-name="PLUGIN_NAME.Bridge"
     :fixedPanels="fixedPanels"
-    :docsContent="t('designer.bridge.docs')"
+    :docsContent="docsContent"
     :isShowDocsIcon="true"
     @close="closePanel"
   >
@@ -22,7 +22,8 @@
 <script lang="ts">
 /* metaService: engine.plugins.bridge.custom.Main */
 import { ref, reactive, computed, provide } from 'vue'
-import { PluginPanel, SvgButton } from '@opentiny/tiny-engine-common'
+import { SvgButton } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import { useLayout } from '@opentiny/tiny-engine-meta-register'
 import { RESOURCE_TYPE } from './js/resource'
 import BridgeManage from './BridgeManage.vue'
@@ -47,6 +48,7 @@ export default {
     const activedName = ref(RESOURCE_TYPE.Util)
     const utilsRef = ref(null)
     const tips = computed(() => RESOURCE_TIP_I18N(t)[activedName.value])
+    const docsContent = computed(() => t('designer.bridge.docs'))
 
     const { PLUGIN_NAME } = useLayout()
 
@@ -69,7 +71,8 @@ export default {
       closePanel,
       refreshList,
       utilsRef,
-      tips
+      tips,
+      docsContent
     }
   }
 }

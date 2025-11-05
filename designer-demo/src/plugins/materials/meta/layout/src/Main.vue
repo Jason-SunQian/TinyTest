@@ -22,7 +22,7 @@
 import { reactive, provide, ref, computed } from 'vue'
 import { Tabs, TabItem } from '@opentiny/vue'
 import { META_APP as PLUGIN_NAME, getMergeMeta } from '@opentiny/tiny-engine-meta-register'
-import { PluginPanel } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 
 export default {
   components: {

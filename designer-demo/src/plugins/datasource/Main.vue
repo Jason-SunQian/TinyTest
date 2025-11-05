@@ -50,10 +50,11 @@
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.Main */
-import { reactive, watch, provide } from 'vue'
+import { reactive, watch, provide, computed } from 'vue'
 import { Button } from '@opentiny/vue'
 import DataSourceList, { refresh as refreshDataSourceList, clearActive } from './DataSourceList.vue'
-import { PluginPanel, SvgButton } from '@opentiny/tiny-engine-common'
+import { SvgButton } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import DataSourceForm, { open as openDataSourceForm, close as closeDataSourceForm } from './DataSourceForm.vue'
 import { close as closeRecordForm } from './DataSourceRecordForm.vue'
 import DataSourceSettingRemoteResult, {
@@ -88,7 +89,7 @@ export default {
     const { t } = useDesignerI18n()
     
     const docsUrl = useHelp().getDocsUrl('datasource')
-    const docsContent = t('designer.datasource.docsContent')
+    const docsContent = computed(() => t('designer.datasource.docsContent'))
     const state = reactive({
       editable: true,
       currentDataSource: { name: 'untitled', data: { type: 'remote', columns: [] } },

@@ -135,7 +135,7 @@ import { computed, ref, watchEffect, reactive, onMounted, nextTick, resolveCompo
 import useClipboard from 'vue-clipboard3'
 import { Grid, GridColumn, Input, Popover, Button, FileUpload, Loading, Tooltip, Select } from '@opentiny/vue'
 import { iconLoadingShadow } from '@opentiny/vue-icon'
-import { PluginPanel, SearchEmpty } from '@opentiny/tiny-engine-common'
+import { PluginPanel, SearchEmpty } from '@/components/i18n-wrappers'
 import {
   useTranslate,
   useModal,
@@ -210,7 +210,7 @@ export default {
       }
     ])
     const docsUrl = useHelp().getDocsUrl('i18n')
-    const docsContent = t('designer.i18n.docs')
+    const docsContent = computed(() => t('designer.i18n.docs'))
     const currentSearchType = ref('')
     const copyTipContent = ref('')
     const searchKey = ref('')

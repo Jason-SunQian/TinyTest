@@ -22,7 +22,8 @@
 import { watchEffect, ref, reactive } from 'vue'
 import { Search } from '@opentiny/vue'
 import { iconSearch } from '@opentiny/vue-icon'
-import { SearchEmpty, SvgButton } from '@opentiny/tiny-engine-common'
+import { SvgButton } from '@opentiny/tiny-engine-common'
+import SearchEmpty from '@/components/i18n-wrappers/SearchEmpty/index.vue'
 import { RESOURCE_TYPE, ACTION_TYPE, getResourcesByType, setType, setActionType, setResource, setCategory, getType, setResourceNamesByType } from './js/resource'
 import { useDesignerI18n } from '../../services/i18nService'
 
@@ -43,7 +44,7 @@ export default {
     const state = reactive({ resourceList: [], activeIndex: -1, searchValue: '' })
 
     const filterResourceSearchValue = (resourceList = state.resourceList, searchValue = state.searchValue) =>
-      resourceList.filter((item) => item.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1)
+        resourceList.filter((item) => item.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1)
 
     const refresh = async (name) => {
       state.resourceList = await getResourcesByType(name)

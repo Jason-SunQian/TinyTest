@@ -29,7 +29,11 @@ import { loadDesignerI18n } from './src/services/i18nService'
 export default {
   [META_SERVICE.Http]: HttpService,
   'engine.config': {
-    ...engineConfig
+    ...engineConfig,
+    // 覆盖生命周期提示文本，支持国际化
+    lifeCycleTips: {
+      Vue: '' // 设为空字符串，隐藏硬编码的中文提示
+    }
   },
   'engine.hooks.i18n': {
     beforeAppCreate: () => {

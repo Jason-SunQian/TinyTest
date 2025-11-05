@@ -51,7 +51,7 @@ import {
   nextTick,
   ref
 } from 'vue'
-import { PluginPanel } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import { constants } from '@opentiny/tiny-engine-utils'
 import {
   useCanvas,

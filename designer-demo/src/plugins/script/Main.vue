@@ -4,7 +4,7 @@
     :fixed-name="PLUGIN_NAME.Page"
     :fixedPanels="fixedPanels"
     :docsUrl="docsUrl"
-    :docsContent="t('designer.script.docs')"
+    :docsContent="docsContent"
     :isShowDocsIcon="true"
     @close="$emit('close')"
     class="plugin-page-js-container plugin-script"
@@ -32,9 +32,10 @@
 
 <script lang="ts">
 /* metaService: engine.plugins.pagecontroller.Main */
-import { onBeforeUnmount, reactive, provide } from 'vue'
+import { onBeforeUnmount, reactive, provide, computed } from 'vue'
 import { Button } from '@opentiny/vue'
-import { VueMonaco, PluginPanel } from '@opentiny/tiny-engine-common'
+import { VueMonaco } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import { useHelp, useLayout } from '@opentiny/tiny-engine-meta-register'
 import { initCompletion } from '@opentiny/tiny-engine-common/js/completion'
 import { initLinter } from '@opentiny/tiny-engine-common/js/linter'
@@ -64,6 +65,7 @@ export default {
   setup(props, { emit }) {
     const { t } = useDesignerI18n()
     const docsUrl = useHelp().getDocsUrl('script')
+    const docsContent = computed(() => t('designer.script.docs'))
     const { state, monaco, change, close, saveMethods } = useMethod({ emit })
 
     const { PLUGIN_NAME } = useLayout()
@@ -142,6 +144,7 @@ export default {
       saveMethods,
       editorDidMount,
       docsUrl,
+      docsContent,
       t
     }
   }

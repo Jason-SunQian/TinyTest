@@ -123,7 +123,8 @@
 import { ref, reactive, computed, watch, provide, inject } from 'vue'
 import { Search as TinySearch, Select as TinySelect, Option as TinyOption, Dropdown as TinyDropdown, DropdownMenu as TinyDropdownMenu, Popover as TinyPopover, Button as TinyButton } from '@opentiny/vue'
 import { IconSearch } from '@opentiny/vue-icon'
-import { PluginPanel, PluginBlockList, SvgButton } from '@opentiny/tiny-engine-common'
+import { PluginBlockList, SvgButton } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { useBlock, useModal, useLayout, useCanvas, useHelp, getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
 import { constants } from '@opentiny/tiny-engine-utils'
@@ -157,7 +158,7 @@ export default {
     const t = i18n?.global?.t || ((key: string) => key)
 
     const docsUrl = useHelp().getDocsUrl('block')
-    const docsContent = t('designer.block.blockDocsContent')
+    const docsContent = computed(() => t('designer.block.blockDocsContent'))
     const { getBlockList, sort } = useBlock()
     const { isSaved } = useCanvas()
     const { confirm } = useModal()

@@ -43,7 +43,8 @@
 /* metaService: engine.plugins.schema.Main */
 import { nextTick, reactive, getCurrentInstance, onActivated, ref, onDeactivated, provide } from 'vue'
 import { Popover, Button } from '@opentiny/vue'
-import { VueMonaco, PluginPanel } from '@opentiny/tiny-engine-common'
+import { VueMonaco } from '@opentiny/tiny-engine-common'
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { useCanvas, useModal, useNotify, useMessage, useLayout } from '@opentiny/tiny-engine-meta-register'
 import { utils } from '@opentiny/tiny-engine-utils'
