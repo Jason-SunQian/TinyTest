@@ -119,7 +119,7 @@ export default {
     title: 'Script',
     type: 'plugins',
     icon: 'plugin-icon-js',
-    width: 600,
+    width: 800,
     widthResizable: true,
     confirm: 'close',
     entry: CustomScript,
@@ -132,7 +132,7 @@ export default {
     title: 'Schema',
     type: 'plugins',
     icon: 'plugin-icon-page-schema',
-    width: 600,
+    width: 800,
     widthResizable: true,
     entry: CustomSchema
   },
