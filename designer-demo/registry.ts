@@ -5,6 +5,8 @@ import { HttpService } from './src/composable'
 import SimpleLanguageSwitcher from './src/components/SimpleLanguageSwitcher.vue'
 import CustomLang from './src/toolbars/lang/Main.vue'
 import CustomSave from './src/toolbars/save/Main.vue'
+import CustomBreadcrumb from './src/toolbars/breadcrumb/Main.vue'
+import customUseBreadcrumb from './src/toolbars/breadcrumb/composable/useBreadcrumb'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import CustomBlockManage from './src/plugins/block/Main.vue'
 import CustomDatasource from './src/plugins/datasource/Main.vue'
@@ -211,6 +213,14 @@ export default {
     icon: 'save',
     entry: CustomSave
   },
+  [META_APP.Breadcrumb]: {
+    id: 'engine.toolbars.breadcrumb.custom',
+    title: 'Breadcrumb',
+    icon: 'breadcrumb',
+    entry: CustomBreadcrumb
+  },
+  // 注册自定义 useBreadcrumb 服务
+  'engine.service.breadcrumb.custom.useBreadcrumb': customUseBreadcrumb,
   [META_APP.Layout]: {
     options: {
       relativeLayoutConfig: {

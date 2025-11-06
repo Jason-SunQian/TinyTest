@@ -5,19 +5,28 @@ import koKR from './ko-KR.json'
 import componentsZhCN from './components.zh-CN.json'
 import componentsEnUS from './components.en-US.json'
 
-// 深度合并对象
-const deepMerge = (target: any, source: any) => {
-  for (const key in source) {
-    if (source[key] instanceof Object && key in target) {
-      Object.assign(source[key], deepMerge(target[key], source[key]))
-    }
+// 简单合并：保留所有原有配置，只添加新的 common 和 components
+const mergedZhCN = {
+  ...zhCN,
+  designer: {
+    ...zhCN.designer,
+    common: componentsZhCN.designer?.common || {},
+    components: componentsZhCN.designer?.components || {}
   }
-  return Object.assign(target || {}, source)
+}
+
+const mergedEnUS = {
+  ...enUS,
+  designer: {
+    ...enUS.designer,
+    common: componentsEnUS.designer?.common || {},
+    components: componentsEnUS.designer?.components || {}
+  }
 }
 
 export default {
-  zh_CN: deepMerge(zhCN, componentsZhCN),
-  en_US: deepMerge(enUS, componentsEnUS),
-  ja_JP: jaJP, // TODO: 添加日语组件翻译
-  ko_KR: koKR  // TODO: 添加韩语组件翻译
+  zh_CN: mergedZhCN,
+  en_US: mergedEnUS,
+  ja_JP: jaJP,
+  ko_KR: koKR
 }
