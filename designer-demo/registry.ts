@@ -8,6 +8,7 @@ import CustomSave from './src/toolbars/save/Main.vue'
 import CustomBreadcrumb from './src/toolbars/breadcrumb/Main.vue'
 import customUseBreadcrumb from './src/toolbars/breadcrumb/composable/useBreadcrumb'
 import CustomClean from './src/toolbars/clean/Main.vue'
+import CustomProps from './src/settings/props/Main.vue'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import CustomBlockManage from './src/plugins/block/Main.vue'
 import CustomDatasource from './src/plugins/datasource/Main.vue'
@@ -228,45 +229,53 @@ export default {
     icon: 'clean',
     entry: CustomClean
   },
+  // [META_APP.Props]: {
+  'engine.setting.props.custom': {
+    id: 'engine.setting.props.custom',
+    title: 'Properties',
+    type: 'plugins',
+    name: 'props',
+    icon: 'form',
+    entry: CustomProps,
+    // 保留官方的 metas 服务（重要！）
+    metas: ['engine.service.properties', 'engine.service.property']
+  },
   [META_APP.Layout]: {
     options: {
-      relativeLayoutConfig: {
-        // 放置自定义 OutlineTree 于原位置
-        'engine.plugins.customOutlineTree': {
-          insertAfter: META_APP.Materials
+      // 使用 layoutConfig 完整配置布局
+      layoutConfig: {
+        plugins: {
+          left: {
+            top: [
+              META_APP.Materials,
+              'engine.plugins.customOutlineTree',
+              'engine.plugins.customAppManage',
+              'engine.plugins.customBlockManage',
+              'engine.plugins.customCollections',
+              'engine.plugins.customBridge',
+              'engine.plugins.customI18n',
+              META_APP.Page,
+              'engine.plugins.customState'
+            ],
+            bottom: ['engine.plugins.customScript', 'engine.plugins.customSchema', META_APP.Help, META_APP.Robot]
+          },
+          right: {
+            top: ['engine.setting.props.custom', META_APP.Styles, META_APP.Event]
+          }
         },
-        'engine.plugins.customBlockManage': {
-          insertAfter: 'engine.plugins.customOutlineTree'
-        },
-        'engine.plugins.customCollections': {
-          insertAfter: 'engine.plugins.customBlockManage'
-        },
-        'engine.plugins.customBridge': {
-          insertAfter: 'engine.plugins.customCollections'
-        },
-        'engine.plugins.customI18n': {
-          insertAfter: 'engine.plugins.customBridge'
-        },
-        'engine.plugins.customState': {
-          insertAfter: 'engine.plugins.customI18n'
-        },
-        'engine.plugins.customScript': {
-          insertAfter: 'engine.plugins.customState'
-        },
-        'engine.plugins.customSchema': {
-          insertAfter: 'engine.plugins.customScript'
-        },
-        'engine.plugins.customMaterials': {
-          insertAfter: 'engine.plugins.customSchema'
-        },
-        'engine.plugins.customAppManage': {
-          insertBefore: 'engine.plugins.customSchema'
-        },
-        [META_APP.Save]: {
-          insertBefore: META_APP.ThemeSwitch
-        },
-        'engine.toolbars.customLang': {
-          insertAfter: META_APP.Breadcrumb
+        toolbars: {
+          left: [META_APP.Breadcrumb, 'engine.toolbars.customLang',META_APP.Lock, META_APP.Logo],
+          center: [META_APP.Media],
+          right: [
+            [META_APP.ThemeSwitch, META_APP.RedoUndo, META_APP.Clean],
+            [META_APP.Preview],
+            [META_APP.GenerateCode, META_APP.Save]
+          ],
+          collapse: [
+            [META_APP.Collaboration],
+            [META_APP.Refresh, META_APP.Fullscreen],
+            [META_APP.ViewSetting]
+          ]
         }
       }
     }

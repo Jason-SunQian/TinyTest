@@ -43,7 +43,16 @@
       "blockManagement": "区块管理",
       "dataSource": "数据源",
       "bridge": "桥接",
-      "i18n": "国际化",
+      "i18n": "国际化"
+    },
+    "settings": {
+      "props": {
+        "title": "属性",
+        "emptyComponent": "您还未拖拽组件至画布中",
+        "emptySelection": "请在画布中选择组件"
+      }
+    },
+    "common": {
       "pageJS": "页面JS",
       "state": "状态",
       "schema": "Schema",

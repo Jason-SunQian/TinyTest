@@ -43,7 +43,16 @@
       "blockManagement": "Block Management",
       "dataSource": "Data Source",
       "bridge": "Bridge",
-      "i18n": "Internationalization",
+      "i18n": "Internationalization"
+    },
+    "settings": {
+      "props": {
+        "title": "Properties",
+        "emptyComponent": "You haven't dragged any components to the canvas yet",
+        "emptySelection": "Please select a component on the canvas"
+      }
+    },
+    "common": {
       "pageJS": "Page JS",
       "state": "State",
       "schema": "Schema",

@@ -25,6 +25,12 @@
 | Breadcrumb | toolbars | 面包屑导航 | 2处 | 响应式国际化 + SessionStorage 同步 |
 | Clean | toolbars | 清除屏幕 | 3处 | 按钮文字 + 确认弹窗国际化 |
 
+### 迁移的 Settings 组件（1个）
+
+| 组件 | 位置 | 主要功能 | 硬编码数量 | 解决问题 |
+|------|------|---------|-----------|---------|
+| Props | settings | 属性设置面板 | 3处 | 面板标题 + 空状态提示国际化 |
+
 ### 已替换文件（14个）
 
 **PluginPanel**（10个插件）:
@@ -63,13 +69,20 @@ designer-demo/
     │   ├── LinkButton/index.vue
     │   └── PluginPanel/index.vue
     │
-    └── toolbars/
-        ├── breadcrumb/
-        │   ├── Main.vue                     # 面包屑主组件
-        │   └── composable/
-        │       └── useBreadcrumb.ts         # 响应式 Composable
-        └── clean/
-            └── Main.vue                     # 清除屏幕组件
+    ├── toolbars/
+    │   ├── breadcrumb/
+    │   │   ├── Main.vue                     # 面包屑主组件
+    │   │   └── composable/
+    │   │       └── useBreadcrumb.ts         # 响应式 Composable
+    │   └── clean/
+    │       └── Main.vue                     # 清除屏幕组件
+    │
+    └── settings/
+        └── props/
+            ├── Main.vue                     # 属性设置面板
+            └── components/
+                ├── Empty.vue                # 空状态组件
+                └── index.ts                 # 组件导出
 ```
 
 ---
