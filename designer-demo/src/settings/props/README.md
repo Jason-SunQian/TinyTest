@@ -80,16 +80,42 @@ watch(() => getSchema()?.children?.length, (len) => {
 import CustomProps from './src/settings/props/Main.vue'
 
 export default {
-  'engine.setting.props': {
-    id: 'engine.setting.props.custom',
+  [META_APP.Props]: {
+    id: 'engine.setting.props',  // ⚠️ 必须使用官方 ID
     title: 'Properties',
     type: 'plugins',
     name: 'props',
     icon: 'form',
-    entry: CustomProps
+    entry: CustomProps,
+    metas: ['engine.service.properties', 'engine.service.property']
   }
 }
 ```
+
+### ⚠️ 重要：为什么必须使用官方 ID？
+
+**问题**：如果使用自定义 ID（如 `'engine.setting.props.custom'`）会导致：
+- ❌ 点击组件时，属性面板自动关闭
+- ❌ 每次需要手动点击按钮重新打开
+- ❌ 功能严重受损
+
+**原因**：`useLayout` 中的默认配置：
+```typescript
+settings: {
+  fixedPanels: [
+    'engine.setting.props',   // 只识别官方 ID
+    'engine.setting.styles',
+    'engine.setting.event'
+  ]
+}
+```
+
+**`fixedPanels` 的作用**：
+- ✅ 固定的面板：保持打开，选择组件时自动显示属性
+- ❌ 非固定的面板：点击组件后自动关闭
+
+**解决方案**：
+使用官方 ID `'engine.setting.props'` 来覆盖，而不是创建新组件。
 
 ## ✨ 效果
 

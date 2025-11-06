@@ -3,7 +3,7 @@
 </template>
 
 <script>
-/* metaService: engine.setting.props.custom.Empty */
+/* metaService: engine.setting.props.Empty */
 import { computed } from 'vue'
 import { useCanvas } from '@opentiny/tiny-engine-meta-register'
 import { useDesignerI18n } from '@/services/i18nService'

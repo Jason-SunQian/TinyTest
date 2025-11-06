@@ -229,9 +229,8 @@ export default {
     icon: 'clean',
     entry: CustomClean
   },
-  // [META_APP.Props]: {
-  'engine.setting.props.custom': {
-    id: 'engine.setting.props.custom',
+  [META_APP.Props]: {
+    id: 'engine.setting.props',  // 使用官方 ID，确保 fixedPanels 能识别
     title: 'Properties',
     type: 'plugins',
     name: 'props',
@@ -255,13 +254,12 @@ export default {
               'engine.plugins.customBridge',
               'engine.plugins.customI18n',
               META_APP.Page,
-              'engine.plugins.customScript',
               'engine.plugins.customState'
             ],
-            bottom: ['engine.plugins.customSchema']
+            bottom: ['engine.plugins.customScript', 'engine.plugins.customSchema', META_APP.Help, META_APP.Robot]
           },
           right: {
-            top: ['engine.setting.props.custom', META_APP.Styles, META_APP.Event]
+            top: [META_APP.Props, META_APP.Styles, META_APP.Event]
           }
         },
         toolbars: {
