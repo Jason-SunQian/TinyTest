@@ -255,9 +255,10 @@ export default {
               'engine.plugins.customBridge',
               'engine.plugins.customI18n',
               META_APP.Page,
+              'engine.plugins.customScript',
               'engine.plugins.customState'
             ],
-            bottom: ['engine.plugins.customScript', 'engine.plugins.customSchema', META_APP.Help, META_APP.Robot]
+            bottom: ['engine.plugins.customSchema']
           },
           right: {
             top: ['engine.setting.props.custom', META_APP.Styles, META_APP.Event]
