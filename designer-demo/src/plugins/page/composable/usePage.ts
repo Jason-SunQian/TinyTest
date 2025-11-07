@@ -459,8 +459,11 @@ const switchPage = (pageId: string | number, clearPreview = false) => {
         getMetaApi(META_SERVICE.GlobalService).updatePageId(pageId)
       }
       useLayout().closePlugin()
-      useLayout().layoutState.pageStatus = getCanvasStatus(data.occupier)
-      useCanvas().initData(data['page_content'], data)
+      const currentUser = getMetaApi(META_SERVICE.GlobalService).getState().userInfo
+      const occupier = data.occupier || currentUser
+      const pageData = !data.occupier && occupier ? { ...data, occupier } : data
+      useLayout().layoutState.pageStatus = getCanvasStatus(occupier)
+      useCanvas().initData(pageData['page_content'], pageData)
     })
     .catch(() => {
       useNotify({
