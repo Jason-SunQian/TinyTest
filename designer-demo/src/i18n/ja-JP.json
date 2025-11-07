@@ -53,6 +53,72 @@
       "createBlock": "ブロック作成",
       "viewBlock": "ブロック表示"
     },
+    "settings": {
+      "props": {
+        "title": "プロパティ",
+        "emptyComponent": "まだコンポーネントをキャンバスにドラッグしていません",
+        "emptySelection": "キャンバス上のコンポーネントを選択してください"
+      },
+      "styles": {
+        "title": "スタイル",
+        "inlinePanel": "インラインスタイル",
+        "inlineButton": "インラインスタイルを編集",
+        "inlinePlaceholder": "インラインスタイルを編集",
+        "inlineBound": "バインド済み: {value}",
+        "groups": {
+          "layout": "レイアウト",
+          "spacing": "スペーシング",
+          "size": "サイズ",
+          "position": "ポジション",
+          "typography": "タイポグラフィ",
+          "background": "背景",
+          "border": "ボーダー",
+          "effects": "エフェクト"
+        },
+        "effects": {
+          "opacity": "不透明度",
+          "outline": "アウトライン",
+          "width": "幅",
+          "offset": "オフセット",
+          "color": "色",
+          "cursor": "カーソル",
+          "selectPlaceholder": "選択してください",
+          "outlineNone": "none - なし",
+          "outlineSolid": "solid - 実線",
+          "outlineDashed": "dashed - 破線",
+          "outlineDotted": "dotted - 点線"
+        },
+        "common": {
+          "reset": "リセット",
+          "resetTip": "リセットすると初期値に戻ります。"
+        },
+        "size": {
+          "width": "幅",
+          "height": "高さ",
+          "minWidth": "最小幅",
+          "minHeight": "最小高さ",
+          "maxWidth": "最大幅",
+          "maxHeight": "最大高さ",
+          "overflow": "オーバーフロー",
+          "fit": "オブジェクトフィット",
+          "objectPosition": "位置",
+          "objectPositionTooltip": "オブジェクト位置の設定"
+        },
+        "fitOptions": {
+          "fill": "fill - フィル",
+          "contain": "contain - コンテイン",
+          "cover": "cover - カバー",
+          "none": "none - なし",
+          "scaleDown": "scale-down - 縮小"
+        },
+        "overflowOptions": {
+          "visible": "visible - 表示",
+          "hidden": "hidden - 非表示",
+          "scroll": "overflow - スクロール",
+          "auto": "auto - 自動"
+        }
+      }
+    },
     "rightPanel": {
       "properties": "プロパティ",
       "styles": "スタイル",

@@ -91,6 +91,9 @@ importers:
       '@opentiny/tiny-engine-common':
         specifier: workspace:*
         version: link:../packages/common
+      '@opentiny/tiny-engine-configurator':
+        specifier: workspace:*
+        version: link:../packages/configurator
       '@opentiny/tiny-engine-meta-register':
         specifier: workspace:*
         version: link:../packages/register
@@ -127,9 +130,15 @@ importers:
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
+      monaco-editor:
+        specifier: 0.51.0
+        version: 0.51.0
       pinyin-pro:
         specifier: ^3.13.0
         version: 3.13.0
+      postcss:
+        specifier: ^8.4.31
+        version: 8.4.31
       vue:
         specifier: ^3.5.0
         version: 3.5.18(typescript@5.9.2)

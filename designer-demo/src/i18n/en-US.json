@@ -50,6 +50,65 @@
         "title": "Properties",
         "emptyComponent": "You haven't dragged any components to the canvas yet",
         "emptySelection": "Please select a component on the canvas"
+      },
+      "styles": {
+        "title": "Styles",
+        "inlinePanel": "Inline Style",
+        "inlineButton": "Edit Inline Style",
+        "inlinePlaceholder": "Edit Inline Style",
+        "inlineBound": "Bound: {value}",
+        "groups": {
+          "layout": "Layout",
+          "spacing": "Spacing",
+          "size": "Size",
+          "position": "Position",
+          "typography": "Typography",
+          "background": "Background",
+          "border": "Border",
+          "effects": "Effects"
+        },
+        "effects": {
+          "opacity": "Opacity",
+          "outline": "Outline",
+          "width": "Width",
+          "offset": "Offset",
+          "color": "Color",
+          "cursor": "Cursor",
+          "selectPlaceholder": "Please Select",
+          "outlineNone": "none - None",
+          "outlineSolid": "solid - Solid Line",
+          "outlineDashed": "dashed - Dashed Line",
+          "outlineDotted": "dotted - Dotted Line"
+        },
+        "common": {
+          "reset": "Reset",
+          "resetTip": "Resetting will restore the initial value."
+        },
+        "size": {
+          "width": "Width",
+          "height": "Height",
+          "minWidth": "Min Width",
+          "minHeight": "Min Height",
+          "maxWidth": "Max Width",
+          "maxHeight": "Max Height",
+          "overflow": "Overflow",
+          "fit": "Object Fit",
+          "objectPosition": "Position",
+          "objectPositionTooltip": "Object position settings"
+        },
+        "fitOptions": {
+          "fill": "fill - Fill",
+          "contain": "contain - Contain",
+          "cover": "cover - Cover",
+          "none": "none - None",
+          "scaleDown": "scale-down - Scale Down"
+        },
+        "overflowOptions": {
+          "visible": "visible - Visible",
+          "hidden": "hidden - Hidden",
+          "scroll": "overflow - Scroll",
+          "auto": "auto - Auto"
+        }
       }
     },
     "common": {

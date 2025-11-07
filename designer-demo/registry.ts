@@ -29,6 +29,8 @@ import MaterialLayout from './src/plugins/materials/meta/layout/index'
 import MaterialBlock from './src/plugins/materials/meta/block/index'
 import MaterialComponent from './src/plugins/materials/meta/component/index'
 import { loadDesignerI18n } from './src/services/i18nService'
+import CustomStyles from './src/settings/styles/Main.vue'
+import StyleService from './src/settings/styles/js/index'
 
 export default {
   [META_SERVICE.Http]: HttpService,
@@ -238,6 +240,15 @@ export default {
     entry: CustomProps,
     // 保留官方的 metas 服务（重要！）
     metas: ['engine.service.properties', 'engine.service.property']
+  },
+  [META_APP.Styles]: {
+    id: 'engine.setting.styles',
+    title: 'Styles',
+    type: 'plugins',
+    name: 'styles',
+    icon: 'display-inline',
+    entry: CustomStyles,
+    metas: [StyleService]
   },
   [META_APP.Layout]: {
     options: {

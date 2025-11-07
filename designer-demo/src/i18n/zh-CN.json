@@ -50,6 +50,65 @@
         "title": "属性",
         "emptyComponent": "您还未拖拽组件至画布中",
         "emptySelection": "请在画布中选择组件"
+      },
+      "styles": {
+        "title": "样式",
+        "inlinePanel": "行内样式",
+        "inlineButton": "编辑行内样式",
+        "inlinePlaceholder": "编辑行内样式",
+        "inlineBound": "已绑定：{value}",
+        "groups": {
+          "layout": "布局",
+          "spacing": "间距",
+          "size": "尺寸",
+          "position": "定位",
+          "typography": "文本",
+          "background": "背景",
+          "border": "边框",
+          "effects": "效果"
+        },
+        "effects": {
+          "opacity": "透明度",
+          "outline": "轮廓",
+          "width": "宽度",
+          "offset": "偏移",
+          "color": "颜色",
+          "cursor": "光标",
+          "selectPlaceholder": "请选择",
+          "outlineNone": "none-无",
+          "outlineSolid": "solid-实线",
+          "outlineDashed": "dashed-虚线",
+          "outlineDotted": "dotted-圆点"
+        },
+        "common": {
+          "reset": "重置",
+          "resetTip": "重置后将恢复到初始值。"
+        },
+        "size": {
+          "width": "宽度",
+          "height": "高度",
+          "minWidth": "最小宽",
+          "minHeight": "最小高",
+          "maxWidth": "最大宽",
+          "maxHeight": "最大高",
+          "overflow": "溢出",
+          "fit": "适应",
+          "objectPosition": "位置",
+          "objectPositionTooltip": "Object position 设置"
+        },
+        "fitOptions": {
+          "fill": "fill-填充",
+          "contain": "contain-包含",
+          "cover": "cover-原比例填充",
+          "none": "none-无",
+          "scaleDown": "scale-down-缩小"
+        },
+        "overflowOptions": {
+          "visible": "visible 溢出可见",
+          "hidden": "hidden 溢出隐藏",
+          "scroll": "overflow 溢出滚动",
+          "auto": "auto 溢出才自动滚动"
+        }
       }
     },
     "common": {
