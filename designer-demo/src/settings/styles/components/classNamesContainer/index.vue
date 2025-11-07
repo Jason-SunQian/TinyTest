@@ -1,19 +1,19 @@
 <template>
   <div class="className-container">
     <h6 class="title">
-      <span>全局样式</span>
+      <span>{{ t('designer.settings.styles.globalStyle.title') }}</span>
       <link-button :href="docsUrl" :tips="docsContent" class="help-link"></link-button>
     </h6>
     <div class="selector-container">
       <code-configurator
         :modelValue="state.cssContent"
-        title="Css 编辑"
+        :title="t('designer.settings.styles.globalStyle.editTitle')"
         language="css"
         v-slot="scope"
         single
         @save="save"
       >
-        <div class="edit-global-css" title="编辑全局样式" @click="scope.open">
+        <div class="edit-global-css" :title="t('designer.settings.styles.globalStyle.editButton')" @click="scope.open">
           <svg-icon name="to-edit"></svg-icon>
         </div>
       </code-configurator>
@@ -43,12 +43,22 @@
                   v-if="!classNameState.curSelectorIsEditing && classNameState.curSelectorEditable"
                   class="edit-wrap"
                 >
-                  <svg-icon name="to-edit" title="编辑" class="edit-btn" @click.stop="handleEditCurSelector"></svg-icon>
-                  <svg-icon name="close" title="删除" class="delete-btn" @click.stop="handleDelSelector"></svg-icon>
+                  <svg-icon
+                    name="to-edit"
+                    :title="t('designer.settings.styles.globalStyle.actions.edit')"
+                    class="edit-btn"
+                    @click.stop="handleEditCurSelector"
+                  ></svg-icon>
+                  <svg-icon
+                    name="close"
+                    :title="t('designer.settings.styles.globalStyle.actions.delete')"
+                    class="delete-btn"
+                    @click.stop="handleDelSelector"
+                  ></svg-icon>
                 </div>
               </div>
             </div>
-            <span v-else class="empty-tips">请选择或创建类名</span>
+            <span v-else class="empty-tips">{{ t('designer.settings.styles.globalStyle.placeholder') }}</span>
             <input
               ref="newSelectorInputRef"
               type="text"
@@ -68,8 +78,12 @@
           <span class="error-tips-text">{{ classNameState.selectorHasError }}</span>
         </div>
         <div v-if="classNameState.showDropdownList" class="selector-drop-down-list lowcode-scrollbar-thin">
-          <span class="selector-dropdown-list-tips">输入并回车创建新选择器</span>
-          <span v-if="currentSelectorList.length" class="selector-dropdown-list-tips">选择已有选择器编辑</span>
+          <span class="selector-dropdown-list-tips">
+            {{ t('designer.settings.styles.globalStyle.dropdown.create') }}
+          </span>
+          <span v-if="currentSelectorList.length" class="selector-dropdown-list-tips">
+            {{ t('designer.settings.styles.globalStyle.dropdown.selectExisting') }}
+          </span>
           <ul class="exist-class-list">
             <li
               v-for="item in currentSelectorList"
@@ -82,7 +96,7 @@
             </li>
           </ul>
           <span v-if="state.selectors.length" class="selector-dropdown-list-tips add-global-class-tips">
-            添加全局类到当前组件并编辑
+            {{ t('designer.settings.styles.globalStyle.dropdown.addToComponent') }}
           </span>
           <ul class="exist-class-list">
             <li
@@ -106,21 +120,31 @@
 import { computed, reactive, ref, nextTick, watch, watchEffect } from 'vue'
 import { Select as TinySelect } from '@opentiny/vue'
 import { useProperties, useCanvas, useHistory, useHelp } from '@opentiny/tiny-engine-meta-register'
-import { LinkButton } from '@opentiny/tiny-engine-common'
+import LinkButton from '@/components/i18n-wrappers/LinkButton/index.vue'
 import { CodeConfigurator } from '@opentiny/tiny-engine-configurator'
 import { formatString } from '@opentiny/tiny-engine-common/js/ast'
 import useStyle, { updateGlobalStyleStr } from '../../js/useStyle'
 import { stringify, getSelectorArr } from '../../js/parser'
+import { useDesignerI18n } from '@/services/i18nService'
 
 const { getSchema, propsUpdateKey, setProp } = useProperties()
 
-const stateOptions = [
-  { label: 'None', value: '' },
-  { label: 'hover', value: 'hover' },
-  { label: 'pressed', value: 'pressed' },
-  { label: 'focused', value: 'focused' },
-  { label: 'disabled', value: 'disabled' }
+const { t, locale } = useDesignerI18n()
+
+const stateOptionDefs = [
+  { key: 'none', value: '' },
+  { key: 'hover', value: 'hover' },
+  { key: 'pressed', value: 'pressed' },
+  { key: 'focused', value: 'focused' },
+  { key: 'disabled', value: 'disabled' }
 ]
+
+const stateOptions = computed(() =>
+  stateOptionDefs.map(({ key, value }) => ({
+    label: t(`designer.settings.styles.globalStyle.states.${key}`),
+    value
+  }))
+)
 const SELECTOR_TYPE = {
   CLASS_NAME: 'className',
   ID: 'id'
@@ -134,7 +158,7 @@ const OPTION_TYPE = {
 
 const docsUrl = useHelp().getDocsUrl('stylePanel')
 
-const docsContent = '声明多条CSS样式或其他媒体查询的样式，然后通过组件的 class 或者 id 进行绑定'
+const docsContent = computed(() => t('designer.settings.styles.globalStyle.docsTip'))
 
 const classNameState = reactive({
   curSelector: '',
@@ -145,11 +169,29 @@ const classNameState = reactive({
   isSelectorValid: true,
   showDropdownList: false,
   showDelConfirm: false,
-  selectorHasError: ''
+  selectorHasError: '',
+  selectorErrorKey: ''
 })
 const selectorTextRef = ref(null)
 const newSelectorInputRef = ref(null)
 const state = useStyle().state
+
+const setSelectorError = (key = '') => {
+  classNameState.selectorErrorKey = key
+  classNameState.selectorHasError = key ? t(`designer.settings.styles.globalStyle.errors.${key}`) : ''
+}
+
+watch(locale, () => {
+  if (classNameState.selectorErrorKey) {
+    classNameState.selectorHasError = t(`designer.settings.styles.globalStyle.errors.${classNameState.selectorErrorKey}`)
+  }
+})
+
+const errorKeyMap = {
+  startNumber: t('designer.settings.styles.globalStyle.errors.startNumber'),
+  singleSelector: t('designer.settings.styles.globalStyle.errors.singleSelector'),
+  invalidChar: t('designer.settings.styles.globalStyle.errors.invalidChar')
+}
 
 const getCurSelectorEditable = (selector) => {
   const selArr = getSelectorArr(selector)
@@ -161,7 +203,7 @@ watch(
   () => state.className.classNameList,
   (className) => {
     classNameState.showDelConfirm = false
-    classNameState.selectorHasError = ''
+    setSelectorError('')
 
     if (classNameState.curSelectorIsEditing) {
       classNameState.curSelectorIsEditing = false
@@ -281,7 +323,7 @@ const currentSelectorList = computed(() => [...state.currentClassNameList, ...st
 const selectorValidator = (selector) => {
   let sel = selector.trim()
 
-  classNameState.selectorHasError = ''
+  setSelectorError('')
 
   if (sel.startsWith('.') || sel.startsWith('#')) {
     sel = sel.slice(1)
@@ -289,22 +331,19 @@ const selectorValidator = (selector) => {
 
   // 开头不能是数字
   if (/^[0-9]/.test(sel)) {
-    classNameState.selectorHasError = '开头不能是数字'
-
+    setSelectorError('startNumber')
     return false
   }
 
   // 限制只添加一个类名
   if (sel.includes('.') || sel.includes('#')) {
-    classNameState.selectorHasError = '单次只能添加一个类名'
-
+    setSelectorError('singleSelector')
     return false
   }
 
   // 不能包含空格
   if (/[\s>~+]/.test(sel)) {
-    classNameState.selectorHasError = "不能包含空格 '>' '~' '+' 等符号"
-
+    setSelectorError('invalidChar')
     return false
   }
 
@@ -327,7 +366,7 @@ const handleCreateNewClass = () => {
   classNameState.showDropdownList = false
   let newSelector = classNameState.newSelector
   const isValid = selectorValidator(newSelector)
-  classNameState.selectorHasError = ''
+  setSelectorError('')
 
   // 清空选择器
   classNameState.newSelector = ''
@@ -396,7 +435,7 @@ const handleCompleteEditCurSelector = () => {
 
   classNameState.curSelectorIsEditing = false
   classNameState.showDropdownList = false
-  classNameState.selectorHasError = ''
+  setSelectorError('')
 
   // 修改的选择器不合法
   if (!selectorValidator(textValue) || textValue.length < 1) {

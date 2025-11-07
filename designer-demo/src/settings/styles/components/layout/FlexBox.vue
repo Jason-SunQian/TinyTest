@@ -22,13 +22,14 @@
 
 <script>
 /* metaService: engine.setting.styles.FlexBox */
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, watch } from 'vue'
 import { RadioConfigurator } from '@opentiny/tiny-engine-configurator'
 import { utils } from '@opentiny/tiny-engine-utils'
 import ModalMask, { useModal } from '../inputs/ModalMask.vue'
 import ResetButton from '../inputs/ResetButton.vue'
 import { useProperties } from '../../js/useStyle'
 import { FLEX_PROPERTY } from '../../js/styleProperty'
+import { useDesignerI18n } from '@/services/i18nService'
 
 const { hyphenate } = utils
 
@@ -46,135 +47,148 @@ export default {
   },
   setup(props, { emit }) {
     let activedName = ''
-    const layoutOpts = ref([
+    const { t, locale } = useDesignerI18n()
+
+    const sectionDefs = [
       {
-        title: '主轴方向',
+        titleKey: 'designer.settings.styles.flex.mainAxis',
         picked: '',
         key: 'flexDirection',
         btnList: [
           {
             value: 'flex-direction:row',
-            title: '',
-            tip: '水平方向，起点在左侧 row',
-            icon: 'flex-directionrow'
+            icon: 'flex-directionrow',
+            tipKey: 'designer.settings.styles.flex.tips.directionRow'
           },
           {
             value: 'flex-direction:row-reverse',
-            title: '',
-            tip: '水平方向，起点在右侧 row-reverse',
-            icon: 'flex-directionrow-reverse'
+            icon: 'flex-directionrow-reverse',
+            tipKey: 'designer.settings.styles.flex.tips.directionRowReverse'
           },
           {
             value: 'flex-direction:column',
-            title: '',
-            tip: '垂直方向，起点在上沿 column',
-            icon: 'flex-directioncolumn'
+            icon: 'flex-directioncolumn',
+            tipKey: 'designer.settings.styles.flex.tips.directionColumn'
           },
           {
             value: 'flex-direction:column-reverse',
-            title: '',
-            tip: '垂直方向，起点在下沿 column-reverse',
-            icon: 'flex-directioncolumn-reverse'
+            icon: 'flex-directioncolumn-reverse',
+            tipKey: 'designer.settings.styles.flex.tips.directionColumnReverse'
           }
         ]
       },
       {
-        title: '主轴对齐',
+        titleKey: 'designer.settings.styles.flex.mainAlign',
         picked: '',
         key: 'justifyContent',
         btnList: [
           {
             value: 'justify-content:flex-start',
-            title: '',
-            tip: '左对齐 flex-start',
-            icon: 'flex-justifyflex-startrow'
+            icon: 'flex-justifyflex-startrow',
+            tipKey: 'designer.settings.styles.flex.tips.justifyStart'
           },
           {
             value: 'justify-content:flex-end',
-            title: '',
-            tip: '右对齐 flex-end',
-            icon: 'flex-justifyflex-endrow'
+            icon: 'flex-justifyflex-endrow',
+            tipKey: 'designer.settings.styles.flex.tips.justifyEnd'
           },
           {
             value: 'justify-content:center',
-            title: '',
-            tip: '水平居中 center',
-            icon: 'flex-justifycenterrow'
+            icon: 'flex-justifycenterrow',
+            tipKey: 'designer.settings.styles.flex.tips.justifyCenter'
           },
           {
             value: 'justify-content:space-between',
-            title: '',
-            tip: '两端对齐 space-between',
-            icon: 'flex-justifyspace-betweenrow'
+            icon: 'flex-justifyspace-betweenrow',
+            tipKey: 'designer.settings.styles.flex.tips.justifySpaceBetween'
           },
           {
             value: 'justify-content:space-around',
-            title: '',
-            tip: '横向平分 space-around',
-            icon: 'flex-justifyspace-aroundrow'
+            icon: 'flex-justifyspace-aroundrow',
+            tipKey: 'designer.settings.styles.flex.tips.justifySpaceAround'
           }
         ]
       },
       {
-        title: '辅轴对齐',
+        titleKey: 'designer.settings.styles.flex.crossAlign',
         picked: '',
         key: 'alignItems',
         btnList: [
           {
             value: 'align-items:flex-start',
-            title: '',
-            tip: '起点对齐 flex-start',
-            icon: 'flex-alignflex-startrow'
+            icon: 'flex-alignflex-startrow',
+            tipKey: 'designer.settings.styles.flex.tips.alignStart'
           },
           {
             value: 'align-items:flex-end',
-            title: '',
-            tip: '终点对齐 flex-end',
-            icon: 'flex-alignflex-endrow'
+            icon: 'flex-alignflex-endrow',
+            tipKey: 'designer.settings.styles.flex.tips.alignEnd'
           },
           {
             value: 'align-items:center',
-            title: '',
-            tip: '水平居中 center',
-            icon: 'flex-aligncenterrow'
+            icon: 'flex-aligncenterrow',
+            tipKey: 'designer.settings.styles.flex.tips.alignCenter'
           },
           {
             value: 'align-items:baseline',
-            title: '',
-            tip: '项目第一行文字的基线对齐 baseline',
-            icon: 'flex-alignbaselinerow'
+            icon: 'flex-alignbaselinerow',
+            tipKey: 'designer.settings.styles.flex.tips.alignBaseline'
           },
           {
             value: 'align-items:stretch',
-            title: '',
-            tip: '沾满整个容器的高度 stretch',
-            icon: 'flex-alignstretchrow'
+            icon: 'flex-alignstretchrow',
+            tipKey: 'designer.settings.styles.flex.tips.alignStretch'
           }
         ]
       },
       {
-        title: '换行模式',
+        titleKey: 'designer.settings.styles.flex.wrap',
         picked: '',
         key: 'flexWrap',
         btnList: [
           {
             value: 'flex-wrap:nowrap',
-            title: '不换行',
-            tip: '不换行 nowrap'
+            titleKey: 'designer.settings.styles.flex.wrapOptions.nowrap',
+            tipKey: 'designer.settings.styles.flex.tips.wrapNowrap'
           },
           {
             value: 'flex-wrap:wrap',
-            title: '正换行',
-            tip: '第一行在上方 wrap'
+            titleKey: 'designer.settings.styles.flex.wrapOptions.wrap',
+            tipKey: 'designer.settings.styles.flex.tips.wrapNormal'
           },
           {
             value: 'flex-wrap:wrap-reverse',
-            title: '逆换行',
-            tip: '第一行在下方 wrap-reverse'
+            titleKey: 'designer.settings.styles.flex.wrapOptions.wrapReverse',
+            tipKey: 'designer.settings.styles.flex.tips.wrapReverse'
           }
         ]
       }
-    ])
+    ]
+
+    const layoutOpts = ref(
+      sectionDefs.map((section) => ({
+        ...section,
+        title: t(section.titleKey),
+        btnList: section.btnList.map((btn) => ({
+          ...btn,
+          title: btn.titleKey ? t(btn.titleKey) : '',
+          tip: btn.tipKey ? t(btn.tipKey) : btn.tip || ''
+        }))
+      }))
+    )
+
+    watch(locale, () => {
+      layoutOpts.value.forEach((section, index) => {
+        const def = sectionDefs[index]
+        section.title = t(def.titleKey)
+        section.btnList.forEach((btn, btnIndex) => {
+          const btnDef = def.btnList[btnIndex]
+          btn.title = btnDef.titleKey ? t(btnDef.titleKey) : ''
+          btn.tip = btnDef.tipKey ? t(btnDef.tipKey) : btn.tip || ''
+        })
+      })
+    })
+
     const { setPosition } = useModal()
     const showModal = ref(false)
 
@@ -228,7 +242,8 @@ export default {
       getSettingFlag,
       select,
       openSetting,
-      reset
+      reset,
+      t
     }
   }
 }

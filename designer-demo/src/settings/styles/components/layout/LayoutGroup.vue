@@ -1,7 +1,7 @@
 <template>
   <div class="display-row">
     <div :class="['display-label', { selected: picked }]" @click="openDisplayModal($event)">
-      <span>排布</span>
+      <span>{{ t('designer.settings.styles.layout.title') }}</span>
     </div>
     <div class="display-content">
       <tabs-group-configurator
@@ -19,12 +19,13 @@
 
 <script>
 /* metaService: engine.setting.styles.LayoutGroup */
-import { ref, computed } from 'vue'
-import { DISPLAY_TYPE, DISPLAY_TEXT } from '../../js/cssType'
+import { ref, computed, watch } from 'vue'
+import { DISPLAY_TYPE } from '../../js/cssType'
 import { TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
 import useEvent from '../../js/useEvent'
 import ResetButton from '../inputs/ResetButton.vue'
 import ModalMask, { useModal } from '../inputs/ModalMask.vue'
+import { useDesignerI18n } from '@/services/i18nService'
 
 export default {
   components: {
@@ -53,9 +54,59 @@ export default {
   emits: useEvent(),
   setup(props, { emit }) {
     const { setPosition } = useModal()
+    const { t, locale } = useDesignerI18n()
 
     const picked = computed(() => props.display)
     const showModal = ref(false)
+
+    const layoutOpts = ref([
+      {
+        value: DISPLAY_TYPE.Block,
+        label: ''
+      },
+      {
+        value: DISPLAY_TYPE.Flex,
+        label: ''
+      },
+      {
+        value: DISPLAY_TYPE.Grid,
+        label: '',
+        collapsed: true
+      },
+      {
+        value: DISPLAY_TYPE.InlineBlock,
+        label: '',
+        collapsed: true
+      },
+      {
+        value: DISPLAY_TYPE.Inline,
+        label: '',
+        collapsed: true
+      },
+      {
+        value: DISPLAY_TYPE.Invisible,
+        label: '',
+        collapsed: true
+      }
+    ])
+
+    const refreshLabels = () => {
+      layoutOpts.value.forEach((item) => {
+        const optionKeyMap = {
+          [DISPLAY_TYPE.Block]: 'block',
+          [DISPLAY_TYPE.Flex]: 'flex',
+          [DISPLAY_TYPE.Grid]: 'grid',
+          [DISPLAY_TYPE.InlineBlock]: 'inlineBlock',
+          [DISPLAY_TYPE.Inline]: 'inline',
+          [DISPLAY_TYPE.Invisible]: 'none'
+        }
+        const key = optionKeyMap[item.value]
+        item.label = key ? t(`designer.settings.styles.layout.options.${key}`) : item.value
+      })
+    }
+
+    refreshLabels()
+    watch(locale, refreshLabels)
 
     const select = (type) => {
       picked.value = type
@@ -77,45 +128,14 @@ export default {
       showModal.value = false
     }
 
-    const layoutOpts = ref([
-      {
-        value: DISPLAY_TYPE.Block,
-        label: DISPLAY_TEXT.Block
-      },
-      {
-        value: DISPLAY_TYPE.Flex,
-        label: DISPLAY_TEXT.Flex
-      },
-      {
-        value: DISPLAY_TYPE.Grid,
-        label: DISPLAY_TEXT.Grid,
-        collapsed: true
-      },
-
-      {
-        value: DISPLAY_TYPE.InlineBlock,
-        label: DISPLAY_TEXT.InlineBlock,
-        collapsed: true
-      },
-      {
-        value: DISPLAY_TYPE.Inline,
-        label: DISPLAY_TEXT.Inline,
-        collapsed: true
-      },
-      {
-        value: DISPLAY_TYPE.Invisible,
-        label: DISPLAY_TEXT.Invisible,
-        collapsed: true
-      }
-    ])
-
     return {
       layoutOpts,
       picked,
       reset,
       select,
       showModal,
-      openDisplayModal
+      openDisplayModal,
+      t
     }
   }
 }

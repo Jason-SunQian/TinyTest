@@ -5,7 +5,7 @@
       title="position"
       @click="openSetting(POSITION_PROPERTY.Position, $event)"
     >
-      <span>定位</span>
+      <span>{{ t('designer.settings.styles.position.title') }}</span>
     </div>
     <div class="position-select">
       <select-configurator
@@ -193,7 +193,7 @@
           <span>{{ state.relativeTo }}</span>
         </div>
         <div class="relative">
-          <span>Relative to</span>
+          <span>{{ t('designer.settings.styles.position.relativeTo') }}</span>
         </div>
         <numeric-select
           :name="getProperty(POSITION_PROPERTY.ZIndex).name"
@@ -219,7 +219,7 @@
 
 <script>
 /* metaService: engine.setting.styles.PositionGroup */
-import { reactive, watchEffect } from 'vue'
+import { reactive, watch, watchEffect, computed } from 'vue'
 import { Tooltip } from '@opentiny/vue'
 import { SelectConfigurator } from '@opentiny/tiny-engine-configurator'
 import { push } from '@opentiny/vue-renderless/common/array'
@@ -229,6 +229,7 @@ import ResetButton from '../inputs/ResetButton.vue'
 import NumericSelect from '../inputs/NumericSelect.vue'
 import { useProperties } from '../../js/useStyle'
 import { POSITION_PROPERTY } from '../../js/styleProperty'
+import { useDesignerI18n } from '@/services/i18nService'
 
 export default {
   components: {
@@ -250,28 +251,21 @@ export default {
   emits: ['update'],
   setup(props, { emit }) {
     let activedName = ''
-    const selectOptions = [
-      {
-        label: 'Static-默认定位',
-        value: 'static'
-      },
-      {
-        label: 'Relative-相对定位',
-        value: 'relative'
-      },
-      {
-        label: 'Absolute-绝对定位',
-        value: 'absolute'
-      },
-      {
-        label: 'Fixed-固定定位',
-        value: 'fixed'
-      },
-      {
-        label: 'Sticky-粘性定位',
-        value: 'sticky'
-      }
+    const { t, locale } = useDesignerI18n()
+    const selectOptionDefs = [
+      { key: 'static', value: 'static' },
+      { key: 'relative', value: 'relative' },
+      { key: 'absolute', value: 'absolute' },
+      { key: 'fixed', value: 'fixed' },
+      { key: 'sticky', value: 'sticky' }
     ]
+
+    const selectOptions = computed(() =>
+      selectOptionDefs.map(({ key, value }) => ({
+        label: t(`designer.settings.styles.position.options.${key}`),
+        value
+      }))
+    )
 
     const positionOptions = [
       {
@@ -321,6 +315,11 @@ export default {
       }
     ]
 
+    const getRelativeToLabel = (position) =>
+      position === 'relative'
+        ? t('designer.settings.styles.position.relativeTargets.self')
+        : t('designer.settings.styles.position.relativeTargets.container')
+
     const state = reactive({
       showModal: false,
       showSetting: false,
@@ -330,7 +329,7 @@ export default {
       className: '',
       selectedIndex: -1,
       selectValue: 'static',
-      relativeTo: '404 Content Wrap',
+      relativeTo: getRelativeToLabel('static'),
       activeArr: ['inset'],
       directionText: {
         top: '',
@@ -343,6 +342,9 @@ export default {
         name: '',
         value: ''
       }
+    })
+    watch(locale, () => {
+      state.relativeTo = getRelativeToLabel(state.selectValue)
     })
     watchEffect(() => {
       state.selectValue = props.style?.position || 'static'
@@ -377,7 +379,7 @@ export default {
         state.selectValue = val
         state.showSetting = val !== 'static'
         state.showSettingIcon = val === 'absolute' || val === 'fixed'
-        state.relativeTo = val === 'relative' ? 'Itself' : '404 Content Wrap'
+        state.relativeTo = getRelativeToLabel(val)
         updateStyle({ [POSITION_PROPERTY.Position]: val })
       }
     }
@@ -446,7 +448,8 @@ export default {
       openSetting,
       getDirectionText,
       clickDirection,
-      closeDirectionModal
+      closeDirectionModal,
+      t
     }
   }
 }

@@ -108,6 +108,90 @@
           "hidden": "hidden - Hidden",
           "scroll": "overflow - Scroll",
           "auto": "auto - Auto"
+        },
+        "layout": {
+          "title": "Layout",
+          "options": {
+            "block": "Block",
+            "flex": "Flex",
+            "grid": "Grid",
+            "inlineBlock": "Inline Block",
+            "inline": "Inline",
+            "none": "Hidden"
+          }
+        },
+        "flex": {
+          "mainAxis": "Main Axis Direction",
+          "mainAlign": "Main Axis Alignment",
+          "crossAlign": "Cross Axis Alignment",
+          "wrap": "Wrap Mode",
+          "wrapOptions": {
+            "nowrap": "No Wrap",
+            "wrap": "Wrap",
+            "wrapReverse": "Wrap Reverse"
+          },
+          "tips": {
+            "directionRow": "Row (left to right)",
+            "directionRowReverse": "Row Reverse (right to left)",
+            "directionColumn": "Column (top to bottom)",
+            "directionColumnReverse": "Column Reverse (bottom to top)",
+            "justifyStart": "Align to start (flex-start)",
+            "justifyEnd": "Align to end (flex-end)",
+            "justifyCenter": "Center across the main axis",
+            "justifySpaceBetween": "Space between",
+            "justifySpaceAround": "Space around",
+            "alignStart": "Align start",
+            "alignEnd": "Align end",
+            "alignCenter": "Center on cross axis",
+            "alignBaseline": "Align to baseline",
+            "alignStretch": "Stretch to fill",
+            "wrapNowrap": "No wrap (nowrap)",
+            "wrapNormal": "Wrap (first row at top)",
+            "wrapReverse": "Wrap reverse (first row at bottom)"
+          }
+        },
+        "position": {
+          "title": "Position",
+          "relativeTo": "Relative to",
+          "options": {
+            "static": "Static - Default",
+            "relative": "Relative - Positioned",
+            "absolute": "Absolute - Out of flow",
+            "fixed": "Fixed - Fixed to viewport",
+            "sticky": "Sticky - Sticky positioning"
+          },
+          "relativeTargets": {
+            "container": "Page container",
+            "self": "Component itself"
+          }
+        },
+        "globalStyle": {
+          "title": "Global Styles",
+          "docsTip": "Declare multiple CSS or media query styles and bind them via component class or ID.",
+          "editTitle": "CSS Editor",
+          "editButton": "Edit global styles",
+          "placeholder": "Select or create a selector",
+          "dropdown": {
+            "create": "Type and press Enter to create a selector",
+            "selectExisting": "Select an existing selector to edit",
+            "addToComponent": "Add a global selector to the component and edit"
+          },
+          "actions": {
+            "edit": "Edit",
+            "delete": "Delete"
+          },
+          "states": {
+            "none": "None",
+            "hover": "hover",
+            "pressed": "pressed",
+            "focused": "focused",
+            "disabled": "disabled"
+          },
+          "errors": {
+            "startNumber": "Selector cannot start with a number",
+            "singleSelector": "Only one selector can be added at a time",
+            "invalidChar": "Selector cannot contain spaces or symbols like '>', '~', '+'"
+          }
         }
       }
     },

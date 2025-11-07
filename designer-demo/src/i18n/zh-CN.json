@@ -108,6 +108,90 @@
           "hidden": "hidden 溢出隐藏",
           "scroll": "overflow 溢出滚动",
           "auto": "auto 溢出才自动滚动"
+        },
+        "layout": {
+          "title": "布局",
+          "options": {
+            "block": "块级布局",
+            "flex": "弹性布局",
+            "grid": "网格布局",
+            "inlineBlock": "内联块级",
+            "inline": "内联",
+            "none": "隐藏"
+          }
+        },
+        "flex": {
+          "mainAxis": "主轴方向",
+          "mainAlign": "主轴对齐",
+          "crossAlign": "辅轴对齐",
+          "wrap": "换行模式",
+          "wrapOptions": {
+            "nowrap": "不换行",
+            "wrap": "正换行",
+            "wrapReverse": "逆换行"
+          },
+          "tips": {
+            "directionRow": "水平方向，起点在左侧 row",
+            "directionRowReverse": "水平方向，起点在右侧 row-reverse",
+            "directionColumn": "垂直方向，起点在上沿 column",
+            "directionColumnReverse": "垂直方向，起点在下沿 column-reverse",
+            "justifyStart": "左对齐 flex-start",
+            "justifyEnd": "右对齐 flex-end",
+            "justifyCenter": "水平居中 center",
+            "justifySpaceBetween": "两端对齐 space-between",
+            "justifySpaceAround": "横向平分 space-around",
+            "alignStart": "起点对齐 flex-start",
+            "alignEnd": "终点对齐 flex-end",
+            "alignCenter": "水平居中 center",
+            "alignBaseline": "项目第一行文字的基线对齐 baseline",
+            "alignStretch": "沾满整个容器的高度 stretch",
+            "wrapNowrap": "不换行 nowrap",
+            "wrapNormal": "第一行在上方 wrap",
+            "wrapReverse": "第一行在下方 wrap-reverse"
+          }
+        },
+        "position": {
+          "title": "定位",
+          "relativeTo": "参考",
+          "options": {
+            "static": "Static - 默认定位",
+            "relative": "Relative - 相对定位",
+            "absolute": "Absolute - 绝对定位",
+            "fixed": "Fixed - 固定定位",
+            "sticky": "Sticky - 粘性定位"
+          },
+          "relativeTargets": {
+            "container": "页面容器",
+            "self": "组件自身"
+          }
+        },
+        "globalStyle": {
+          "title": "全局样式",
+          "docsTip": "声明多条 CSS 样式或媒体查询样式，并通过组件的 class 或 id 进行绑定",
+          "editTitle": "CSS 编辑",
+          "editButton": "编辑全局样式",
+          "placeholder": "请选择或创建类名",
+          "dropdown": {
+            "create": "输入并回车创建新选择器",
+            "selectExisting": "选择已有选择器编辑",
+            "addToComponent": "添加全局类到当前组件并编辑"
+          },
+          "actions": {
+            "edit": "编辑",
+            "delete": "删除"
+          },
+          "states": {
+            "none": "None",
+            "hover": "hover",
+            "pressed": "pressed",
+            "focused": "focused",
+            "disabled": "disabled"
+          },
+          "errors": {
+            "startNumber": "开头不能是数字",
+            "singleSelector": "单次只能添加一个类名",
+            "invalidChar": "不能包含空格或 '>' '~' '+' 等符号"
+          }
         }
       }
     },
