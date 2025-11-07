@@ -130,9 +130,6 @@ importers:
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
-      monaco-editor:
-        specifier: 0.51.0
-        version: 0.51.0
       pinyin-pro:
         specifier: ^3.13.0
         version: 3.13.0

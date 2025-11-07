@@ -33,8 +33,7 @@
     "xlsx": "^0.18.5",
     "@vue/shared": "^3.3.4",
     "vue": "^3.5.0",
-    "postcss": "^8.4.31",
-    "monaco-editor": "0.51.0"
+    "postcss": "^8.4.31"
   },
   "devDependencies": {
     "@opentiny/tiny-engine-vite-config": "workspace:*",
