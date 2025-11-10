@@ -82,7 +82,9 @@
         },
         "common": {
           "reset": "Reset",
-          "resetTip": "Resetting will restore the initial value."
+          "resetTip": "Resetting will restore the initial value.",
+          "selectPlaceholder": "Select",
+          "colorPlaceholder": "Enter color"
         },
         "size": {
           "width": "Width",

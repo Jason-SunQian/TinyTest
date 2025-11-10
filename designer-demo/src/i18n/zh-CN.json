@@ -82,7 +82,9 @@
         },
         "common": {
           "reset": "重置",
-          "resetTip": "重置后将恢复到初始值。"
+          "resetTip": "重置后将恢复到初始值。",
+          "selectPlaceholder": "请选择",
+          "colorPlaceholder": "请输入颜色"
         },
         "size": {
           "width": "宽度",

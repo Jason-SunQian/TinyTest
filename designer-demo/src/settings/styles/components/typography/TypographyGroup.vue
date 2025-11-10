@@ -50,6 +50,7 @@
           <select-configurator
             v-model="state.sizeValue"
             :options="sizeOptions"
+            :placeholder="selectPlaceholder"
             @update:modelValue="selectFontSize"
             allow-create
             filterable
@@ -83,7 +84,12 @@
           <span>{{ t('designer.settings.styles.typography.color') }}</span>
         </label>
         <div class="color-wrap">
-          <color-configurator :modelValue="getProperty(TYPO_PROPERTY.Color).value" @change="changeColor" />
+          <color-configurator
+            :key="colorPlaceholder"
+            :modelValue="getProperty(TYPO_PROPERTY.Color).value"
+            :placeholder="colorPlaceholder"
+            @change="changeColor"
+          />
         </div>
       </div>
     </div>
@@ -147,7 +153,8 @@
 /* metaService: engine.setting.styles.TypographyGroup */
 import { ref, reactive, computed } from 'vue'
 import NumericSelect from '../inputs/NumericSelect.vue'
-import { ColorConfigurator, SelectConfigurator, TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
+import { SelectConfigurator, TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
+import ColorConfigurator from '@/components/i18n-wrappers/ColorConfigurator/index.vue'
 import { TYPO_PROPERTY } from '../../js/styleProperty'
 import useEvent from '../../js/useEvent'
 import { useProperties } from '../../js/useStyle'
@@ -187,7 +194,7 @@ export default {
       parseNumber: true
     })
     const { setPosition } = useModal()
-    const { t } = useDesignerI18n()
+    const { t, locale } = useDesignerI18n()
 
     const fontFamilyDefs = [
       { key: 'microsoftYaHei', value: '"Microsoft YaHei", "微软雅黑", sans-serif' },
@@ -293,6 +300,16 @@ export default {
         content: t(`designer.settings.styles.typography.decorationOptions.${key}`)
       }))
     )
+
+    const selectPlaceholder = computed(() => {
+      void locale.value
+      return t('designer.settings.styles.common.selectPlaceholder')
+    })
+
+    const colorPlaceholder = computed(() => {
+      void locale.value
+      return t('designer.settings.styles.common.colorPlaceholder')
+    })
 
     const openSetting = (name, event) => {
       let hasSettingFlag = false
@@ -419,6 +436,8 @@ export default {
       alignOptions,
       styleOptions,
       decorationOptions,
+      selectPlaceholder,
+      colorPlaceholder,
       showModal,
       state,
       t

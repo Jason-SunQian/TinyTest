@@ -180,7 +180,12 @@
         >
           <span>{{ t('designer.settings.styles.border.color') }}</span>
         </label>
-        <color-configurator :modelValue="borderColorValue" @change="changeBorderColor"></color-configurator>
+        <color-configurator
+          :key="colorPlaceholder"
+          :modelValue="borderColorValue"
+          :placeholder="colorPlaceholder"
+          @change="changeBorderColor"
+        ></color-configurator>
       </div>
     </div>
   </div>
@@ -198,12 +203,13 @@ import ModalMask, { useModal } from '../inputs/ModalMask.vue'
 import NumericSelect from '../inputs/NumericSelect.vue'
 import ResetButton from '../inputs/ResetButton.vue'
 import ButtonGroup from '../buttons/ButtonGroup.vue'
-import { ColorConfigurator, SliderConfigurator, TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
+import { SliderConfigurator, TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
 import useEvent from '../../js/useEvent'
 import { useProperties } from '../../js/useStyle'
 import { RADIUS_SETTING, BORDER_SETTING, BORDER_STYLE_TYPE } from '../../js/cssType'
 import { BORDER_PROPERTY, BORDER_RADIUS_PROPERTY } from '../../js/styleProperty'
 import { useDesignerI18n } from '@/services/i18nService'
+import ColorConfigurator from '@/components/i18n-wrappers/ColorConfigurator/index.vue'
 
 const BORDER_STYLE = {
   [BORDER_SETTING.All]: BORDER_PROPERTY.BorderStyle,
@@ -256,7 +262,7 @@ export default {
   },
   emits: useEvent(),
   setup(props, { emit }) {
-    const { t } = useDesignerI18n()
+    const { t, locale } = useDesignerI18n()
 
     const state = reactive({
       showModal: false,
@@ -431,6 +437,11 @@ export default {
       }))
     )
 
+    const colorPlaceholder = computed(() => {
+      void locale.value
+      return t('designer.settings.styles.common.colorPlaceholder')
+    })
+
     const styleValue = computed(() => {
       const propertyName = BORDER_STYLE[state.activedBorder]
       return getPropertyValue(propertyName)
@@ -550,6 +561,7 @@ export default {
       isBorderWidthSetting,
       isBorderColorSetting,
       changeBorderColor,
+      colorPlaceholder,
       t
     }
   }

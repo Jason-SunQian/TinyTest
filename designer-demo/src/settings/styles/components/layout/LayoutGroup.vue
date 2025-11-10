@@ -54,45 +54,26 @@ export default {
   emits: useEvent(),
   setup(props, { emit }) {
     const { setPosition } = useModal()
-    const { t, locale } = useDesignerI18n()
+    const { t } = useDesignerI18n()
 
     const picked = computed(() => props.display)
     const showModal = ref(false)
 
     const layoutOptionDefs = [
-      { value: DISPLAY_TYPE.Block },
-      { value: DISPLAY_TYPE.Flex },
-      { value: DISPLAY_TYPE.Grid, collapsed: true },
-      { value: DISPLAY_TYPE.InlineBlock, collapsed: true },
-      { value: DISPLAY_TYPE.Inline, collapsed: true },
-      { value: DISPLAY_TYPE.Invisible, collapsed: true }
+      { value: DISPLAY_TYPE.Block, label: 'Block' },
+      { value: DISPLAY_TYPE.Flex, label: 'Flex' },
+      { value: DISPLAY_TYPE.Grid, label: 'Grid', collapsed: true },
+      { value: DISPLAY_TYPE.InlineBlock, label: 'Inline Block', collapsed: true },
+      { value: DISPLAY_TYPE.Inline, label: 'Inline', collapsed: true },
+      { value: DISPLAY_TYPE.Invisible, label: 'Hidden', collapsed: true }
     ]
 
-    const layoutOpts = computed(() => {
-      const optionKeyMap = {
-        [DISPLAY_TYPE.Block]: 'block',
-        [DISPLAY_TYPE.Flex]: 'flex',
-        [DISPLAY_TYPE.Grid]: 'grid',
-        [DISPLAY_TYPE.InlineBlock]: 'inlineBlock',
-        [DISPLAY_TYPE.Inline]: 'inline',
-        [DISPLAY_TYPE.Invisible]: 'none'
-      }
-
-      // 访问 locale.value 以建立依赖
-      const currentLocale = locale.value
-      void currentLocale
-
-      return layoutOptionDefs.map((item) => {
-        const key = optionKeyMap[item.value]
-        const text = key ? t(`designer.settings.styles.layout.options.${key}`) : item.value
-
-        return {
-          ...item,
-          label: text,
-          content: text
-        }
-      })
-    })
+    const layoutOpts = computed(() =>
+      layoutOptionDefs.map((item) => ({
+        ...item,
+        content: item.label
+      }))
+    )
 
     const select = (type) => {
       picked.value = type

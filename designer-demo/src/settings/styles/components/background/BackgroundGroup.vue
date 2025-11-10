@@ -54,7 +54,12 @@
       >
         <span>{{ t('designer.settings.styles.background.color') }}</span>
       </label>
-      <color-configurator :modelValue="getProperty(BACKGROUND_PROPERTY.BackgroundColor).value" @change="changeColor" />
+      <color-configurator
+        :key="colorPlaceholder"
+        :modelValue="getProperty(BACKGROUND_PROPERTY.BackgroundColor).value"
+        :placeholder="colorPlaceholder"
+        @change="changeColor"
+      />
     </div>
     <div class="background-clip">
       <label
@@ -91,7 +96,7 @@
 /* metaService: engine.setting.styles.BackgroundGroup */
 import { reactive, watch, computed } from 'vue'
 import { Tooltip } from '@opentiny/vue'
-import { ColorConfigurator, SelectConfigurator } from '@opentiny/tiny-engine-configurator'
+import { SelectConfigurator } from '@opentiny/tiny-engine-configurator'
 import { useCanvas } from '@opentiny/tiny-engine-meta-register'
 import { iconPlus } from '@opentiny/vue-icon'
 import ModalMask, { useModal } from '../inputs/ModalMask.vue'
@@ -100,6 +105,7 @@ import BackgroundImageSetting from './BackgroundImageSetting.vue'
 import { useProperties } from '../../js/useStyle'
 import { BACKGROUND_PROPERTY, TYPE_TEXT, PROPERTY_DEFAULT_VALUE } from '../../js/styleProperty'
 import { useDesignerI18n } from '@/services/i18nService'
+import ColorConfigurator from '@/components/i18n-wrappers/ColorConfigurator/index.vue'
 
 // 顶层 schema 没有 id，所以指定一个 page-root-id 作为一个 key
 const PAGE_ROOT_ID = 'page-root-id'
@@ -123,7 +129,7 @@ export default {
   emits: ['update'],
   setup(props, { emit }) {
     let activedName = []
-    const { t } = useDesignerI18n()
+    const { t, locale } = useDesignerI18n()
     const clipOptionDefs = [
       { key: 'none', value: 'none' },
       { key: 'padding', value: 'clip background to padding' },
@@ -137,6 +143,11 @@ export default {
         label: t(`designer.settings.styles.background.clipOptions.${key}`)
       }))
     )
+
+    const colorPlaceholder = computed(() => {
+      void locale.value
+      return t('designer.settings.styles.common.colorPlaceholder')
+    })
 
     const state = reactive({
       selectValue: 'none',
@@ -383,6 +394,7 @@ export default {
       getSettingFlag,
       getProperty,
       TYPE_TEXT,
+      colorPlaceholder,
       t
     }
   }
