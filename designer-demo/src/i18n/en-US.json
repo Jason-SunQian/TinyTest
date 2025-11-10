@@ -368,6 +368,67 @@
             "invalidChar": "Selector cannot contain spaces or symbols like '>', '~', '+'"
           }
         }
+      },
+      "events": {
+        "panelTitle": "Events",
+        "sections": {
+          "binding": "Event Binding",
+          "advanced": "Advanced Config"
+        },
+        "bind": {
+          "bindEvent": "Bind Event",
+          "addEvent": "Add Event",
+          "emptyTip": "No event bindings",
+          "locateCode": "Locate Code",
+          "confirmTitle": "Confirm Delete",
+          "deleteConfirm": "Are you sure you want to delete event {name}?",
+          "customEventDescription": "The callback function for {name}"
+        },
+        "dialog": {
+          "title": "Event Binding",
+          "description": "Select an existing method or add a new method (clicking Confirm will create a new method with this name in the JS panel).",
+          "cancel": "Cancel",
+          "confirm": "Confirm",
+          "methodName": "Method Name",
+          "methodNamePlaceholder": "Please select a method from the left to bind, or select Add New Method and enter a custom method name.",
+          "extraParams": "Extra Parameters",
+          "extraParamsTip": "Extra parameters: Real parameters passed when calling the current event, array format, appended after the original event parameters",
+          "extraParamsExample": "e.g.: {name}(eventArgs, extParam1, extParam2, ...)",
+          "paramsTip": "Please enter parameters in array format. Parameters can be expressions. Example: [\"extParam1\", \"item.status\", 1, \"getNames()\"]",
+          "methodTips": {
+            "default": "",
+            "empty": "Method name cannot be empty",
+            "exist": "Method name already exists",
+            "ruleInvalid": "Invalid method name format. Only letters, numbers, underscores, and $ are allowed, and cannot start with a number"
+          },
+          "sidebar": {
+            "title": "Response Methods",
+            "searchPlaceholder": "Search",
+            "addNewMethod": "Add New Method"
+          }
+        },
+        "addEvent": {
+          "title": "Add New Event",
+          "eventName": "Event Function Name",
+          "eventNamePlaceholder": "Camel case format, e.g.: onDrag",
+          "eventDescription": "Event Description",
+          "cancel": "Cancel",
+          "confirm": "Confirm",
+          "required": "Required",
+          "eventNameExists": "Event name already exists",
+          "invalidEventName": "Please enter a valid browser event name"
+        },
+        "advanced": {
+          "render": "Render",
+          "bound": "Bound: {value}",
+          "loopData": "Loop Data",
+          "loopItem": "Iteration Variable Name",
+          "loopIndex": "Index Variable Name",
+          "loopKey": "key",
+          "loopKeyTooltip": "It is recommended to fill in the unique value in the loop item (e.g., item.id). If a number is entered, it will not be saved",
+          "defaultValue": "Default value: {value}",
+          "defaultIndexName": "Default to index name: {value}"
+        }
       }
     },
     "common": {

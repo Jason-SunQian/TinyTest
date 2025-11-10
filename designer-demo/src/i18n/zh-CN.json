@@ -368,6 +368,67 @@
             "invalidChar": "不能包含空格或 '>' '~' '+' 等符号"
           }
         }
+      },
+      "events": {
+        "panelTitle": "事件",
+        "sections": {
+          "binding": "事件绑定",
+          "advanced": "高级配置"
+        },
+        "bind": {
+          "bindEvent": "绑定事件",
+          "addEvent": "添加事件",
+          "emptyTip": "暂无事件绑定",
+          "locateCode": "定位代码",
+          "confirmTitle": "确认删除",
+          "deleteConfirm": "确定要删除事件 {name} 吗？",
+          "customEventDescription": "{name}的回调函数"
+        },
+        "dialog": {
+          "title": "事件绑定",
+          "description": "选择已有方法或者添加新方法（点击 确定 之后将在JS面板中创建一个该名称的新方法）。",
+          "cancel": "取 消",
+          "confirm": "确 定",
+          "methodName": "方法名称",
+          "methodNamePlaceholder": "请从左侧选择一个方法进行绑定，或者选择添加新方法，输入自定义方法名称。",
+          "extraParams": "扩展参数设置",
+          "extraParamsTip": "扩展参数：调用当前事件传入的真实参数，数组格式，追加在原有事件参数之后",
+          "extraParamsExample": "如: {name}(eventArgs, extParam1, extParam2, ...)",
+          "paramsTip": "请输入数组格式的参数，参数可以为表达式。例如：[\"extParam1\", \"item.status\", 1, \"getNames()\"]",
+          "methodTips": {
+            "default": "",
+            "empty": "方法名不能为空",
+            "exist": "方法名已存在",
+            "ruleInvalid": "方法名格式不正确，只能包含字母、数字、下划线和$，且不能以数字开头"
+          },
+          "sidebar": {
+            "title": "响应方法",
+            "searchPlaceholder": "搜索",
+            "addNewMethod": "添加新方法"
+          }
+        },
+        "addEvent": {
+          "title": "添加新事件",
+          "eventName": "事件函数名",
+          "eventNamePlaceholder": "小驼峰格式，如：onDrag",
+          "eventDescription": "事件描述",
+          "cancel": "取消",
+          "confirm": "确定",
+          "required": "必填",
+          "eventNameExists": "事件名已存在",
+          "invalidEventName": "请输入正确的浏览器事件名"
+        },
+        "advanced": {
+          "render": "是否渲染",
+          "bound": "已绑定：{value}",
+          "loopData": "循环数据",
+          "loopItem": "迭代变量名",
+          "loopIndex": "索引变量名",
+          "loopKey": "key",
+          "loopKeyTooltip": "建议填写循环项中的唯一值（如item.id），如果填写为数字将不保存",
+          "defaultValue": "默认值为：{value}",
+          "defaultIndexName": "默认为索引名：{value}"
+        }
       }
     },
     "common": {

@@ -31,6 +31,7 @@ import MaterialComponent from './src/plugins/materials/meta/component/index'
 import { loadDesignerI18n } from './src/services/i18nService'
 import CustomStyles from './src/settings/styles/Main.vue'
 import StyleService from './src/settings/styles/js/index'
+import CustomEvents from './src/settings/events/index'
 
 export default {
   [META_SERVICE.Http]: HttpService,
@@ -249,6 +250,9 @@ export default {
     icon: 'display-inline',
     entry: CustomStyles,
     metas: [StyleService]
+  },
+  [META_APP.Event]: {
+    ...CustomEvents
   },
   [META_APP.Layout]: {
     options: {

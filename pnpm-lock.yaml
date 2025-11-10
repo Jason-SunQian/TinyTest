@@ -130,6 +130,9 @@ importers:
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
+      magic-string:
+        specifier: ^0.30.17
+        version: 0.30.17
       pinyin-pro:
         specifier: ^3.13.0
         version: 3.13.0
