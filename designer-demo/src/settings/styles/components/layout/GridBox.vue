@@ -12,7 +12,7 @@
         <div class="grid-edit">
           <div class="grid-edit-btn">
             <svg-icon name="pencil-thick"></svg-icon>
-            <span class="text">编辑网格</span>
+            <span class="text">{{ texts.edit }}</span>
             <span>●</span>
           </div>
         </div>
@@ -23,7 +23,7 @@
             <span
               :class="['gap-label', { 'is-setting': getGapSetting() }]"
               @click="openSetting(GRID_PROPERTY.GridGap, $event)"
-              >列间距</span
+              >{{ texts.columnGap }}</span
             >
             <numeric-select
               :name="getProperty(GRID_PROPERTY.GridColumnGap).name"
@@ -34,7 +34,7 @@
             <span
               :class="['gap-label', { 'is-setting': getGapSetting() }]"
               @click="openSetting(GRID_PROPERTY.GridGap, $event)"
-              >行间距</span
+              >{{ texts.rowGap }}</span
             >
             <numeric-select
               :name="getProperty(GRID_PROPERTY.GridRowGap).name"
@@ -46,7 +46,7 @@
             <span
               :class="['direction-label', { 'is-setting': getSettingFlag(GRID_PROPERTY.GridAutoFlow) }]"
               @click="openSetting(GRID_PROPERTY.GridAutoFlow, $event)"
-              >方向</span
+              >{{ texts.direction }}</span
             >
             <radio-configurator
               :options="state.direction"
@@ -64,8 +64,8 @@
               value="dense"
               @change="denseChange"
             />
-            <label for="dense">Dense</label>
-            <tiny-tooltip :open-delay="500" content="dense 表示尽可能紧密填满，尽量不出现空格" effect="light">
+            <label for="dense">{{ texts.dense }}</label>
+            <tiny-tooltip :open-delay="500" :content="texts.denseTip" effect="light">
               <svg-icon class="btn-icon" name="plugin-icon-plugin-help"></svg-icon>
             </tiny-tooltip>
           </div>
@@ -74,7 +74,7 @@
           <div v-for="(item, index) in state.metaOptions" :key="index" class="layout-item">
             <div class="top">
               <span>{{ item.label }}</span>
-              <span class="add" @click="addItem(item)">添加</span>
+              <span class="add" @click="addItem(item)">{{ texts.add }}</span>
             </div>
             <meta-list-items :optionsList="item.list">
               <template #content="{ data }">
@@ -82,12 +82,12 @@
                 <span class="text">{{ data.text }}</span>
               </template>
               <template #operate="{ data }">
-                <tiny-tooltip class="item" effect="light" :open-delay="500" content="复制" placement="top">
+                <tiny-tooltip class="item" effect="light" :open-delay="500" :content="texts.copy" placement="top">
                   <span class="item-icon">
                     <svg-icon name="copy" @click="copyItem(item.list, data)"></svg-icon>
                   </span>
                 </tiny-tooltip>
-                <tiny-tooltip class="item" effect="light" :open-delay="500" content="删除" placement="top">
+                <tiny-tooltip class="item" effect="light" :open-delay="500" :content="texts.delete" placement="top">
                   <span class="item-icon">
                     <svg-icon name="delete" @click="deleteItem(item.list, data)"></svg-icon>
                   </span>
@@ -102,8 +102,8 @@
     <div class="grid-item-wrap">
       <div v-for="(item, index) in state.gridOptions" :key="index" class="grid-item">
         <span
-          :class="['grid-label', { 'is-setting': getPropSetting(item.title) }]"
-          @click="openSetting(item.title, $event)"
+          :class="['grid-label', { 'is-setting': getPropSetting(item.name) }]"
+          @click="openSetting(item.name, $event)"
           >{{ item.title }}</span
         >
         <div class="radio-wrap">
@@ -129,7 +129,7 @@
 
 <script>
 /* metaService: engine.setting.styles.GridBox */
-import { reactive, watchEffect } from 'vue'
+import { reactive, watchEffect, watch } from 'vue'
 import { Popover, Tooltip } from '@opentiny/vue'
 import { MetaListItems, MaskModal } from '@opentiny/tiny-engine-common'
 import { RadioConfigurator } from '@opentiny/tiny-engine-configurator'
@@ -139,6 +139,7 @@ import ResetButton from '../inputs/ResetButton.vue'
 import NumericSelect from '../inputs/NumericSelect.vue'
 import { useProperties } from '../../js/useStyle'
 import { GRID_PROPERTY } from '../../js/styleProperty'
+import { useDesignerI18n } from '@/services/i18nService'
 
 export default {
   components: {
@@ -161,6 +162,92 @@ export default {
     let activedName = []
 
     const { setPosition } = useModal()
+    const { t, locale } = useDesignerI18n()
+
+    const directionDefs = [
+      {
+        value: 'grid-auto-flow:row',
+        textKey: 'row',
+        tipKey: 'row'
+      },
+      {
+        value: 'grid-auto-flow:column',
+        textKey: 'column',
+        tipKey: 'column'
+      }
+    ]
+
+    const gridOptionDefs = [
+      {
+        name: 'Align',
+        titleKey: 'designer.settings.styles.grid.align.title',
+        alignKey: 'align-items',
+        alignOptions: [
+            { value: 'align-items:start', tipKey: 'alignItems.start', icon: 'align-items-start' },
+            { value: 'align-items:center', tipKey: 'alignItems.center', icon: 'align-items-center' },
+            { value: 'align-items:end', tipKey: 'alignItems.end', icon: 'align-items-end' },
+            { value: 'align-items:stretch', tipKey: 'alignItems.stretch', icon: 'align-content-stretch' },
+            { value: 'align-items:baseline', tipKey: 'alignItems.baseline', icon: 'align-items-baseline' }
+        ],
+        justifyKey: 'justify-items',
+        justifyOptions: [
+            { value: 'justify-items:start', tipKey: 'justifyItems.start', icon: 'justify-items-start' },
+            { value: 'justify-items:center', tipKey: 'justifyItems.center', icon: 'justify-items-center' },
+            { value: 'justify-items:end', tipKey: 'justifyItems.end', icon: 'justify-items-end' },
+            { value: 'justify-items:stretch', tipKey: 'justifyItems.stretch', icon: 'justify-items-stretch' },
+            { value: 'justify-items:baseline', tipKey: 'justifyItems.baseline', icon: 'justify-items-baseline' }
+        ]
+      },
+      {
+        name: 'Distribute',
+        titleKey: 'designer.settings.styles.grid.distribute.title',
+        alignKey: 'align-content',
+        alignOptions: [
+            { value: 'align-content:start', tipKey: 'alignContent.start', icon: 'align-content-start' },
+            { value: 'align-content:center', tipKey: 'alignContent.center', icon: 'align-content-center' },
+            { value: 'align-content:end', tipKey: 'alignContent.end', icon: 'align-content-end' },
+            { value: 'align-content:stretch', tipKey: 'alignContent.stretch', icon: 'align-content-stretch' },
+            { value: 'align-content:space-between', tipKey: 'alignContent.spaceBetween', icon: 'align-content-space-between' },
+            { value: 'align-content:space-around', tipKey: 'alignContent.spaceAround', icon: 'align-content-space-around' }
+        ],
+        justifyKey: 'justify-content',
+        justifyOptions: [
+            { value: 'justify-content:start', tipKey: 'justifyContent.start', icon: 'justify-content-start' },
+            { value: 'justify-content:center', tipKey: 'justifyContent.center', icon: 'justify-content-center' },
+            { value: 'justify-content:end', tipKey: 'justifyContent.end', icon: 'justify-content-end' },
+            { value: 'justify-content:stretch', tipKey: 'justifyContent.stretch', icon: 'justify-content-stretch' },
+            { value: 'justify-content:space-between', tipKey: 'justifyContent.spaceBetween', icon: 'justify-content-space-between' },
+            { value: 'justify-content:space-around', tipKey: 'justifyContent.spaceAround', icon: 'justify-content-space-around' }
+        ]
+      }
+    ]
+
+    const metaOptionDefs = [
+      {
+        type: 'columns',
+        labelKey: 'designer.settings.styles.grid.meta.columns',
+        defaultText: '1fr',
+        icon: 'grid-column-flex'
+      },
+      {
+        type: 'rows',
+        labelKey: 'designer.settings.styles.grid.meta.rows',
+        defaultText: 'Auto',
+        icon: 'grid-row-auto'
+      }
+    ]
+
+    const texts = reactive({
+      edit: '',
+      columnGap: '',
+      rowGap: '',
+      direction: '',
+      dense: '',
+      denseTip: '',
+      add: '',
+      copy: '',
+      delete: ''
+    })
 
     const state = reactive({
       showModal: false,
@@ -169,195 +256,93 @@ export default {
       showMask: false,
       icon: 'unlocked',
       picked: '',
-      direction: [
-        {
-          value: 'grid-auto-flow:row',
-          title: '',
-          tip: '',
-          text: '横向'
+      direction: directionDefs.map((item) => ({ value: item.value, text: '', tip: '' })),
+      gridOptions: gridOptionDefs.map((def) => ({
+        name: def.name,
+        title: '',
+        align: {
+          picked: '',
+          key: def.alignKey,
+          list: def.alignOptions.map((opt) => ({
+            value: opt.value,
+            tip: '',
+            icon: opt.icon
+          }))
         },
-        {
-          value: 'grid-auto-flow:column',
-          title: '',
-          tip: '',
-          text: '纵向'
+        justify: {
+          picked: '',
+          key: def.justifyKey,
+          list: def.justifyOptions.map((opt) => ({
+            value: opt.value,
+            tip: '',
+            icon: opt.icon
+          }))
         }
-      ],
-      gridOptions: [
-        {
-          title: '对齐',
-          key: ['alignItems', 'justifyItems'],
-          align: {
-            picked: '',
-            key: 'align-items',
-            list: [
-              {
-                value: 'align-items:start',
-                tip: 'start 辅轴起点对齐',
-                icon: 'align-items-start'
-              },
-              {
-                value: 'align-items:center',
-                tip: 'center 辅轴居中对齐',
-                icon: 'align-items-center'
-              },
-              {
-                value: 'align-items:end',
-                tip: 'end 辅轴终点对齐',
-                icon: 'align-items-end'
-              },
-              {
-                value: 'align-items:stretch',
-                tip: 'stretch 辅轴拉伸对齐',
-                icon: 'align-content-stretch'
-              },
-              {
-                value: 'align-items:baseline',
-                tip: 'baseline 辅轴基线对齐',
-                icon: 'align-items-baseline'
-              }
-            ]
-          },
-          justify: {
-            picked: '',
-            key: 'justify-items',
-            list: [
-              {
-                value: 'justify-items:start',
-                tip: 'start 主轴起点对齐',
-                icon: 'justify-items-start'
-              },
-              {
-                value: 'justify-items:center',
-                tip: 'center 主轴居中对齐',
-                icon: 'justify-items-center'
-              },
-              {
-                value: 'justify-items:end',
-                tip: 'end 主轴终点对齐',
-                icon: 'justify-items-end'
-              },
-              {
-                value: 'justify-items:stretch',
-                tip: 'stretch 主轴拉伸对齐',
-                icon: 'justify-items-stretch'
-              },
-              {
-                value: 'justify-items:baseline',
-                tip: 'baseline 主轴基线对齐',
-                icon: 'justify-items-baseline'
-              }
-            ]
-          }
-        },
-        {
-          title: '多行对齐',
-          key: ['alignContent', 'justifyContent'],
-          align: {
-            picked: '',
-            key: 'align-content',
-            list: [
-              {
-                value: 'align-content:start',
-                tip: 'start 辅轴起点对齐',
-                icon: 'align-content-start'
-              },
-              {
-                value: 'align-content:center',
-                tip: 'center 辅轴居中对齐',
-                icon: 'align-content-center'
-              },
-              {
-                value: 'align-content:end',
-                tip: 'end 辅轴终点对齐',
-                icon: 'align-content-end'
-              },
-              {
-                value: 'align-content:stretch',
-                tip: 'stretch 辅轴拉伸对齐',
-                icon: 'align-content-stretch'
-              },
-              {
-                value: 'align-content:space-between',
-                tip: 'Space Between 辅轴两端对齐',
-                icon: 'align-content-space-between'
-              },
-              {
-                value: 'align-content:space-around',
-                tip: 'Space Around 辅轴均匀对齐',
-                icon: 'align-content-space-around'
-              }
-            ]
-          },
-          justify: {
-            picked: '',
-            key: 'justify-content',
-            list: [
-              {
-                value: 'justify-content:start',
-                tip: 'Start 主轴起点对齐',
-                icon: 'justify-content-start'
-              },
-              {
-                value: 'justify-content:center',
-                tip: 'Center 主轴居中对齐',
-                icon: 'justify-content-center'
-              },
-              {
-                value: 'justify-content:end',
-                tip: 'End 主轴终点对齐',
-                icon: 'justify-content-end'
-              },
-              {
-                value: 'justify-content:stretch',
-                tip: 'Stretch 主轴拉伸对齐',
-                icon: 'justify-content-stretch'
-              },
-              {
-                value: 'justify-content:space-between',
-                tip: 'Space Between 主轴两端对齐',
-                icon: 'justify-content-space-between'
-              },
-              {
-                value: 'justify-content:space-around',
-                tip: 'Space Around 主轴均匀对齐',
-                icon: 'justify-content-space-around'
-              }
-            ]
-          }
-        }
-      ],
-      metaOptions: [
-        {
-          label: '列',
-          icon: 'IconPlus',
-          list: [
-            {
-              text: '1fr',
-              icon: 'grid-column-flex'
-            },
-            {
-              text: '1fr',
-              icon: 'grid-column-flex'
-            }
-          ]
-        },
-        {
-          label: '行',
-          icon: 'IconPlus',
-          list: [
-            {
-              text: 'Auto',
-              icon: 'grid-row-auto'
-            },
-            {
-              text: 'Auto',
-              icon: 'grid-row-auto'
-            }
-          ]
-        }
-      ]
+      })),
+      metaOptions: metaOptionDefs.map((def) => ({
+        type: def.type,
+        label: '',
+        list: [
+          { text: def.defaultText, icon: def.icon },
+          { text: def.defaultText, icon: def.icon }
+        ]
+      }))
     })
+
+    const applyTranslations = () => {
+      texts.edit = t('designer.settings.styles.grid.edit')
+      texts.columnGap = t('designer.settings.styles.grid.gap.column')
+      texts.rowGap = t('designer.settings.styles.grid.gap.row')
+      texts.direction = t('designer.settings.styles.grid.direction.title')
+      texts.dense = t('designer.settings.styles.grid.dense.label')
+      texts.denseTip = t('designer.settings.styles.grid.dense.tip')
+      texts.add = t('designer.settings.styles.grid.actions.add')
+      texts.copy = t('designer.settings.styles.grid.actions.copy')
+      texts.delete = t('designer.settings.styles.grid.actions.delete')
+
+      state.direction.forEach((item, index) => {
+        const def = directionDefs[index]
+        if (def) {
+          item.text = t(`designer.settings.styles.grid.direction.options.${def.textKey}`)
+          item.tip = t(`designer.settings.styles.grid.direction.tips.${def.tipKey}`)
+        }
+      })
+
+      state.gridOptions.forEach((option) => {
+        const def = gridOptionDefs.find((d) => d.name === option.name)
+        if (!def) {
+          return
+        }
+
+        option.title = t(def.titleKey)
+
+        option.align.list.forEach((listItem, idx) => {
+          const opt = def.alignOptions[idx]
+          if (opt) {
+            listItem.tip = t(`designer.settings.styles.grid.${opt.tipKey}`)
+            listItem.value = opt.value
+          }
+        })
+
+        option.justify.list.forEach((listItem, idx) => {
+          const opt = def.justifyOptions[idx]
+          if (opt) {
+            listItem.tip = t(`designer.settings.styles.grid.${opt.tipKey}`)
+            listItem.value = opt.value
+          }
+        })
+      })
+
+      state.metaOptions.forEach((option, index) => {
+        const def = metaOptionDefs[index]
+        if (def) {
+          option.label = t(def.labelKey)
+        }
+      })
+    }
+
+    applyTranslations()
+    watch(locale, applyTranslations)
 
     const { getProperty, getSettingFlag } = useProperties({
       names: Object.values(GRID_PROPERTY),
@@ -390,7 +375,7 @@ export default {
     }
 
     const reInit = (name) => {
-      const option = state.gridOptions.find((item) => item.title === name)
+      const option = state.gridOptions.find((item) => item.name === name)
       option.align.picked = ''
       option.justify.picked = ''
     }
@@ -440,7 +425,7 @@ export default {
     }
 
     const addItem = (item) => {
-      if (item.label === 'Columns') {
+      if (item.type === 'columns') {
         item.list?.push({ text: '1fr', icon: 'grid-column-flex' })
       } else {
         item.list?.push({ text: 'Auto', icon: 'grid-row-auto' })
@@ -460,7 +445,7 @@ export default {
       if (value) {
         Object.keys(value).forEach((keys) => {
           state.gridOptions.forEach((item) => {
-            if (item.key.includes(keys)) {
+            if (item.name === keys) {
               if (keys.includes('align')) {
                 item.align.picked = `${item.align.key}:${value[keys]}`
               } else {
@@ -487,7 +472,8 @@ export default {
       reset,
       addItem,
       copyItem,
-      deleteItem
+      deleteItem,
+      texts
     }
   }
 }

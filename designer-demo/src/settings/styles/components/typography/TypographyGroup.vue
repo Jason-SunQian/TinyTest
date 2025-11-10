@@ -9,7 +9,7 @@
           ]"
           @click="openSetting(`${TYPO_PROPERTY.FontFamily},${TYPO_PROPERTY.FontWeight}`, $event)"
         >
-          <span>Font</span>
+          <span>{{ t('designer.settings.styles.typography.font') }}</span>
         </label>
 
         <div class="typography-select">
@@ -44,7 +44,7 @@
           :class="['typography-label', { 'is-setting': getSettingFlag(TYPO_PROPERTY.FontSize) }]"
           @click="openSetting(TYPO_PROPERTY.FontSize, $event)"
         >
-          <span>Size</span>
+          <span>{{ t('designer.settings.styles.typography.size') }}</span>
         </label>
         <div class="font-size">
           <select-configurator
@@ -64,7 +64,7 @@
           :class="['typography-label', { 'is-setting': getSettingFlag(TYPO_PROPERTY.LineHeight) }]"
           @click="openSetting(TYPO_PROPERTY.LineHeight, $event)"
         >
-          <span>Height</span>
+          <span>{{ t('designer.settings.styles.typography.lineHeight') }}</span>
         </label>
         <numeric-select
           :name="getProperty(TYPO_PROPERTY.LineHeight).name"
@@ -80,7 +80,7 @@
           :class="['typography-label', { 'is-setting': getSettingFlag(TYPO_PROPERTY.Color) }]"
           @click="openSetting(TYPO_PROPERTY.Color, $event)"
         >
-          <span>Color</span>
+          <span>{{ t('designer.settings.styles.typography.color') }}</span>
         </label>
         <div class="color-wrap">
           <color-configurator :modelValue="getProperty(TYPO_PROPERTY.Color).value" @change="changeColor" />
@@ -93,7 +93,7 @@
           :class="['typography-label', { 'is-setting': getSettingFlag(TYPO_PROPERTY.TextAlign) }]"
           @click="openSetting(TYPO_PROPERTY.TextAlign, $event)"
         >
-          <span>对齐</span>
+          <span>{{ t('designer.settings.styles.typography.align') }}</span>
         </label>
       </div>
       <tabs-group-configurator
@@ -115,7 +115,7 @@
           title="font-style"
           @click="openSetting(`${TYPO_PROPERTY.FontStyle},${TYPO_PROPERTY.TextDecoration}`, $event)"
         >
-          <span>样式</span>
+          <span>{{ t('designer.settings.styles.typography.style') }}</span>
         </label>
       </div>
       <div class="style-decoration-wrap">
@@ -145,7 +145,7 @@
 
 <script>
 /* metaService: engine.setting.styles.TypographyGroup */
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import NumericSelect from '../inputs/NumericSelect.vue'
 import { ColorConfigurator, SelectConfigurator, TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
 import { TYPO_PROPERTY } from '../../js/styleProperty'
@@ -153,6 +153,7 @@ import useEvent from '../../js/useEvent'
 import { useProperties } from '../../js/useStyle'
 import ModalMask, { useModal } from '../inputs/ModalMask.vue'
 import ResetButton from '../inputs/ResetButton.vue'
+import { useDesignerI18n } from '@/services/i18nService'
 
 export default {
   components: {
@@ -186,215 +187,112 @@ export default {
       parseNumber: true
     })
     const { setPosition } = useModal()
+    const { t } = useDesignerI18n()
 
-    const fontFamilyOptions = [
+    const fontFamilyDefs = [
+      { key: 'microsoftYaHei', value: '"Microsoft YaHei", "微软雅黑", sans-serif' },
+      { key: 'pingFang', value: 'PingFang SC' },
+      { key: 'simHei', value: 'SimHei' },
+      { key: 'simSun', value: 'SimSun' },
+      { key: 'arial', value: 'Arial, "Helvetica Neue", Helvetica' },
+      { key: 'bitter', value: 'Bitter' },
+      { key: 'changaOne', value: '"Changa One", Impact' },
+      { key: 'droidSans', value: '"Droid Sans"' },
+      { key: 'droidSerif', value: '"Droid Serif"' },
+      { key: 'exo', value: 'Exo' },
+      { key: 'georgia', value: 'Georgia, Times, "Times New Roman"' },
+      { key: 'greatVibes', value: '"Great Vibes"' },
+      { key: 'impact', value: 'Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal' },
+      { key: 'inconsolata', value: 'Inconsolata' },
+      { key: 'lato', value: 'Lato' },
+      { key: 'merriweather', value: 'Merriweather' },
+      { key: 'montserrat', value: 'Montserrat' },
+      { key: 'openSans', value: '"Open Sans"' },
+      { key: 'oswald', value: 'Oswald' },
+      { key: 'ptSans', value: '"PT Sans"' },
+      { key: 'ptSerif', value: '"PT Serif"' },
+      { key: 'palatino', value: '"Palatino Linotype", "Book Antiqua", Palatino' },
+      { key: 'tahoma', value: 'Tahoma, Verdana, Segoe' },
+      { key: 'timesNewRoman', value: '"Times New Roman", TimesNewRoman, Times, Baskerville, Georgia' },
+      { key: 'trebuchetMs', value: '"Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma' },
+      { key: 'ubuntu', value: 'Ubuntu, Helvetica' },
+      { key: 'varela', value: 'Varela' },
+      { key: 'varelaRound', value: '"Varela Round"' },
+      { key: 'verdana', value: 'Verdana, Geneva' },
+      { key: 'vollkorn', value: 'Vollkorn' },
       {
-        label: '微软雅黑',
-        value: '"Microsoft YaHei", "微软雅黑", sans-serif'
-      },
-      {
-        label: '苹方',
-        value: 'PingFang SC'
-      },
-      {
-        label: '黑体',
-        value: 'SimHei'
-      },
-      {
-        label: '宋体',
-        value: 'SimSun'
-      },
-      {
-        label: 'Arial',
-        value: 'Arial, "Helvetica Neue", Helvetica'
-      },
-      {
-        label: 'Bitter',
-        value: 'Bitter'
-      },
-      {
-        label: 'Changa One',
-        value: '"Changa One", Impact'
-      },
-      {
-        label: 'Droid Sans',
-        value: '"Droid Sans"'
-      },
-      {
-        label: 'Droid Serif',
-        value: '"Droid Serif"'
-      },
-      {
-        label: 'Exo',
-        value: 'Exo'
-      },
-      {
-        label: 'Georgia',
-        value: 'Georgia, Times, "Times New Roman"'
-      },
-      {
-        label: 'Great Vibes',
-        value: '"Great Vibes"'
-      },
-      {
-        label: 'Impact',
-        value: 'Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal'
-      },
-      {
-        label: 'Inconsolata',
-        value: 'Inconsolata'
-      },
-      {
-        label: 'Lato',
-        value: 'Lato'
-      },
-      {
-        label: 'Merriweather',
-        value: 'Merriweather'
-      },
-      {
-        label: 'Montserrat',
-        value: 'Montserrat'
-      },
-      {
-        label: 'Open Sans',
-        value: '"Open Sans"'
-      },
-      {
-        label: 'Oswald',
-        value: 'Oswald'
-      },
-      {
-        label: 'PT Sans',
-        value: '"PT Sans"'
-      },
-      {
-        label: 'PT Serif',
-        value: '"PT Serif"'
-      },
-      {
-        label: 'Palatino Linotype',
-        value: '"Palatino Linotype", "Book Antiqua", Palatino'
-      },
-      {
-        label: 'Tahoma',
-        value: 'Tahoma, Verdana, Segoe'
-      },
-      {
-        label: 'Times New Roman',
-        value: '"Times New Roman", TimesNewRoman, Times, Baskerville, Georgia'
-      },
-      {
-        label: 'Trebuchet MS',
-        value: '"Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma'
-      },
-      {
-        label: 'Ubuntu',
-        value: 'Ubuntu, Helvetica'
-      },
-      {
-        label: 'Varela',
-        value: 'Varela'
-      },
-      {
-        label: 'Varela Round',
-        value: '"Varela Round"'
-      },
-      {
-        label: 'Verdana',
-        value: 'Verdana, Geneva'
-      },
-      {
-        label: 'Vollkorn',
-        value: 'Vollkorn'
-      },
-      {
-        label: 'system-ui',
+        key: 'systemUi',
         value:
           'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue"'
       }
     ]
 
-    const selectOptions = [
-      {
-        label: '100-Thin',
-        value: '100'
-      },
-      {
-        label: '400-Normal',
-        value: '400'
-      },
-      {
-        label: '700-Bold',
-        value: '700'
-      },
-      {
-        label: '900-Black',
-        value: '900'
-      }
+    const fontFamilyOptions = computed(() =>
+      fontFamilyDefs.map(({ key, value }) => ({
+        value,
+        label: t(`designer.settings.styles.typography.fontFamily.${key}`)
+      }))
+    )
+
+    const weightDefs = [
+      { key: 'thin', value: '100' },
+      { key: 'normal', value: '400' },
+      { key: 'bold', value: '700' },
+      { key: 'black', value: '900' }
     ]
+
+    const selectOptions = computed(() =>
+      weightDefs.map(({ key, value }) => ({
+        value,
+        label: t(`designer.settings.styles.typography.fontWeight.${key}`)
+      }))
+    )
 
     const sizes = ['9', '10', '11', '12', '14', '16', '18', '20', '24']
-    const sizeOptions = sizes.map((size) => ({ label: size, value: size }))
+    const sizeOptions = computed(() => sizes.map((size) => ({ label: size, value: size })))
 
-    const alignOptions = [
-      {
-        icon: 'text-align-left',
-        content: 'Left-左对齐',
-        value: 'left'
-      },
-      {
-        icon: 'text-align-center',
-        content: 'Center-居中对齐',
-        value: 'center'
-      },
-      {
-        icon: 'text-align-right',
-        content: 'Right-右对齐',
-        value: 'right'
-      },
-      {
-        icon: 'text-align-justify',
-        content: 'Justify-两侧对齐',
-        value: 'justify'
-      }
+    const alignOptionDefs = [
+      { key: 'left', icon: 'text-align-left', value: 'left' },
+      { key: 'center', icon: 'text-align-center', value: 'center' },
+      { key: 'right', icon: 'text-align-right', value: 'right' },
+      { key: 'justify', icon: 'text-align-justify', value: 'justify' }
     ]
 
-    const styleOptions = [
-      {
-        icon: 'font-style-none',
-        content: 'Regular-常规',
-        value: 'normal'
-      },
-      {
-        icon: 'font-style-italic',
-        content: 'Italic-斜体',
-        value: 'italic'
-      }
+    const alignOptions = computed(() =>
+      alignOptionDefs.map(({ key, icon, value }) => ({
+        icon,
+        value,
+        content: t(`designer.settings.styles.typography.alignOptions.${key}`)
+      }))
+    )
+
+    const styleOptionDefs = [
+      { key: 'regular', icon: 'font-style-none', value: 'normal' },
+      { key: 'italic', icon: 'font-style-italic', value: 'italic' }
     ]
 
-    const decorationOptions = [
-      {
-        icon: 'cross',
-        content: 'None-无',
-        value: 'none'
-      },
-      {
-        icon: 'text-decoration-strike',
-        content: 'Strikethrough-删除线',
-        value: 'line-through'
-      },
-      {
-        icon: 'text-decoration-underline',
-        content: 'Underline-下划线',
-        value: 'underline'
-      },
-      {
-        icon: 'text-decoration-overline',
-        content: 'Overline-上划线',
-        value: 'overline'
-      }
+    const styleOptions = computed(() =>
+      styleOptionDefs.map(({ key, icon, value }) => ({
+        icon,
+        value,
+        content: t(`designer.settings.styles.typography.styleOptions.${key}`)
+      }))
+    )
+
+    const decorationOptionDefs = [
+      { key: 'none', icon: 'cross', value: 'none' },
+      { key: 'strike', icon: 'text-decoration-strike', value: 'line-through' },
+      { key: 'underline', icon: 'text-decoration-underline', value: 'underline' },
+      { key: 'overline', icon: 'text-decoration-overline', value: 'overline' }
     ]
+
+    const decorationOptions = computed(() =>
+      decorationOptionDefs.map(({ key, icon, value }) => ({
+        icon,
+        value,
+        content: t(`designer.settings.styles.typography.decorationOptions.${key}`)
+      }))
+    )
 
     const openSetting = (name, event) => {
       let hasSettingFlag = false
@@ -499,30 +397,31 @@ export default {
     }
 
     return {
-      reset,
-      showModal,
       TYPO_PROPERTY,
       getProperty,
       getSettingFlag,
-      updateStyle,
       changeColor,
-      selectedAlign,
-      selectAlign,
-      selectedFontStyle,
-      selectFontStyle,
-      selectedTextDecoration,
-      selectTextDecoration,
+      selectFontFamily,
+      selectFontWeight,
       selectFontSize,
+      selectAlign,
+      selectFontStyle,
+      selectTextDecoration,
+      reset,
       openSetting,
+      updateStyle,
+      selectedAlign,
+      selectedFontStyle,
+      selectedTextDecoration,
       selectOptions,
       sizeOptions,
-      state,
-      selectFontWeight,
       fontFamilyOptions,
+      alignOptions,
       styleOptions,
       decorationOptions,
-      alignOptions,
-      selectFontFamily
+      showModal,
+      state,
+      t
     }
   }
 }

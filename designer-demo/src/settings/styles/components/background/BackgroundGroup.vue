@@ -6,9 +6,9 @@
           :class="['background-label', { 'is-setting': getSettingFlag(BACKGROUND_PROPERTY.BackgroundImage) }]"
           @click="openSetting(BACKGROUND_PROPERTY.BackgroundImage, $event)"
         >
-          <span>背景图 & 渐变</span>
+          <span>{{ t('designer.settings.styles.background.title') }}</span>
         </label>
-        <tiny-tooltip effect="light" placement="top" content="添加背景图，线性渐变，径向渐变等">
+        <tiny-tooltip effect="light" placement="top" :content="t('designer.settings.styles.background.tooltip')">
           <div class="background-image-icon" @click="openBackgroundImageModal($event, { isAdd: true })">
             <icon-plus></icon-plus>
           </div>
@@ -52,7 +52,7 @@
         :class="['background-label', { 'is-setting': getSettingFlag(BACKGROUND_PROPERTY.BackgroundColor) }]"
         @click="openSetting(BACKGROUND_PROPERTY.BackgroundColor, $event)"
       >
-        <span>颜色</span>
+        <span>{{ t('designer.settings.styles.background.color') }}</span>
       </label>
       <color-configurator :modelValue="getProperty(BACKGROUND_PROPERTY.BackgroundColor).value" @change="changeColor" />
     </div>
@@ -61,7 +61,7 @@
         :class="['background-label', { 'is-setting': getSettingFlag(BACKGROUND_PROPERTY.BackgroundClip) }]"
         @click="openSetting(BACKGROUND_PROPERTY.BackgroundClip, $event)"
       >
-        <span>裁剪</span>
+        <span>{{ t('designer.settings.styles.background.clip') }}</span>
       </label>
       <div class="position-select">
         <select-configurator
@@ -77,7 +77,7 @@
   </modal-mask>
   <modal-mask v-if="state.showBackgroundImageModal" teleport="body">
     <div class="background-model-title">
-      <span>背景图 & 渐变设置</span>
+      <span>{{ t('designer.settings.styles.background.modalTitle') }}</span>
       <svg-icon name="close" @click="state.showBackgroundImageModal = false"></svg-icon>
     </div>
     <background-image-setting
@@ -89,7 +89,7 @@
 
 <script>
 /* metaService: engine.setting.styles.BackgroundGroup */
-import { reactive, watch } from 'vue'
+import { reactive, watch, computed } from 'vue'
 import { Tooltip } from '@opentiny/vue'
 import { ColorConfigurator, SelectConfigurator } from '@opentiny/tiny-engine-configurator'
 import { useCanvas } from '@opentiny/tiny-engine-meta-register'
@@ -99,6 +99,7 @@ import ResetButton from '../inputs/ResetButton.vue'
 import BackgroundImageSetting from './BackgroundImageSetting.vue'
 import { useProperties } from '../../js/useStyle'
 import { BACKGROUND_PROPERTY, TYPE_TEXT, PROPERTY_DEFAULT_VALUE } from '../../js/styleProperty'
+import { useDesignerI18n } from '@/services/i18nService'
 
 // 顶层 schema 没有 id，所以指定一个 page-root-id 作为一个 key
 const PAGE_ROOT_ID = 'page-root-id'
@@ -122,24 +123,20 @@ export default {
   emits: ['update'],
   setup(props, { emit }) {
     let activedName = []
-    const selectOptions = [
-      {
-        label: 'None-无',
-        value: 'none'
-      },
-      {
-        label: 'padding-box 裁剪到padding',
-        value: 'clip background to padding'
-      },
-      {
-        label: 'content-box 裁剪到content',
-        value: 'clip background to content'
-      },
-      {
-        label: 'text 裁剪到文字',
-        value: 'clip background to text'
-      }
+    const { t } = useDesignerI18n()
+    const clipOptionDefs = [
+      { key: 'none', value: 'none' },
+      { key: 'padding', value: 'clip background to padding' },
+      { key: 'content', value: 'clip background to content' },
+      { key: 'text', value: 'clip background to text' }
     ]
+
+    const selectOptions = computed(() =>
+      clipOptionDefs.map(({ key, value }) => ({
+        value,
+        label: t(`designer.settings.styles.background.clipOptions.${key}`)
+      }))
+    )
 
     const state = reactive({
       selectValue: 'none',
@@ -367,24 +364,26 @@ export default {
     }
 
     return {
-      BACKGROUND_PROPERTY,
       state,
+      BACKGROUND_PROPERTY,
       selectOptions,
-      updateStyle,
-      updateCurrentBackground,
-      openSetting,
-      getProperty,
-      getSettingFlag,
-      reset,
       changeColor,
-      selectBackgroundClip,
-      deleteItem,
-      changeVisible,
-      handleDragstart,
+      updateStyle,
+      openSetting,
+      reset,
+      openBackgroundImageModal,
       handleDragenter,
+      handleDragstart,
       handleDragleave,
       handleDragend,
-      openBackgroundImageModal
+      deleteItem,
+      updateCurrentBackground,
+      updateBackgroundImage,
+      changeVisible,
+      getSettingFlag,
+      getProperty,
+      TYPE_TEXT,
+      t
     }
   }
 }

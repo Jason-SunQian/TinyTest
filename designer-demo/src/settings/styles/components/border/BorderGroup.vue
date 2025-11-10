@@ -4,7 +4,7 @@
       :class="['radius-label', { 'is-setting': isRadiusSetting() }]"
       @click="openSetting(BORDER_RADIUS_PROPERTY.BorderRadius, $event)"
     >
-      <span>圆角</span>
+      <span>{{ t('designer.settings.styles.border.radius') }}</span>
     </div>
     <div class="radius-content">
       <div class="radius-btn-group">
@@ -30,7 +30,7 @@
     <div class="radius-label"></div>
     <div class="radius-multiple-container">
       <div>
-        <tiny-tooltip :effect="effect" :placement="placement" content="top left corner">
+        <tiny-tooltip :effect="effect" :placement="placement" :content="t('designer.settings.styles.border.corner.topLeft')">
           <span>
             <svg-icon name="border-radius-topleft"></svg-icon>
           </span>
@@ -43,7 +43,7 @@
         />
       </div>
       <div>
-        <tiny-tooltip :effect="effect" :placement="placement" content="top right corner">
+        <tiny-tooltip :effect="effect" :placement="placement" :content="t('designer.settings.styles.border.corner.topRight')">
           <span>
             <svg-icon name="border-radius-topright"></svg-icon>
           </span>
@@ -56,7 +56,7 @@
         />
       </div>
       <div>
-        <tiny-tooltip :effect="effect" :placement="placement" content="bottom left corner">
+        <tiny-tooltip :effect="effect" :placement="placement" :content="t('designer.settings.styles.border.corner.bottomLeft')">
           <span>
             <svg-icon name="border-radius-bottomleft"></svg-icon>
           </span>
@@ -69,7 +69,7 @@
         />
       </div>
       <div>
-        <tiny-tooltip :effect="effect" :placement="placement" content="bottom right corner">
+        <tiny-tooltip :effect="effect" :placement="placement" :content="t('designer.settings.styles.border.corner.bottomRight')">
           <span>
             <svg-icon name="border-radius-bottomright"></svg-icon>
           </span>
@@ -90,7 +90,7 @@
       :class="{ 'is-setting': isBorderSetting(), 'set-border-style': true }"
       @click="openSetting(BORDER_PROPERTY.Border, $event)"
     >
-      <span>边框</span>
+      <span>{{ t('designer.settings.styles.border.title') }}</span>
     </label>
   </div>
   <div class="border-container">
@@ -98,7 +98,7 @@
       <div
         class="svg-wrap center"
         :class="['row-item', { selected: isBorderSelected(BORDER_SETTING.All) }]"
-        title="全边框"
+        :title="t('designer.settings.styles.border.position.all')"
         @click="selectBorder(BORDER_SETTING.All)"
       >
         <svg-icon name="border-all"></svg-icon>
@@ -106,7 +106,7 @@
       <div
         class="svg-wrap left"
         :class="['row-item', { selected: isBorderSelected(BORDER_SETTING.Left) }]"
-        title="左边框"
+        :title="t('designer.settings.styles.border.position.left')"
         @click="selectBorder(BORDER_SETTING.Left)"
       >
         <svg-icon name="border-left"></svg-icon>
@@ -114,7 +114,7 @@
       <div
         class="svg-wrap top"
         :class="['row-item', { selected: isBorderSelected(BORDER_SETTING.Top) }]"
-        title="上边框"
+        :title="t('designer.settings.styles.border.position.top')"
         @click="selectBorder(BORDER_SETTING.Top)"
       >
         <svg-icon name="border-top"></svg-icon>
@@ -122,7 +122,7 @@
       <div
         class="svg-wrap bottom"
         :class="['row-item', { selected: isBorderSelected(BORDER_SETTING.Bottom) }]"
-        title="下边框"
+        :title="t('designer.settings.styles.border.position.bottom')"
         @click="selectBorder(BORDER_SETTING.Bottom)"
       >
         <svg-icon name="border-bottom"></svg-icon>
@@ -131,7 +131,7 @@
       <div
         class="svg-wrap right"
         :class="['row-item', { selected: isBorderSelected(BORDER_SETTING.Right) }]"
-        title="右边框"
+        :title="t('designer.settings.styles.border.position.right')"
         @click="selectBorder(BORDER_SETTING.Right)"
       >
         <svg-icon name="border-right"></svg-icon>
@@ -144,7 +144,7 @@
           :class="{ 'is-setting': isBorderStyleSetting() }"
           @click="openSetting(BORDER_PROPERTY.BorderStyle, $event)"
         >
-          <span>样式</span>
+          <span>{{ t('designer.settings.styles.border.style') }}</span>
         </label>
         <div class="styles-container">
           <tabs-group-configurator
@@ -163,7 +163,7 @@
           :class="{ 'is-setting': isBorderWidthSetting() }"
           @click="openSetting(BORDER_PROPERTY.BorderWidth, $event)"
         >
-          <span>宽度</span>
+          <span>{{ t('designer.settings.styles.border.width') }}</span>
         </label>
         <numeric-select
           :name="borderWidthValue.name"
@@ -178,7 +178,7 @@
           :class="{ 'is-setting': isBorderColorSetting() }"
           @click="openSetting(BORDER_PROPERTY.BorderColor, $event)"
         >
-          <span>颜色</span>
+          <span>{{ t('designer.settings.styles.border.color') }}</span>
         </label>
         <color-configurator :modelValue="borderColorValue" @change="changeBorderColor"></color-configurator>
       </div>
@@ -203,6 +203,7 @@ import useEvent from '../../js/useEvent'
 import { useProperties } from '../../js/useStyle'
 import { RADIUS_SETTING, BORDER_SETTING, BORDER_STYLE_TYPE } from '../../js/cssType'
 import { BORDER_PROPERTY, BORDER_RADIUS_PROPERTY } from '../../js/styleProperty'
+import { useDesignerI18n } from '@/services/i18nService'
 
 const BORDER_STYLE = {
   [BORDER_SETTING.All]: BORDER_PROPERTY.BorderStyle,
@@ -255,7 +256,7 @@ export default {
   },
   emits: useEvent(),
   setup(props, { emit }) {
-    let activedName = ''
+    const { t } = useDesignerI18n()
 
     const state = reactive({
       showModal: false,
@@ -315,10 +316,18 @@ export default {
       { immediate: true }
     )
 
-    const radiusOptions = [
-      { icon: 'border-radius-single', value: RADIUS_SETTING.Single, tip: '所有边框' },
-      { icon: 'border-radius-multiple', value: RADIUS_SETTING.Multiple, tip: '分别定义' }
+    const radiusOptionDefs = [
+      { key: 'single', icon: 'border-radius-single', value: RADIUS_SETTING.Single },
+      { key: 'multiple', icon: 'border-radius-multiple', value: RADIUS_SETTING.Multiple }
     ]
+
+    const radiusOptions = computed(() =>
+      radiusOptionDefs.map(({ key, icon, value }) => ({
+        icon,
+        value,
+        tip: t(`designer.settings.styles.border.radiusOptions.${key}`)
+      }))
+    )
 
     const radiusSelected = computed(() => state.activedRadius)
 
@@ -407,12 +416,20 @@ export default {
       return isSetting
     }
 
-    const styleOptions = [
-      { icon: 'cross', value: BORDER_STYLE_TYPE.None, content: 'none-无' },
-      { icon: 'border-style-solid', value: BORDER_STYLE_TYPE.Solid, content: 'solid-实线' },
-      { icon: 'border-style-dashed', value: BORDER_STYLE_TYPE.Dashed, content: 'dashed-虚线' },
-      { icon: 'border-style-dotted', value: BORDER_STYLE_TYPE.Dotted, content: 'dotted-圆点' }
+    const styleOptionDefs = [
+      { key: 'none', icon: 'cross', value: BORDER_STYLE_TYPE.None },
+      { key: 'solid', icon: 'border-style-solid', value: BORDER_STYLE_TYPE.Solid },
+      { key: 'dashed', icon: 'border-style-dashed', value: BORDER_STYLE_TYPE.Dashed },
+      { key: 'dotted', icon: 'border-style-dotted', value: BORDER_STYLE_TYPE.Dotted }
     ]
+
+    const styleOptions = computed(() =>
+      styleOptionDefs.map(({ key, icon, value }) => ({
+        icon,
+        value,
+        content: t(`designer.settings.styles.border.styleOptions.${key}`)
+      }))
+    )
 
     const styleValue = computed(() => {
       const propertyName = BORDER_STYLE[state.activedBorder]
@@ -532,7 +549,8 @@ export default {
       selectBorderStyle,
       isBorderWidthSetting,
       isBorderColorSetting,
-      changeBorderColor
+      changeBorderColor,
+      t
     }
   }
 }

@@ -19,7 +19,7 @@
 
 <script>
 /* metaService: engine.setting.styles.LayoutGroup */
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { DISPLAY_TYPE } from '../../js/cssType'
 import { TabsGroupConfigurator } from '@opentiny/tiny-engine-configurator'
 import useEvent from '../../js/useEvent'
@@ -59,54 +59,40 @@ export default {
     const picked = computed(() => props.display)
     const showModal = ref(false)
 
-    const layoutOpts = ref([
-      {
-        value: DISPLAY_TYPE.Block,
-        label: ''
-      },
-      {
-        value: DISPLAY_TYPE.Flex,
-        label: ''
-      },
-      {
-        value: DISPLAY_TYPE.Grid,
-        label: '',
-        collapsed: true
-      },
-      {
-        value: DISPLAY_TYPE.InlineBlock,
-        label: '',
-        collapsed: true
-      },
-      {
-        value: DISPLAY_TYPE.Inline,
-        label: '',
-        collapsed: true
-      },
-      {
-        value: DISPLAY_TYPE.Invisible,
-        label: '',
-        collapsed: true
+    const layoutOptionDefs = [
+      { value: DISPLAY_TYPE.Block },
+      { value: DISPLAY_TYPE.Flex },
+      { value: DISPLAY_TYPE.Grid, collapsed: true },
+      { value: DISPLAY_TYPE.InlineBlock, collapsed: true },
+      { value: DISPLAY_TYPE.Inline, collapsed: true },
+      { value: DISPLAY_TYPE.Invisible, collapsed: true }
+    ]
+
+    const layoutOpts = computed(() => {
+      const optionKeyMap = {
+        [DISPLAY_TYPE.Block]: 'block',
+        [DISPLAY_TYPE.Flex]: 'flex',
+        [DISPLAY_TYPE.Grid]: 'grid',
+        [DISPLAY_TYPE.InlineBlock]: 'inlineBlock',
+        [DISPLAY_TYPE.Inline]: 'inline',
+        [DISPLAY_TYPE.Invisible]: 'none'
       }
-    ])
 
-    const refreshLabels = () => {
-      layoutOpts.value.forEach((item) => {
-        const optionKeyMap = {
-          [DISPLAY_TYPE.Block]: 'block',
-          [DISPLAY_TYPE.Flex]: 'flex',
-          [DISPLAY_TYPE.Grid]: 'grid',
-          [DISPLAY_TYPE.InlineBlock]: 'inlineBlock',
-          [DISPLAY_TYPE.Inline]: 'inline',
-          [DISPLAY_TYPE.Invisible]: 'none'
-        }
+      // 访问 locale.value 以建立依赖
+      const currentLocale = locale.value
+      void currentLocale
+
+      return layoutOptionDefs.map((item) => {
         const key = optionKeyMap[item.value]
-        item.label = key ? t(`designer.settings.styles.layout.options.${key}`) : item.value
-      })
-    }
+        const text = key ? t(`designer.settings.styles.layout.options.${key}`) : item.value
 
-    refreshLabels()
-    watch(locale, refreshLabels)
+        return {
+          ...item,
+          label: text,
+          content: text
+        }
+      })
+    })
 
     const select = (type) => {
       picked.value = type

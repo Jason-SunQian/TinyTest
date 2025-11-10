@@ -165,6 +165,179 @@
             "self": "Component itself"
           }
         },
+        "background": {
+          "title": "Background & Gradient",
+          "tooltip": "Add background images, linear gradients, radial gradients, etc.",
+          "color": "Color",
+          "clip": "Clip",
+          "modalTitle": "Background & Gradient Settings",
+          "clipOptions": {
+            "none": "None",
+            "padding": "padding-box - Clip to padding",
+            "content": "content-box - Clip to content",
+            "text": "text - Clip to text"
+          }
+        },
+        "grid": {
+          "edit": "Edit Grid",
+          "gap": {
+            "column": "Column Gap",
+            "row": "Row Gap"
+          },
+          "direction": {
+            "title": "Flow Direction",
+            "options": {
+              "row": "Row first",
+              "column": "Column first"
+            },
+            "tips": {
+              "row": "Row first: fill items by rows",
+              "column": "Column first: fill items by columns"
+            }
+          },
+          "dense": {
+            "label": "Dense",
+            "tip": "Dense fills gaps by reordering items whenever possible"
+          },
+          "actions": {
+            "add": "Add",
+            "copy": "Copy",
+            "delete": "Delete"
+          },
+          "meta": {
+            "columns": "Columns",
+            "rows": "Rows"
+          },
+          "align": {
+            "title": "Align"
+          },
+          "distribute": {
+            "title": "Multi-row Align"
+          },
+          "alignItems": {
+            "start": "Align to start",
+            "center": "Align to center",
+            "end": "Align to end",
+            "stretch": "Stretch to fill",
+            "baseline": "Align to baseline"
+          },
+          "justifyItems": {
+            "start": "Align to start",
+            "center": "Align to center",
+            "end": "Align to end",
+            "stretch": "Stretch to fill",
+            "baseline": "Align to baseline"
+          },
+          "alignContent": {
+            "start": "Align to start",
+            "center": "Align to center",
+            "end": "Align to end",
+            "stretch": "Stretch to fill",
+            "spaceBetween": "Distribute with space between",
+            "spaceAround": "Distribute with space around"
+          },
+          "justifyContent": {
+            "start": "Align to start",
+            "center": "Align to center",
+            "end": "Align to end",
+            "stretch": "Stretch to fill",
+            "spaceBetween": "Distribute with space between",
+            "spaceAround": "Distribute with space around"
+          }
+        },
+        "border": {
+          "radius": "Border Radius",
+          "title": "Border",
+          "style": "Style",
+          "width": "Width",
+          "color": "Color",
+          "corner": {
+            "topLeft": "Top left corner",
+            "topRight": "Top right corner",
+            "bottomLeft": "Bottom left corner",
+            "bottomRight": "Bottom right corner"
+          },
+          "position": {
+            "all": "All sides",
+            "left": "Left border",
+            "top": "Top border",
+            "bottom": "Bottom border",
+            "right": "Right border"
+          },
+          "radiusOptions": {
+            "single": "Apply to all",
+            "multiple": "Set individually"
+          },
+          "styleOptions": {
+            "none": "none",
+            "solid": "solid",
+            "dashed": "dashed",
+            "dotted": "dotted"
+          }
+        },
+        "typography": {
+          "font": "Font",
+          "size": "Size",
+          "lineHeight": "Line Height",
+          "color": "Color",
+          "align": "Align",
+          "style": "Style",
+          "fontFamily": {
+            "microsoftYaHei": "Microsoft YaHei",
+            "pingFang": "PingFang SC",
+            "simHei": "SimHei",
+            "simSun": "SimSun",
+            "arial": "Arial",
+            "bitter": "Bitter",
+            "changaOne": "Changa One",
+            "droidSans": "Droid Sans",
+            "droidSerif": "Droid Serif",
+            "exo": "Exo",
+            "georgia": "Georgia",
+            "greatVibes": "Great Vibes",
+            "impact": "Impact",
+            "inconsolata": "Inconsolata",
+            "lato": "Lato",
+            "merriweather": "Merriweather",
+            "montserrat": "Montserrat",
+            "openSans": "Open Sans",
+            "oswald": "Oswald",
+            "ptSans": "PT Sans",
+            "ptSerif": "PT Serif",
+            "palatino": "Palatino Linotype",
+            "tahoma": "Tahoma",
+            "timesNewRoman": "Times New Roman",
+            "trebuchetMs": "Trebuchet MS",
+            "ubuntu": "Ubuntu",
+            "varela": "Varela",
+            "varelaRound": "Varela Round",
+            "verdana": "Verdana",
+            "vollkorn": "Vollkorn",
+            "systemUi": "system-ui"
+          },
+          "fontWeight": {
+            "thin": "100 - Thin",
+            "normal": "400 - Normal",
+            "bold": "700 - Bold",
+            "black": "900 - Black"
+          },
+          "alignOptions": {
+            "left": "Left - Align left",
+            "center": "Center - Align center",
+            "right": "Right - Align right",
+            "justify": "Justify - Justify"
+          },
+          "styleOptions": {
+            "regular": "Regular",
+            "italic": "Italic"
+          },
+          "decorationOptions": {
+            "none": "None",
+            "strike": "Strikethrough",
+            "underline": "Underline",
+            "overline": "Overline"
+          }
+        },
         "globalStyle": {
           "title": "Global Styles",
           "docsTip": "Declare multiple CSS or media query styles and bind them via component class or ID.",

@@ -271,7 +271,8 @@ export default {
       updateStyle,
       setConfig,
       isCollapsed,
-      t
+      t,
+      locale
     }
   }
 }

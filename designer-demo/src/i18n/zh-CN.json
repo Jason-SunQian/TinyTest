@@ -165,6 +165,179 @@
             "self": "组件自身"
           }
         },
+        "background": {
+          "title": "背景图 & 渐变",
+          "tooltip": "添加背景图、线性渐变、径向渐变等",
+          "color": "颜色",
+          "clip": "裁剪",
+          "modalTitle": "背景图 & 渐变设置",
+          "clipOptions": {
+            "none": "None - 无",
+            "padding": "padding-box - 裁剪到 padding",
+            "content": "content-box - 裁剪到 content",
+            "text": "text - 裁剪到文字"
+          }
+        },
+        "grid": {
+          "edit": "编辑网格",
+          "gap": {
+            "column": "列间距",
+            "row": "行间距"
+          },
+          "direction": {
+            "title": "方向",
+            "options": {
+              "row": "行优先",
+              "column": "列优先"
+            },
+            "tips": {
+              "row": "行优先：按行顺序填充",
+              "column": "列优先：按列顺序填充"
+            }
+          },
+          "dense": {
+            "label": "Dense",
+            "tip": "Dense 表示尽可能紧密填满，减少空格"
+          },
+          "actions": {
+            "add": "添加",
+            "copy": "复制",
+            "delete": "删除"
+          },
+          "meta": {
+            "columns": "列",
+            "rows": "行"
+          },
+          "align": {
+            "title": "对齐"
+          },
+          "distribute": {
+            "title": "多行对齐"
+          },
+          "alignItems": {
+            "start": "辅轴起点对齐",
+            "center": "辅轴居中对齐",
+            "end": "辅轴终点对齐",
+            "stretch": "辅轴拉伸对齐",
+            "baseline": "辅轴基线对齐"
+          },
+          "justifyItems": {
+            "start": "主轴起点对齐",
+            "center": "主轴居中对齐",
+            "end": "主轴终点对齐",
+            "stretch": "主轴拉伸对齐",
+            "baseline": "主轴基线对齐"
+          },
+          "alignContent": {
+            "start": "辅轴起点对齐",
+            "center": "辅轴居中对齐",
+            "end": "辅轴终点对齐",
+            "stretch": "辅轴拉伸对齐",
+            "spaceBetween": "辅轴两端对齐",
+            "spaceAround": "辅轴均匀对齐"
+          },
+          "justifyContent": {
+            "start": "主轴起点对齐",
+            "center": "主轴居中对齐",
+            "end": "主轴终点对齐",
+            "stretch": "主轴拉伸对齐",
+            "spaceBetween": "主轴两端对齐",
+            "spaceAround": "主轴均匀对齐"
+          }
+        },
+        "border": {
+          "radius": "圆角",
+          "title": "边框",
+          "style": "样式",
+          "width": "宽度",
+          "color": "颜色",
+          "corner": {
+            "topLeft": "左上角",
+            "topRight": "右上角",
+            "bottomLeft": "左下角",
+            "bottomRight": "右下角"
+          },
+          "position": {
+            "all": "全边框",
+            "left": "左边框",
+            "top": "上边框",
+            "bottom": "下边框",
+            "right": "右边框"
+          },
+          "radiusOptions": {
+            "single": "统一圆角",
+            "multiple": "分别定义"
+          },
+          "styleOptions": {
+            "none": "none - 无",
+            "solid": "solid - 实线",
+            "dashed": "dashed - 虚线",
+            "dotted": "dotted - 点线"
+          }
+        },
+        "typography": {
+          "font": "字体",
+          "size": "字号",
+          "lineHeight": "行高",
+          "color": "颜色",
+          "align": "对齐",
+          "style": "样式",
+          "fontFamily": {
+            "microsoftYaHei": "微软雅黑",
+            "pingFang": "苹方",
+            "simHei": "黑体",
+            "simSun": "宋体",
+            "arial": "Arial",
+            "bitter": "Bitter",
+            "changaOne": "Changa One",
+            "droidSans": "Droid Sans",
+            "droidSerif": "Droid Serif",
+            "exo": "Exo",
+            "georgia": "Georgia",
+            "greatVibes": "Great Vibes",
+            "impact": "Impact",
+            "inconsolata": "Inconsolata",
+            "lato": "Lato",
+            "merriweather": "Merriweather",
+            "montserrat": "Montserrat",
+            "openSans": "Open Sans",
+            "oswald": "Oswald",
+            "ptSans": "PT Sans",
+            "ptSerif": "PT Serif",
+            "palatino": "Palatino Linotype",
+            "tahoma": "Tahoma",
+            "timesNewRoman": "Times New Roman",
+            "trebuchetMs": "Trebuchet MS",
+            "ubuntu": "Ubuntu",
+            "varela": "Varela",
+            "varelaRound": "Varela Round",
+            "verdana": "Verdana",
+            "vollkorn": "Vollkorn",
+            "systemUi": "system-ui"
+          },
+          "fontWeight": {
+            "thin": "100 - 细体",
+            "normal": "400 - 常规",
+            "bold": "700 - 粗体",
+            "black": "900 - 特粗"
+          },
+          "alignOptions": {
+            "left": "Left - 左对齐",
+            "center": "Center - 居中对齐",
+            "right": "Right - 右对齐",
+            "justify": "Justify - 两端对齐"
+          },
+          "styleOptions": {
+            "regular": "Regular - 常规",
+            "italic": "Italic - 斜体"
+          },
+          "decorationOptions": {
+            "none": "None - 无",
+            "strike": "Strikethrough - 删除线",
+            "underline": "Underline - 下划线",
+            "overline": "Overline - 上划线"
+          }
+        },
         "globalStyle": {
           "title": "全局样式",
           "docsTip": "声明多条 CSS 样式或媒体查询样式，并通过组件的 class 或 id 进行绑定",
