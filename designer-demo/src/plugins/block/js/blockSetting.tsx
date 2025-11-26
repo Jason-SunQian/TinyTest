@@ -30,8 +30,8 @@ import {
   META_SERVICE
 } from '@opentiny/tiny-engine-meta-register'
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments'
-import { getCanvasStatus } from '@opentiny/tiny-engine-common/js/canvas'
 import html2canvas from 'html2canvas'
+import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus'
 
 import {
   fetchBlockList,
@@ -462,7 +462,9 @@ export const refreshBlockData = async (block = {}) => {
 
       // 与当前正在画布编辑态的区块相同，需要同步更新
       if (useBlock().getCurrentBlock()?.id === block.id) {
-        useLayout().layoutState.pageStatus = getCanvasStatus(newBlock?.occupier)
+        const occupier = ensureOccupier(newBlock?.occupier)
+        newBlock.occupier = occupier
+        useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(occupier)
         useHistory().addHistory(block.content)
         Object.assign(useBlock().getCurrentBlock(), newBlock)
       }

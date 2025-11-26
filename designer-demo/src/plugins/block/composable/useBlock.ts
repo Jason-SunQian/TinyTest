@@ -17,7 +17,6 @@ import { extend, copyArray } from '@opentiny/vue-renderless/common/object'
 import { format } from '@opentiny/vue-renderless/common/date'
 import { remove } from '@opentiny/vue-renderless/common/array'
 import { constants } from '@opentiny/tiny-engine-utils'
-import { getCanvasStatus } from '@opentiny/tiny-engine-common/js/canvas'
 import { ast2String, parseExpression } from '@opentiny/tiny-engine-common/js/ast'
 import { getCssObjectFromStyleStr } from '@opentiny/tiny-engine-common/js/css'
 import {
@@ -32,6 +31,7 @@ import {
   getOptions,
   META_SERVICE
 } from '@opentiny/tiny-engine-meta-register'
+import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus'
 import type {
   Block,
   BlockContent,
@@ -311,8 +311,9 @@ const initBlock = async (block: any = {}, _langs = {}, isEdit?: boolean) => {
   // 如果是点击区块管理列表进来的则不需要执行以下操作
   if (!isEdit) {
     // 非编辑状态即为新增，新增默认锁定画布
-    block.occupier = getMetaApi(META_SERVICE.GlobalService).getState().userInfo
-    useLayout().layoutState.pageStatus = getCanvasStatus(block.occupier)
+    const currentUser = getMetaApi(META_SERVICE.GlobalService).getState().userInfo
+    block.occupier = ensureOccupier(block.occupier || currentUser)
+    useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(block.occupier)
     addBlock(block)
     setSaved(false)
   }

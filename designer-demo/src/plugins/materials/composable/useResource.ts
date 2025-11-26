@@ -13,7 +13,6 @@
 /* metaService: engine.service.resource.useResource */
 import { reactive, toRaw } from 'vue'
 import { constants } from '@opentiny/tiny-engine-utils'
-import { getCanvasStatus } from '@opentiny/tiny-engine-common/js/canvas'
 import {
   useCanvas,
   useTranslate,
@@ -26,6 +25,7 @@ import {
   useMessage,
   META_SERVICE
 } from '@opentiny/tiny-engine-meta-register'
+import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus'
 
 const { COMPONENT_NAME, DEFAULT_INTERCEPTOR } = constants
 
@@ -82,7 +82,9 @@ const initPage = (pageInfo: PageInfo) => {
   try {
     // 有id，说明不是临时的页面
     if (pageInfo?.id || typeof pageInfo?.id === 'number') {
-      useLayout().layoutState.pageStatus = getCanvasStatus(pageInfo.occupier)
+      const occupier = ensureOccupier(pageInfo.occupier)
+      pageInfo.occupier = occupier
+      useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(occupier)
       goPage(pageInfo.id)
     } else {
       useLayout().layoutState.pageStatus = {
@@ -110,7 +112,9 @@ const initBlock = async (blockId: string) => {
     blockContent.public_scope_tenants = blockContent.public_scope_tenants.map((e: { id: string }) => e.id)
   }
 
-  useLayout().layoutState.pageStatus = getCanvasStatus(blockContent?.occupier)
+  const occupier = ensureOccupier(blockContent?.occupier)
+  blockContent.occupier = occupier
+  useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(occupier)
 
   // 请求区块详情
   useBlock().initBlock(blockContent, {}, true)

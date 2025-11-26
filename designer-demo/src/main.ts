@@ -4,6 +4,7 @@
 import { configurators } from './configurators'
 import 'virtual:svg-icons-register'
 import { loadDesignerI18n } from './services/i18nService'
+import { startPageStatusGuard } from './composable/pageStatusGuard'
 
 async function startApp() {
   const registry = await import('../registry')
@@ -24,6 +25,7 @@ async function startApp() {
       appCreated: ({ app }) => {
         console.log('✅ designer-demo 应用创建完成')
         // 可以在这里添加其他初始化逻辑
+        startPageStatusGuard()
       }
     }
   })

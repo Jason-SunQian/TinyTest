@@ -14,7 +14,6 @@
 import { reactive, ref } from 'vue'
 import { extend, isEqual as isValuesEqual } from '@opentiny/vue-renderless/common/object'
 import { constants } from '@opentiny/tiny-engine-utils'
-import { getCanvasStatus } from '@opentiny/tiny-engine-common/js/canvas'
 import {
   useCanvas,
   useLayout,
@@ -24,6 +23,7 @@ import {
   getMetaApi,
   META_SERVICE
 } from '@opentiny/tiny-engine-meta-register'
+import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus'
 import http from '../http'
 import { t } from '../../../services/i18nService'
 
@@ -437,10 +437,10 @@ const switchPage = (pageId: string | number, clearPreview = false) => {
       getMetaApi(META_SERVICE.GlobalService).updatePageId('')
     }
     useCanvas().initData({ componentName: COMPONENT_NAME.Page, props: {} }, {})
-    useLayout().layoutState.pageStatus = {
-      state: 'empty',
-      data: {}
-    }
+      useLayout().layoutState.pageStatus = {
+        state: 'empty',
+        data: {}
+      }
 
     return
   }
@@ -460,9 +460,10 @@ const switchPage = (pageId: string | number, clearPreview = false) => {
       }
       useLayout().closePlugin()
       const currentUser = getMetaApi(META_SERVICE.GlobalService).getState().userInfo
-      const occupier = data.occupier || currentUser
+      const occupier = ensureOccupier(data.occupier || currentUser)
       const pageData = !data.occupier && occupier ? { ...data, occupier } : data
-      useLayout().layoutState.pageStatus = getCanvasStatus(occupier)
+      pageData.occupier = occupier
+      useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(occupier)
       useCanvas().initData(pageData['page_content'], pageData)
     })
     .catch(() => {
