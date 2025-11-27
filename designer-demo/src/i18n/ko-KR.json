@@ -35,7 +35,42 @@
       "codeSaveSuccessMessage": "{count}개 파일을 저장했습니다",
       "codeSaveFailed": "코드 저장 실패",
       "blockSetting": "블록 설정",
-      "pageSetting": "페이지 설정"
+      "pageSetting": "페이지 설정",
+      "media": {
+        "canvasSettings": "캔버스 설정",
+        "width": "너비",
+        "scale": "확대/축소",
+        "freeLayout": "자유 레이아웃",
+        "addLargeBreakpoint": "큰 중단점 추가",
+        "hoverBreakpointTip": "중단점 위에 마우스를 올려 자세한 정보를 확인하세요",
+        "devices": {
+          "largeScreen": {
+            "title": "대형 화면",
+            "subTitle": "1200px 이상",
+            "content": "여기에 추가된 스타일은 1200픽셀 이상에 적용되며, 더 큰 중단점에서 편집되지 않는 한 적용됩니다."
+          },
+          "desktop": {
+            "title": "데스크톱",
+            "subTitle": "기본 중단점",
+            "content": "데스크톱 스타일은 더 크거나 작은 중단점에서 편집되지 않는 한 모든 중단점에 적용됩니다. 여기서 레이아웃을 시작하세요."
+          },
+          "tablet": {
+            "title": "태블릿",
+            "subTitle": "992px 이하",
+            "content": "여기에 추가된 스타일은 992픽셀 이하에 적용되며, 더 작은 중단점에서 편집되지 않는 한 적용됩니다."
+          },
+          "landscapeMobile": {
+            "title": "가로 모드 모바일",
+            "subTitle": "768px 이하",
+            "content": "여기에 추가된 스타일은 768픽셀 이하에 적용되며, 더 작은 중단점에서 편집되지 않는 한 적용됩니다."
+          },
+          "mobile": {
+            "title": "세로 모드 모바일",
+            "subTitle": "480px 이하",
+            "content": "여기에 추가된 스타일은 480픽셀 이하에 적용됩니다."
+          }
+        }
+      }
     },
     "settings": {
       "props": {

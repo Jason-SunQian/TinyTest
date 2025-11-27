@@ -36,7 +36,42 @@
       "codeSaveSuccessMessage": "保存了 {count} 个文件",
       "codeSaveFailed": "代码保存失败",
       "blockSetting": "区块设置",
-      "pageSetting": "页面设置"
+      "pageSetting": "页面设置",
+      "media": {
+        "canvasSettings": "画布设置",
+        "width": "宽度",
+        "scale": "缩放",
+        "freeLayout": "自由布局",
+        "addLargeBreakpoint": "添加大断点",
+        "hoverBreakpointTip": "将鼠标悬停在断点上以了解更多信息",
+        "devices": {
+          "largeScreen": {
+            "title": "大屏",
+            "subTitle": "1200px 及以上",
+            "content": "此处添加的样式将适用于 1200 像素及以上，除非它们在更大的断点处进行编辑。"
+          },
+          "desktop": {
+            "title": "PC 端",
+            "subTitle": "基本断点",
+            "content": "桌面端样式适用于所有断点，除非它们在更大或更小的断点处进行编辑，在这里开始你的布局。"
+          },
+          "tablet": {
+            "title": "平板",
+            "subTitle": "992px 及以下",
+            "content": "此处添加的样式将适用于 992 像素及以下，除非它们在较小的断点处进行编辑。"
+          },
+          "landscapeMobile": {
+            "title": "手机横屏",
+            "subTitle": "768px 及以下",
+            "content": "此处添加的样式将适用于 768 像素及以下，除非它们在较小的断点处进行编辑。"
+          },
+          "mobile": {
+            "title": "手机竖屏",
+            "subTitle": "480px 及以下",
+            "content": "此处添加的样式将适用于 480 像素及以下。"
+          }
+        }
+      }
     },
     "leftPanel": {
       "materials": "物料",

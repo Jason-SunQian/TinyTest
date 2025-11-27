@@ -35,7 +35,42 @@
       "codeSaveSuccessMessage": "{count} ファイルを保存しました",
       "codeSaveFailed": "コード保存失敗",
       "blockSetting": "ブロック設定",
-      "pageSetting": "ページ設定"
+      "pageSetting": "ページ設定",
+      "media": {
+        "canvasSettings": "キャンバス設定",
+        "width": "幅",
+        "scale": "スケール",
+        "freeLayout": "自由レイアウト",
+        "addLargeBreakpoint": "大きなブレークポイントを追加",
+        "hoverBreakpointTip": "ブレークポイントにマウスをホバーして詳細を確認",
+        "devices": {
+          "largeScreen": {
+            "title": "大型画面",
+            "subTitle": "1200px以上",
+            "content": "ここに追加されたスタイルは、1200ピクセル以上に適用され、より大きなブレークポイントで編集されない限り適用されます。"
+          },
+          "desktop": {
+            "title": "デスクトップ",
+            "subTitle": "基本ブレークポイント",
+            "content": "デスクトップスタイルは、より大きいまたは小さいブレークポイントで編集されない限り、すべてのブレークポイントに適用されます。ここでレイアウトを開始してください。"
+          },
+          "tablet": {
+            "title": "タブレット",
+            "subTitle": "992px以下",
+            "content": "ここに追加されたスタイルは、992ピクセル以下に適用され、より小さなブレークポイントで編集されない限り適用されます。"
+          },
+          "landscapeMobile": {
+            "title": "横向きモバイル",
+            "subTitle": "768px以下",
+            "content": "ここに追加されたスタイルは、768ピクセル以下に適用され、より小さなブレークポイントで編集されない限り適用されます。"
+          },
+          "mobile": {
+            "title": "縦向きモバイル",
+            "subTitle": "480px以下",
+            "content": "ここに追加されたスタイルは、480ピクセル以下に適用されます。"
+          }
+        }
+      }
     },
     "leftPanel": {
       "materials": "マテリアル",

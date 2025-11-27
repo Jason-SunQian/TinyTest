@@ -9,6 +9,7 @@ import CustomBreadcrumb from './src/toolbars/breadcrumb/Main.vue'
 import customUseBreadcrumb from './src/toolbars/breadcrumb/composable/useBreadcrumb'
 import CustomClean from './src/toolbars/clean/Main.vue'
 import CustomRefresh from './src/toolbars/refresh/Main.vue'
+import CustomMedia from './src/toolbars/media/Main.vue'
 import CustomProps from './src/settings/props/Main.vue'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import CustomBlockManage from './src/plugins/block/Main.vue'
@@ -239,6 +240,20 @@ export default {
     title: 'Refresh',
     icon: 'refresh',
     entry: CustomRefresh
+  },
+  // 禁用官方 Media 并注册自定义版本
+  [META_APP.Media]: {
+    id: 'engine.toolbars.media.custom',
+    type: 'toolbars',
+    title: 'Media',
+    icon: '',
+    entry: CustomMedia,
+    options: {
+      icon: {
+        default: ''
+      },
+      renderType: 'slot'
+    }
   },
   [META_APP.Props]: {
     id: 'engine.setting.props',  // 使用官方 ID，确保 fixedPanels 能识别

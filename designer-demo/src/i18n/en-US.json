@@ -36,7 +36,42 @@
       "codeSaveSuccessMessage": "Saved {count} files",
       "codeSaveFailed": "Code Save Failed",
       "blockSetting": "Block Settings",
-      "pageSetting": "Page Settings"
+      "pageSetting": "Page Settings",
+      "media": {
+        "canvasSettings": "Canvas Settings",
+        "width": "Width",
+        "scale": "Scale",
+        "freeLayout": "Free Layout",
+        "addLargeBreakpoint": "Add Large Breakpoint",
+        "hoverBreakpointTip": "Hover over breakpoints to learn more",
+        "devices": {
+          "largeScreen": {
+            "title": "Large Screen",
+            "subTitle": "1200px and up",
+            "content": "Style added here will apply at 1200px and up, unless they're edited at a larger breakpoint."
+          },
+          "desktop": {
+            "title": "Desktop",
+            "subTitle": "Base breakpoint",
+            "content": "Desktop styles apply at all breakpoints, unless they're edited at a larger or smaller breakpoints. Start your styling here."
+          },
+          "tablet": {
+            "title": "Tablet",
+            "subTitle": "992px and down",
+            "content": "Styles added here will apply at 992px and down, unless they're edited at smaller breakpoints."
+          },
+          "landscapeMobile": {
+            "title": "Landscape Mobile",
+            "subTitle": "768px and down",
+            "content": "Styles added here will apply at 768px and down, unless they're edited at smaller breakpoints."
+          },
+          "mobile": {
+            "title": "Mobile",
+            "subTitle": "480px and down",
+            "content": "Styles added here will apply at 480px and down."
+          }
+        }
+      }
     },
     "leftPanel": {
       "materials": "Materials",
