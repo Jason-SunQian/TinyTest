@@ -8,6 +8,7 @@ import CustomSave from './src/toolbars/save/Main.vue'
 import CustomBreadcrumb from './src/toolbars/breadcrumb/Main.vue'
 import customUseBreadcrumb from './src/toolbars/breadcrumb/composable/useBreadcrumb'
 import CustomClean from './src/toolbars/clean/Main.vue'
+import CustomRefresh from './src/toolbars/refresh/Main.vue'
 import CustomProps from './src/settings/props/Main.vue'
 import CustomOutlineTree from './src/plugins/tree/Main.vue'
 import CustomBlockManage from './src/plugins/block/Main.vue'
@@ -232,6 +233,13 @@ export default {
     icon: 'clean',
     entry: CustomClean
   },
+  // 禁用官方 Refresh 并注册自定义版本
+  [META_APP.Refresh]: {
+    id: 'engine.toolbars.refresh.custom',
+    title: 'Refresh',
+    icon: 'refresh',
+    entry: CustomRefresh
+  },
   [META_APP.Props]: {
     id: 'engine.setting.props',  // 使用官方 ID，确保 fixedPanels 能识别
     title: 'Properties',
@@ -286,9 +294,7 @@ export default {
             [META_APP.Save]
           ],
           collapse: [
-            [META_APP.Collaboration],
-            [META_APP.Refresh, META_APP.Fullscreen],
-            [META_APP.ViewSetting]
+            [META_APP.Refresh],
           ]
         }
       }
