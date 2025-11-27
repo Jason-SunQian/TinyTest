@@ -87,6 +87,7 @@ import { IconWebPlus } from '@opentiny/vue-icon'
 import { useLayout, useCanvas } from '@opentiny/tiny-engine-meta-register'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
 import { useDesignerI18n } from '@/services/i18nService'
+import { MEDIA_MOBILE_ONLY } from '@/config/featureFlags'
 
 
 export default {
@@ -180,74 +181,96 @@ export default {
       }
     ])
 
-    const media = computed(() => [
-      {
-        idx: 0,
-        view: 'mdx',
-        icon: 'IconDesktopView',
-        liked: 'desktop-large',
-        width: '1920px',
-        minWidth: '1200px',
-        maxWidth: '1920px',
-        title: t('designer.toolbar.media.devices.largeScreen.title'),
-        subTitle: t('designer.toolbar.media.devices.largeScreen.subTitle'),
-        content: t('designer.toolbar.media.devices.largeScreen.content'),
-        enContent: 'Style added here will apply at 1200px and up,unless they′re edited at a larger breakpoint.'
-      },
-      {
-        idx: 1,
-        view: 'desktop',
-        icon: 'IconDesktopView',
-        liked: 'laptop-cut-corner',
-        width: '1200px',
-        minWidth: '992px',
-        maxWidth: '1200px',
-        title: t('designer.toolbar.media.devices.desktop.title'),
-        subTitle: t('designer.toolbar.media.devices.desktop.subTitle'),
-        content: t('designer.toolbar.media.devices.desktop.content'),
-        enContent:
-          'Desktop styles apply at all breakpoints,unless they′re edited at a larger or smaller breakpoints. Start your stying here.'
-      },
-      {
-        idx: 2,
-        view: 'tablet',
-        icon: 'IconTabletView',
-        liked: 'tablet-portrait',
-        width: '992px',
-        minWidth: '768px',
-        maxWidth: '992px',
-        title: t('designer.toolbar.media.devices.tablet.title'),
-        subTitle: t('designer.toolbar.media.devices.tablet.subTitle'),
-        content: t('designer.toolbar.media.devices.tablet.content'),
-        enContent: 'styles added here will apply at 992px and down,unless they′re edited at smaller breakpoints.'
-      },
-      {
-        idx: 3,
-        view: 'lanMobile',
-        icon: 'IconMobileView',
-        liked: 'mobile-landscape',
-        width: '768px',
-        minWidth: '480px',
-        maxWidth: '768px',
-        title: t('designer.toolbar.media.devices.landscapeMobile.title'),
-        subTitle: t('designer.toolbar.media.devices.landscapeMobile.subTitle'),
-        content: t('designer.toolbar.media.devices.landscapeMobile.content'),
-        enContent: 'styles added here will apply at 768px and down,unless they′re edited at smaller breakpoints.'
-      },
-      {
-        idx: 4,
-        view: 'mobile',
-        icon: 'IconMobileView',
-        liked: 'mobile-portrai',
-        width: '480px',
-        minWidth: '240px',
-        maxWidth: '480px',
-        title: t('designer.toolbar.media.devices.mobile.title'),
-        subTitle: t('designer.toolbar.media.devices.mobile.subTitle'),
-        content: t('designer.toolbar.media.devices.mobile.content'),
-        enContent: 'styles added here will apply at 480px and down.'
+    const media = computed(() => {
+      // 如果只显示手机竖屏，只返回手机竖屏配置
+      if (MEDIA_MOBILE_ONLY) {
+        return [
+          {
+            idx: 0,
+            view: 'mobile',
+            icon: 'IconMobileView',
+            liked: 'mobile-portrai',
+            width: '480px',
+            minWidth: '240px',
+            maxWidth: '480px',
+            title: t('designer.toolbar.media.devices.mobile.title'),
+            subTitle: t('designer.toolbar.media.devices.mobile.subTitle'),
+            content: t('designer.toolbar.media.devices.mobile.content'),
+            enContent: 'styles added here will apply at 480px and down.'
+          }
+        ]
       }
-    ])
+
+      // 恢复所有设备选项
+      return [
+        {
+          idx: 0,
+          view: 'mdx',
+          icon: 'IconDesktopView',
+          liked: 'desktop-large',
+          width: '1920px',
+          minWidth: '1200px',
+          maxWidth: '1920px',
+          title: t('designer.toolbar.media.devices.largeScreen.title'),
+          subTitle: t('designer.toolbar.media.devices.largeScreen.subTitle'),
+          content: t('designer.toolbar.media.devices.largeScreen.content'),
+          enContent: 'Style added here will apply at 1200px and up,unless they′re edited at a larger breakpoint.'
+        },
+        {
+          idx: 1,
+          view: 'desktop',
+          icon: 'IconDesktopView',
+          liked: 'laptop-cut-corner',
+          width: '1200px',
+          minWidth: '992px',
+          maxWidth: '1200px',
+          title: t('designer.toolbar.media.devices.desktop.title'),
+          subTitle: t('designer.toolbar.media.devices.desktop.subTitle'),
+          content: t('designer.toolbar.media.devices.desktop.content'),
+          enContent:
+            'Desktop styles apply at all breakpoints,unless they′re edited at a larger or smaller breakpoints. Start your stying here.'
+        },
+        {
+          idx: 2,
+          view: 'tablet',
+          icon: 'IconTabletView',
+          liked: 'tablet-portrait',
+          width: '992px',
+          minWidth: '768px',
+          maxWidth: '992px',
+          title: t('designer.toolbar.media.devices.tablet.title'),
+          subTitle: t('designer.toolbar.media.devices.tablet.subTitle'),
+          content: t('designer.toolbar.media.devices.tablet.content'),
+          enContent: 'styles added here will apply at 992px and down,unless they′re edited at smaller breakpoints.'
+        },
+        {
+          idx: 3,
+          view: 'lanMobile',
+          icon: 'IconMobileView',
+          liked: 'mobile-landscape',
+          width: '768px',
+          minWidth: '480px',
+          maxWidth: '768px',
+          title: t('designer.toolbar.media.devices.landscapeMobile.title'),
+          subTitle: t('designer.toolbar.media.devices.landscapeMobile.subTitle'),
+          content: t('designer.toolbar.media.devices.landscapeMobile.content'),
+          enContent: 'styles added here will apply at 768px and down,unless they′re edited at smaller breakpoints.'
+        },
+        {
+          idx: 4,
+          view: 'mobile',
+          icon: 'IconMobileView',
+          liked: 'mobile-portrai',
+          width: '480px',
+          minWidth: '240px',
+          maxWidth: '480px',
+          title: t('designer.toolbar.media.devices.mobile.title'),
+          subTitle: t('designer.toolbar.media.devices.mobile.subTitle'),
+          content: t('designer.toolbar.media.devices.mobile.content'),
+          enContent: 'styles added here will apply at 480px and down.'
+        }
+      ]
+    })
 
     const hide = () => {
       active.value = false
@@ -368,8 +391,12 @@ export default {
     watch(
       () => dimension.value.deviceType,
       (deviceType) => {
-        state.activeIndex = mediaMap.value[deviceType].index
-        state.readonly = deviceType !== 'mdx'
+        // 如果当前设备类型不在 mediaMap 中（比如只显示手机竖屏时，deviceType 可能是 desktop），使用默认值
+        const device = mediaMap.value[deviceType] || mediaMap.value[MEDIA_MOBILE_ONLY ? 'mobile' : 'desktop']
+        if (device) {
+          state.activeIndex = device.index
+          state.readonly = deviceType !== 'mdx'
+        }
       },
       { immediate: true }
     )
@@ -399,8 +426,12 @@ export default {
     })
 
     // 初始化 viewpoint
-    const mode = dimension.value.deviceType || 'desktop'
-    setViewPort(mediaMap.value[mode])
+    // 如果只显示手机竖屏，默认选择 mobile；否则使用当前设备类型或默认 desktop
+    const defaultMode = MEDIA_MOBILE_ONLY ? 'mobile' : (dimension.value.deviceType || 'desktop')
+    const targetDevice = mediaMap.value[defaultMode] || mediaMap.value[media.value[0]?.view] || mediaMap.value['mobile']
+    if (targetDevice) {
+      setViewPort(targetDevice)
+    }
 
     return {
       scale,
