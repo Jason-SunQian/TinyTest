@@ -279,7 +279,7 @@ export default {
               META_APP.Page,
               'engine.plugins.customState'
             ],
-            bottom: ['engine.plugins.customScript', 'engine.plugins.customSchema', META_APP.Help, META_APP.Robot]
+            bottom: ['engine.plugins.customScript', 'engine.plugins.customSchema']
           },
           right: {
             top: [META_APP.Props, META_APP.Styles, META_APP.Event]
