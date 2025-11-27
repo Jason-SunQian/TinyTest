@@ -24,7 +24,8 @@ import {
 } from '@opentiny/tiny-engine-meta-register'
 import { ToolbarBase } from '@opentiny/tiny-engine-common'
 import { useDesignerI18n } from '@/services/i18nService'
-import meta from './meta'
+
+const REFRESH_PLUGIN_ID = 'engine.toolbars.refresh.custom'
 
 export default {
   components: {
@@ -42,7 +43,7 @@ export default {
     const { isBlock, isSaved, pageState, initData } = useCanvas()
     const { PLUGIN_NAME, activePlugin, isEmptyPage } = useLayout()
     const { getCurrentBlock, initBlock } = useBlock()
-    const { beforeRefresh } = getOptions(meta.id)
+    const { beforeRefresh } = getOptions(REFRESH_PLUGIN_ID) || {}
     const { publish } = useMessage()
 
     const refreshResource = () => {
