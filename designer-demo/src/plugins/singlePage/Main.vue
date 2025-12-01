@@ -15,7 +15,7 @@
 
 <script lang="tsx">
 /* metaService: engine.plugins.singlePage.Main */
-import { ref, reactive, onMounted, watch, provide } from 'vue'
+import { ref, reactive, onMounted, onActivated, watch, provide, nextTick } from 'vue'
 import { useCanvas, usePage, useLayout, useNotify, getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { extend } from '@opentiny/vue-renderless/common/object'
@@ -84,9 +84,12 @@ export default {
         // 有页面ID，加载页面详情
         try {
           const pageDetail = await fetchPageDetail(pageId)
+          // 确保设置为非新建状态，并初始化当前页面数据
+          // 注意：必须在 initCurrentPageData 之前设置 isNew，确保数据正确显示
           pageSettingState.isNew = false
           initCurrentPageData(pageDetail)
-          openPageSettingPanel()
+          console.log('[singlePage] 已加载当前页面:', pageDetail.name, pageDetail.id)
+          // singlePage 使用 PluginPanel，不需要调用 openPageSettingPanel
         } catch (error) {
           console.error('加载页面失败:', error)
           // 如果加载失败，创建新页面
@@ -94,6 +97,7 @@ export default {
         }
       } else {
         // 没有页面ID，创建新页面
+        console.log('[singlePage] 没有当前页面ID，创建新页面')
         createEmptyPage()
       }
     }
@@ -164,14 +168,26 @@ export default {
     watch(
       () => getCurrentPageId(),
       (newPageId, oldPageId) => {
+        // 当页面ID变化时，重新加载页面数据
         if (newPageId && newPageId !== oldPageId) {
+          console.log('[singlePage] 页面ID变化:', oldPageId, '->', newPageId)
           loadCurrentPage()
         }
-      }
+      },
+      { immediate: false }
     )
 
     // 插件打开时自动加载当前页面
     onMounted(() => {
+      // 使用 nextTick 确保在组件完全渲染后再加载数据
+      nextTick(() => {
+        loadCurrentPage()
+      })
+    })
+
+    // 插件激活时也重新加载当前页面（使用 keep-alive 时）
+    onActivated(() => {
+      // 确保显示的是当前页面的设置，而不是之前的状态
       loadCurrentPage()
     })
 
