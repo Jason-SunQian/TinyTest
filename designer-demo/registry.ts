@@ -23,6 +23,10 @@ import CustomPage, { api as PageApi } from './src/plugins/page/Main.vue'
 import { PageService } from './src/plugins/page/composable/index'
 import PageGeneral from './src/plugins/page/PageGeneral.vue'
 import mcp from './src/plugins/page/mcp'
+import SinglePage, { api as SinglePageApi } from './src/plugins/singlePage/Main.vue'
+import { PageService as SinglePageService } from './src/plugins/singlePage/composable/index'
+import SinglePageGeneral from './src/plugins/singlePage/PageGeneral.vue'
+import singlePageMcp from './src/plugins/singlePage/mcp'
 import SaveNewBlock from './src/plugins/block/SaveNewBlock.vue'
 import { BlockService } from './src/plugins/block/composable/index'
 import CustomMaterials, { ResourceService, MaterialService } from './src/plugins/materials/index'
@@ -151,6 +155,27 @@ export default {
   },
   // 禁用官方 AppManage 并注册自定义版本
   [META_APP.AppManage]: false,
+  // 注册 singlePage 插件（简化版，只管理当前页面）
+  'engine.plugins.singlePage': {
+    id: 'engine.plugins.singlePage',
+    title: 'Page',
+    type: 'plugins',
+    icon: 'plugin-icon-page',
+    entry: SinglePage,
+    apis: SinglePageApi,
+    options: {
+      pageBaseStyle: {
+        className: 'page-base-style',
+        style: 'padding: 24px;background: #FFFFFF;'
+      }
+    },
+    components: {
+      PageGeneral: SinglePageGeneral
+    },
+    metas: [SinglePageService],
+    mcp: singlePageMcp
+  },
+  // 保留原 page 插件（customAppManage），可以通过修改入口切换回来
   'engine.plugins.customAppManage': {
     id: 'engine.plugins.customAppManage',
     title: 'Page',
@@ -286,7 +311,7 @@ export default {
             top: [
               META_APP.Materials,
               'engine.plugins.customOutlineTree',
-              'engine.plugins.customAppManage',
+              'engine.plugins.singlePage',
               'engine.plugins.customBlockManage',
               'engine.plugins.customCollections',
               'engine.plugins.customBridge',
