@@ -309,14 +309,12 @@ export default {
         plugins: {
           left: {
             top: [
-              META_APP.Materials,
               'engine.plugins.customOutlineTree',
               'engine.plugins.singlePage',
               'engine.plugins.customBlockManage',
               'engine.plugins.customCollections',
               'engine.plugins.customBridge',
               'engine.plugins.customI18n',
-              META_APP.Page,
               'engine.plugins.customState',
               'engine.plugins.customMaterials'
             ],
