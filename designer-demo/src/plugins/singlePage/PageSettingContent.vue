@@ -1,19 +1,19 @@
 <template>
   <div class="page-setting-content-wrapper">
     <!-- 暂时隐藏顶部操作按钮 -->
-    <!-- <div class="page-setting-header-actions">
+    <div class="page-setting-header-actions">
       <button-group>
         <tiny-button type="primary" @click="savePageSetting">{{ t('designer.page.save') }}</tiny-button>
-        <svg-button
-          v-if="!pageSettingState.isNew"
-          name="text-copy-page"
-          placement="bottom"
-          :tips="t('designer.page.copyPage')"
-          @click="copyPage"
-        ></svg-button>
-        <svg-button v-if="!pageSettingState.isNew" name="delete" :tips="t('designer.page.deletePage')" @click="deletePage"></svg-button>
+<!--        <svg-button-->
+<!--          v-if="!pageSettingState.isNew"-->
+<!--          name="text-copy-page"-->
+<!--          placement="bottom"-->
+<!--          :tips="t('designer.page.copyPage')"-->
+<!--          @click="copyPage"-->
+<!--        ></svg-button>-->
+<!--        <svg-button v-if="!pageSettingState.isNew" name="delete" :tips="t('designer.page.deletePage')" @click="deletePage"></svg-button>-->
       </button-group>
-    </div> -->
+    </div>
     <div class="page-setting-content">
       <tiny-collapse v-model="state.activeName" class="page-setting-collapse">
         <tiny-collapse-item :title="t('designer.page.basicSettings')" :name="PAGE_SETTING_SESSION.general">
