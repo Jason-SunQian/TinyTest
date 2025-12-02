@@ -317,7 +317,8 @@ export default {
               'engine.plugins.customBridge',
               'engine.plugins.customI18n',
               META_APP.Page,
-              'engine.plugins.customState'
+              'engine.plugins.customState',
+              'engine.plugins.customMaterials'
             ],
             bottom: ['engine.plugins.customScript', 'engine.plugins.customSchema']
           },
