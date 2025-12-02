@@ -35,6 +35,7 @@ const DEFAULT_PAGE = {
   app: '',
   name: '',
   route: '',
+  serviceName: '',
   page_content: {
     componentName: 'Page',
     css: '',

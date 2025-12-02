@@ -54,6 +54,9 @@
           </span>
         </div>
       </tiny-form-item>
+      <tiny-form-item :label="t('designer.page.pageService')" prop="serviceName">
+        <tiny-input v-model="pageSettingState.currentPageData.serviceName" :placeholder="t('designer.page.enterService')"> </tiny-input>
+      </tiny-form-item>
       <tiny-form-item
         v-if="pageSettingState.currentPageData.group !== 'publicPages' && !isFolder && state.childPageOp?.length"
         :label="t('designer.page.setDefaultRedirect')"
