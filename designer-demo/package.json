@@ -11,13 +11,13 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@opentiny/tiny-engine": "workspace:*",
-    "@opentiny/tiny-engine-block-compiler": "workspace:*",
-    "@opentiny/tiny-engine-builtin-component": "workspace:*",
-    "@opentiny/tiny-engine-common": "workspace:*",
-    "@opentiny/tiny-engine-configurator": "workspace:*",
-    "@opentiny/tiny-engine-meta-register": "workspace:*",
-    "@opentiny/tiny-engine-utils": "workspace:*",
+    "@opentiny/tiny-engine": "^2.8.2",
+    "@opentiny/tiny-engine-block-compiler": "^2.8.2",
+    "@opentiny/tiny-engine-builtin-component": "^2.8.2",
+    "@opentiny/tiny-engine-common": "^2.8.2",
+    "@opentiny/tiny-engine-configurator": "^2.8.2",
+    "@opentiny/tiny-engine-meta-register": "^2.8.2",
+    "@opentiny/tiny-engine-utils": "^2.8.2",
     "@opentiny/vue": "~3.20.0",
     "@opentiny/vue-design-smb": "~3.20.0",
     "@opentiny/vue-icon": "~3.20.0",
@@ -37,7 +37,7 @@
     "magic-string": "^0.30.17"
   },
   "devDependencies": {
-    "@opentiny/tiny-engine-vite-config": "workspace:*",
+    "@opentiny/tiny-engine-vite-config": "^2.8.2",
     "@types/node": "^18.0.0",
     "@vitejs/plugin-vue": "^5.1.2",
     "concurrently": "^8.2.0",
