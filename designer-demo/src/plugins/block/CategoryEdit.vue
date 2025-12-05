@@ -83,19 +83,21 @@ const t = i18n?.global?.t || ((key: string) => key);
 
 const { getGroupList, shouldReplaceCategoryWithGroup } = useBlock();
 
-const groupLabels = shouldReplaceCategoryWithGroup()
-    ? {
-          text: t('designer.block.group'),
-          nameInput: t('designer.block.groupName'),
-          nameInputPlaceholder: t('designer.block.enterGroupName'),
-          validateErrMsg: t('designer.block.groupNameRepeat')
-      }
-    : {
-          text: t('designer.block.category'),
-          nameInput: t('designer.block.categoryName'),
-          nameInputPlaceholder: t('designer.block.enterCategoryName'),
-          validateErrMsg: t('designer.block.categoryNameRepeat')
-      };
+const groupLabels = computed(() =>
+    shouldReplaceCategoryWithGroup()
+        ? {
+              text: t('designer.block.group'),
+              nameInput: t('designer.block.groupName'),
+              nameInputPlaceholder: t('designer.block.enterGroupName'),
+              validateErrMsg: t('designer.block.groupNameRepeat')
+          }
+        : {
+              text: t('designer.block.category'),
+              nameInput: t('designer.block.categoryName'),
+              nameInputPlaceholder: t('designer.block.enterCategoryName'),
+              validateErrMsg: t('designer.block.categoryNameRepeat')
+          }
+);
 
 const state = reactive({ visible: false });
 const isEdit = computed(() => Object.keys(props.initialValue).length !== 0);
@@ -109,7 +111,7 @@ const validateGroup = (rule, value, callback) => {
         props.initialValue?.name !== value &&
         groupList.value.some(group => group.name === value);
     if (isRepeat) {
-        callback(new Error(groupLabels.validateErrMsg));
+        callback(new Error(groupLabels.value.validateErrMsg));
         return;
     }
     callback();
@@ -157,9 +159,7 @@ const handleChangeName = value => {
 
 const title = computed(
     () =>
-        `${isEdit.value ? t('designer.block.edit') : t('designer.block.new')}${
-            groupLabels.text
-        }`
+        `${isEdit.value ? t('designer.block.edit') : t('designer.block.new')} ${groupLabels.value.text}`
 );
 const closeDialog = () => {
     emit('update:modelValue', false);

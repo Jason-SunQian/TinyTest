@@ -29,6 +29,7 @@
                     :filter-method="categoryFilter"
                     clearable
                     top-create
+                    :top-create-text="t('designer.block.new')"
                     class="search-select"
                     @top-create-click="createCategory"
                     @change="changeCategory"
