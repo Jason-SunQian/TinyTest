@@ -235,6 +235,10 @@
             "unnamedGroup": "無名グループ",
             "groupNameRule": "中国語、数字、英字、'-'または'_'のみ許可",
             "groupNameRequired": "グループ名は必須です"
+        },
+        "page": {
+            "noChangesToSave": "ページ内容が変更されていないため、保存する必要がありません",
+            "pageIdMissing": "ページIDが存在しないため、保存できません"
         }
     }
 }

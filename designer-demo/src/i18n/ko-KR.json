@@ -235,6 +235,10 @@
             "unnamedGroup": "이름 없는 그룹",
             "groupNameRule": "중국어, 숫자, 영문자, '-' 또는 '_'만 허용",
             "groupNameRequired": "그룹명은 필수입니다"
+        },
+        "page": {
+            "noChangesToSave": "페이지 내용이 변경되지 않아 저장할 필요가 없습니다",
+            "pageIdMissing": "페이지 ID가 존재하지 않아 저장할 수 없습니다"
         }
     }
 }

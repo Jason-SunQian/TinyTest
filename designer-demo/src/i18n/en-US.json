@@ -1033,6 +1033,8 @@
             "savePage": "Save Page",
             "saveSuccess": "Save successfully",
             "saveFailed": "Save failed",
+            "noChangesToSave": "No changes to save",
+            "pageIdMissing": "Page ID is missing, cannot save",
             "duplicatePage": "Duplicate Page",
             "editPage": "Edit Page",
             "pageSettings": "Page Settings",

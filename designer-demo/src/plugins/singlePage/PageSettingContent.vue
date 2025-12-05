@@ -210,10 +210,23 @@ export default {
 
         const createHistoryMessage = () => {
             if (isCurrentDataSame()) {
+                useNotify({
+                    message: t('designer.page.noChangesToSave'),
+                    type: 'info'
+                });
                 return;
             }
 
             const { id } = pageSettingState.currentPageData;
+            
+            if (!id) {
+                useNotify({
+                    message: t('designer.page.pageIdMissing'),
+                    type: 'error'
+                });
+                return;
+            }
+
             // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             const {
                 // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
@@ -233,46 +246,52 @@ export default {
                 pageSettingState.currentPageData.route;
             const isCurEditPage = pageState?.currentPage?.id === id;
 
-            handlePageUpdate(id, params, routerChange, isCurEditPage).then(
-                data => {
-                    if (data) {
-                        pageSettingState.currentPageData = {
-                            ...pageSettingState.currentPageData,
-                            ...data
-                        };
+            const updateParams = {
+                id,
+                params,
+                routerChange,
+                isCurEditPage,
+                isUpdateTree: true
+            };
 
-                        if (pageState?.currentPage?.id === data?.id) {
-                            initData(data.page_content, data);
-                        }
+            handlePageUpdate(updateParams).then(data => {
+                if (data) {
+                    pageSettingState.currentPageData = {
+                        ...pageSettingState.currentPageData,
+                        ...data
+                    };
 
-                        pageSettingState.currentPageDataCopy = extend(
-                            true,
-                            {},
-                            pageSettingState.currentPageData
-                        );
-                        const {
-                            id: pageId,
-                            name,
-                            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
-                            page_content
-                        } = pageSettingState.currentPageData;
+                    if (pageState?.currentPage?.id === data?.id) {
+                        initData(data.page_content, data);
+                    }
 
-                        const pageContent = {
-                            ...pageSettingState.currentPageData,
-                            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
-                            page_content
-                        };
+                    pageSettingState.currentPageDataCopy = extend(
+                        true,
+                        {},
+                        pageSettingState.currentPageData
+                    );
+                    const {
+                        id: pageId,
+                        name,
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                        page_content
+                    } = pageSettingState.currentPageData;
 
-                        if (isVsCodeEnv()) {
-                            generatePage({
-                                pageId,
-                                pageName: name,
-                                pageContent
-                            });
-                        }
+                    const pageContent = {
+                        ...pageSettingState.currentPageData,
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                        page_content
+                    };
+
+                    if (isVsCodeEnv()) {
+                        generatePage({
+                            pageId,
+                            pageName: name,
+                            pageContent
+                        });
                     }
                 }
-            );
+            });
         };
 
         const savePageSetting = () => {

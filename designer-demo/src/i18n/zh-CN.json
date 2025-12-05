@@ -1043,6 +1043,8 @@
             "savePage": "保存页面",
             "saveSuccess": "保存成功",
             "saveFailed": "保存失败",
+            "noChangesToSave": "页面内容未修改，无需保存",
+            "pageIdMissing": "页面ID不存在，无法保存",
             "duplicatePage": "复制页面",
             "editPage": "编辑页面",
             "pageSettings": "页面设置",
