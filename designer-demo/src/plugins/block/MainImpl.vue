@@ -1,280 +1,683 @@
+<!-- eslint-disable vue/max-lines-per-block -->
 <template>
-  <plugin-panel
-    :title="t('designer.leftPanel.blockManagement')"
-    class="plugin-block"
-    :fixed-name="PLUGIN_NAME.BlockManage"
-    :fixedPanels="fixedPanels"
-    :docsUrl="docsUrl"
-    :docsContent="docsContent"
-    :isShowDocsIcon="true"
-    @close="close"
-  >
-    <template #header>
-      <svg-button name="add-page" placement="bottom" :tips="t('designer.leftPanel.createBlock')" @click="openBlockAdd"></svg-button>
-    </template>
-    <template #content>
-      <div class="app-manage-type">
-        <tiny-select
-          ref="groupSelect"
-          v-model="state.categoryId"
-          popper-class="block-popper"
-          :placeholder="groupLabels.selectPlaceholder"
-          filterable
-          :filter-method="categoryFilter"
-          clearable
-          top-create
-          @top-create-click="createCategory"
-          @change="changeCategory"
-          @clear="changeCategory"
-          @visible-change="handleSelectVisibleChange"
-          class="search-select"
-        >
-          <tiny-option
-            v-for="item in categoryList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-            class="block-group-option-item"
-          >
-            <div class="block-item">
-              <span>{{ item.name }}</span>
-              <div class="item-btns">
-                <svg-button
-                  class="item-icon"
-                  name="to-edit"
-                  :hoverBgColor="false"
-                  @click.stop="editCategory(item)"
-                ></svg-button>
-                <tiny-popover
-                  :modelValue="state.currentDeleteGroupId === item.id"
-                  placement="right"
-                  trigger="manual"
-                  popper-class="block-category-option-popper-wrapper"
-                  @update:modelValue="handleChangeDeletePopoverVisible"
+    <plugin-panel
+        :title="t('designer.leftPanel.blockManagement')"
+        class="plugin-block"
+        :fixed-name="PLUGIN_NAME.BlockManage"
+        :fixed-panels="fixedPanels"
+        :docs-url="docsUrl"
+        :docs-content="docsContent"
+        :is-show-docs-icon="true"
+        @close="close"
+    >
+        <template #header>
+            <svg-button
+                name="add-page"
+                placement="bottom"
+                :tips="t('designer.leftPanel.createBlock')"
+                @click="openBlockAdd"
+            />
+        </template>
+        <template #content>
+            <div class="app-manage-type">
+                <tiny-select
+                    ref="groupSelect"
+                    v-model="state.categoryId"
+                    popper-class="block-popper"
+                    :placeholder="groupLabels.selectPlaceholder"
+                    filterable
+                    :filter-method="categoryFilter"
+                    clearable
+                    top-create
+                    class="search-select"
+                    @top-create-click="createCategory"
+                    @change="changeCategory"
+                    @clear="changeCategory"
+                    @visible-change="handleSelectVisibleChange"
                 >
-                  <div class="popper-confirm" @mousedown.stop="">
-                    <div class="popper-confirm-header">{{ t('designer.common.delete') }}</div>
-                    <div class="popper-confirm-content">
-                      <span class="title">{{ groupLabels.deletePrompt }}</span>
-                    </div>
-                    <div class="popper-confirm-footer">
-                      <tiny-button class="cancel-btn" size="small" @click="handleShowDeleteModal(null)">
-                        {{ t('designer.common.cancel') }}
-                      </tiny-button>
-                      <tiny-button class="confirm-btn" size="small" type="primary" @click="delCategory(item.id)">
-                        {{ t('designer.common.confirm') }}
-                      </tiny-button>
-                    </div>
-                  </div>
-                  <template #reference>
-                    <svg-button
-                      v-if="!item.blocks.length"
-                      class="item-icon"
-                      name="delete"
-                      :hoverBgColor="false"
-                      @click.stop="handleShowDeleteModal(item.id)"
-                    ></svg-button>
-                  </template>
-                </tiny-popover>
-              </div>
+                    <tiny-option
+                        v-for="item in categoryList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                        class="block-group-option-item"
+                    >
+                        <div class="block-item">
+                            <span>{{ item.name }}</span>
+                            <div class="item-btns">
+                                <svg-button
+                                    class="item-icon"
+                                    name="to-edit"
+                                    :hover-bg-color="false"
+                                    @click.stop="editCategory(item)"
+                                />
+                                <tiny-popover
+                                    :model-value="
+                                        state.currentDeleteGroupId === item.id
+                                    "
+                                    placement="right"
+                                    trigger="manual"
+                                    popper-class="block-category-option-popper-wrapper"
+                                    @update:model-value="
+                                        handleChangeDeletePopoverVisible
+                                    "
+                                >
+                                    <div
+                                        class="popper-confirm"
+                                        @mousedown.stop=""
+                                    >
+                                        <div class="popper-confirm-header">
+                                            {{ t('designer.common.delete') }}
+                                        </div>
+                                        <div class="popper-confirm-content">
+                                            <span class="title">{{
+                                                groupLabels.deletePrompt
+                                            }}</span>
+                                        </div>
+                                        <div class="popper-confirm-footer">
+                                            <tiny-button
+                                                class="cancel-btn"
+                                                size="small"
+                                                @click="
+                                                    handleShowDeleteModal(null)
+                                                "
+                                            >
+                                                {{
+                                                    t('designer.common.cancel')
+                                                }}
+                                            </tiny-button>
+                                            <tiny-button
+                                                class="confirm-btn"
+                                                size="small"
+                                                type="primary"
+                                                @click="delCategory(item.id)"
+                                            >
+                                                {{
+                                                    t('designer.common.confirm')
+                                                }}
+                                            </tiny-button>
+                                        </div>
+                                    </div>
+                                    <template #reference>
+                                        <svg-button
+                                            v-if="!item.blocks.length"
+                                            class="item-icon"
+                                            name="delete"
+                                            :hover-bg-color="false"
+                                            @click.stop="
+                                                handleShowDeleteModal(item.id)
+                                            "
+                                        />
+                                    </template>
+                                </tiny-popover>
+                            </div>
+                        </div>
+                    </tiny-option>
+                </tiny-select>
             </div>
-          </tiny-option>
-        </tiny-select>
-      </div>
-      <div class="app-manage-search">
-        <tiny-search v-model="state.searchKey" :placeholder="t('designer.common.search')">
-          <template #prefix>
-            <tiny-icon-search />
-          </template>
-        </tiny-search>
-      </div>
-      <div class="plugin-block-list">
-        <plugin-block-list
-          :data="state.blockList"
-          :isBlockManage="true"
-          :showBlockShot="true"
-          :blockStyle="state.layout"
-          :default-icon-tip="t('designer.leftPanel.viewBlock')"
-          :externalBlock="externalBlock"
-          @editBlock="editBlock"
-          @iconClick="openSettingPanel"
-        ></plugin-block-list>
-      </div>
-      <block-setting></block-setting>
-      <div class="block-footer">
-        <tiny-dropdown trigger="click" @item-click="changeType">
-          <span>
-            <span>{{ state.sortTypeLabel }}</span>
-          </span>
-          <template #dropdown>
-            <tiny-dropdown-menu popper-class="block-footer-dropdown" placement="top" :options="state.sortOptions"></tiny-dropdown-menu>
-          </template>
-        </tiny-dropdown>
-        <block-group-arrange v-model="state.layout" :arrangeList="state.arrangeList"></block-group-arrange>
-      </div>
-    </template>
-  </plugin-panel>
-  <category-edit v-model="state.editVisible" :initialValue="state.groupInitialValue"></category-edit>
-  <save-new-block :boxVisibility="boxVisibility" @close="close"></save-new-block>
+            <div class="app-manage-search">
+                <tiny-search
+                    v-model="state.searchKey"
+                    :placeholder="t('designer.common.search')"
+                >
+                    <template #prefix>
+                        <tiny-icon-search />
+                    </template>
+                </tiny-search>
+            </div>
+            <div class="plugin-block-list">
+                <plugin-block-list
+                    :data="state.blockList"
+                    :is-block-manage="true"
+                    :show-block-shot="true"
+                    :block-style="state.layout"
+                    :default-icon-tip="t('designer.leftPanel.viewBlock')"
+                    :external-block="externalBlock"
+                    @edit-block="editBlock"
+                    @icon-click="openSettingPanel"
+                />
+            </div>
+            <block-setting/>
+            <div class="block-footer">
+                <tiny-dropdown trigger="click" @item-click="changeType">
+                    <span>
+                        <span>{{ state.sortTypeLabel }}</span>
+                    </span>
+                    <template #dropdown>
+                        <tiny-dropdown-menu
+                            popper-class="block-footer-dropdown"
+                            placement="top"
+                            :options="state.sortOptions"
+                        />
+                    </template>
+                </tiny-dropdown>
+                <block-group-arrange
+                    v-model="state.layout"
+                    :arrange-list="state.arrangeList"
+                />
+            </div>
+        </template>
+    </plugin-panel>
+    <category-edit
+        v-model="state.editVisible"
+        :initial-value="state.groupInitialValue"
+    />
+    <save-new-block
+        :box-visibility="boxVisibility"
+        @close="close"
+    />
 </template>
 
-<script lang="tsx">
+<!-- eslint-disable vue/max-lines-per-block -->
+<script lang="ts">
 /* metaService: engine.plugins.blockmanage.Main */
-import { ref, reactive, computed, watch, provide, inject } from 'vue'
-import { Search as TinySearch, Select as TinySelect, Option as TinyOption, Dropdown as TinyDropdown, DropdownMenu as TinyDropdownMenu, Popover as TinyPopover, Button as TinyButton } from '@opentiny/vue'
-import { IconSearch } from '@opentiny/vue-icon'
-import { PluginBlockList, SvgButton } from '@opentiny/tiny-engine-common'
-import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
-import { useBlock, useModal, useLayout, useCanvas, useHelp, getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
-import { constants } from '@opentiny/tiny-engine-utils'
-import BlockSetting, { openPanel, closePanel } from './BlockSetting.vue'
-import BlockGroupArrange from './BlockGroupArrange.vue'
-import CategoryEdit from './CategoryEdit.vue'
-import SaveNewBlock from './SaveNewBlock.vue'
-import { setCurrentCategory, saveBlock, initEditBlock, mountedHook, refreshBlockData, getBlockById, getBlockContentByLabel, getBlockBase64, updateBlockList, delCategory, getEditBlock, publishBlock } from './js/blockSetting'
-import { fetchBlockList, requestBlocks, requestInitBlocks, fetchBlockContent } from './js/http'
+/* eslint-disable max-lines */
+import { ref, reactive, computed, watch, provide, inject, h } from 'vue';
+import {
+    Search as TinySearch,
+    Select as TinySelect,
+    Option as TinyOption,
+    Dropdown as TinyDropdown,
+    DropdownMenu as TinyDropdownMenu,
+    Popover as TinyPopover,
+    Button as TinyButton
+} from '@opentiny/vue';
+import { IconSearch } from '@opentiny/vue-icon';
+import { PluginBlockList, SvgButton } from '@opentiny/tiny-engine-common';
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+import {
+    useBlock,
+    useModal,
+    useLayout,
+    useCanvas,
+    useHelp,
+    getMetaApi,
+    META_SERVICE
+} from '@opentiny/tiny-engine-meta-register';
+import { constants } from '@opentiny/tiny-engine-utils';
 
-const { SORT_TYPE } = constants
-const externalBlock = ref(null)
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
+
+import BlockSetting, { openPanel, closePanel } from './BlockSetting.vue';
+import BlockGroupArrange from './BlockGroupArrange.vue';
+import CategoryEdit from './CategoryEdit.vue';
+import SaveNewBlock from './SaveNewBlock.vue';
+import {
+    setCurrentCategory,
+    saveBlock,
+    initEditBlock,
+    mountedHook,
+    refreshBlockData,
+    getBlockById,
+    getBlockContentByLabel,
+    getBlockBase64,
+    updateBlockList,
+    delCategory,
+    getEditBlock,
+    publishBlock
+} from './js/blockSetting';
+import {
+    fetchBlockList,
+    requestBlocks,
+    requestInitBlocks,
+    fetchBlockContent
+} from './js/http';
+
+const { SORT_TYPE } = constants;
+// eslint-disable-next-line
+const externalBlock = ref(null);
 
 const openSettingPanel = async ({ isOpen = true, item: block = {} }) => {
-  externalBlock.value = block
-  if (block?.id !== useBlock().getCurrentBlock()?.id) {
-    await refreshBlockData(block)
-  }
-  initEditBlock(block)
-  if (isOpen) openPanel()
-}
+    externalBlock.value = block;
+    if (block?.id !== useBlock().getCurrentBlock()?.id) {
+        await refreshBlockData(block);
+    }
+    initEditBlock(block);
+    if (isOpen) openPanel();
+};
 
-export const api = { fetchBlockList, openSettingPanel, saveBlock, getBlockById, getBlockContentByLabel, requestBlocks, refreshBlockData, useBlock, requestInitBlocks, getBlockBase64, fetchBlockContent, getEditBlock, publishBlock }
+export const api = {
+    fetchBlockList,
+    openSettingPanel,
+    saveBlock,
+    getBlockById,
+    getBlockContentByLabel,
+    requestBlocks,
+    refreshBlockData,
+    useBlock,
+    requestInitBlocks,
+    getBlockBase64,
+    fetchBlockContent,
+    getEditBlock,
+    publishBlock
+};
 
 export default {
-  components: { TinySearch, TinySelect, TinyOption, SvgButton, TinyDropdown, TinyDropdownMenu, PluginPanel, SaveNewBlock, BlockSetting, BlockGroupArrange, CategoryEdit, PluginBlockList, TinyPopover, TinyButton, TinyIconSearch: IconSearch() },
-  props: { fixedPanels: { type: Array } },
-  emits: ['close'],
-  setup(props, { emit }) {
-    const i18n: any = inject(I18nInjectionKey)
-    const t = i18n?.global?.t || ((key: string) => key)
-
-    const docsUrl = useHelp().getDocsUrl('block')
-    const docsContent = computed(() => t('designer.block.blockDocsContent'))
-    const { getBlockList, sort } = useBlock()
-    const { isSaved } = useCanvas()
-    const { confirm } = useModal()
-    const formData = reactive({ name: '', path: '', nameCn: '' })
-
-    const state = reactive({
-      searchKey: '',
-      categoryId: '',
-      groupValueCache: '',
-      sortTypeLabel: t('designer.block.sortByTimeDesc'),
-      sortType: 'timeDesc',
-      publishFilterType: '',
-      sortOptions: [
-        { label: t('designer.block.sortByTimeAsc'), value: SORT_TYPE.timeAsc },
-        { label: t('designer.block.sortByTimeDesc'), value: SORT_TYPE.timeDesc },
-        { label: t('designer.block.sortByAlphabetAsc'), value: SORT_TYPE.alphabetAsc },
-        { label: t('designer.block.sortByAlphabetDesc'), value: SORT_TYPE.alphabetDesc },
-        { label: t('designer.block.published'), value: 'published' },
-        { label: t('designer.block.draft'), value: 'draft' }
-      ],
-      editVisible: false,
-      groupInitialValue: {},
-      layout: 'default',
-      arrangeList: [
-        { id: 'default', name: t('designer.block.grid'), svgName: 'grid' },
-        { id: 'mini', name: t('designer.block.list'), svgName: 'small-list' }
-      ],
-      curLayout: 'grid',
-      blockList: getBlockList(),
-      currentDeleteGroupId: null
-    })
-
-    const groupSelect = ref(null)
-    const { PLUGIN_NAME } = useLayout()
-    const panelState = reactive({ emitEvent: emit })
-    provide('panelState', panelState)
-
-    watch(() => [getBlockList(), state.searchKey, state.publishFilterType], () => {
-      const blockList = getBlockList()
-      state.blockList = blockList.filter((item) => {
-        let publishFilterFlag = true
-        switch (state.publishFilterType) {
-          case 'published': publishFilterFlag = item.is_published; break
-          case 'draft': publishFilterFlag = !item.is_published; break
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinySearch,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinySelect,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyOption,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        SvgButton,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyDropdown,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyDropdownMenu,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PluginPanel,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        SaveNewBlock,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        BlockSetting,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        BlockGroupArrange,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        CategoryEdit,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PluginBlockList,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyPopover,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyButton,
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+        TinyIconSearch: IconSearch()
+    },
+    props: {
+        fixedPanels: {
+            type: Array as () => string[],
+            default: () => []
         }
-        if (!publishFilterFlag) return false
-        const pattern = new RegExp(state.searchKey, 'i')
-        return pattern.test(item?.name_cn) || pattern.test(item?.label) || pattern.test(item?.description)
-      })
-      state.blockList = sort(state.blockList, state.sortType)
-    })
+    },
+    emits: ['close'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const i18n: any = inject(I18nInjectionKey);
+        const t = i18n?.global?.t || ((key: string) => key);
 
-    const categoryList = computed(() => useBlock().getCategoryList())
-    mountedHook()
-    const boxVisibility = ref(false)
-    const openBlockAdd = () => { boxVisibility.value = true }
-    const close = () => { boxVisibility.value = false; emit('close'); closePanel() }
+        const docsUrl = useHelp().getDocsUrl('block');
+        const docsContent = computed(() =>
+            t('designer.block.blockDocsContent')
+        );
+        const { getBlockList, sort } = useBlock();
+        const { isSaved } = useCanvas();
+        const { confirm } = useModal();
+        const formData = reactive({ name: '', path: '', nameCn: '' });
 
-    const editBlock = async (block) => {
-      const isEdit = true
-      if (isSaved()) {
-        await refreshBlockData(block)
-        getMetaApi(META_SERVICE.GlobalService).updateBlockId(block.id)
-        useBlock().initBlock(block, {}, isEdit)
-      } else {
-        confirm({ message: t('designer.block.canvasNotSavedConfirm'), exec: async () => { await refreshBlockData(block); useBlock().initBlock(block, {}, isEdit) } })
-      }
+        const state = reactive({
+            searchKey: '',
+            categoryId: '',
+            groupValueCache: '',
+            sortTypeLabel: t('designer.block.sortByTimeDesc'),
+            sortType: 'timeDesc',
+            publishFilterType: '',
+            sortOptions: [
+                {
+                    label: t('designer.block.sortByTimeAsc'),
+                    value: SORT_TYPE.timeAsc
+                },
+                {
+                    label: t('designer.block.sortByTimeDesc'),
+                    value: SORT_TYPE.timeDesc
+                },
+                {
+                    label: t('designer.block.sortByAlphabetAsc'),
+                    value: SORT_TYPE.alphabetAsc
+                },
+                {
+                    label: t('designer.block.sortByAlphabetDesc'),
+                    value: SORT_TYPE.alphabetDesc
+                },
+                { label: t('designer.block.published'), value: 'published' },
+                { label: t('designer.block.draft'), value: 'draft' }
+            ],
+            editVisible: false,
+            groupInitialValue: {},
+            layout: 'default',
+            arrangeList: [
+                {
+                    id: 'default',
+                    name: t('designer.block.grid'),
+                    svgName: 'grid'
+                },
+                {
+                    id: 'mini',
+                    name: t('designer.block.list'),
+                    svgName: 'small-list'
+                }
+            ],
+            curLayout: 'grid',
+            blockList: getBlockList(),
+            currentDeleteGroupId: null
+        });
+
+        // eslint-disable-next-line
+        const groupSelect = ref(null);
+        const { PLUGIN_NAME } = useLayout();
+        const panelState = reactive({ emitEvent: emit });
+        provide('panelState', panelState);
+
+        watch(
+            () => [getBlockList(), state.searchKey, state.publishFilterType],
+            () => {
+                const blockList = getBlockList();
+                state.blockList = blockList.filter(item => {
+                    let publishFilterFlag = true;
+                    switch (state.publishFilterType) {
+                        case 'published':
+                            publishFilterFlag = item.is_published;
+                            break;
+                        case 'draft':
+                            publishFilterFlag = !item.is_published;
+                            break;
+                        default:
+                            publishFilterFlag = true;
+                            break;
+                    }
+                    if (!publishFilterFlag) return false;
+                    const pattern = new RegExp(state.searchKey, 'i');
+                    return (
+                        pattern.test(item?.name_cn) ||
+                        pattern.test(item?.label) ||
+                        pattern.test(item?.description)
+                    );
+                });
+                state.blockList = sort(state.blockList, state.sortType);
+            }
+        );
+
+        const categoryList = computed(() => useBlock().getCategoryList());
+        mountedHook();
+        const boxVisibility = ref(false);
+        const openBlockAdd = () => {
+            boxVisibility.value = true;
+        };
+        const close = () => {
+            boxVisibility.value = false;
+            emit('close');
+            closePanel();
+        };
+
+        const editBlock = async block => {
+            const isEdit = true;
+            if (isSaved()) {
+                await refreshBlockData(block);
+                getMetaApi(META_SERVICE.GlobalService).updateBlockId(block.id);
+                useBlock().initBlock(block, {}, isEdit);
+            } else {
+                confirm({
+                    message: t('designer.block.canvasNotSavedConfirm'),
+                    exec: async () => {
+                        await refreshBlockData(block);
+                        useBlock().initBlock(block, {}, isEdit);
+                    }
+                });
+            }
+        };
+
+        const categoryFilter = (value, selectRef) => {
+            const select = selectRef?.value || groupSelect.value;
+            if (value) {
+                select.state.cachedOptions.forEach(item => {
+                    item.state.visible = item.label.indexOf(value) > -1;
+                });
+            } else {
+                select.state.cachedOptions.forEach(item => {
+                    item.state.visible = true;
+                });
+            }
+        };
+
+        const groupLabels = computed(() =>
+            useBlock().shouldReplaceCategoryWithGroup()
+                ? {
+                      selectPlaceholder: t(
+                          'designer.block.selectAllGroupsPlaceholder'
+                      ),
+                      deletePrompt: t('designer.block.deleteGroupPrompt'),
+                      deleteTitle: t('designer.block.deleteGroupTitle')
+                  }
+                : {
+                      selectPlaceholder: t(
+                          'designer.block.selectAllCategoriesPlaceholder'
+                      ),
+                      deletePrompt: t('designer.block.deleteCategoryPrompt'),
+                      deleteTitle: t('designer.block.deleteCategoryTitle')
+                  }
+        );
+
+        const changeCategory = val => {
+            setCurrentCategory(val);
+            updateBlockList();
+        };
+        const editCategory = category => {
+            state.groupInitialValue = category;
+            state.editVisible = true;
+            state.currentDeleteGroupId = null;
+        };
+        const createCategory = () => {
+            editCategory({});
+        };
+        const deleteItem = item => {
+            confirm({
+                title: groupLabels.value.deleteTitle,
+                status: 'custom',
+                message: {
+                    render() {
+                        const itemName = item.name;
+                        const messageText = t(
+                            'designer.block.confirmDeleteItem',
+                            {
+                                itemName
+                            }
+                        );
+                        return h('div', messageText);
+                    }
+                },
+                exec() {
+                    delCategory(item.id);
+                }
+            });
+        };
+        const changeType = ({ itemData }) => {
+            const { label, value } = itemData;
+            state.sortTypeLabel = label;
+            state.sortType = value;
+            let type = value;
+            const filterType = ['published', 'draft'];
+            if (filterType.includes(type)) {
+                state.publishFilterType = type;
+                type = 'timeDesc';
+                state.sortType = type;
+            } else {
+                state.publishFilterType = '';
+            }
+            state.blockList = sort(state.blockList, type);
+        };
+        const handleShowDeleteModal = id => {
+            state.currentDeleteGroupId = id;
+        };
+        const handleChangeDeletePopoverVisible = visible => {
+            if (!visible) state.currentDeleteGroupId = null;
+        };
+        const handleSelectVisibleChange = visible => {
+            handleChangeDeletePopoverVisible(visible);
+        };
+
+        return {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            PLUGIN_NAME,
+            state,
+            groupSelect,
+            categoryList,
+            editBlock,
+            categoryFilter,
+            changeCategory,
+            createCategory,
+            editCategory,
+            deleteItem,
+            closePanel,
+            openBlockAdd,
+            boxVisibility,
+            openSettingPanel,
+            close,
+            formData,
+            changeType,
+            handleShowDeleteModal,
+            delCategory,
+            handleChangeDeletePopoverVisible,
+            handleSelectVisibleChange,
+            externalBlock,
+            docsUrl,
+            docsContent,
+            groupLabels,
+            t
+        };
     }
-
-    const categoryFilter = (value, selectRef) => {
-      const select = selectRef?.value || groupSelect.value
-      if (value) { select.state.cachedOptions.forEach((item) => { item.state.visible = item.label.indexOf(value) > -1 }) }
-      else { select.state.cachedOptions.forEach((item) => { item.state.visible = true }) }
-    }
-
-    const groupLabels = computed(() => useBlock().shouldReplaceCategoryWithGroup() ?
-      { selectPlaceholder: t('designer.block.selectAllGroupsPlaceholder'), deletePrompt: t('designer.block.deleteGroupPrompt'), deleteTitle: t('designer.block.deleteGroupTitle') } :
-      { selectPlaceholder: t('designer.block.selectAllCategoriesPlaceholder'), deletePrompt: t('designer.block.deleteCategoryPrompt'), deleteTitle: t('designer.block.deleteCategoryTitle') })
-
-    const changeCategory = (val) => { setCurrentCategory(val); updateBlockList() }
-    const editCategory = (category) => { state.groupInitialValue = category; state.editVisible = true; state.currentDeleteGroupId = null }
-    const createCategory = () => { editCategory({}) }
-    const deleteItem = (item) => { confirm({ title: groupLabels.value.deleteTitle, status: 'custom', message: { render() { return (<div>{t('designer.block.confirmDeleteItem', { itemName: item.name })}</div>) } }, exec() { delCategory(item.id) } }) }
-    const changeType = ({ itemData }) => {
-      const { label, value } = itemData
-      state.sortTypeLabel = label
-      state.sortType = value
-      let type = value
-      const filterType = ['published', 'draft']
-      if (filterType.includes(type)) { state.publishFilterType = type; type = 'timeDesc'; state.sortType = type } else { state.publishFilterType = '' }
-      state.blockList = sort(state.blockList, type)
-    }
-    const handleShowDeleteModal = (id) => { state.currentDeleteGroupId = id }
-    const handleChangeDeletePopoverVisible = (visible) => { if (!visible) state.currentDeleteGroupId = null }
-    const handleSelectVisibleChange = (visible) => { handleChangeDeletePopoverVisible(visible) }
-
-    return { PLUGIN_NAME, state, groupSelect, categoryList, editBlock, categoryFilter, changeCategory, createCategory, editCategory, deleteItem, closePanel, openBlockAdd, boxVisibility, openSettingPanel, close, formData, changeType, handleShowDeleteModal, delCategory, handleChangeDeletePopoverVisible, handleSelectVisibleChange, externalBlock, docsUrl, docsContent, groupLabels, t }
-  }
-}
+};
 </script>
 
-<style lang="less" scoped>
-.plugin-block { width: 100%; height: 100%; }
-.app-manage-type { padding: 0 10px; margin-bottom: 12px; display: flex; .search-select { flex: 1; } }
-.app-manage-search { padding: 0 10px 12px 10px; border-bottom: 1px solid var(--te-block-panel-header-border-color); }
-.block-popper { .block-group-option-item { display: flex; } .block-item { display: flex; justify-content: space-between; align-items: center; flex: 1; .item-btns { display: none; } &:hover { .item-btns { display: block; } } } .item-icon { font-size: 12px; } }
-.plugin-block-list { margin-bottom: 40px; padding: 12px; overflow-y: auto; }
-.block-footer { position: absolute; bottom: 0; left: -6px; right: 0; padding: 8px 16px; border-top: 1px solid var(--te-block-panel-footer-border-color); background-color: var(--te-block-panel-footer-bg-color); color: var(--te-block-panel-footer-text-color); display: flex; justify-content: space-between; :deep(.tiny-dropdown) { color: var(--te-block-panel-footer-text-color); .tiny-dropdown__trigger:not(.tiny-dropdown__caret-button):not(.is-disabled):hover { color: var(--te-block-panel-footer-text-color); } .tiny-dropdown__suffix-inner { color: var(--te-block-panel-footer-icon-color); height: 10px; .tiny-svg { fill: currentcolor; } } .tiny-dropdown__title { font-size: var(--te-base-font-size-base); } } :deep(.tiny-dropdown-menu) { padding: var(--te-common-vertical-form-label-spacing) 0; } .footer-layout { font-size: 12px; color: var(--te-block-panel-footer-text-color); .tiny-svg { cursor: pointer; margin-left: 8px; &.active { color: var(--te-block-panel-footer-bind-icon-color); } } } .ml8 { margin-left: 8px; } }
-:deep(.tiny-button) { border-radius: 4px; height: 24px; line-height: 24px; }
-:deep(.tiny-dropdown-item) { font-size: var(--te-base-font-size-base); &:not(.is-disabled):active, &:not(.is-disabled):hover, &:focus { background-color: var(--te-block-panel-footer-bg-color-active); color: var(--te-block-panel-footer-text-color); } }
-:deep(.tiny-dropdown-menu.tiny-popper[x-placement^='top']) { padding: var(--te-common-vertical-form-label-spacing) 0; }
+<!-- eslint-disable vue/max-lines-per-block -->
+<style lang="scss" scoped>
+.plugin-block {
+    width: 100%;
+    height: 100%;
+}
+.app-manage-type {
+    padding: 0 10px;
+    margin-bottom: 12px;
+    display: flex;
+    .search-select {
+        flex: 1;
+    }
+}
+.app-manage-search {
+    padding: 0 10px 12px 10px;
+    border-bottom: 1px solid var(--te-block-panel-header-border-color);
+}
+.block-popper {
+    .block-group-option-item {
+        display: flex;
+    }
+    .block-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex: 1;
+        .item-btns {
+            display: none;
+        }
+        &:hover {
+            .item-btns {
+                display: block;
+            }
+        }
+    }
+    .item-icon {
+        font-size: 12px;
+    }
+}
+.plugin-block-list {
+    margin-bottom: 40px;
+    padding: 12px;
+    overflow-y: auto;
+}
+.block-footer {
+    position: absolute;
+    bottom: 0;
+    left: -6px;
+    right: 0;
+    padding: 8px 16px;
+    border-top: 1px solid var(--te-block-panel-footer-border-color);
+    background-color: var(--te-block-panel-footer-bg-color);
+    color: var(--te-block-panel-footer-text-color);
+    display: flex;
+    justify-content: space-between;
+    :deep(.tiny-dropdown) {
+        color: var(--te-block-panel-footer-text-color);
+        .tiny-dropdown__trigger:not(.tiny-dropdown__caret-button):not(.is-disabled):hover {
+            color: var(--te-block-panel-footer-text-color);
+        }
+        .tiny-dropdown__suffix-inner {
+            color: var(--te-block-panel-footer-icon-color);
+            height: 10px;
+            .tiny-svg {
+                fill: currentcolor;
+            }
+        }
+        .tiny-dropdown__title {
+            font-size: var(--te-base-font-size-base);
+        }
+    }
+    :deep(.tiny-dropdown-menu) {
+        padding: var(--te-common-vertical-form-label-spacing) 0;
+    }
+    .footer-layout {
+        font-size: 12px;
+        color: var(--te-block-panel-footer-text-color);
+        .tiny-svg {
+            cursor: pointer;
+            margin-left: 8px;
+            &.active {
+                color: var(--te-block-panel-footer-bind-icon-color);
+            }
+        }
+    }
+    .ml8 {
+        margin-left: 8px;
+    }
+}
+:deep(.tiny-button) {
+    border-radius: 4px;
+    height: 24px;
+    line-height: 24px;
+}
+:deep(.tiny-dropdown-item) {
+    font-size: var(--te-base-font-size-base);
+    &:not(.is-disabled):active,
+    &:not(.is-disabled):hover,
+    &:focus {
+        background-color: var(--te-block-panel-footer-bg-color-active);
+        color: var(--te-block-panel-footer-text-color);
+    }
+}
+:deep(.tiny-dropdown-menu.tiny-popper[x-placement^='top']) {
+    padding: var(--te-common-vertical-form-label-spacing) 0;
+}
 </style>
 
-<style lang="less">
-.tiny-popover.tiny-popper.block-category-option-popper-wrapper { width: 220px; height: 108px; box-sizing: border-box; padding: 6px; .popper-confirm-header { font-size: var(--te-base-font-size-1); color: var(--te-block-popper-title-text-color); font-weight: var(--te-base-font-weight-7); margin-bottom: 12px; } .popper-confirm-content { font-size: 12px; color: var(--te-block-popper-content-text-color); } .popper-confirm-footer { text-align: right; margin-top: 16px; .tiny-button { min-width: 40px; margin-right: 0; & + .tiny-button { margin-left: 8px; } } } }
-.tiny-dropdown-menu.tiny-dropdown-menu { padding: var(--te-common-vertical-form-label-spacing) 0; }
+<style lang="scss">
+.tiny-popover.tiny-popper.block-category-option-popper-wrapper {
+    width: 220px;
+    height: 108px;
+    box-sizing: border-box;
+    padding: 6px;
+    .popper-confirm-header {
+        font-size: var(--te-base-font-size-1);
+        color: var(--te-block-popper-title-text-color);
+        font-weight: var(--te-base-font-weight-7);
+        margin-bottom: 12px;
+    }
+    .popper-confirm-content {
+        font-size: 12px;
+        color: var(--te-block-popper-content-text-color);
+    }
+    .popper-confirm-footer {
+        text-align: right;
+        margin-top: 16px;
+        .tiny-button {
+            min-width: 40px;
+            margin-right: 0;
+            & + .tiny-button {
+                margin-left: 8px;
+            }
+        }
+    }
+}
+.tiny-dropdown-menu.tiny-dropdown-menu {
+    padding: var(--te-common-vertical-form-label-spacing) 0;
+}
 </style>
-
-

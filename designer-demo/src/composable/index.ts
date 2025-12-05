@@ -1,3 +1,1 @@
-export { default as HttpService } from './http'
-
-
+export { default as HttpService } from './http';

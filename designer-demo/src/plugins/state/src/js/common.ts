@@ -18,32 +18,42 @@
  * @param {Object} options: { required: boolean }  required是否必填
  * @return result.success:boolean true（通过）/false（不通过）, result.message:string
  */
-export const validateMonacoEditorData = (editor, name, { required, language = 'json' } = {}) => {
-  if (!editor || !editor.getEditor || !editor.getValue) {
-    return { success: false, message: `系统异常，请刷新后重试。` }
-  }
-
-  const content = editor.getValue()
-  if (required && !content) {
-    return { success: false, message: `${name}未填写，请按照提示填写后重试。` }
-  }
-
-  const model = editor.getEditor().getModel()
-  const uri = model.uri._formatted
-  const markers = editor.editor
-    .getMonaco()
-    .editor.getModelMarkers({ owner: language })
-    .filter(({ resource: { _formatted } }) => _formatted === uri)
-  const messages = markers.map(
-    ({ startLineNumber, startColumn, message }) => `错误: line: ${startLineNumber} column: ${startColumn} ${message}`
-  )
-
-  if (messages.length) {
-    return {
-      success: false,
-      message: `${name}存在以下错误，请先点击右上角格式化按钮自动修复或手动修改后重试：${messages.join('\n')}`
+export const validateMonacoEditorData = (
+    editor,
+    name,
+    { required, language = 'json' } = {}
+) => {
+    if (!editor?.getEditor || !editor.getValue) {
+        return { success: false, message: `系统异常，请刷新后重试。` };
     }
-  }
 
-  return { success: true }
-}
+    const content = editor.getValue();
+    if (required && !content) {
+        return {
+            success: false,
+            message: `${name}未填写，请按照提示填写后重试。`
+        };
+    }
+
+    const model = editor.getEditor().getModel();
+    const uri = model.uri._formatted;
+    const markers = editor.editor
+        .getMonaco()
+        .editor.getModelMarkers({ owner: language })
+        .filter(({ resource: { _formatted } }) => _formatted === uri);
+    const messages = markers.map(
+        ({ startLineNumber, startColumn, message }) =>
+            `错误: line: ${startLineNumber} column: ${startColumn} ${message}`
+    );
+
+    if (messages.length) {
+        return {
+            success: false,
+            message: `${name}存在以下错误，请先点击右上角格式化按钮自动修复或手动修改后重试：${messages.join(
+                '\n'
+            )}`
+        };
+    }
+
+    return { success: true };
+};

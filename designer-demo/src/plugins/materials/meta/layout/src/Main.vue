@@ -1,131 +1,169 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <plugin-panel
-    :title="shortcut ? '' : title"
-    :fixed-name="PLUGIN_NAME.Materials"
-    :fixedPanels="fixedPanels"
-    @close="$emit('close')"
-  >
-    <template #content>
-      <tiny-tabs v-model="activeName" tab-style="button-card" class="full-width-tabs" v-if="!onlyShowDefault">
-        <tiny-tab-item :key="item.id" v-for="item in tabComponents" :title="item.title" :name="item.id">
-          <component :is="item.component" :activeTabName="activeName" :rightPanelRef="rightPanelRef"></component>
-        </tiny-tab-item>
-      </tiny-tabs>
-      <component :is="defaultComponent" v-if="onlyShowDefault"></component>
-      <div class="material-right-panel" ref="rightPanelRef"></div>
-    </template>
-  </plugin-panel>
+    <plugin-panel
+        :title="shortcut ? '' : title"
+        :fixed-name="PLUGIN_NAME.Materials"
+        :fixed-panels="fixedPanels"
+        @close="$emit('close')"
+    >
+        <template #content>
+            <tiny-tabs
+                v-if="!onlyShowDefault"
+                v-model="activeName"
+                tab-style="button-card"
+                class="full-width-tabs"
+            >
+                <tiny-tab-item
+                    v-for="item in tabComponents"
+                    :key="item.id"
+                    :title="item.title"
+                    :name="item.id"
+                >
+                    <component
+                        :is="item.component"
+                        :active-tab-name="activeName"
+                        :right-panel-ref="rightPanelRef"
+                    />
+                </tiny-tab-item>
+            </tiny-tabs>
+            <component :is="defaultComponent" v-if="onlyShowDefault" />
+            <div ref="rightPanelRef" class="material-right-panel" />
+        </template>
+    </plugin-panel>
 </template>
 
 <script lang="ts">
 /* metaService: engine.plugins.materials.layout.Main */
-import { reactive, provide, ref, computed } from 'vue'
-import { Tabs, TabItem } from '@opentiny/vue'
-import { META_APP as PLUGIN_NAME, getMergeMeta } from '@opentiny/tiny-engine-meta-register'
-import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue'
+import { reactive, provide, ref, computed } from 'vue';
+import { Tabs, TabItem } from '@opentiny/vue';
+import {
+    META_APP as PLUGIN_NAME,
+    getMergeMeta
+} from '@opentiny/tiny-engine-meta-register';
+
+import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
 
 export default {
-  components: {
-    PluginPanel,
-    TinyTabs: Tabs,
-    TinyTabItem: TabItem
-  },
-
-  props: {
-    shortcut: [Boolean, String],
-    fixedPanels: {
-      type: Array
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PluginPanel,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyTabs: Tabs,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyTabItem: TabItem
     },
-    registryData: {
-      type: Object,
-      default: () => ({})
+
+    props: {
+        shortcut: {
+            type: [Boolean, String],
+            default: false
+        },
+        fixedPanels: {
+            type: Array as () => string[],
+            default: () => []
+        },
+        registryData: {
+            type: Object as () => Record<string, unknown>,
+            default: () => ({})
+        },
+        groupName: {
+            type: String,
+            default: ''
+        }
     },
-    groupName: {
-      type: String,
-      default: ''
+    emits: ['close', 'fix-panel'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const panelState = reactive({
+            isShortcutPanel: props.shortcut,
+            isBlockGroupPanel: false,
+            isBlockList: false,
+            materialGroup: props.groupName,
+            emitEvent: emit
+        });
+        // 使用provide传给子组件,后续可能会有调整，先暂定
+        provide('panelState', panelState);
+
+        // eslint-disable-next-line vue/require-typed-ref
+        const rightPanelRef = ref(null);
+        const displayComponentIds =
+            props.registryData?.options?.displayComponentIds || [];
+        const onlyShowDefault = ref(
+            displayComponentIds.length === 1 || props.groupName !== ''
+        );
+
+        const activeTabId =
+            displayComponentIds.find(
+                item => item === props.registryData?.options?.defaultTabId
+            ) || displayComponentIds[0];
+
+        const activeName = ref(activeTabId);
+        const defaultComponent = computed(() => {
+            const defaultComponentID =
+                props.registryData?.options?.defaultTabId;
+            const computedActiveTabId = onlyShowDefault.value
+                ? defaultComponentID
+                : activeName.value;
+            return getMergeMeta(computedActiveTabId)?.entry;
+        });
+        const tabComponents = displayComponentIds.map(id => {
+            const itemMeta = getMergeMeta(id);
+            return {
+                id,
+                component: itemMeta?.entry,
+                title: itemMeta?.options?.title || itemMeta?.id
+            };
+        });
+
+        const title = ref(props.registryData?.title);
+
+        return {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            PLUGIN_NAME,
+            title,
+            activeName,
+            defaultComponent,
+            onlyShowDefault,
+            tabComponents,
+            rightPanelRef
+        };
     }
-  },
-  emits: ['close', 'fix-panel'],
-  setup(props, { emit }) {
-    const panelState = reactive({
-      isShortcutPanel: props.shortcut,
-      isBlockGroupPanel: false,
-      isBlockList: false,
-      materialGroup: props.groupName,
-      emitEvent: emit
-    })
-    provide('panelState', panelState) // 使用provide传给子组件,后续可能会有调整，先暂定
-
-    const rightPanelRef = ref(null)
-    const displayComponentIds = props.registryData?.options?.displayComponentIds || []
-    const onlyShowDefault = ref(displayComponentIds.length === 1 || props.groupName !== '')
-
-    const activeTabId =
-      displayComponentIds.find((item) => item === props.registryData?.options?.defaultTabId) || displayComponentIds[0]
-
-    const activeName = ref(activeTabId)
-    const defaultComponent = computed(() => {
-      const defaultComponentID = props.registryData?.options?.defaultTabId
-      const activeTabId = onlyShowDefault.value ? defaultComponentID : activeName.value
-      return getMergeMeta(activeTabId)?.entry
-    })
-    const tabComponents = displayComponentIds.map((id) => {
-      const itemMeta = getMergeMeta(id)
-      return {
-        id,
-        component: itemMeta?.entry,
-        title: itemMeta?.options?.title || itemMeta?.id
-      }
-    })
-
-    const title = ref(props.registryData?.title)
-
-    return {
-      PLUGIN_NAME,
-      title,
-      activeName,
-      defaultComponent,
-      onlyShowDefault,
-      tabComponents,
-      rightPanelRef
-    }
-  }
-}
+};
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .tiny-tabs {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
 }
 
 :deep(.tiny-tabs__header) {
-  padding: 0 12px;
+    padding: 0 12px;
 }
 
 :deep(.tiny-tabs__content) {
-  flex: 1;
-  padding: 0;
-  margin: 0px;
-  & > div {
-    height: 100%;
-  }
+    flex: 1;
+    padding: 0;
+    margin: 0px;
+    & > div {
+        height: 100%;
+    }
 }
 
 :deep(.tiny-tabs__item:first-child) {
-  border-top-left-radius: var(--te-base-border-radius-1);
-  border-bottom-left-radius: var(--te-base-border-radius-1);
+    border-top-left-radius: var(--te-base-border-radius-1);
+    border-bottom-left-radius: var(--te-base-border-radius-1);
 }
 
 :deep(.tiny-tabs__item:last-child) {
-  border-top-right-radius: var(--te-base-border-radius-1);
-  border-bottom-right-radius: var(--te-base-border-radius-1);
+    border-top-right-radius: var(--te-base-border-radius-1);
+    border-bottom-right-radius: var(--te-base-border-radius-1);
 }
 
 .tiny-collapse {
-  flex: 1;
-  overflow-y: scroll;
+    flex: 1;
+    overflow-y: scroll;
 }
 </style>

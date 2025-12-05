@@ -1,45 +1,48 @@
+<!-- eslint-disable vue/no-root-v-if, vue/multi-word-component-names, vue/block-lang, vue/component-api-style -->
 <template>
-  <p v-if="showEmptyTips" class="empty-tips">{{ tipsDesc }}</p>
+    <p v-if="showEmptyTips" class="empty-tips">{{ tipsDesc }}</p>
 </template>
 
-<script>
+<script lang="ts">
 /* metaService: engine.setting.props.Empty */
-import { computed } from 'vue'
-import { useCanvas } from '@opentiny/tiny-engine-meta-register'
-import { useDesignerI18n } from '@/services/i18nService'
+import { computed } from 'vue';
+import { useCanvas } from '@opentiny/tiny-engine-meta-register';
+
+import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
-  props: {
-    showEmptyTips: {
-      type: Boolean,
-      default: false
-    }
-  },
-  setup() {
-    const { t } = useDesignerI18n()
-    const { getSchema } = useCanvas()
-    
-    // 使用 computed 确保响应式（自动响应语言切换）
-    const tipsDesc = computed(() => {
-      const len = getSchema()?.children?.length
-      return len 
-        ? t('designer.settings.props.emptySelection') 
-        : t('designer.settings.props.emptyComponent')
-    })
+    props: {
+        showEmptyTips: {
+            type: Boolean,
+            default: false
+        }
+    },
+    // eslint-disable-next-line vue/component-api-style
+    setup() {
+        const { t } = useDesignerI18n();
+        const { getSchema } = useCanvas();
 
-    return {
-      tipsDesc
+        // 使用 computed 确保响应式（自动响应语言切换）
+        const tipsDesc = computed(() => {
+            const len = getSchema()?.children?.length;
+            return len
+                ? t('designer.settings.props.emptySelection')
+                : t('designer.settings.props.emptyComponent');
+        });
+
+        return {
+            tipsDesc
+        };
     }
-  }
-}
+};
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .empty-tips {
-  color: var(--te-props-common-text-color-weaken);
-  text-align: center;
-  margin-top: 50px;
-  font-size: 12px;
+    color: var(--te-props-common-text-color-weaken);
+    text-align: center;
+    margin-top: 50px;
+    font-size: 12px;
 }
 </style>
-

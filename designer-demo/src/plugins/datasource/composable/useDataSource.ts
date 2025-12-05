@@ -11,135 +11,177 @@
  */
 
 /* metaService: engine.service.dataSource.useDataSource */
-import { reactive } from 'vue'
-import { utils } from '@opentiny/tiny-engine-utils'
-import { isEqual } from '@opentiny/vue-renderless/common/object'
-import { isEmptyObject } from '@opentiny/vue-renderless/common/type'
-import { useModal } from '@opentiny/tiny-engine-meta-register'
+import { reactive } from 'vue';
+import { utils } from '@opentiny/tiny-engine-utils';
+import { isEqual } from '@opentiny/vue-renderless/common/object';
+import { isEmptyObject } from '@opentiny/vue-renderless/common/type';
+import { useModal } from '@opentiny/tiny-engine-meta-register';
 
 const dataSourceState = reactive({
-  dataSource: {},
-  record: {},
-  recordCopies: {},
-  dataSourceColumn: {},
-  dataSourceColumnCopies: {},
-  remoteData: {},
-  remoteDataCopies: {},
-  currentRecordId: '',
-  isRecordValidate: true,
-  disCard: false,
-  remoteConfig: {}
-})
+    dataSource: {},
+    record: {},
+    recordCopies: {},
+    dataSourceColumn: {},
+    dataSourceColumnCopies: {},
+    remoteData: {},
+    remoteDataCopies: {},
+    currentRecordId: '',
+    isRecordValidate: true,
+    disCard: false,
+    remoteConfig: {}
+});
 
 const compareData = () => {
-  let isRecordSame = true
-  let isDataSourceSame = false
+    let isRecordSame = true;
+    let isDataSourceSame = false;
 
-  if (!isEmptyObject(dataSourceState.record) && !isEmptyObject(dataSourceState.recordCopies)) {
-    isRecordSame = isEqual(dataSourceState.record, dataSourceState.recordCopies)
-  }
+    if (
+        !isEmptyObject(dataSourceState.record) &&
+        !isEmptyObject(dataSourceState.recordCopies)
+    ) {
+        isRecordSame = isEqual(
+            dataSourceState.record,
+            dataSourceState.recordCopies
+        );
+    }
 
-  isDataSourceSame = isEqual(dataSourceState.dataSourceColumn, dataSourceState.dataSourceColumnCopies)
+    isDataSourceSame = isEqual(
+        dataSourceState.dataSourceColumn,
+        dataSourceState.dataSourceColumnCopies
+    );
 
-  const isRemoteDataSame = isEqual(dataSourceState.remoteData, dataSourceState.remoteDataCopies)
+    const isRemoteDataSame = isEqual(
+        dataSourceState.remoteData,
+        dataSourceState.remoteDataCopies
+    );
 
-  return { isRecordSame, isDataSourceSame, isRemoteDataSame }
-}
+    return { isRecordSame, isDataSourceSame, isRemoteDataSame };
+};
 
 interface DataSourceState {
-  dataSource: Record<string, any>
-  record: Record<string, any>
-  recordCopies: Record<string, any>
-  dataSourceColumn: Record<string, any>
-  dataSourceColumnCopies: Record<string, any>
-  remoteData: Record<string, any>
-  remoteDataCopies: Record<string, any>
-  currentRecordId: string
-  isRecordValidate: boolean
-  disCard: boolean
-  remoteConfig: Record<string, any>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataSource: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    record: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recordCopies: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataSourceColumn: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dataSourceColumnCopies: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    remoteData: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    remoteDataCopies: Record<string, any>;
+    currentRecordId: string;
+    isRecordValidate: boolean;
+    disCard: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    remoteConfig: Record<string, any>;
 }
 
 const handleConfirmSave = (
-  dataSourceState: DataSourceState,
-  isRecordSame: boolean,
-  resolve: (value: unknown) => void,
-  isDataSourceSame: boolean,
-  callback: (...args: any[]) => any
+    localDataSourceState: DataSourceState,
+    isRecordSame: boolean,
+    resolve: (value: unknown) => void,
+    isDataSourceSame: boolean,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback: (...args: any[]) => any
+    // eslint-disable-next-line @typescript-eslint/max-params
 ) => {
-  let {
-    name,
-    data: { data, columns }
-  } = dataSourceState.dataSource
+    let {
+        name,
+        data: { data: dataValue, columns }
+    } = localDataSourceState.dataSource;
 
-  if (!isRecordSame) {
-    // 必填字段没数据不记录该条数据
-    if (!dataSourceState.isRecordValidate) {
-      dataSourceState.record = {}
-      dataSourceState.recordCopies = {}
-      dataSourceState.isRecordValidate = true
-      return resolve(true)
+    if (!isRecordSame) {
+        // 必填字段没数据不记录该条数据
+        if (!localDataSourceState.isRecordValidate) {
+            localDataSourceState.record = {};
+            localDataSourceState.recordCopies = {};
+            localDataSourceState.isRecordValidate = true;
+            resolve(true);
+            return;
+        }
+
+        // 数据源数据修改，新增，数据源数据做修改
+        if (localDataSourceState.currentRecordId) {
+            dataValue = dataValue || [];
+            const index = dataValue.findIndex(
+                (item: { id: string }) =>
+                    item.id === localDataSourceState.currentRecordId
+            );
+
+            dataValue[index] = Object.assign(
+                dataValue[index],
+                localDataSourceState.record
+            );
+        } else {
+            const record = { ...localDataSourceState.record, id: utils.guid() };
+            dataValue = [...dataValue, record];
+        }
     }
 
-    // 数据源数据修改，新增，数据源数据做修改
-    if (dataSourceState.currentRecordId) {
-      data = data || []
-      const index = data.findIndex((item: { id: string }) => item.id === dataSourceState.currentRecordId)
-
-      data[index] = Object.assign(data[index], dataSourceState.record)
-    } else {
-      const record = { ...dataSourceState.record, id: utils.guid() }
-      data = [...data, record]
+    if (!isDataSourceSame) {
+        // 数据源名称，类型，字段改变，数据源修改
+        columns = localDataSourceState.dataSourceColumn?.columns;
+        name = localDataSourceState.dataSourceColumn?.name;
     }
-  }
 
-  if (!isDataSourceSame) {
-    // 数据源名称，类型，字段改变，数据源修改
-    columns = dataSourceState.dataSourceColumn?.columns
-    name = dataSourceState.dataSourceColumn?.name
-  }
+    const {
+        id,
+        data: { type }
+    } = localDataSourceState.dataSource;
 
-  const {
-    id,
-    data: { type }
-  } = dataSourceState.dataSource
+    const requestData = { name, data: { columns, data: dataValue, type } };
 
-  const requestData = { name, data: { columns, data, type } }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    callback(id, requestData).then((responseData: any) => {
+        if (responseData) {
+            localDataSourceState.record = {};
+            localDataSourceState.recordCopies = {};
+            localDataSourceState.currentRecordId = '';
+            localDataSourceState.dataSourceColumn = {};
+            localDataSourceState.dataSourceColumnCopies = {};
+            localDataSourceState.dataSource = {};
+            resolve(true);
+        }
+    });
 
-  callback(id, requestData).then((data: any) => {
-    if (data) {
-      dataSourceState.record = {}
-      dataSourceState.recordCopies = {}
-      dataSourceState.currentRecordId = ''
-      dataSourceState.dataSourceColumn = {}
-      dataSourceState.dataSourceColumnCopies = {}
-      dataSourceState.dataSource = {}
-      resolve(true)
-    }
-  })
+    return undefined;
+};
 
-  return undefined
-}
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const saveDataSource = (callback: (...args: any[]) => any) => {
-  const { isRecordSame, isDataSourceSame } = compareData()
-  const { confirm } = useModal()
+    const { isRecordSame, isDataSourceSame } = compareData();
+    const { confirm } = useModal();
 
-  if (!isEmptyObject(dataSourceState.dataSource) && (!isRecordSame || !isDataSourceSame)) {
-    return new Promise((resolve) => {
-      confirm({
-        title: '提示',
-        message: dataSourceState.isRecordValidate
-          ? '当前数据未保存，关闭前是否需要保存改数据'
-          : '必填项为空，将不会被存储！',
-        exec: () => handleConfirmSave(dataSourceState, isDataSourceSame, resolve, isDataSourceSame, callback)
-      })
-    })
-  }
+    if (
+        !isEmptyObject(dataSourceState.dataSource) &&
+        (!isRecordSame || !isDataSourceSame)
+    ) {
+        return new Promise(resolve => {
+            confirm({
+                title: '提示',
+                message: dataSourceState.isRecordValidate
+                    ? '当前数据未保存，关闭前是否需要保存改数据'
+                    : '必填项为空，将不会被存储！',
+                exec: () => {
+                    handleConfirmSave(
+                        dataSourceState,
+                        isRecordSame,
+                        resolve,
+                        isDataSourceSame,
+                        callback
+                    );
+                }
+            });
+        });
+    }
 
-  return Promise.resolve(false)
-}
+    return Promise.resolve(false);
+};
 
 export default () => {
-  return { dataSourceState, compareData, saveDataSource }
-}
+    return { dataSourceState, compareData, saveDataSource };
+};

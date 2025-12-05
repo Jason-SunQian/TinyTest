@@ -12,54 +12,63 @@
 
 /* metaService: engine.plugins.materials.block.js-usePanel */
 
-import { reactive } from 'vue'
+import { reactive } from 'vue';
 
 const generateInitPanelState = () => ({
-  created: false,
-  show: false
-})
+    created: false,
+    show: false
+});
 
 const panelState = reactive({
-  groupPanel: generateInitPanelState(),
-  versionSelectPanel: generateInitPanelState()
-})
+    groupPanel: generateInitPanelState(),
+    versionSelectPanel: generateInitPanelState()
+});
 
-const openPanel = (panel) => {
-  panel.created = true
-  panel.show = true
-}
+const openPanel = panel => {
+    panel.created = true;
+    panel.show = true;
+};
 
-const closePanel = (panel) => {
-  panel.show = false
-}
+const closePanel = panel => {
+    panel.show = false;
+};
 
 const closeAllPanel = () => {
-  Object.values(panelState).forEach(closePanel)
-}
+    Object.values(panelState).forEach(closePanel);
+};
 
-const generateUsePanelMethod = (panel) => {
-  return () => ({
-    panel,
-    openPanel: () => openPanel(panel),
-    closePanel: () => closePanel(panel)
-  })
-}
+const generateUsePanelMethod = panel => {
+    return () => ({
+        panel,
+        openPanel: () => {
+            openPanel(panel);
+        },
+        closePanel: () => {
+            closePanel(panel);
+        }
+    });
+};
 
-export const useGroupPanel = generateUsePanelMethod(panelState.groupPanel)
+const generateSetVisibleMethod = usePanel => {
+    return visible => {
+        const { openPanel: openPanelFn } = usePanel();
 
-export const useVersionSelectPanel = generateUsePanelMethod(panelState.versionSelectPanel)
+        closeAllPanel();
+        if (visible) {
+            openPanelFn();
+        }
+    };
+};
 
-const generateSetVisibleMethod = (usePanel) => {
-  return (visible) => {
-    const { openPanel } = usePanel()
+const useGroupPanel = generateUsePanelMethod(panelState.groupPanel);
 
-    closeAllPanel()
-    if (visible) {
-      openPanel()
-    }
-  }
-}
+const useVersionSelectPanel = generateUsePanelMethod(
+    panelState.versionSelectPanel
+);
 
-export const setBlockPanelVisible = generateSetVisibleMethod(useGroupPanel)
+export { useGroupPanel, useVersionSelectPanel };
+export const setBlockPanelVisible = generateSetVisibleMethod(useGroupPanel);
 
-export const setBlockVersionPanelVisible = generateSetVisibleMethod(useVersionSelectPanel)
+export const setBlockVersionPanelVisible = generateSetVisibleMethod(
+    useVersionSelectPanel
+);

@@ -1,8 +1,8 @@
-import Empty from './Empty.vue'
+import Empty from './Empty.vue';
 
-export { Empty }
+export { Empty };
 
 export default {
-  Empty
-}
-
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    Empty
+};

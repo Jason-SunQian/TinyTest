@@ -1,240 +1,240 @@
 {
-  "designer": {
-    "toolbar": {
-      "page": "ページ",
-      "chineseEnglishSwitch": "言語切り替え",
-      "save": "保存",
-      "generateCode": "コード生成",
-      "preview": "プレビュー",
-      "undo": "元に戻す",
-      "redo": "やり直し",
-      "clean": "クリア",
-      "fullscreen": "フルスクリーン",
-      "refresh": "更新",
-      "refreshCanvas": "キャンバスを更新",
-      "refreshConfirm": "{type}が保存されていません。更新を続行しますか?",
-      "collaboration": "コラボレーション",
-      "lock": "ロック",
-      "unlock": "アンロック",
-      "setting": "設定",
-      "themeSwitch": "テーマ切り替え",
-      "publish": "公開",
-      "saving": "保存中",
-      "saveSetting": "保存設定",
-      "autoSave": "自動保存",
-      "saveInterval": "保存間隔",
-      "setAndSave": "設定して保存",
-      "schemaDiff": "Schema ローカルとオンライン差分",
-      "fiveMinutes": "5分",
-      "tenMinutes": "10分",
-      "fifteenMinutes": "15分",
-      "codeGenerating": "コード生成中",
-      "codeGenerationFailed": "コード生成失敗",
-      "codeSaving": "コード保存中",
-      "codeSaveSuccess": "コード保存成功",
-      "codeSaveSuccessMessage": "{count} ファイルを保存しました",
-      "codeSaveFailed": "コード保存失敗",
-      "blockSetting": "ブロック設定",
-      "pageSetting": "ページ設定",
-      "media": {
-        "canvasSettings": "キャンバス設定",
-        "width": "幅",
-        "scale": "スケール",
-        "freeLayout": "自由レイアウト",
-        "addLargeBreakpoint": "大きなブレークポイントを追加",
-        "hoverBreakpointTip": "ブレークポイントにマウスをホバーして詳細を確認",
-        "devices": {
-          "largeScreen": {
-            "title": "大型画面",
-            "subTitle": "1200px以上",
-            "content": "ここに追加されたスタイルは、1200ピクセル以上に適用され、より大きなブレークポイントで編集されない限り適用されます。"
-          },
-          "desktop": {
-            "title": "デスクトップ",
-            "subTitle": "基本ブレークポイント",
-            "content": "デスクトップスタイルは、より大きいまたは小さいブレークポイントで編集されない限り、すべてのブレークポイントに適用されます。ここでレイアウトを開始してください。"
-          },
-          "tablet": {
-            "title": "タブレット",
-            "subTitle": "992px以下",
-            "content": "ここに追加されたスタイルは、992ピクセル以下に適用され、より小さなブレークポイントで編集されない限り適用されます。"
-          },
-          "landscapeMobile": {
-            "title": "横向きモバイル",
-            "subTitle": "768px以下",
-            "content": "ここに追加されたスタイルは、768ピクセル以下に適用され、より小さなブレークポイントで編集されない限り適用されます。"
-          },
-          "mobile": {
-            "title": "縦向きモバイル",
-            "subTitle": "480px以下",
-            "content": "ここに追加されたスタイルは、480ピクセル以下に適用されます。"
-          }
-        }
-      }
-    },
-    "leftPanel": {
-      "materials": "マテリアル",
-      "outlineTree": "アウトライン",
-      "pageManagement": "ページ管理",
-      "blockManagement": "ブロック管理",
-      "dataSource": "データソース",
-      "bridge": "ブリッジ",
-      "i18n": "国際化",
-      "pageJS": "ページJS",
-      "state": "状態",
-      "schema": "Schema",
-      "help": "ヘルプ",
-      "robot": "ロボット",
-      "searchPlaceholder": "キーワードで検索してください",
-      "toggleView": "ビュー切り替え",
-      "createBlock": "ブロック作成",
-      "viewBlock": "ブロック表示"
-    },
-    "settings": {
-      "props": {
-        "title": "プロパティ",
-        "emptyComponent": "まだコンポーネントをキャンバスにドラッグしていません",
-        "emptySelection": "キャンバス上のコンポーネントを選択してください"
-      },
-      "styles": {
-        "title": "スタイル",
-        "inlinePanel": "インラインスタイル",
-        "inlineButton": "インラインスタイルを編集",
-        "inlinePlaceholder": "インラインスタイルを編集",
-        "inlineBound": "バインド済み: {value}",
-        "groups": {
-          "layout": "レイアウト",
-          "spacing": "スペーシング",
-          "size": "サイズ",
-          "position": "ポジション",
-          "typography": "タイポグラフィ",
-          "background": "背景",
-          "border": "ボーダー",
-          "effects": "エフェクト"
+    "designer": {
+        "toolbar": {
+            "page": "ページ",
+            "chineseEnglishSwitch": "言語切り替え",
+            "save": "保存",
+            "generateCode": "コード生成",
+            "preview": "プレビュー",
+            "undo": "元に戻す",
+            "redo": "やり直し",
+            "clean": "クリア",
+            "fullscreen": "フルスクリーン",
+            "refresh": "更新",
+            "refreshCanvas": "キャンバスを更新",
+            "refreshConfirm": "{type}が保存されていません。更新を続行しますか?",
+            "collaboration": "コラボレーション",
+            "lock": "ロック",
+            "unlock": "アンロック",
+            "setting": "設定",
+            "themeSwitch": "テーマ切り替え",
+            "publish": "公開",
+            "saving": "保存中",
+            "saveSetting": "保存設定",
+            "autoSave": "自動保存",
+            "saveInterval": "保存間隔",
+            "setAndSave": "設定して保存",
+            "schemaDiff": "Schema ローカルとオンライン差分",
+            "fiveMinutes": "5分",
+            "tenMinutes": "10分",
+            "fifteenMinutes": "15分",
+            "codeGenerating": "コード生成中",
+            "codeGenerationFailed": "コード生成失敗",
+            "codeSaving": "コード保存中",
+            "codeSaveSuccess": "コード保存成功",
+            "codeSaveSuccessMessage": "{count} ファイルを保存しました",
+            "codeSaveFailed": "コード保存失敗",
+            "blockSetting": "ブロック設定",
+            "pageSetting": "ページ設定",
+            "media": {
+                "canvasSettings": "キャンバス設定",
+                "width": "幅",
+                "scale": "スケール",
+                "freeLayout": "自由レイアウト",
+                "addLargeBreakpoint": "大きなブレークポイントを追加",
+                "hoverBreakpointTip": "ブレークポイントにマウスをホバーして詳細を確認",
+                "devices": {
+                    "largeScreen": {
+                        "title": "大型画面",
+                        "subTitle": "1200px以上",
+                        "content": "ここに追加されたスタイルは、1200ピクセル以上に適用され、より大きなブレークポイントで編集されない限り適用されます。"
+                    },
+                    "desktop": {
+                        "title": "デスクトップ",
+                        "subTitle": "基本ブレークポイント",
+                        "content": "デスクトップスタイルは、より大きいまたは小さいブレークポイントで編集されない限り、すべてのブレークポイントに適用されます。ここでレイアウトを開始してください。"
+                    },
+                    "tablet": {
+                        "title": "タブレット",
+                        "subTitle": "992px以下",
+                        "content": "ここに追加されたスタイルは、992ピクセル以下に適用され、より小さなブレークポイントで編集されない限り適用されます。"
+                    },
+                    "landscapeMobile": {
+                        "title": "横向きモバイル",
+                        "subTitle": "768px以下",
+                        "content": "ここに追加されたスタイルは、768ピクセル以下に適用され、より小さなブレークポイントで編集されない限り適用されます。"
+                    },
+                    "mobile": {
+                        "title": "縦向きモバイル",
+                        "subTitle": "480px以下",
+                        "content": "ここに追加されたスタイルは、480ピクセル以下に適用されます。"
+                    }
+                }
+            }
         },
-        "effects": {
-          "opacity": "不透明度",
-          "outline": "アウトライン",
-          "width": "幅",
-          "offset": "オフセット",
-          "color": "色",
-          "cursor": "カーソル",
-          "selectPlaceholder": "選択してください",
-          "outlineNone": "none - なし",
-          "outlineSolid": "solid - 実線",
-          "outlineDashed": "dashed - 破線",
-          "outlineDotted": "dotted - 点線"
+        "leftPanel": {
+            "materials": "マテリアル",
+            "outlineTree": "アウトライン",
+            "pageManagement": "ページ管理",
+            "blockManagement": "ブロック管理",
+            "dataSource": "データソース",
+            "bridge": "ブリッジ",
+            "i18n": "国際化",
+            "pageJS": "ページJS",
+            "state": "状態",
+            "schema": "Schema",
+            "help": "ヘルプ",
+            "robot": "ロボット",
+            "searchPlaceholder": "キーワードで検索してください",
+            "toggleView": "ビュー切り替え",
+            "createBlock": "ブロック作成",
+            "viewBlock": "ブロック表示"
+        },
+        "settings": {
+            "props": {
+                "title": "プロパティ",
+                "emptyComponent": "まだコンポーネントをキャンバスにドラッグしていません",
+                "emptySelection": "キャンバス上のコンポーネントを選択してください"
+            },
+            "styles": {
+                "title": "スタイル",
+                "inlinePanel": "インラインスタイル",
+                "inlineButton": "インラインスタイルを編集",
+                "inlinePlaceholder": "インラインスタイルを編集",
+                "inlineBound": "バインド済み: {value}",
+                "groups": {
+                    "layout": "レイアウト",
+                    "spacing": "スペーシング",
+                    "size": "サイズ",
+                    "position": "ポジション",
+                    "typography": "タイポグラフィ",
+                    "background": "背景",
+                    "border": "ボーダー",
+                    "effects": "エフェクト"
+                },
+                "effects": {
+                    "opacity": "不透明度",
+                    "outline": "アウトライン",
+                    "width": "幅",
+                    "offset": "オフセット",
+                    "color": "色",
+                    "cursor": "カーソル",
+                    "selectPlaceholder": "選択してください",
+                    "outlineNone": "none - なし",
+                    "outlineSolid": "solid - 実線",
+                    "outlineDashed": "dashed - 破線",
+                    "outlineDotted": "dotted - 点線"
+                },
+                "common": {
+                    "reset": "リセット",
+                    "resetTip": "リセットすると初期値に戻ります。"
+                },
+                "size": {
+                    "width": "幅",
+                    "height": "高さ",
+                    "minWidth": "最小幅",
+                    "minHeight": "最小高さ",
+                    "maxWidth": "最大幅",
+                    "maxHeight": "最大高さ",
+                    "overflow": "オーバーフロー",
+                    "fit": "オブジェクトフィット",
+                    "objectPosition": "位置",
+                    "objectPositionTooltip": "オブジェクト位置の設定"
+                },
+                "fitOptions": {
+                    "fill": "fill - フィル",
+                    "contain": "contain - コンテイン",
+                    "cover": "cover - カバー",
+                    "none": "none - なし",
+                    "scaleDown": "scale-down - 縮小"
+                },
+                "overflowOptions": {
+                    "visible": "visible - 表示",
+                    "hidden": "hidden - 非表示",
+                    "scroll": "overflow - スクロール",
+                    "auto": "auto - 自動"
+                }
+            }
+        },
+        "rightPanel": {
+            "properties": "プロパティ",
+            "styles": "スタイル",
+            "events": "イベント",
+            "selectComponentTip": "キャンバスでコンポーネントを選択してください",
+            "pinPanel": "パネル固定",
+            "closePanel": "パネル閉じる",
+            "panelOptions": "パネルオプション"
+        },
+        "canvas": {
+            "emptyCanvas": "空白キャンバス",
+            "dragComponentHere": "コンポーネントをここにドラッグ",
+            "selectComponent": "コンポーネント選択",
+            "componentSettings": "コンポーネント設定",
+            "noSelectedNode": "選択されたノードがありません",
+            "createBlock": "ブロック作成",
+            "routeJump": "ルートジャンプ",
+            "routeJumpEdit": "ルートジャンプ編集",
+            "routeJumpNotBound": "ルートジャンプページがバインドされていません",
+            "tooltipInfo": "ツールチップ情報",
+            "popupTitle": "ポップアップタイトル",
+            "tooltipContent": "ツールチップ内容"
         },
         "common": {
-          "reset": "リセット",
-          "resetTip": "リセットすると初期値に戻ります。"
+            "confirm": "確認",
+            "cancel": "キャンセル",
+            "ok": "OK",
+            "close": "閉じる",
+            "save": "保存",
+            "delete": "削除",
+            "edit": "編集",
+            "add": "追加",
+            "search": "検索",
+            "filter": "フィルター",
+            "refresh": "更新",
+            "loading": "読み込み中...",
+            "noData": "データがありません",
+            "operation": "操作",
+            "status": "状態",
+            "name": "名前",
+            "description": "説明",
+            "type": "タイプ",
+            "required": "必須",
+            "optional": "オプション",
+            "publish": "公開",
+            "unfixPanel": "パネル固定解除",
+            "fixPanel": "パネル固定",
+            "pleaseSelect": "選択してください",
+            "tip": "ヒント",
+            "block": "ブロック",
+            "page": "ページ",
+            "pageLocked": "クリックしたページは {username} によってロックされており、一時的に編集できません。アンロックを依頼してください。",
+            "pageNotSaved": "現在のページが保存されていません。切り替えを続行しますか？",
+            "createPageFirst": "まずページを作成してください",
+            "saveCurrentPageFirst": "まず現在のページを保存してください"
         },
-        "size": {
-          "width": "幅",
-          "height": "高さ",
-          "minWidth": "最小幅",
-          "minHeight": "最小高さ",
-          "maxWidth": "最大幅",
-          "maxHeight": "最大高さ",
-          "overflow": "オーバーフロー",
-          "fit": "オブジェクトフィット",
-          "objectPosition": "位置",
-          "objectPositionTooltip": "オブジェクト位置の設定"
+        "preview": {
+            "debugMode": "デバッグモード"
         },
-        "fitOptions": {
-          "fill": "fill - フィル",
-          "contain": "contain - コンテイン",
-          "cover": "cover - カバー",
-          "none": "none - なし",
-          "scaleDown": "scale-down - 縮小"
-        },
-        "overflowOptions": {
-          "visible": "visible - 表示",
-          "hidden": "hidden - 非表示",
-          "scroll": "overflow - スクロール",
-          "auto": "auto - 自動"
+        "block": {
+            "sortByTimeDesc": "時間降順",
+            "sortByTimeAsc": "時間昇順",
+            "sortByAlphabetAsc": "アルファベット昇順",
+            "sortByAlphabetDesc": "アルファベット降順",
+            "published": "公開済み",
+            "draft": "ドラフト",
+            "grid": "グリッド",
+            "list": "リスト",
+            "createGroupFailed": "ブロックグループ作成失敗：{error}",
+            "deleteGroupSuccess": "{groupName} グループ削除成功！",
+            "deleteGroupFailed": "ブロックグループ削除失敗：{error}",
+            "enterNewGroupName": "新しいグループ名を入力してください",
+            "confirmDeleteGroup": "このグループを削除してもよろしいですか？",
+            "newGroupTitle": "新しいグループ",
+            "groupName": "グループ名",
+            "enterGroupName": "グループ名を入力してください",
+            "unnamedGroup": "無名グループ",
+            "groupNameRule": "中国語、数字、英字、'-'または'_'のみ許可",
+            "groupNameRequired": "グループ名は必須です"
         }
-      }
-    },
-    "rightPanel": {
-      "properties": "プロパティ",
-      "styles": "スタイル",
-      "events": "イベント",
-      "selectComponentTip": "キャンバスでコンポーネントを選択してください",
-      "pinPanel": "パネル固定",
-      "closePanel": "パネル閉じる",
-      "panelOptions": "パネルオプション"
-    },
-    "canvas": {
-      "emptyCanvas": "空白キャンバス",
-      "dragComponentHere": "コンポーネントをここにドラッグ",
-      "selectComponent": "コンポーネント選択",
-      "componentSettings": "コンポーネント設定",
-      "noSelectedNode": "選択されたノードがありません",
-      "createBlock": "ブロック作成",
-      "routeJump": "ルートジャンプ",
-      "routeJumpEdit": "ルートジャンプ編集",
-      "routeJumpNotBound": "ルートジャンプページがバインドされていません",
-      "tooltipInfo": "ツールチップ情報",
-      "popupTitle": "ポップアップタイトル",
-      "tooltipContent": "ツールチップ内容"
-    },
-    "common": {
-      "confirm": "確認",
-      "cancel": "キャンセル",
-      "ok": "OK",
-      "close": "閉じる",
-      "save": "保存",
-      "delete": "削除",
-      "edit": "編集",
-      "add": "追加",
-      "search": "検索",
-      "filter": "フィルター",
-      "refresh": "更新",
-      "loading": "読み込み中...",
-      "noData": "データがありません",
-      "operation": "操作",
-      "status": "状態",
-      "name": "名前",
-      "description": "説明",
-      "type": "タイプ",
-      "required": "必須",
-      "optional": "オプション",
-      "publish": "公開",
-      "unfixPanel": "パネル固定解除",
-      "fixPanel": "パネル固定",
-      "pleaseSelect": "選択してください",
-      "tip": "ヒント",
-      "block": "ブロック",
-      "page": "ページ",
-      "pageLocked": "クリックしたページは {username} によってロックされており、一時的に編集できません。アンロックを依頼してください。",
-      "pageNotSaved": "現在のページが保存されていません。切り替えを続行しますか？",
-      "createPageFirst": "まずページを作成してください",
-      "saveCurrentPageFirst": "まず現在のページを保存してください"
-    },
-    "preview": {
-      "debugMode": "デバッグモード"
-    },
-    "block": {
-      "sortByTimeDesc": "時間降順",
-      "sortByTimeAsc": "時間昇順",
-      "sortByAlphabetAsc": "アルファベット昇順",
-      "sortByAlphabetDesc": "アルファベット降順",
-      "published": "公開済み",
-      "draft": "ドラフト",
-      "grid": "グリッド",
-      "list": "リスト",
-      "createGroupFailed": "ブロックグループ作成失敗：{error}",
-      "deleteGroupSuccess": "{groupName} グループ削除成功！",
-      "deleteGroupFailed": "ブロックグループ削除失敗：{error}",
-      "enterNewGroupName": "新しいグループ名を入力してください",
-      "confirmDeleteGroup": "このグループを削除してもよろしいですか？",
-      "newGroupTitle": "新しいグループ",
-      "groupName": "グループ名",
-      "enterGroupName": "グループ名を入力してください",
-      "unnamedGroup": "無名グループ",
-      "groupNameRule": "中国語、数字、英字、'-'または'_'のみ許可",
-      "groupNameRequired": "グループ名は必須です"
     }
-  }
 }

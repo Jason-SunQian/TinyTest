@@ -1,5 +1,19 @@
-import { getPageList, getPageDetail, changePageBasicInfo, editSpecificPage, delPage, addPage } from './tools'
+import {
+    getPageList,
+    getPageDetail,
+    changePageBasicInfo,
+    editSpecificPage,
+    delPage,
+    addPage
+} from './tools';
 
 export default {
-  tools: [getPageList, getPageDetail, changePageBasicInfo, editSpecificPage, delPage, addPage]
-}
+    tools: [
+        getPageList,
+        getPageDetail,
+        changePageBasicInfo,
+        editSpecificPage,
+        delPage,
+        addPage
+    ]
+};

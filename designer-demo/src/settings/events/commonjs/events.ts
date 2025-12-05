@@ -10,194 +10,197 @@
  *
  */
 
+/* eslint-disable import/exports-last, @typescript-eslint/naming-convention, camelcase */
 /* metaService: engine.setting.event.commonjs-events */
 
 export const commonEvents = {
-  onClick: {
-    label: {
-      zh_CN: '点击事件',
-      en_US: 'Click event'
+    onClick: {
+        label: {
+            zh_CN: '点击事件',
+            en_US: 'Click event'
+        },
+        description: {
+            zh_CN: '鼠标单击时触发的回调函数',
+            en_US: 'Callback triggered when the mouse clicks.'
+        },
+        type: 'event',
+        functionInfo: {
+            params: [],
+            returns: {}
+        },
+        defaultValue: ''
     },
-    description: {
-      zh_CN: '鼠标单击时触发的回调函数',
-      en_US: 'Callback triggered when the mouse clicks.'
+    onChange: {
+        label: {
+            zh_CN: '值被改变时触发',
+            en_US: 'Value changed'
+        },
+        description: {
+            zh_CN: '当用户更改 <input>、<select> 和 <textarea> 元素的值时，被触发的回调函数，',
+            en_US: 'Callback triggered when the value of <input>, <select> or <textarea> changes.'
+        },
+        type: 'event',
+        functionInfo: {
+            params: [],
+            returns: {}
+        },
+        defaultValue: ''
     },
-    type: 'event',
-    functionInfo: {
-      params: [],
-      returns: {}
+    onFocus: {
+        label: {
+            zh_CN: '元素获得焦点',
+            en_US: 'Element focused'
+        },
+        description: {
+            zh_CN: '元素获得焦点时触发的回调函数',
+            en_US: 'Callback triggered when the element gains focus.'
+        },
+        type: 'event',
+        functionInfo: {
+            params: [],
+            returns: {}
+        },
+        defaultValue: ''
     },
-    defaultValue: ''
-  },
-  onChange: {
-    label: {
-      zh_CN: '值被改变时触发',
-      en_US: 'Value changed'
-    },
-    description: {
-      zh_CN: '当用户更改 <input>、<select> 和 <textarea> 元素的值时，被触发的回调函数，',
-      en_US: 'Callback triggered when the value of <input>, <select> or <textarea> changes.'
-    },
-    type: 'event',
-    functionInfo: {
-      params: [],
-      returns: {}
-    },
-    defaultValue: ''
-  },
-  onFocus: {
-    label: {
-      zh_CN: '元素获得焦点',
-      en_US: 'Element focused'
-    },
-    description: {
-      zh_CN: '元素获得焦点时触发的回调函数',
-      en_US: 'Callback triggered when the element gains focus.'
-    },
-    type: 'event',
-    functionInfo: {
-      params: [],
-      returns: {}
-    },
-    defaultValue: ''
-  },
-  onMousemove: {
-    label: {
-      zh_CN: '鼠标移动时触发',
-      en_US: 'Mouse move'
-    },
-    description: {
-      zh_CN: '鼠标移动时触发的回调函数',
-      en_US: 'Callback triggered when the mouse moves.'
-    },
-    type: 'event',
-    functionInfo: {
-      params: [],
-      returns: {}
-    },
-    defaultValue: ''
-  }
-}
+    onMousemove: {
+        label: {
+            zh_CN: '鼠标移动时触发',
+            en_US: 'Mouse move'
+        },
+        description: {
+            zh_CN: '鼠标移动时触发的回调函数',
+            en_US: 'Callback triggered when the mouse moves.'
+        },
+        type: 'event',
+        functionInfo: {
+            params: [],
+            returns: {}
+        },
+        defaultValue: ''
+    }
+};
 
 const allEvents = [
-  'onabort',
-  'onafterprint',
-  'onanimationend',
-  'onanimationiteration',
-  'onanimationstart',
-  'onappinstalled',
-  'onauxclick',
-  'onbeforeinstallprompt',
-  'onbeforeprint',
-  'onbeforeunload',
-  'onbeforexrselect',
-  'onblur',
-  'oncancel',
-  'oncanplay',
-  'oncanplaythrough',
-  'onchange',
-  'onclick',
-  'onclose',
-  'oncontextlost',
-  'oncontextmenu',
-  'oncontextrestored',
-  'oncuechange',
-  'ondblclick',
-  'ondrag',
-  'ondragend',
-  'ondragenter',
-  'ondragleave',
-  'ondragover',
-  'ondragstart',
-  'ondrop',
-  'ondurationchange',
-  'onemptied',
-  'onended',
-  'onerror',
-  'onfocus',
-  'onformdata',
-  'ongotpointercapture',
-  'onhashchange',
-  'oninput',
-  'oninvalid',
-  'onkeydown',
-  'onkeypress',
-  'onkeyup',
-  'onlanguagechange',
-  'onload',
-  'onloadeddata',
-  'onloadedmetadata',
-  'onloadstart',
-  'onlostpointercapture',
-  'onmessage',
-  'onmessageerror',
-  'onmousedown',
-  'onmouseenter',
-  'onmouseleave',
-  'onmousemove',
-  'onmouseout',
-  'onmouseover',
-  'onmouseup',
-  'onmousewheel',
-  'onoffline',
-  'ononline',
-  'onpagehide',
-  'onpageshow',
-  'onpause',
-  'onplay',
-  'onplaying',
-  'onpointercancel',
-  'onpointerdown',
-  'onpointerenter',
-  'onpointerleave',
-  'onpointermove',
-  'onpointerout',
-  'onpointerover',
-  'onpointerrawupdate',
-  'onpointerup',
-  'onpopstate',
-  'onprogress',
-  'onratechange',
-  'onrejectionhandled',
-  'onreset',
-  'onresize',
-  'onscroll',
-  'onsearch',
-  'onsecuritypolicyviolation',
-  'onseeked',
-  'onseeking',
-  'onselect',
-  'onselectionchange',
-  'onselectstart',
-  'onslotchange',
-  'onstalled',
-  'onstorage',
-  'onsubmit',
-  'onsuspend',
-  'ontimeupdate',
-  'ontoggle',
-  'ontransitioncancel',
-  'ontransitionend',
-  'ontransitionrun',
-  'ontransitionstart',
-  'onunhandledrejection',
-  'onunload',
-  'onvolumechange',
-  'onwaiting',
-  'onwebkitanimationend',
-  'onwebkitanimationiteration',
-  'onwebkitanimationstart',
-  'onwebkittransitionend',
-  'onwheel'
-]
+    'onabort',
+    'onafterprint',
+    'onanimationend',
+    'onanimationiteration',
+    'onanimationstart',
+    'onappinstalled',
+    'onauxclick',
+    'onbeforeinstallprompt',
+    'onbeforeprint',
+    'onbeforeunload',
+    'onbeforexrselect',
+    'onblur',
+    'oncancel',
+    'oncanplay',
+    'oncanplaythrough',
+    'onchange',
+    'onclick',
+    'onclose',
+    'oncontextlost',
+    'oncontextmenu',
+    'oncontextrestored',
+    'oncuechange',
+    'ondblclick',
+    'ondrag',
+    'ondragend',
+    'ondragenter',
+    'ondragleave',
+    'ondragover',
+    'ondragstart',
+    'ondrop',
+    'ondurationchange',
+    'onemptied',
+    'onended',
+    'onerror',
+    'onfocus',
+    'onformdata',
+    'ongotpointercapture',
+    'onhashchange',
+    'oninput',
+    'oninvalid',
+    'onkeydown',
+    'onkeypress',
+    'onkeyup',
+    'onlanguagechange',
+    'onload',
+    'onloadeddata',
+    'onloadedmetadata',
+    'onloadstart',
+    'onlostpointercapture',
+    'onmessage',
+    'onmessageerror',
+    'onmousedown',
+    'onmouseenter',
+    'onmouseleave',
+    'onmousemove',
+    'onmouseout',
+    'onmouseover',
+    'onmouseup',
+    'onmousewheel',
+    'onoffline',
+    'ononline',
+    'onpagehide',
+    'onpageshow',
+    'onpause',
+    'onplay',
+    'onplaying',
+    'onpointercancel',
+    'onpointerdown',
+    'onpointerenter',
+    'onpointerleave',
+    'onpointermove',
+    'onpointerout',
+    'onpointerover',
+    'onpointerrawupdate',
+    'onpointerup',
+    'onpopstate',
+    'onprogress',
+    'onratechange',
+    'onrejectionhandled',
+    'onreset',
+    'onresize',
+    'onscroll',
+    'onsearch',
+    'onsecuritypolicyviolation',
+    'onseeked',
+    'onseeking',
+    'onselect',
+    'onselectionchange',
+    'onselectstart',
+    'onslotchange',
+    'onstalled',
+    'onstorage',
+    'onsubmit',
+    'onsuspend',
+    'ontimeupdate',
+    'ontoggle',
+    'ontransitioncancel',
+    'ontransitionend',
+    'ontransitionrun',
+    'ontransitionstart',
+    'onunhandledrejection',
+    'onunload',
+    'onvolumechange',
+    'onwaiting',
+    'onwebkitanimationend',
+    'onwebkitanimationiteration',
+    'onwebkitanimationstart',
+    'onwebkittransitionend',
+    'onwheel'
+];
 
-export const checkEvent = (event: string) => {
-  const checkEventList = allEvents.map((e) => {
-    const three = e[2].toUpperCase()
-    return `${e.substring(0, 2)}${three}${e.substring(3)}`
-  })
-  if (!checkEventList.includes(event)) {
-    return false
-  }
-  return true
-}
+const checkEvent = (event: string) => {
+    const checkEventList = allEvents.map(e => {
+        const three = e[2].toUpperCase();
+        return `${e.substring(0, 2)}${three}${e.substring(3)}`;
+    });
+    if (!checkEventList.includes(event)) {
+        return false;
+    }
+    return true;
+};
+
+export { checkEvent };

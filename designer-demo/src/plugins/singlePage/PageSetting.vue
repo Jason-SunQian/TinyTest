@@ -1,552 +1,708 @@
+<!-- eslint-disable vue/no-root-v-if, vue/html-self-closing, vue/attribute-hyphenation, vue/attributes-order, vue/v-on-event-hyphenation, vue/max-lines-per-block, vue/block-lang, max-lines -->
 <template>
-  <plugin-setting
-    v-if="isShow"
-    :fixed-name="'engine.plugins.singlePage'"
-    :align="align"
-    :title="state.title"
-    class="page-plugin-setting"
-  >
-    <template #header>
-      <button-group>
-        <tiny-button type="primary" @click="savePageSetting">{{ t('designer.page.save') }}</tiny-button>
-        <svg-button
-          v-if="!pageSettingState.isNew"
-          name="text-copy-page"
-          placement="bottom"
-          :tips="t('designer.page.copyPage')"
-          @click="copyPage"
-        ></svg-button>
-        <svg-button v-if="!pageSettingState.isNew" name="delete" :tips="t('designer.page.deletePage')" @click="deletePage"></svg-button>
-        <svg-button name="close" @click="cancelPageSetting"></svg-button>
-      </button-group>
-    </template>
+    <plugin-setting
+        v-if="isShow"
+        :fixed-name="'engine.plugins.singlePage'"
+        :align="align"
+        :title="state.title"
+        class="page-plugin-setting"
+    >
+        <template #header>
+            <button-group>
+                <tiny-button type="primary" @click="savePageSetting">{{
+                    t('designer.page.save')
+                }}</tiny-button>
+                <svg-button
+                    v-if="!pageSettingState.isNew"
+                    name="text-copy-page"
+                    placement="bottom"
+                    :tips="t('designer.page.copyPage')"
+                    @click="copyPage"
+                ></svg-button>
+                <svg-button
+                    v-if="!pageSettingState.isNew"
+                    name="delete"
+                    :tips="t('designer.page.deletePage')"
+                    @click="deletePage"
+                ></svg-button>
+                <svg-button
+                    name="close"
+                    @click="cancelPageSetting"
+                ></svg-button>
+            </button-group>
+        </template>
 
-    <template #content>
-      <div class="page-setting-content">
-        <tiny-collapse v-model="state.activeName" class="page-setting-collapse">
-          <tiny-collapse-item :title="t('designer.page.basicSettings')" :name="PAGE_SETTING_SESSION.general">
-            <component :is="pageGeneral" ref="pageGeneralRef" :isFolder="isFolder"></component>
-          </tiny-collapse-item>
+        <template #content>
+            <div class="page-setting-content">
+                <tiny-collapse
+                    v-model="state.activeName"
+                    class="page-setting-collapse"
+                >
+                    <tiny-collapse-item
+                        :title="t('designer.page.basicSettings')"
+                        :name="PAGE_SETTING_SESSION.general"
+                    >
+                        <component
+                            :is="pageGeneral"
+                            ref="pageGeneralRef"
+                            :isFolder="isFolder"
+                        ></component>
+                    </tiny-collapse-item>
 
-          <tiny-collapse-item
-            class="base-setting"
-            v-if="pageSettingState.currentPageData.group !== 'public'"
-            :title="t('designer.page.inputOutput')"
-            :name="PAGE_SETTING_SESSION.inputOutput"
-          >
-            <page-input-output></page-input-output>
-          </tiny-collapse-item>
-          <tiny-collapse-item
-            class="input-output"
-            v-if="pageSettingState.currentPageData.group !== 'public'"
-            :title="t('designer.page.lifecycleConfig')"
-            :name="PAGE_SETTING_SESSION.lifeCycles"
-          >
-            <div class="life-cycles-container">
-              <life-cycles
-                :bindLifeCycles="pageSettingState.currentPageData.page_content?.lifeCycles"
-                @updatePageLifeCycles="updatePageLifeCycles"
-              ></life-cycles>
+                    <tiny-collapse-item
+                        class="base-setting"
+                        v-if="
+                            pageSettingState.currentPageData.group !== 'public'
+                        "
+                        :title="t('designer.page.inputOutput')"
+                        :name="PAGE_SETTING_SESSION.inputOutput"
+                    >
+                        <page-input-output></page-input-output>
+                    </tiny-collapse-item>
+                    <tiny-collapse-item
+                        class="input-output"
+                        v-if="
+                            pageSettingState.currentPageData.group !== 'public'
+                        "
+                        :title="t('designer.page.lifecycleConfig')"
+                        :name="PAGE_SETTING_SESSION.lifeCycles"
+                    >
+                        <div class="life-cycles-container">
+                            <life-cycles
+                                :bindLifeCycles="
+                                    pageSettingState.currentPageData
+                                        .page_content?.lifeCycles
+                                "
+                                @updatePageLifeCycles="updatePageLifeCycles"
+                            ></life-cycles>
+                        </div>
+                    </tiny-collapse-item>
+
+                    <tiny-collapse-item
+                        class="history-source"
+                        :title="t('designer.page.historyBackup')"
+                        :name="PAGE_SETTING_SESSION.history"
+                    >
+                        <page-history @restorePage="restorePage"></page-history>
+                    </tiny-collapse-item>
+                </tiny-collapse>
             </div>
-          </tiny-collapse-item>
-
-          <tiny-collapse-item class="history-source" :title="t('designer.page.historyBackup')" :name="PAGE_SETTING_SESSION.history">
-            <page-history @restorePage="restorePage"></page-history>
-          </tiny-collapse-item>
-        </tiny-collapse>
-      </div>
-    </template>
-  </plugin-setting>
+        </template>
+    </plugin-setting>
 </template>
 
-<script lang="jsx">
+<!-- eslint-disable vue/max-lines-per-block, vue/block-lang, max-lines -->
+<script lang="tsx">
 /* metaService: engine.plugins.appmanage.PageSetting */
-import { reactive, ref, computed, onActivated, onDeactivated, watchEffect, nextTick, onMounted } from 'vue'
-import { Button, Collapse, CollapseItem, Input } from '@opentiny/vue'
-import { PluginSetting, ButtonGroup, SvgButton } from '@opentiny/tiny-engine-common'
-import LifeCycles from '@/components/i18n-wrappers/LifeCycles/index.vue'
 import {
-  useLayout,
-  usePage,
-  useCanvas,
-  useModal,
-  useNotify,
-  getMergeMeta,
-  getMetaApi,
-  META_SERVICE,
-  useMessage
-} from '@opentiny/tiny-engine-meta-register'
-import { extend, isEqual } from '@opentiny/vue-renderless/common/object'
-import { constants } from '@opentiny/tiny-engine-utils'
-import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments'
-import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http'
-import { generatePage } from '@opentiny/tiny-engine-common/js/vscodeGenerateFile'
-import PageHistory from './PageHistory.vue'
-import PageInputOutput from './PageInputOutput.vue'
-import meta from './meta'
-import http from './http'
-import { useDesignerI18n } from '../../services/i18nService'
+    reactive,
+    ref,
+    computed,
+    onActivated,
+    onDeactivated,
+    watchEffect,
+    nextTick,
+    onMounted
+} from 'vue';
+import { Button, Collapse, CollapseItem } from '@opentiny/vue';
+import {
+    PluginSetting,
+    ButtonGroup,
+    SvgButton
+} from '@opentiny/tiny-engine-common';
+import {
+    useLayout,
+    usePage,
+    useCanvas,
+    useModal,
+    useNotify,
+    getMergeMeta,
+    getMetaApi,
+    META_SERVICE,
+    useMessage
+} from '@opentiny/tiny-engine-meta-register';
+import { extend, isEqual } from '@opentiny/vue-renderless/common/object';
+import { constants } from '@opentiny/tiny-engine-utils';
+import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
+import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http';
+import { generatePage } from '@opentiny/tiny-engine-common/js/vscodeGenerateFile';
 
-const { COMPONENT_NAME } = constants
-const isShow = ref(false)
+import LifeCycles from '@/components/i18n-wrappers/LifeCycles/index.vue';
 
-export const openPageSettingPanel = () => {
-  isShow.value = true
-}
+import { useDesignerI18n } from '../../services/i18nService';
 
-export const closePageSettingPanel = () => {
-  isShow.value = false
+import PageHistory from './PageHistory.vue';
+import meta from './meta';
+import http from './http';
+import PageInputOutput from './PageInputOutput.vue';
 
-  const { resetPageData } = usePage()
+const { COMPONENT_NAME } = constants;
+const isShow = ref(false);
 
-  resetPageData()
-}
+const openPageSettingPanel = () => {
+    isShow.value = true;
+};
+
+const closePageSettingPanel = () => {
+    isShow.value = false;
+
+    const { resetPageData } = usePage();
+
+    resetPageData();
+};
 
 const PAGE_SETTING_SESSION = {
-  general: 'general',
-  inputOutput: 'inputOutput',
-  lifeCycles: 'lifeCycles',
-  history: 'history'
-}
+    general: 'general',
+    inputOutput: 'inputOutput',
+    lifeCycles: 'lifeCycles',
+    history: 'history'
+};
 
 export default {
-  components: {
-    TinyButton: Button,
-    TinyCollapse: Collapse,
-    TinyCollapseItem: CollapseItem,
-    PageInputOutput,
-    LifeCycles,
-    PageHistory,
-    PluginSetting,
-    SvgButton,
-    ButtonGroup
-  },
-  props: {
-    isFolder: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['openNewPage'],
-  setup(props, { emit }) {
-    const { t } = useDesignerI18n()
-    const { requestCreatePage, requestDeletePage } = http
-    const {
-      getDefaultPage,
-      pageSettingState,
-      changeTreeData,
-      isCurrentDataSame,
-      initCurrentPageData,
-      isTemporaryPage,
-      STATIC_PAGE_GROUP_ID,
-      updatePageSettingAfterSave
-    } = usePage()
-    const { pageState, initData } = useCanvas()
-    const { confirm } = useModal()
-    const registry = getMergeMeta(meta.id)
-    const pageGeneral = registry.components.PageGeneral
-    const beforeCreatePage = registry?.options?.beforeCreatePage
-    const pageGeneralRef = ref(null)
-
-    const { PLUGIN_NAME, getPluginByLayout, getPluginWidth, changePluginWidth } = useLayout()
-    const align = computed(() => getPluginByLayout('engine.plugins.singlePage'))
-    
-    // 确保 singlePage 插件的宽度设置为左侧菜单栏宽度（40px），这样 PluginSetting 才能正确定位
-    // 使用 watchEffect 确保在组件渲染前就设置好宽度
-    watchEffect(() => {
-      const navPanelWidth = 40 // --base-nav-panel-width
-      const currentWidth = getPluginWidth('engine.plugins.singlePage')
-      if (currentWidth !== navPanelWidth) {
-        changePluginWidth('engine.plugins.singlePage', navPanelWidth)
-      }
-    })
-    
-    // 在组件挂载后，直接通过 DOM 操作强制设置位置，覆盖内联样式
-    const forceSetPosition = () => {
-      nextTick(() => {
-        const settingPanel = document.querySelector('.page-plugin-setting .plugin-setting')
-        if (settingPanel) {
-          // 直接设置样式，覆盖内联样式
-          settingPanel.style.setProperty('left', '40px', 'important')
-          settingPanel.style.setProperty('right', 'auto', 'important')
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyButton: Button,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyCollapse: Collapse,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyCollapseItem: CollapseItem,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PageInputOutput,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        LifeCycles,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PageHistory,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PluginSetting,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        SvgButton,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        ButtonGroup
+    },
+    props: {
+        isFolder: {
+            type: Boolean,
+            default: false
         }
-      })
-    }
-    
-    onMounted(() => {
-      forceSetPosition()
-    })
-    
-    // 监听 isShow 变化，确保面板显示时位置正确
-    watchEffect(() => {
-      if (isShow.value) {
-        forceSetPosition()
-      }
-    })
-    const { subscribe, unsubscribe } = useMessage()
+    },
+    emits: ['openNewPage'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const { t } = useDesignerI18n();
+        const { requestCreatePage, requestDeletePage } = http;
+        const {
+            getDefaultPage,
+            pageSettingState,
+            changeTreeData,
+            isCurrentDataSame,
+            initCurrentPageData,
+            isTemporaryPage,
+            STATIC_PAGE_GROUP_ID,
+            updatePageSettingAfterSave
+        } = usePage();
+        const { pageState, initData } = useCanvas();
+        const { confirm } = useModal();
+        const registry = getMergeMeta(meta.id);
+        const pageGeneral = registry.components.PageGeneral;
+        const beforeCreatePage = registry?.options?.beforeCreatePage;
+        const pageGeneralRef = ref(null);
 
-    // 初始化订阅
-    let subscriber = null
+        const {
+            PLUGIN_NAME,
+            getPluginByLayout,
+            getPluginWidth,
+            changePluginWidth
+        } = useLayout();
+        const align = computed(() =>
+            getPluginByLayout('engine.plugins.singlePage')
+        );
 
-    // 组件激活时订阅
-    onActivated(() => {
-      subscriber = subscribe({
-        topic: 'page-saved',
-        callback: () => {
-          // 当收到页面保存事件时，更新页面设置状态
-          updatePageSettingAfterSave()
-        }
-      })
-    })
-
-    // 组件卸载或失活时取消订阅
-    onDeactivated(() => {
-      if (subscriber) {
-        unsubscribe(subscriber)
-      }
-    })
-
-    const state = reactive({
-      activeName: Object.values(PAGE_SETTING_SESSION),
-      title: computed(() => t('designer.page.pageSettings')),
-      historyMessage: ''
-    })
-
-    const cancelPageSetting = () => {
-      if (isEqual(pageSettingState.currentPageData, pageSettingState.currentPageDataCopy)) {
-        closePageSettingPanel()
-      } else {
-        confirm({
-          title: t('designer.page.tip'),
-          message: t('designer.page.closeWithoutSave'),
-          exec: () => {
-            if (!pageSettingState.isNew) {
-              changeTreeData(pageSettingState.oldParentId, pageSettingState.currentPageData.parentId)
-              Object.assign(pageSettingState.currentPageData, pageSettingState.currentPageDataCopy)
+        // 确保 singlePage 插件的宽度设置为左侧菜单栏宽度（40px），这样 PluginSetting 才能正确定位
+        // 使用 watchEffect 确保在组件渲染前就设置好宽度
+        watchEffect(() => {
+            // --base-nav-panel-width
+            const navPanelWidth = 40;
+            const currentWidth = getPluginWidth('engine.plugins.singlePage');
+            if (currentWidth !== navPanelWidth) {
+                changePluginWidth('engine.plugins.singlePage', navPanelWidth);
             }
-            closePageSettingPanel()
-          }
-        })
-      }
-    }
+        });
 
-    const createPage = async () => {
-      const { page_content, ...other } = getDefaultPage()
-      const { page_content: page_content_state, ...pageSettingStateOther } = pageSettingState.currentPageData
-      const createParams = {
-        ...other,
-        ...pageSettingStateOther,
-        page_content: {
-          ...page_content,
-          ...page_content_state,
-          fileName: pageSettingState.currentPageData.name
-        },
-        app: getMetaApi(META_SERVICE.GlobalService).getBaseInfo().id,
-        isPage: true
-      }
+        // 在组件挂载后，直接通过 DOM 操作强制设置位置，覆盖内联样式
+        const forceSetPosition = () => {
+            nextTick(() => {
+                const settingPanel = document.querySelector(
+                    '.page-plugin-setting .plugin-setting'
+                );
+                if (settingPanel) {
+                    // 直接设置样式，覆盖内联样式
+                    settingPanel.style.setProperty('left', '40px', 'important');
+                    settingPanel.style.setProperty(
+                        'right',
+                        'auto',
+                        'important'
+                    );
+                }
+            });
+        };
 
-      if (createParams.id) {
-        delete createParams.id
-        delete createParams._id
-      }
-      if (beforeCreatePage) {
-        await beforeCreatePage(createParams)
-      }
+        onMounted(() => {
+            forceSetPosition();
+        });
 
-      try {
-        const data = await requestCreatePage(createParams)
+        // 监听 isShow 变化，确保面板显示时位置正确
+        watchEffect(() => {
+            if (isShow.value) {
+                forceSetPosition();
+            }
+        });
+        const { subscribe, unsubscribe } = useMessage();
 
-        await pageSettingState.updateTreeData()
-        pageSettingState.isNew = false
-        isTemporaryPage.saved = false
-        emit('openNewPage', data)
-        closePageSettingPanel()
-        useLayout().closePlugin()
-        useNotify({
-          type: 'success',
-          message: t('designer.page.createPageSuccess')
-        })
-        if (isVsCodeEnv) {
-          generatePage(data)
-        }
-      } catch (err) {
-        useNotify({
-          type: 'error',
-          title: t('designer.page.createPageFailed'),
-          message: JSON.stringify(err?.message || err)
-        })
-      }
-    }
+        // 初始化订阅
+        let subscriber = null;
 
-    const updatePage = (id, params, isUpdateTree = true) => {
-      const routerChange = pageSettingState.currentPageDataCopy.route !== pageSettingState.currentPageData.route
-      const isCurEditPage = pageState?.currentPage?.id === id
-      const updateParams = {
-        id,
-        params,
-        routerChange,
-        isCurEditPage,
-        isUpdateTree
-      }
+        // 组件激活时订阅
+        onActivated(() => {
+            // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+            subscriber = subscribe({
+                topic: 'page-saved',
+                callback: () => {
+                    // 当收到页面保存事件时，更新页面设置状态
+                    updatePageSettingAfterSave();
+                }
+            });
+        });
 
-      return handlePageUpdate(updateParams)
-    }
+        // 组件卸载或失活时取消订阅
+        onDeactivated(() => {
+            if (subscriber) {
+                unsubscribe(subscriber);
+            }
+        });
 
-    const restorePage = (pageData) => {
-      const currentData = {
-        ...pageData,
-        id: pageData.page
-      }
+        const state = reactive({
+            activeName: Object.values(PAGE_SETTING_SESSION),
+            title: computed(() => t('designer.page.pageSettings')),
+            historyMessage: ''
+        });
 
-      const unnecessaryFields = ['page', 'backupTime', 'backupTitle', 'time']
-      unnecessaryFields.forEach((key) => delete currentData[key])
+        const cancelPageSetting = () => {
+            if (
+                isEqual(
+                    pageSettingState.currentPageData,
+                    pageSettingState.currentPageDataCopy
+                )
+            ) {
+                closePageSettingPanel();
+            } else {
+                confirm({
+                    title: t('designer.page.tip'),
+                    message: t('designer.page.closeWithoutSave'),
+                    exec: () => {
+                        if (!pageSettingState.isNew) {
+                            changeTreeData(
+                                pageSettingState.oldParentId,
+                                pageSettingState.currentPageData.parentId
+                            );
+                            Object.assign(
+                                pageSettingState.currentPageData,
+                                pageSettingState.currentPageDataCopy
+                            );
+                        }
+                        closePageSettingPanel();
+                    }
+                });
+            }
+        };
 
-      const params = {
-        ...pageSettingState.currentPageData,
-        ...currentData,
-        message: t('designer.page.restorePage')
-      }
+        const createPage = async () => {
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            const { page_content, ...other } = getDefaultPage();
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            const {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                page_content: page_content_state,
+                ...pageSettingStateOther
+            } = pageSettingState.currentPageData;
+            const createParams = {
+                ...other,
+                ...pageSettingStateOther,
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                page_content: {
+                    // eslint-disable-next-line camelcase
+                    ...page_content,
+                    // eslint-disable-next-line camelcase
+                    ...page_content_state,
+                    fileName: pageSettingState.currentPageData.name
+                },
+                app: getMetaApi(META_SERVICE.GlobalService).getBaseInfo().id,
+                isPage: true
+            };
 
-      updatePage(currentData.id, params).then((data) => {
-        // 还原的页面是当前页，需要同步更新画布
-        if (pageState?.currentPage?.id === data?.id) {
-          initData(data.page_content, data)
-        }
-        initCurrentPageData(data)
-      })
-    }
+            if (createParams.id) {
+                delete createParams.id;
+                delete createParams._id;
+            }
+            if (beforeCreatePage) {
+                await beforeCreatePage(createParams);
+            }
 
-    const editPage = async () => {
-      // 更新页面
-      const { id, name, page_content } = pageSettingState.currentPageData
-      const params = {
-        ...pageSettingState.currentPageData,
-        page_content: {
-          ...page_content,
-          fileName: name
-        }
-      }
+            try {
+                const data = await requestCreatePage(createParams);
 
-      const res = await updatePage(id, params)
+                await pageSettingState.updateTreeData();
+                pageSettingState.isNew = false;
+                isTemporaryPage.saved = false;
+                emit('openNewPage', data);
+                closePageSettingPanel();
+                useLayout().closePlugin();
+                useNotify({
+                    type: 'success',
+                    message: t('designer.page.createPageSuccess')
+                });
+                if (isVsCodeEnv) {
+                    generatePage(data);
+                }
+            } catch (err) {
+                useNotify({
+                    type: 'error',
+                    title: t('designer.page.createPageFailed'),
+                    message: JSON.stringify(err?.message || err)
+                });
+            }
+        };
 
-      initCurrentPageData(res)
-    }
+        const updatePage = (id, params, isUpdateTree = true) => {
+            const routerChange =
+                pageSettingState.currentPageDataCopy.route !==
+                pageSettingState.currentPageData.route;
+            const isCurEditPage = pageState?.currentPage?.id === id;
+            const updateParams = {
+                id,
+                params,
+                routerChange,
+                isCurEditPage,
+                isUpdateTree
+            };
 
-    const updatePageLifeCycles = (val) => {
-      if (!val) {
-        return
-      }
+            return handlePageUpdate(updateParams);
+        };
 
-      const pageContent = pageSettingState.currentPageData.page_content
+        const restorePage = pageData => {
+            const currentData = {
+                ...pageData,
+                id: pageData.page
+            };
 
-      pageContent.lifeCycles = {
-        ...(pageContent.lifeCycles || {}),
-        ...val
-      }
-    }
+            const unnecessaryFields = [
+                'page',
+                'backupTime',
+                'backupTitle',
+                'time'
+            ];
+            unnecessaryFields.forEach(key => delete currentData[key]);
 
-    const copyPageData = () => {
-      const data = pageSettingState.currentPageData
-      const copyData = extend(true, {}, data)
+            const params = {
+                ...pageSettingState.currentPageData,
+                ...currentData,
+                message: t('designer.page.restorePage')
+            };
 
-      pageSettingState.isNew = true
-      copyData.name = `${copyData.name}Copy`
-      copyData.route = `${copyData.route}Copy`
-      pageSettingState.currentPageData = copyData
-      pageSettingState.currentPageDataCopy = extend(true, {}, copyData)
-      pageSettingState.defaultPage = null
-    }
+            updatePage(currentData.id, params).then(data => {
+                // 还原的页面是当前页，需要同步更新画布
+                if (pageState?.currentPage?.id === data?.id) {
+                    initData(data.page_content, data);
+                }
+                initCurrentPageData(data);
+            });
+        };
 
-    const copyPage = () => {
-      if (!isCurrentDataSame()) {
-        confirm({
-          title: t('designer.page.tip'),
-          message: t('designer.page.copyWithoutSave'),
-          exec: () => {
-            changeTreeData(pageSettingState.oldParentId, pageSettingState.currentPageData.parentId)
-            Object.assign(pageSettingState.currentPageData, pageSettingState.currentPageDataCopy)
-            copyPageData()
-          }
-        })
-      } else {
-        copyPageData()
-      }
-    }
+        const editPage = async () => {
+            // 更新页面
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            const {id} = pageSettingState.currentPageData;
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            const {name} = pageSettingState.currentPageData;
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            const {page_content} = pageSettingState.currentPageData;
+            const params = {
+                ...pageSettingState.currentPageData,
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                page_content: {
+                    // eslint-disable-next-line camelcase
+                    ...page_content,
+                    fileName: name
+                }
+            };
 
-    const settingDefaultPage = async () => {
-      const params = { ...pageSettingState.defaultPage, isDefault: true }
-      updatePage(pageSettingState.defaultPage?.id, params, false).then((res) => {
-        if (res) {
-          editPage()
-        }
-      })
-    }
+            const res = await updatePage(id, params);
 
-    const createHistoryMessage = () => {
-      if (pageSettingState.isNew) {
-        pageSettingState.currentPageData.message = 'Page auto save'
-        createPage()
-      } else {
-        const title = t('designer.page.createHistoryBackup')
-        const messageRender = {
-          render: () => <Input placeholder={t('designer.page.historyBackupInfo')} v-model={state.historyMessage}></Input>
-        }
-        const exec = () => {
-          pageSettingState.currentPageData.message = state.historyMessage.trim() || 'Page auto save'
-          if (pageSettingState.defaultPage?.id) {
-            settingDefaultPage()
-          } else {
-            editPage()
-          }
-          state.historyMessage = ''
-        }
+            initCurrentPageData(res);
+        };
 
-        confirm({ title, message: messageRender, exec })
-      }
-    }
+        const updatePageLifeCycles = val => {
+            if (!val) {
+                return;
+            }
 
-    const savePageSetting = () => {
-      pageGeneralRef.value.validGeneralForm().then(createHistoryMessage)
-    }
+            const pageContent = pageSettingState.currentPageData.page_content;
 
-    const collectAllPage = (staticPageList = []) => {
-      if (!Array.isArray(staticPageList)) {
-        return []
-      }
+            pageContent.lifeCycles = {
+                ...(pageContent.lifeCycles || {}),
+                ...val
+            };
+        };
 
-      const pageList = []
+        const copyPageData = () => {
+            const data = pageSettingState.currentPageData;
+            const copyData = extend(true, {}, data);
 
-      staticPageList.forEach((pageItem) => {
-        if (pageItem?.isPage) {
-          pageList.push(pageItem)
+            pageSettingState.isNew = true;
+            copyData.name = `${copyData.name}Copy`;
+            copyData.route = `${copyData.route}Copy`;
+            pageSettingState.currentPageData = copyData;
+            pageSettingState.currentPageDataCopy = extend(true, {}, copyData);
+            pageSettingState.defaultPage = null;
+        };
 
-          return
-        }
+        const copyPage = () => {
+            if (!isCurrentDataSame()) {
+                confirm({
+                    title: t('designer.page.tip'),
+                    message: t('designer.page.copyWithoutSave'),
+                    exec: () => {
+                        changeTreeData(
+                            pageSettingState.oldParentId,
+                            pageSettingState.currentPageData.parentId
+                        );
+                        Object.assign(
+                            pageSettingState.currentPageData,
+                            pageSettingState.currentPageDataCopy
+                        );
+                        copyPageData();
+                    }
+                });
+            } else {
+                copyPageData();
+            }
+        };
 
-        if (!pageItem?.isPage && pageItem?.children?.length) {
-          pageList.push(...collectAllPage(pageItem.children))
-        }
-      })
+        // eslint-disable-next-line @typescript-eslint/require-await
+        const settingDefaultPage = async () => {
+            const params = { ...pageSettingState.defaultPage, isDefault: true };
+            updatePage(pageSettingState.defaultPage?.id, params, false).then(
+                res => {
+                    if (res) {
+                        editPage();
+                    }
+                }
+            );
+        };
 
-      return pageList
-    }
+        const createHistoryMessage = () => {
+            if (pageSettingState.isNew) {
+                pageSettingState.currentPageData.message = 'Page auto save';
+                createPage();
+            } else {
+                const title = t('designer.page.createHistoryBackup');
+                const messageRender = {
+                    render: () => {
+                        // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention, @typescript-eslint/no-var-requires
+                        const { Input } = require('@opentiny/vue');
+                        // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+                        const { h } = require('vue');
+                        return h(Input, {
+                            placeholder: t('designer.page.historyBackupInfo'),
+                            modelValue: state.historyMessage,
+                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                            'onUpdate:modelValue': (value: string) => {
+                                state.historyMessage = value;
+                            }
+                        });
+                    }
+                };
+                const exec = () => {
+                    pageSettingState.currentPageData.message =
+                        state.historyMessage.trim() || 'Page auto save';
+                    if (pageSettingState.defaultPage?.id) {
+                        settingDefaultPage();
+                    } else {
+                        editPage();
+                    }
+                    state.historyMessage = '';
+                };
 
-    const deletePage = () => {
-      if (pageSettingState.treeDataMapping[pageSettingState.currentPageData.id]?.children?.length) {
-        useNotify({
-          type: 'error',
-          message: t('designer.page.pageHasChildren')
-        })
+                confirm({ title, message: messageRender, exec });
+            }
+        };
 
-        return
-      }
+        const savePageSetting = () => {
+            pageGeneralRef.value.validGeneralForm().then(createHistoryMessage);
+        };
 
-      confirm({
-        title: t('designer.page.tip'),
-        message: t('designer.page.deletePageConfirm'),
-        exec: () => {
-          const id = pageSettingState.currentPageData?.id || ''
-          requestDeletePage(id)
-            .then(() => {
-              pageSettingState.updateTreeData().then((pages) => {
-                if (pageState?.currentPage?.id !== id) {
-                  return
+        const collectAllPage = (staticPageList = []) => {
+            if (!Array.isArray(staticPageList)) {
+                return [];
+            }
+
+            const pageList = [];
+
+            staticPageList.forEach(pageItem => {
+                if (pageItem?.isPage) {
+                    pageList.push(pageItem);
+
+                    return;
                 }
 
-                const staticPageList = (pages || []).find(({ groupId }) => groupId === STATIC_PAGE_GROUP_ID)?.data || []
-                const pageList = collectAllPage(staticPageList)
-
-                const pageHome = pageList.find((page) => page.isHome)
-                const firstPage = pageList?.[0]
-                const defaultPage = {
-                  componentName: COMPONENT_NAME.Page
+                if (!pageItem?.isPage && pageItem?.children?.length) {
+                    pageList.push(...collectAllPage(pageItem.children));
                 }
+            });
 
-                emit('openNewPage', pageHome || firstPage || defaultPage)
-              })
+            return pageList;
+        };
 
-              closePageSettingPanel()
-              useNotify({ message: t('designer.page.deletePageSuccess'), type: 'success' })
-            })
-            .catch(() => {
-              useNotify({ message: t('designer.page.deletePageFailed'), type: 'error' })
-            })
-        }
-      })
+        const deletePage = () => {
+            if (
+                pageSettingState.treeDataMapping[
+                    pageSettingState.currentPageData.id
+                ]?.children?.length
+            ) {
+                useNotify({
+                    type: 'error',
+                    message: t('designer.page.pageHasChildren')
+                });
+
+                return;
+            }
+
+            confirm({
+                title: t('designer.page.tip'),
+                message: t('designer.page.deletePageConfirm'),
+                exec: () => {
+                    const id = pageSettingState.currentPageData?.id || '';
+                    requestDeletePage(id)
+                        .then(() => {
+                            pageSettingState.updateTreeData().then(pages => {
+                                if (pageState?.currentPage?.id !== id) {
+                                    return;
+                                }
+
+                                const staticPageList =
+                                    (pages || []).find(
+                                        ({ groupId }) =>
+                                            groupId === STATIC_PAGE_GROUP_ID
+                                    )?.data || [];
+                                const pageList = collectAllPage(staticPageList);
+
+                                const pageHome = pageList.find(
+                                    page => page.isHome
+                                );
+                                const firstPage = pageList?.[0];
+                                const defaultPage = {
+                                    componentName: COMPONENT_NAME.Page
+                                };
+
+                                emit(
+                                    'openNewPage',
+                                    pageHome || firstPage || defaultPage
+                                );
+                            });
+
+                            closePageSettingPanel();
+                            useNotify({
+                                message: t('designer.page.deletePageSuccess'),
+                                type: 'success'
+                            });
+                        })
+                        .catch(() => {
+                            useNotify({
+                                message: t('designer.page.deletePageFailed'),
+                                type: 'error'
+                            });
+                        });
+                }
+            });
+        };
+
+        return {
+            align,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            PLUGIN_NAME,
+            state,
+            isShow,
+            savePageSetting,
+            copyPage,
+            pageSettingState,
+            pageGeneral,
+            pageGeneralRef,
+            deletePage,
+            cancelPageSetting,
+            closePageSettingPanel,
+            updatePageLifeCycles,
+            restorePage,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            PAGE_SETTING_SESSION,
+            t
+        };
     }
+};
 
-    return {
-      align,
-      PLUGIN_NAME,
-      state,
-      isShow,
-      savePageSetting,
-      copyPage,
-      pageSettingState,
-      pageGeneral,
-      pageGeneralRef,
-      deletePage,
-      cancelPageSetting,
-      closePageSettingPanel,
-      updatePageLifeCycles,
-      restorePage,
-      PAGE_SETTING_SESSION,
-      t
-    }
-  }
-}
+// eslint-disable-next-line no-redeclare
+export { openPageSettingPanel, closePageSettingPanel };
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .block-add-content {
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 45px);
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 45px);
 }
 
 .page-plugin-setting {
-  // 确保设置面板紧贴左侧菜单栏（40px）
-  // 使用更高优先级的选择器覆盖内联样式，确保完全紧贴
-  // 注意：PluginSetting 使用内联样式，需要通过 !important 强制覆盖
-  :deep(.plugin-setting) {
-    left: 40px !important; // 直接使用 CSS 变量值，覆盖内联样式
-    right: auto !important;
-  }
-  
-  // 如果上面的选择器不够强，尝试更具体的选择器
-  :deep(#panel-setting.plugin-setting) {
-    left: 40px !important;
-    right: auto !important;
-  }
+    // 确保设置面板紧贴左侧菜单栏（40px）
+    // 使用更高优先级的选择器覆盖内联样式，确保完全紧贴
+    // 注意：PluginSetting 使用内联样式，需要通过 !important 强制覆盖
+    :deep(.plugin-setting) {
+        left: 40px !important; // 直接使用 CSS 变量值，覆盖内联样式
+        right: auto !important;
+    }
 
-  :deep(.plugin-setting-header) {
-    border: 0;
-  }
+    // 如果上面的选择器不够强，尝试更具体的选择器
+    :deep(#panel-setting.plugin-setting) {
+        left: 40px !important;
+        right: auto !important;
+    }
 
-  :deep(.plugin-setting-content) {
-    padding: 0 0 16px 0;
-  }
+    :deep(.plugin-setting-header) {
+        border: 0;
+    }
 
-  :deep(.tiny-collapse) {
-    border-bottom: 0;
-  }
+    :deep(.plugin-setting-content) {
+        padding: 0 0 16px 0;
+    }
+
+    :deep(.tiny-collapse) {
+        border-bottom: 0;
+    }
 }
 
 .page-setting-collapse {
-  :deep(.tiny-collapse-item__header) {
-    &,
-    &.is-active {
-      &::before {
-        border: none;
-      }
-    }
+    :deep(.tiny-collapse-item__header) {
+        &,
+        &.is-active {
+            &::before {
+                border: none;
+            }
+        }
 
-    .svg-icon {
-      margin-right: 6px;
+        .svg-icon {
+            margin-right: 6px;
+        }
     }
-  }
-  :deep(.tiny-collapse-item__content) {
-    padding: 0 12px 12px;
-  }
+    :deep(.tiny-collapse-item__content) {
+        padding: 0 12px 12px;
+    }
 }
 </style>

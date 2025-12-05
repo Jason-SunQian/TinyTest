@@ -11,7 +11,7 @@
  */
 
 export default () => {
-  return {
-    update: null
-  }
-}
+    return {
+        update: null
+    };
+};

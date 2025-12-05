@@ -11,809 +11,979 @@
  */
 
 /* metaService: engine.service.block.useBlock */
-import { ref, reactive, readonly, type DeepReadonly, toRaw } from 'vue'
-import { hyphenate } from '@vue/shared'
-import { extend, copyArray } from '@opentiny/vue-renderless/common/object'
-import { format } from '@opentiny/vue-renderless/common/date'
-import { remove } from '@opentiny/vue-renderless/common/array'
-import { constants } from '@opentiny/tiny-engine-utils'
-import { ast2String, parseExpression } from '@opentiny/tiny-engine-common/js/ast'
-import { getCssObjectFromStyleStr } from '@opentiny/tiny-engine-common/js/css'
+/* eslint-disable max-lines */
+import { ref, reactive, readonly, toRaw } from 'vue';
+import type { DeepReadonly } from 'vue';
+import { extend, copyArray } from '@opentiny/vue-renderless/common/object';
+import { format } from '@opentiny/vue-renderless/common/date';
+import { remove } from '@opentiny/vue-renderless/common/array';
+import { constants } from '@opentiny/tiny-engine-utils';
 import {
-  useCanvas,
-  useTranslate,
-  useBreadcrumb,
-  useLayout,
-  useMessage,
-  getMetaApi,
-  META_APP,
-  getMergeMeta,
-  getOptions,
-  META_SERVICE
-} from '@opentiny/tiny-engine-meta-register'
-import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus'
+    ast2String,
+    parseExpression
+} from '@opentiny/tiny-engine-common/js/ast';
+import { getCssObjectFromStyleStr } from '@opentiny/tiny-engine-common/js/css';
+import {
+    useCanvas,
+    useTranslate,
+    useBreadcrumb,
+    useLayout,
+    useMessage,
+    getMetaApi,
+    META_APP,
+    getMergeMeta,
+    getOptions,
+    META_SERVICE
+} from '@opentiny/tiny-engine-meta-register';
+
+import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus';
+
 import type {
-  Block,
-  BlockContent,
-  BlockGroup,
-  BlockProperty,
-  CreateBlockOptions,
-  CreateEmptyBlockOptions,
-  ParseChildPropsOptions,
-  ParsePropToDataOptons,
-  Property,
-  SchemaData
-} from './types'
+    Block,
+    BlockContent,
+    BlockGroup,
+    BlockProperty,
+    CreateBlockOptions,
+    CreateEmptyBlockOptions,
+    ParseChildPropsOptions,
+    ParsePropToDataOptons,
+    Property,
+    SchemaData
+} from './types';
 
-const { SORT_TYPE, SCHEMA_DATA_TYPE, BLOCK_OPENNESS } = constants
+// 将 camelCase 转换为 kebab-case
+const hyphenate = (str: string): string => {
+    return str
+        .replace(/([A-Z])/g, '-$1')
+        .toLowerCase()
+        .replace(/^-/, '');
+};
 
-const NODE_TYPE_PAGE = 'Page'
-const nameCn = 'name_cn'
+const { SORT_TYPE, SCHEMA_DATA_TYPE, BLOCK_OPENNESS } = constants;
+
+const NODE_TYPE_PAGE = 'Page';
+const nameCn = 'name_cn';
 const DEFAULT_PROPERTIES = readonly<Property[]>([
-  {
-    label: {
-      zh_CN: '基础信息'
-    },
-    description: {
-      zh_CN: '基础信息'
-    },
-    collapse: {
-      number: 6,
-      text: {
-        zh_CN: '显示更多'
-      }
-    },
-    content: []
-  }
-])
+    {
+        label: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            zh_CN: '基础信息'
+        },
+        description: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+            zh_CN: '基础信息'
+        },
+        collapse: {
+            number: 6,
+            text: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                zh_CN: '显示更多'
+            }
+        },
+        content: []
+    }
+]);
 
 const DEFAULT_BLOCK = readonly<DeepReadonly<BlockContent>>({
-  componentName: 'Block',
-  fileName: '',
-  css: '',
-  props: {},
-  children: [],
-  schema: {
-    properties: DEFAULT_PROPERTIES,
-    events: {}
-  },
-  state: {},
-  methods: {},
-  dataSource: {}
-})
+    componentName: 'Block',
+    fileName: '',
+    css: '',
+    props: {},
+    children: [],
+    schema: {
+        properties: DEFAULT_PROPERTIES,
+        events: {}
+    },
+    state: {},
+    methods: {},
+    dataSource: {}
+});
 
+// 当前画布中正在渲染的区块数据
 const blockState = reactive<{ list: Block[]; current: Block | null }>({
-  list: [],
-  current: null // 当前画布中正在渲染的区块数据
-})
+    list: [],
+    current: null
+});
 
 // 区块分组信息
-const groupState = reactive<{ list: BlockGroup[]; selected: BlockGroup | object }>({
-  list: [],
-  selected: {}
-})
+const groupState = reactive<{
+    list: BlockGroup[];
+    selected: BlockGroup | object;
+}>({
+    list: [],
+    selected: {}
+});
 
 // 区块分类
 const categoryState = reactive<{ list: BlockGroup[] }>({
-  list: []
-})
+    list: []
+});
 
-const getBlockList = () => blockState.list
+const getBlockList = () => blockState.list;
 
 const setBlockList = (list: Block[]) => {
-  blockState.list = list
-}
+    blockState.list = list;
+};
 
 const addBlock = (block: Block) => {
-  const blockList = getBlockList()
-  blockList.unshift(block)
-}
+    const blockList = getBlockList();
+    blockList.unshift(block);
+};
 
 const delBlock = (block: Block) => {
-  remove(getBlockList(), block)
-}
+    remove(getBlockList(), block);
+};
 
 // 获取当前画布中的区块信息
-const getCurrentBlock = () => blockState.current
+const getCurrentBlock = () => blockState.current;
 
 const setCurrentBlock = (block: Block) => {
-  blockState.current = block
-}
+    blockState.current = block;
+};
 
-const getGroupList = () => groupState.list
+const getGroupList = () => groupState.list;
 
 const setGroupList = (list: BlockGroup[]) => {
-  groupState.list = list
-}
+    groupState.list = list;
+};
 
-const getCategoryList = () => categoryState.list
+const getCategoryList = () => categoryState.list;
 
 const setCategoryList = (list: BlockGroup[]) => {
-  categoryState.list = list
-}
+    categoryState.list = list;
+};
 
-const getSelectedGroup = () => groupState.selected
+const getSelectedGroup = () => groupState.selected;
 
 const setSelectedGroup = (selected: BlockGroup) => {
-  groupState.selected = selected
-}
+    groupState.selected = selected;
+};
 
-const copyCss = (css: string, classNameList: string[]) => {
-  classNameList = Array.from(new Set(classNameList)).map((item) => '.' + item)
-  const cssObject = getCssObjectFromStyleStr(css)
-  let styleStr = ''
+const copyCss = (css: string, classNameListParam: string[]) => {
+    const classNameList = Array.from(new Set(classNameListParam)).map(
+        item => `.${item}`
+    );
+    const cssObject = getCssObjectFromStyleStr(css);
+    let styleStr = '';
 
-  Object.entries(cssObject).forEach(([key, value]) => {
-    // 只要选择器包含目标类名，就复制
-    if (classNameList.some((classNameItem) => key.includes(classNameItem))) {
-      styleStr += `${key} {\n${value}\n}\n`
-    }
-  })
+    Object.entries(cssObject).forEach(([key, value]) => {
+        // 只要选择器包含目标类名，就复制
+        if (classNameList.some(classNameItem => key.includes(classNameItem))) {
+            styleStr += `${key} {\n${value}\n}\n`;
+        }
+    });
 
-  return styleStr
-}
+    return styleStr;
+};
 
-const copySchema = (schema: Partial<BlockContent['schema']>, contentList: string[], methods: Record<string, any>) => {
-  const content = schema?.properties?.[0]?.content || []
-  let emitList: string[] = []
-  const emitListCopies: Record<string, any> = {}
-  Object.keys(methods).forEach((key) => {
-    const item = JSON.stringify(methods[key].value).match(/emit..*?\)/g)
+const copySchema = (
+    schema: Partial<BlockContent['schema']>,
+    contentList: string[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    methods: Record<string, any>
+) => {
+    const content = schema?.properties?.[0]?.content || [];
+    let emitList: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const emitListCopies: Record<string, any> = {};
+    Object.keys(methods).forEach(key => {
+        const item = JSON.stringify(methods[key].value).match(/emit..*?\)/g);
 
-    if (item?.length) {
-      emitList = [...emitList, ...item]
-    }
-  })
+        if (item?.length) {
+            emitList = [...emitList, ...item];
+        }
+    });
 
-  emitList.forEach((e) => {
-    const matches = e.match(/'.*?'/g)
+    emitList.forEach(e => {
+        const matches = e.match(/'.*?'/g);
 
-    if (!matches || !matches.length) {
-      return
-    }
+        if (!matches?.length) {
+            return;
+        }
 
-    let key = matches[0].replace(/'/g, '')
+        let key = matches[0].replace(/'/g, '');
 
-    key = `on${key[0].toLocaleUpperCase() + key.slice(1, key.length)}`
-    if (schema?.events?.[key]) {
-      emitListCopies[key] = schema?.events[key]
-    }
-  })
-  const schemaCopies = {
-    properties: [
-      {
-        ...extend(true, {}, DEFAULT_PROPERTIES[0]),
-        content: content.filter((item) => contentList.includes(item.property))
-      }
-    ],
-    events: emitListCopies || {}
-  }
+        key = `on${key[0].toLocaleUpperCase() + key.slice(1, key.length)}`;
+        if (schema?.events?.[key]) {
+            emitListCopies[key] = schema?.events[key];
+        }
+    });
+    const schemaCopies = {
+        properties: [
+            {
+                ...extend(true, {}, DEFAULT_PROPERTIES[0]),
+                content: content.filter(item =>
+                    contentList.includes(item.property)
+                )
+            }
+        ],
+        events: emitListCopies || {}
+    };
 
-  return schemaCopies
-}
+    return schemaCopies;
+};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const copyMethods = (schema: Record<string, any>) => {
-  const methodsListCopies: Record<string, any> = {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const methodsListCopies: Record<string, any> = {};
 
-  // 因为methods方法里面大部分是用户的业务代码（无法复用）,所以只需要拷贝一个空方法即可
-  Object.entries(schema).forEach(([key, value]) => {
-    const ast: any = parseExpression(value.value)
+    // 因为methods方法里面大部分是用户的业务代码（无法复用）,所以只需要拷贝一个空方法即可
+    Object.entries(schema).forEach(([key, value]) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ast: any = parseExpression(value.value);
 
-    // 清空函数体
-    if (ast.body?.body) {
-      ast.body.body = []
+        // 清空函数体
+        if (ast.body?.body) {
+            ast.body.body = [];
+        }
+        methodsListCopies[key] = {
+            type: 'JSFunction',
+            value: ast2String(ast)
+        };
+    });
+
+    return methodsListCopies;
+};
+
+const copyState = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    stateObj: Record<string, any> = {},
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    methodsObj: Record<string, any> = {}
+) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const stateCopies: Record<string, any> = {};
+    const stateKey = Object.keys(stateObj).map(e => `state.${e} `);
+
+    stateKey.forEach(e => {
+        Object.keys(methodsObj).forEach(methodKey => {
+            if (methodsObj[methodKey].value.indexOf(e) !== -1) {
+                // eslint-disable-next-line @typescript-eslint/no-shadow
+                const key = e.replace('state.', '').replace(' ', '');
+                stateCopies[key] = stateObj[key];
+            }
+        });
+    });
+
+    return stateCopies;
+};
+
+const parsePropToData = (
+    data: SchemaData,
+    { prop, langs, state, methods }: ParsePropToDataOptons
+) => {
+    if (prop.type === SCHEMA_DATA_TYPE.I18n) {
+        data.langs[prop.key] = langs[prop.key];
+    } else if (prop.type === SCHEMA_DATA_TYPE.JSExpression) {
+        if (/\.state\./.test(prop.value)) {
+            const key = prop.value.replace('this.state.', '');
+            data.state[key] = state[key];
+        } else if (/\.props\./.test(prop.value)) {
+            const key = prop.value.replace('this.props.', '');
+            data.contentList.push(key);
+        } else {
+            const key = prop.value.replace('this.', '').replace(/\(.*?\)/, '');
+            data.methods[key] = methods[key];
+        }
     }
-    methodsListCopies[key] = {
-      type: 'JSFunction',
-      value: ast2String(ast)
-    }
-  })
+};
 
-  return methodsListCopies
-}
-
-const copyState = (stateObj: Record<string, any> = {}, methodsObj: Record<string, any> = {}) => {
-  const stateCopies: Record<string, any> = {}
-  const stateKey = Object.keys(stateObj).map((e) => `state.${e} `)
-
-  stateKey.forEach((e) => {
-    Object.keys(methodsObj).forEach((key) => {
-      if (methodsObj[key].value.indexOf(e) !== -1) {
-        const key = e.replace('state.', '').replace(' ', '')
-        stateCopies[key] = stateObj[key]
-      }
-    })
-  })
-
-  return stateCopies
-}
-
-const parsePropToData = (data: SchemaData, { prop, langs, state, methods }: ParsePropToDataOptons) => {
-  if (prop.type === SCHEMA_DATA_TYPE.I18n) {
-    data.langs[prop.key] = langs[prop.key]
-  } else if (prop.type === SCHEMA_DATA_TYPE.JSExpression) {
-    if (/\.state\./.test(prop.value)) {
-      const key = prop.value.replace('this.state.', '')
-      data.state[key] = state[key]
-    } else if (/\.props\./.test(prop.value)) {
-      const key = prop.value.replace('this.props.', '')
-      data.contentList.push(key)
-    } else {
-      const key = prop.value.replace('this.', '').replace(/\(.*?\)/, '')
-      data.methods[key] = methods[key]
-    }
-  }
-}
+type ChildSchema = {
+    props?: Record<string, unknown>;
+    children?: ChildSchema[];
+    [key: string]: unknown;
+};
 
 const filterDataFn =
-  (parseChildProps: (...args: any[]) => any) =>
-  ({ children = [] as any[], langs = {}, methods = {}, state = {} }) => {
-    const data: SchemaData = {
-      langs: {},
-      methods: {},
-      state: {},
-      classNameList: [],
-      contentList: []
-    }
+    (
+        parseChildProps: (
+            data: SchemaData,
+            options: ParseChildPropsOptions
+        ) => void
+    ) =>
+    ({
+        children = [] as ChildSchema[],
+        langs = {} as Record<string, unknown>,
+        methods = {} as Record<string, unknown>,
+        state = {} as Record<string, unknown>
+    }: {
+        children?: ChildSchema[];
+        langs?: Record<string, unknown>;
+        methods?: Record<string, unknown>;
+        state?: Record<string, unknown>;
+    }) => {
+        const data: SchemaData = {
+            langs: {},
+            methods: {},
+            state: {},
+            classNameList: [],
+            contentList: []
+        };
 
-    if (Array.isArray(children)) {
-      children.forEach((child) => {
-        parseChildProps(data, { child, langs, state, methods })
-      })
-    }
-
-    return data
-  }
-
-const parseChildProps = (data: SchemaData, { child, langs, state, methods }: ParseChildPropsOptions) => {
-  if (child.props) {
-    Object.entries(child.props).forEach(([propKey, prop]) => {
-      if (typeof prop === 'object') {
-        parsePropToData(data, { prop, langs, state, methods })
-      } else {
-        if (propKey === 'className' && prop) {
-          data.classNameList.push(...prop.split(' ').filter((item: string) => item))
+        if (Array.isArray(children)) {
+            children.forEach(child => {
+                parseChildProps(data, { child, langs, state, methods });
+            });
         }
-      }
-    })
-  }
 
-  if (Array.isArray(child.children)) {
-    const filterData = filterDataFn(parseChildProps)
-    const childData = filterData({ children: child.children, langs, methods, state })
-    Object.assign(data.langs, childData.langs)
-    Object.assign(data.methods, childData.methods)
-    Object.assign(data.state, childData.state)
-    data.classNameList = [...data.classNameList, ...childData.classNameList]
-    data.contentList = [...data.contentList, ...childData.contentList]
-  }
-}
+        return data;
+    };
+
+const parseChildProps = (
+    data: SchemaData,
+    { child, langs, state, methods }: ParseChildPropsOptions
+) => {
+    if (child.props) {
+        Object.entries(child.props).forEach(([propKey, prop]) => {
+            if (typeof prop === 'object') {
+                parsePropToData(data, { prop, langs, state, methods });
+            } else if (propKey === 'className' && prop) {
+                data.classNameList.push(
+                    ...prop.split(' ').filter((item: string) => item)
+                );
+            }
+        });
+    }
+
+    if (Array.isArray(child.children)) {
+        const filterData = filterDataFn(parseChildProps);
+        const childData = filterData({
+            children: child.children,
+            langs,
+            methods,
+            state
+        });
+        Object.assign(data.langs, childData.langs);
+        Object.assign(data.methods, childData.methods);
+        Object.assign(data.state, childData.state);
+        data.classNameList = [
+            ...data.classNameList,
+            ...childData.classNameList
+        ];
+        data.contentList = [...data.contentList, ...childData.contentList];
+    }
+};
 
 const getBlockPageSchema = (block: Block) => {
-  const content = block?.content || {}
-  content.componentName = content.componentName || content.blockName || ''
+    const content = block?.content || {};
+    content.componentName = content.componentName || content.blockName || '';
 
-  return content
-}
+    return content;
+};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const initBlock = async (block: any = {}, _langs = {}, isEdit?: boolean) => {
-  const { resetBlockCanvasState, setSaved, getSchema } = useCanvas()
-  const { setBreadcrumbBlock } = useBreadcrumb()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-void
+    void _langs;
+    const { resetBlockCanvasState, setSaved, getSchema } = useCanvas();
+    const { setBreadcrumbBlock } = useBreadcrumb();
 
-  // 把区块的schema传递给画布
-  await resetBlockCanvasState({ pageSchema: getBlockPageSchema(block) })
-  // 这一步操作很重要，让区块管理面板和画布共同维护同一份区块schema
-  block.content = getSchema()
+    // 把区块的schema传递给画布
+    await resetBlockCanvasState({ pageSchema: getBlockPageSchema(block) });
+    // 这一步操作很重要，让区块管理面板和画布共同维护同一份区块schema
+    block.content = getSchema();
 
-  setCurrentBlock(block)
-  setBreadcrumbBlock([block[nameCn] || block.label])
+    setCurrentBlock(block);
+    setBreadcrumbBlock([block[nameCn] || block.label]);
 
-  // 如果是点击区块管理列表进来的则不需要执行以下操作
-  if (!isEdit) {
-    // 非编辑状态即为新增，新增默认锁定画布
-    const currentUser = getMetaApi(META_SERVICE.GlobalService).getState().userInfo
-    block.occupier = ensureOccupier(block.occupier || currentUser)
-    useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(block.occupier)
-    addBlock(block)
-    setSaved(false)
-  }
-
-  useMessage().publish({
-    topic: 'pageOrBlockInit',
-    data: block.content
-  })
-}
-
-const createBlock = ({ name_cn, label, path, categories }: CreateBlockOptions) => {
-  const { pageState } = useCanvas()
-  const rawSchema = toRaw(pageState.currentSchema)
-
-  let processedSchema = []
-  if (!rawSchema) {
-    processedSchema = []
-  } else if (Array.isArray(rawSchema)) {
-    processedSchema = rawSchema.map((schemaItem) => extend(true, {}, schemaItem))
-  } else {
-    processedSchema = extend(true, {}, rawSchema)
-  }
-
-  // 判断 node 类型 以及 schema 类型
-  // 选中 body 节点 创建区块时需传递子节点数据
-  const isPageNode = processedSchema.componentName === NODE_TYPE_PAGE
-  const hasMultiSchema = Array.isArray(processedSchema) && processedSchema.length
-
-  const children = isPageNode ? processedSchema.children : hasMultiSchema ? processedSchema : [processedSchema]
-
-  // 过滤只有新区块内使用到的数据
-  const { getLangs } = useTranslate()
-  const filterData = filterDataFn(parseChildProps)
-  const { methods, state, classNameList, contentList } = extend(
-    true,
-    {},
-    filterData({
-      children,
-      langs: getLangs(),
-      methods: pageState.pageSchema?.methods,
-      state: pageState.pageSchema?.state
-    })
-  )
-
-  const css = copyCss(pageState.pageSchema?.css || '', classNameList)
-  const methodsCopies = copyMethods(methods)
-  Object.assign(methods, methodsCopies)
-
-  const schemaCopies = copySchema(pageState.pageSchema?.schema, contentList, methods)
-  const stateCopies = copyState(pageState.pageSchema?.state, methods)
-  Object.assign(state, stateCopies)
-
-  const block: Block = {
-    path,
-    [nameCn]: name_cn,
-    label,
-    histories: [],
-    categories,
-    public: BLOCK_OPENNESS.Open,
-    framework: getMergeMeta('engine.config')?.dslMode,
-    content: {
-      ...extend(true, {}, DEFAULT_BLOCK),
-      fileName: label,
-      css,
-      methods,
-      state,
-      children,
-      schema: schemaCopies
+    // 如果是点击区块管理列表进来的则不需要执行以下操作
+    if (!isEdit) {
+        // 非编辑状态即为新增，新增默认锁定画布
+        const currentUser = getMetaApi(META_SERVICE.GlobalService).getState()
+            .userInfo;
+        block.occupier = ensureOccupier(block.occupier || currentUser);
+        useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(
+            block.occupier
+        );
+        addBlock(block);
+        setSaved(false);
     }
-  }
 
-  const api = getMetaApi(META_APP.BlockManage)
-  // saveBlock 内部会调用 blockSettings.tsx 中的 createBlock 接口，成功后会自动初始化区块
-  return api.saveBlock?.(block)
-}
+    useMessage().publish({
+        topic: 'pageOrBlockInit',
+        data: block.content
+    });
+};
 
-const createEmptyBlock = ({ name_cn, label, path, categories }: CreateEmptyBlockOptions) => {
-  const block: Block = {
-    path,
-    [nameCn]: name_cn,
+const createBlock = ({
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+    name_cn,
     label,
-    categories,
-    public: BLOCK_OPENNESS.Open,
-    framework: getMergeMeta('engine.config')?.dslMode,
-    content: {
-      ...extend(true, {}, DEFAULT_BLOCK),
-      fileName: label
+    path,
+    categories
+}: CreateBlockOptions) => {
+    const { pageState } = useCanvas();
+    const rawSchema = toRaw(pageState.currentSchema);
+
+    let processedSchema = [];
+    if (!rawSchema) {
+        processedSchema = [];
+    } else if (Array.isArray(rawSchema)) {
+        processedSchema = rawSchema.map(schemaItem =>
+            extend(true, {}, schemaItem)
+        );
+    } else {
+        processedSchema = extend(true, {}, rawSchema);
     }
-  }
 
-  const api = getMetaApi(META_APP.BlockManage)
-  // saveBlock 内部会调用 blockSettings.tsx 中的 createBlock 接口，成功后会自动初始化区块
-  return api.saveBlock?.(block)
-}
+    // 判断 node 类型 以及 schema 类型
+    // 选中 body 节点 创建区块时需传递子节点数据
+    const isPageNode = processedSchema.componentName === NODE_TYPE_PAGE;
+    const hasMultiSchema =
+        Array.isArray(processedSchema) && processedSchema.length;
 
-const setComponentLinkedValue = ({ propertyName, value }: { propertyName: string; value: any }) => {
-  const { schema } = useCanvas().canvasApi.value?.getCurrent?.() || {}
+    const children = isPageNode
+        ? processedSchema.children
+        : hasMultiSchema
+        ? processedSchema
+        : [processedSchema];
 
-  if (!propertyName || !schema) {
-    return
-  }
+    // 过滤只有新区块内使用到的数据
+    const { getLangs } = useTranslate();
+    const filterData = filterDataFn(parseChildProps);
+    const { methods, state, classNameList, contentList } = extend(
+        true,
+        {},
+        filterData({
+            children,
+            langs: getLangs(),
+            methods: pageState.pageSchema?.methods,
+            state: pageState.pageSchema?.state
+        })
+    );
 
-  schema.props = schema.props || {}
-  schema.props[propertyName] = value
-}
+    const css = copyCss(pageState.pageSchema?.css || '', classNameList);
+    const methodsCopies = copyMethods(methods);
+    Object.assign(methods, methodsCopies);
 
-const getBlockI18n = (block: Block) => block?.content?.i18n || {}
+    const schemaCopies = copySchema(
+        pageState.pageSchema?.schema,
+        contentList,
+        methods
+    );
+    const stateCopies = copyState(pageState.pageSchema?.state, methods);
+    Object.assign(state, stateCopies);
 
-const getBlockProperties = (block: Block) => block?.content?.schema?.properties?.[0]?.content || []
+    const block: Block = {
+        path,
+        // eslint-disable-next-line camelcase
+        [nameCn]: name_cn,
+        label,
+        histories: [],
+        categories,
+        public: BLOCK_OPENNESS.Open,
+        framework: getMergeMeta('engine.config')?.dslMode,
+        content: {
+            ...extend(true, {}, DEFAULT_BLOCK),
+            fileName: label,
+            css,
+            methods,
+            state,
+            children,
+            schema: schemaCopies
+        }
+    };
+
+    const api = getMetaApi(META_APP.BlockManage);
+    // saveBlock 内部会调用 blockSettings.tsx 中的 createBlock 接口，成功后会自动初始化区块
+    return api.saveBlock?.(block);
+};
+
+const createEmptyBlock = ({
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+    name_cn,
+    label,
+    path,
+    categories
+}: CreateEmptyBlockOptions) => {
+    const block: Block = {
+        path,
+        // eslint-disable-next-line camelcase
+        [nameCn]: name_cn,
+        label,
+        categories,
+        public: BLOCK_OPENNESS.Open,
+        framework: getMergeMeta('engine.config')?.dslMode,
+        content: {
+            ...extend(true, {}, DEFAULT_BLOCK),
+            fileName: label
+        }
+    };
+
+    const api = getMetaApi(META_APP.BlockManage);
+    // saveBlock 内部会调用 blockSettings.tsx 中的 createBlock 接口，成功后会自动初始化区块
+    return api.saveBlock?.(block);
+};
+
+const setComponentLinkedValue = ({
+    propertyName,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value
+}: {
+    propertyName: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any;
+}) => {
+    const { schema } = useCanvas().canvasApi.value?.getCurrent?.() || {};
+
+    if (!propertyName || !schema) {
+        return;
+    }
+
+    schema.props = schema.props || {};
+    schema.props[propertyName] = value;
+};
+
+const getBlockI18n = (block: Block) => block?.content?.i18n || {};
+
+const getBlockProperties = (block: Block) =>
+    block?.content?.schema?.properties?.[0]?.content || [];
 
 const addBlockProperty = (property: BlockProperty, block: Block) => {
-  if (!block) {
-    return
-  }
+    if (!block) {
+        return;
+    }
 
-  if (!block.content) {
-    block.content = {} as BlockContent
-  }
+    if (!block.content) {
+        block.content = {} as BlockContent;
+    }
 
-  if (!block.content.schema) {
-    block.content.schema = {} as BlockContent['schema']
-  }
+    if (!block.content.schema) {
+        block.content.schema = {} as BlockContent['schema'];
+    }
 
-  if (!block.content.schema.properties) {
-    block.content.schema.properties = copyArray(DEFAULT_PROPERTIES)
-  }
+    if (!block.content.schema.properties) {
+        block.content.schema.properties = copyArray(DEFAULT_PROPERTIES);
+    }
 
-  block.content.schema.properties?.[0].content?.push(property)
+    block.content.schema.properties?.[0].content?.push(property);
 
-  if (property.linked) {
-    setComponentLinkedValue({
-      propertyName: property.linked.property,
-      value: {
-        type: SCHEMA_DATA_TYPE.JSExpression,
-        value: `this.props.${property.property}`
-      }
-    })
-  }
-}
+    if (property.linked) {
+        setComponentLinkedValue({
+            propertyName: property.linked.property,
+            value: {
+                type: SCHEMA_DATA_TYPE.JSExpression,
+                value: `this.props.${property.property}`
+            }
+        });
+    }
+};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const editBlockProperty = (property: BlockProperty, data: any) => {
-  if (property.linked) {
-    const value = {
-      type: SCHEMA_DATA_TYPE.JSExpression,
-      value: `this.props.${property.property}`
+    if (property.linked) {
+        const value = {
+            type: SCHEMA_DATA_TYPE.JSExpression,
+            value: `this.props.${property.property}`
+        };
+        setComponentLinkedValue({
+            propertyName: data?.property,
+            value
+        });
+        data.widget.props.modelValue = value;
     }
-    setComponentLinkedValue({
-      propertyName: data?.property,
-      value
-    })
-    data.widget.props.modelValue = value
-  }
-}
+};
 
-const removePropertyLink = ({ componentProperty }: { componentProperty: BlockProperty }) => {
-  const linked = componentProperty.linked
-  componentProperty.linked = null
-  const properties = getBlockProperties(getCurrentBlock()!)
+const removePropertyLink = ({
+    componentProperty
+}: {
+    componentProperty: BlockProperty;
+}) => {
+    const { linked } = componentProperty;
+    componentProperty.linked = null;
+    const properties = getBlockProperties(getCurrentBlock()!);
 
-  properties.forEach((property) => {
-    if (property.linked && property.property === linked?.blockProperty) {
-      if (componentProperty.widget?.props?.modelValue) {
-        componentProperty.widget.props.modelValue = property.defaultValue
-      }
+    properties.forEach(property => {
+        if (property.linked && property.property === linked?.blockProperty) {
+            if (componentProperty.widget?.props?.modelValue) {
+                componentProperty.widget.props.modelValue =
+                    property.defaultValue;
+            }
 
-      setComponentLinkedValue({
-        propertyName: property.linked.property,
-        value: property.defaultValue
-      })
+            setComponentLinkedValue({
+                propertyName: property.linked.property,
+                value: property.defaultValue
+            });
 
-      property.linked = null
+            property.linked = null;
+        }
+    });
+};
+
+const getBlockEvents = (block = {} as Block) =>
+    block?.content?.schema?.events || {};
+
+const addBlockEvent = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { name, event }: { name: string; event: any },
+    block: Block
+) => {
+    if (!block) {
+        return;
     }
-  })
-}
 
-const getBlockEvents = (block = {} as Block) => block?.content?.schema?.events || {}
+    if (!block.content) {
+        block.content = {} as BlockContent;
+    }
 
-const addBlockEvent = ({ name, event }: { name: string; event: any }, block: Block) => {
-  if (!block) {
-    return
-  }
+    if (!block.content.schema) {
+        block.content.schema = {} as BlockContent['schema'];
+    }
 
-  if (!block.content) {
-    block.content = {} as BlockContent
-  }
+    if (!block.content.schema.events) {
+        block.content.schema.events = {};
+    }
 
-  if (!block.content.schema) {
-    block.content.schema = {} as BlockContent['schema']
-  }
-
-  if (!block.content.schema.events) {
-    block.content.schema.events = {}
-  }
-
-  block.content.schema.events[name] = event
-}
+    block.content.schema.events[name] = event;
+};
 
 const removeEventLink = (linkedEventName: string) => {
-  const events = getBlockEvents(getCurrentBlock()!)
+    const events = getBlockEvents(getCurrentBlock()!);
 
-  Object.entries(events).forEach(([name, event]) => {
-    if (linkedEventName === name) {
-      event.linked = null
+    Object.entries(events).forEach(([name, event]) => {
+        if (linkedEventName === name) {
+            event.linked = null;
+        }
+    });
+};
+
+const appendEventEmit = ({
+    eventName,
+    functionName
+}: { eventName?: string; functionName?: string } = {}) => {
+    if (!eventName || !functionName) {
+        return;
     }
-  })
-}
 
-const appendEventEmit = ({ eventName, functionName }: { eventName?: string; functionName?: string } = {}) => {
-  if (!eventName || !functionName) {
-    return
-  }
+    const getMethods = getMetaApi(META_APP.Page)?.getMethods;
 
-  const getMethods = getMetaApi(META_APP.Page)?.getMethods
+    if (getMethods && typeof getMethods === 'function') {
+        const method = getMethods()?.[functionName];
 
-  if (getMethods && typeof getMethods === 'function') {
-    const method = getMethods()?.[functionName]
+        if (method?.type === SCHEMA_DATA_TYPE.JSFunction) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const ast: any = parseExpression(method.value);
+            const params = ast.params.map(
+                (param: { name: string }) => param.name
+            );
+            const emitContent = `this.emit('${hyphenate(
+                eventName.replace(/^on/i, '')
+            )}', ${params.join(',')})`;
 
-    if (method?.type === SCHEMA_DATA_TYPE.JSFunction) {
-      const ast: any = parseExpression(method.value)
-      const params = ast.params.map((param: { name: string }) => param.name)
-      const emitContent = `this.emit('${hyphenate(eventName.replace(/^on/i, ''))}', ${params.join(',')})`
-
-      // 如果方法里面已经有了相同的emit语句就不添加了
-      if (!method?.value?.includes(emitContent)) {
-        ast.body.body.push(parseExpression(emitContent))
-      }
-      method.value = ast2String(ast)
+            // 如果方法里面已经有了相同的emit语句就不添加了
+            if (!method?.value?.includes(emitContent)) {
+                ast.body.body.push(parseExpression(emitContent));
+            }
+            method.value = ast2String(ast);
+        }
     }
-  }
-}
+};
 
 // 区块消费侧
 
 const DEFAULT_GROUPS = [
-  {
-    groupId: 'all',
-    groupName: '所有分组'
-  },
-  {
-    groupId: 'default',
-    groupName: '设计器默认区块分组'
-  }
-]
+    {
+        groupId: 'all',
+        groupName: '所有分组'
+    },
+    {
+        groupId: 'default',
+        groupName: '设计器默认区块分组'
+    }
+];
 
 // 区块默认分组id
-const DEFAULT_GROUP_ID = DEFAULT_GROUPS[1].groupId
+const DEFAULT_GROUP_ID = DEFAULT_GROUPS[1].groupId;
 
 // 区块默认分组名称
-const DEFAULT_GROUP_NAME = DEFAULT_GROUPS[1].groupName
+const DEFAULT_GROUP_NAME = DEFAULT_GROUPS[1].groupName;
 
 // 当前选中的分组
-const selectedGroup = ref({ ...DEFAULT_GROUPS[0] })
+const selectedGroup = ref({ ...DEFAULT_GROUPS[0] });
 
 // 当前选中的区块，用于查看区块详情、区块历史记录
-const selectedBlock = ref('')
+const selectedBlock = ref('');
 
 // 已选择的区块数组，用于在当前分组里添加区块
-const selectedBlockArray = ref<Block[]>([])
+const selectedBlockArray = ref<Block[]>([]);
 
 // 是否刷新区块列表，在当前分组里添加/删除区块后通知刷新区块列表
-const isRefresh = ref(false)
+const isRefresh = ref(false);
 
 // 切换分组时调用
 const groupChange = (group?: BlockGroup) => {
-  if (!group) return
+    if (!group) return;
 
-  // 需要改变selectedGroup的引用地址才能触发tiny-select组件的watch事件
-  selectedGroup.value = {
-    groupId: group.groupId || group.id,
-    groupName: group.groupName || group.name
-  }
-}
+    // 需要改变selectedGroup的引用地址才能触发tiny-select组件的watch事件
+    selectedGroup.value = {
+        groupId: group.groupId || group.id,
+        groupName: group.groupName || group.name
+    };
+};
 
 // 添加设计器默认区块分组
 const addDefaultGroup = (groups: BlockGroup[]) => {
-  const result = DEFAULT_GROUPS.map((group) => ({
-    label: group.groupName,
-    value: group
-  }))
+    const result = DEFAULT_GROUPS.map(group => ({
+        label: group.groupName,
+        value: group
+    }));
 
-  groups.forEach((item) => {
-    result.push({
-      label: item.name,
-      value: {
-        groupId: item.id,
-        groupName: item.name
-      }
-    })
-  })
+    groups.forEach(item => {
+        result.push({
+            label: item.name,
+            value: {
+                groupId: item.id,
+                groupName: item.name
+            }
+        });
+    });
 
-  setGroupList(groups)
+    setGroupList(groups);
 
-  return result
-}
+    return result;
+};
 
 // 是否是设计器默认区块分组
-const isDefaultGroupId = (groupId: string) => groupId === DEFAULT_GROUP_ID
+const isDefaultGroupId = (groupId: string) => groupId === DEFAULT_GROUP_ID;
 
-const isAllGroupId = (groupId: string) => groupId === DEFAULT_GROUPS[0].groupId
+const isAllGroupId = (groupId: string) => groupId === DEFAULT_GROUPS[0].groupId;
 
 // 获取今天的开始时间
-const getCurrentDate = () => new Date().setHours(0, 0, 0, 0)
+const getCurrentDate = () => new Date().setHours(0, 0, 0, 0);
 
 interface DateInfo {
-  nowDayOfWeek: number
-  nowDay: number
-  nowMonth: number
-  nowYear: number
-  lastMonth: number
+    nowDayOfWeek: number;
+    nowDay: number;
+    nowMonth: number;
+    nowYear: number;
+    lastMonth: number;
 }
 
 // 获取本周的开始时间
 const getCurrentWeek = (date: DateInfo) => {
-  const { nowDayOfWeek, nowDay, nowMonth, nowYear } = date
-  const weekStartDate = new Date(nowYear, nowMonth, nowDay - nowDayOfWeek + 1)
+    const { nowDayOfWeek, nowDay, nowMonth, nowYear } = date;
+    const weekStartDate = new Date(
+        nowYear,
+        nowMonth,
+        nowDay - nowDayOfWeek + 1
+    );
 
-  return weekStartDate.setHours(0, 0, 0, 0)
-}
+    return weekStartDate.setHours(0, 0, 0, 0);
+};
 
 // 获取本月的开始时间
 const getCurrentMonth = (date: DateInfo) => {
-  const { nowMonth, nowYear } = date
-  const monthStartDate = new Date(nowYear, nowMonth, 1)
+    const { nowMonth, nowYear } = date;
+    const monthStartDate = new Date(nowYear, nowMonth, 1);
 
-  return monthStartDate.setHours(0, 0, 0, 0)
-}
+    return monthStartDate.setHours(0, 0, 0, 0);
+};
 
 // 获取上月的开始时间
 const getLastMonth = (date: DateInfo) => {
-  const { nowYear, lastMonth } = date
-  const lastMonthStartDate = new Date(nowYear, lastMonth, 1)
+    const { nowYear, lastMonth } = date;
+    const lastMonthStartDate = new Date(nowYear, lastMonth, 1);
 
-  return lastMonthStartDate.setHours(0, 0, 0, 0)
-}
+    return lastMonthStartDate.setHours(0, 0, 0, 0);
+};
 
 // 判断时间戳属于今天/本周/本月/上月/更久以前
-const getDateFromNow = (timeStamp: number = 0) => {
-  // 当前日期
-  const now = new Date()
-  const nowDay = now.getDate()
-  const nowMonth = now.getMonth()
-  const nowYear = now.getFullYear()
+const getDateFromNow = (timeStamp = 0) => {
+    // 当前日期
+    const now = new Date();
+    const nowDay = now.getDate();
+    const nowMonth = now.getMonth();
+    const nowYear = now.getFullYear();
 
-  // 今天是本周的第几天
-  const nowDayOfWeek = now.getDay() || 7
+    // 今天是本周的第几天
+    const nowDayOfWeek = now.getDay() || 7;
 
-  // 上月日期
-  const lastMonthDate = new Date()
-  lastMonthDate.setDate(1)
-  lastMonthDate.setMonth(lastMonthDate.getMonth() - 1)
-  const lastMonth = lastMonthDate.getMonth()
+    // 上月日期
+    const lastMonthDate = new Date();
+    lastMonthDate.setDate(1);
+    lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+    const lastMonth = lastMonthDate.getMonth();
 
-  const date: DateInfo = { nowDayOfWeek, nowDay, nowMonth, nowYear, lastMonth }
+    const date: DateInfo = {
+        nowDayOfWeek,
+        nowDay,
+        nowMonth,
+        nowYear,
+        lastMonth
+    };
 
-  // 存在currentDateStart与currentWeekStart相同的情况，故不可以用currentDateStart作key
-  const dateMap = new Map([
-    ['今天', getCurrentDate],
-    ['本周', () => getCurrentWeek(date)],
-    ['本月', () => getCurrentMonth(date)],
-    ['上月', () => getLastMonth(date)],
-    ['更久以前', () => 0]
-  ])
+    // 存在currentDateStart与currentWeekStart相同的情况，故不可以用currentDateStart作key
+    const dateMap = new Map([
+        ['今天', getCurrentDate],
+        ['本周', () => getCurrentWeek(date)],
+        ['本月', () => getCurrentMonth(date)],
+        ['上月', () => getLastMonth(date)],
+        ['更久以前', () => 0]
+    ]);
 
-  for (const [key, value] of dateMap) {
-    if (timeStamp >= value()) {
-      return key
+    for (const [key, value] of dateMap) {
+        if (timeStamp >= value()) {
+            return key;
+        }
     }
-  }
-
-  return undefined
-}
+};
 
 // 将历史记录分组
-const splitBackupGroups = (data: { updated_at: string | number; message: string; id: string }[]) => {
-  const backupList: Record<string, any> = {}
+const splitBackupGroups = (
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    data: Array<{ updated_at: string | number; message: string; id: string }>
+) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const backupList: Record<string, any> = {};
 
-  if (!data || !data.length) return backupList
+    if (!data?.length) return backupList;
 
-  data.sort((backup1, backup2) => new Date(backup2.updated_at).getTime() - new Date(backup1.updated_at).getTime())
-  data.forEach((item) => {
-    const updateTime = item.updated_at ? new Date(item.updated_at) : null
-    const title = getDateFromNow(updateTime?.getTime()) || ''
-    backupList[title] = backupList[title] || []
-    backupList[title].push({
-      backupTitle: item.message,
-      backupTime: format(updateTime),
-      id: item.id
-    })
-  })
+    data.sort(
+        (backup1, backup2) =>
+            new Date(backup2.updated_at).getTime() -
+            new Date(backup1.updated_at).getTime()
+    );
+    data.forEach(item => {
+        const updateTime = item.updated_at ? new Date(item.updated_at) : null;
+        const title = getDateFromNow(updateTime?.getTime()) || '';
+        backupList[title] = backupList[title] || [];
+        backupList[title].push({
+            backupTitle: item.message,
+            backupTime: format(updateTime),
+            id: item.id
+        });
+    });
 
-  return backupList
-}
+    return backupList;
+};
 
 const sortTypeHandlerMap = {
-  [SORT_TYPE.timeAsc]: (blockList: Block[]) => {
-    blockList.sort(
-      (block1, block2) => new Date(block1.updated_at || '').getTime() - new Date(block2.updated_at || '').getTime()
-    )
-  },
-  [SORT_TYPE.timeDesc]: (blockList: Block[]) => {
-    blockList.sort(
-      (block1, block2) => new Date(block2.updated_at || '').getTime() - new Date(block1.updated_at || '').getTime()
-    )
-  },
-  [SORT_TYPE.alphabetDesc]: (blockList: Block[]) => {
-    // name_cn 包含中文，需要用 localeCompare
-    blockList.sort((block1, block2) => (block2.name_cn || block2.label).localeCompare(block1.name_cn || block1.label))
-  },
-  [SORT_TYPE.alphabetAsc]: (blockList: Block[]) => {
-    // name_cn 包含中文，需要用 localeCompare
-    blockList.sort((block1, block2) => (block1.name_cn || block1.label).localeCompare(block2.name_cn || block2.label))
-  }
-}
+    [SORT_TYPE.timeAsc]: (blockList: Block[]) => {
+        blockList.sort(
+            (block1, block2) =>
+                new Date(block1.updated_at || '').getTime() -
+                new Date(block2.updated_at || '').getTime()
+        );
+    },
+    [SORT_TYPE.timeDesc]: (blockList: Block[]) => {
+        blockList.sort(
+            (block1, block2) =>
+                new Date(block2.updated_at || '').getTime() -
+                new Date(block1.updated_at || '').getTime()
+        );
+    },
+    [SORT_TYPE.alphabetDesc]: (blockList: Block[]) => {
+        // name_cn 包含中文，需要用 localeCompare
+        blockList.sort((block1, block2) =>
+            (block2.name_cn || block2.label).localeCompare(
+                block1.name_cn || block1.label
+            )
+        );
+    },
+    [SORT_TYPE.alphabetAsc]: (blockList: Block[]) => {
+        // name_cn 包含中文，需要用 localeCompare
+        blockList.sort((block1, block2) =>
+            (block1.name_cn || block1.label).localeCompare(
+                block2.name_cn || block2.label
+            )
+        );
+    }
+};
 
 // 排序
 const sort = (blockList: Block[], type: string) => {
-  if (blockList.length === 0) return blockList
+    if (blockList.length === 0) return blockList;
 
-  if (sortTypeHandlerMap[type]) {
-    sortTypeHandlerMap[type](blockList)
-  } else {
-    // 默认按照时间倒序进行排序
-    sortTypeHandlerMap[SORT_TYPE.timeDesc](blockList)
-  }
+    if (sortTypeHandlerMap[type]) {
+        sortTypeHandlerMap[type](blockList);
+    } else {
+        // 默认按照时间倒序进行排序
+        sortTypeHandlerMap[SORT_TYPE.timeDesc](blockList);
+    }
 
-  return blockList
-}
+    return blockList;
+};
 
 // 在可选区块列表里选择区块
 const check = (block: Block) => {
-  if (selectedBlockArray.value.some((item) => item.id === block.id)) {
-    return
-  }
+    if (selectedBlockArray.value.some(item => item.id === block.id)) {
+        return;
+    }
 
-  selectedBlockArray.value = selectedBlockArray.value.concat(block)
-}
+    selectedBlockArray.value = selectedBlockArray.value.concat(block);
+};
 
 // 取消选择区块
 const cancelCheck = (block: Block) => {
-  selectedBlockArray.value = selectedBlockArray.value.filter((item) => item.id !== block.id)
-}
+    selectedBlockArray.value = selectedBlockArray.value.filter(
+        item => item.id !== block.id
+    );
+};
 
 const checkAll = (blockList: Block[]) => {
-  selectedBlockArray.value = blockList
-}
+    selectedBlockArray.value = blockList;
+};
 
 const cancelCheckAll = () => {
-  selectedBlockArray.value = []
-}
+    selectedBlockArray.value = [];
+};
 
 const shouldReplaceCategoryWithGroup = () => {
-  const { mergeCategoriesAndGroups } = getOptions('engine.plugins.blockmanage')
-  return mergeCategoriesAndGroups
-}
+    const { mergeCategoriesAndGroups } = getOptions(
+        'engine.plugins.blockmanage'
+    );
+    return mergeCategoriesAndGroups;
+};
 
-export default function () {
-  return {
-    NODE_TYPE_PAGE,
-    DEFAULT_GROUP_ID,
-    DEFAULT_GROUP_NAME,
-    selectedGroup,
-    selectedBlock,
-    selectedBlockArray,
-    isRefresh,
-    addBlock,
-    delBlock,
-    createBlock,
-    createEmptyBlock,
-    groupChange,
-    addDefaultGroup,
-    isDefaultGroupId,
-    isAllGroupId,
-    splitBackupGroups,
-    sort,
-    check,
-    cancelCheck,
-    checkAll,
-    cancelCheckAll,
-    getBlockList,
-    setBlockList,
-    getBlockI18n,
-    getGroupList,
-    setGroupList,
-    getCategoryList,
-    setCategoryList,
-    addBlockEvent,
-    getBlockEvents,
-    appendEventEmit,
-    getCurrentBlock,
-    initBlock,
-    setCurrentBlock,
-    removeEventLink,
-    getSelectedGroup,
-    setSelectedGroup,
-    addBlockProperty,
-    editBlockProperty,
-    removePropertyLink,
-    getBlockProperties,
-    getBlockPageSchema,
-    getDateFromNow,
-    shouldReplaceCategoryWithGroup
-  }
+export default function useBlockComposable() {
+    return {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        NODE_TYPE_PAGE,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        DEFAULT_GROUP_ID,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        DEFAULT_GROUP_NAME,
+        selectedGroup,
+        selectedBlock,
+        selectedBlockArray,
+        isRefresh,
+        addBlock,
+        delBlock,
+        createBlock,
+        createEmptyBlock,
+        groupChange,
+        addDefaultGroup,
+        isDefaultGroupId,
+        isAllGroupId,
+        splitBackupGroups,
+        sort,
+        check,
+        cancelCheck,
+        checkAll,
+        cancelCheckAll,
+        getBlockList,
+        setBlockList,
+        getBlockI18n,
+        getGroupList,
+        setGroupList,
+        getCategoryList,
+        setCategoryList,
+        addBlockEvent,
+        getBlockEvents,
+        appendEventEmit,
+        getCurrentBlock,
+        initBlock,
+        setCurrentBlock,
+        removeEventLink,
+        getSelectedGroup,
+        setSelectedGroup,
+        addBlockProperty,
+        editBlockProperty,
+        removePropertyLink,
+        getBlockProperties,
+        getBlockPageSchema,
+        getDateFromNow,
+        shouldReplaceCategoryWithGroup
+    };
 }

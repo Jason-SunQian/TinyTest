@@ -1,122 +1,131 @@
 <template>
-  <div class="right-item">
-    <tiny-form label-position="top">
-      <tiny-form-item prop="name" :label="t('designer.datasource.dataSourceType')">
-        <tiny-radio-group v-model="dataSourceType">
-          <tiny-radio
-            v-for="item in radioGroup"
-            :key="item.value"
-            :text="item.name"
-            :label="item.value"
-            :disabled="editable"
-          />
-        </tiny-radio-group>
-      </tiny-form-item>
-    </tiny-form>
-  </div>
+    <div class="right-item">
+        <tiny-form label-position="top">
+            <tiny-form-item
+                prop="name"
+                :label="t('designer.datasource.dataSourceType')"
+            >
+                <tiny-radio-group v-model="dataSourceType">
+                    <tiny-radio
+                        v-for="item in radioGroup"
+                        :key="item.value"
+                        :text="item.name"
+                        :label="item.value"
+                        :disabled="editable"
+                    />
+                </tiny-radio-group>
+            </tiny-form-item>
+        </tiny-form>
+    </div>
 </template>
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceType */
-import { watch, ref, computed } from 'vue'
-import { Form, FormItem, RadioGroup, Radio } from '@opentiny/vue'
-import { useDesignerI18n } from '../../services/i18nService'
+import { watch, ref, computed } from 'vue';
+import { Form, FormItem, RadioGroup, Radio } from '@opentiny/vue';
+
+import { useDesignerI18n } from '../../services/i18nService';
 
 export default {
-  components: {
-    TinyForm: Form,
-    TinyFormItem: FormItem,
-    TinyRadioGroup: RadioGroup,
-    TinyRadio: Radio
-  },
-  props: {
-    modelValue: {
-      type: String,
-      default: 'remote'
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyForm: Form,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyFormItem: FormItem,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyRadioGroup: RadioGroup,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyRadio: Radio
     },
-    editable: {
-      type: Boolean,
-      default: false
+    props: {
+        modelValue: {
+            type: String,
+            default: 'remote'
+        },
+        editable: {
+            type: Boolean,
+            default: false
+        }
+    },
+    emits: ['update:modelValue'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const { t } = useDesignerI18n();
+
+        const radioGroup = computed(() => [
+            {
+                name: t('designer.datasource.remoteDataSourceType'),
+                value: 'remote'
+            }
+        ]);
+
+        const dataSourceType = ref(props.modelValue);
+
+        watch(
+            () => props.modelValue,
+            newVal => {
+                dataSourceType.value = newVal;
+            }
+        );
+
+        watch(
+            () => dataSourceType.value,
+            newVal => {
+                emit('update:modelValue', newVal);
+            }
+        );
+
+        return {
+            radioGroup,
+            dataSourceType,
+            t
+        };
     }
-  },
-  emits: ['update:modelValue'],
-  setup(props, { emit }) {
-    const { t } = useDesignerI18n()
-    
-    const radioGroup = computed(() => [
-      {
-        name: t('designer.datasource.remoteDataSourceType'),
-        value: 'remote'
-      }
-    ])
-
-    const dataSourceType = ref(props.modelValue)
-
-    watch(
-      () => props.modelValue,
-      (newVal) => {
-        dataSourceType.value = newVal
-      }
-    )
-
-    watch(
-      () => dataSourceType.value,
-      (newVal) => {
-        emit('update:modelValue', newVal)
-      }
-    )
-
-    return {
-      radioGroup,
-      dataSourceType,
-      t
-    }
-  }
-}
+};
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .right-item {
-  color: var(--te-datasource-toolbar-icon-color);
-  display: flex;
-  flex-direction: column;
-  .title {
+    color: var(--te-datasource-toolbar-icon-color);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    line-height: 22px;
-    font-weight: normal;
-    margin-bottom: 10px;
-    color: var(--te-datasource-label-text-color);
-  }
-
-  .item-type {
-    font-size: 12px;
-    color: var(--te-datasource-input-icon-color);
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-
-    &.not-allowed {
-      cursor: not-allowed;
+    flex-direction: column;
+    .title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        line-height: 22px;
+        font-weight: normal;
+        margin-bottom: 10px;
+        color: var(--te-datasource-label-text-color);
     }
 
-    &:not(:last-child) {
-      margin-right: 24px;
-    }
+    .item-type {
+        font-size: 12px;
+        color: var(--te-datasource-input-icon-color);
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
 
-    &.is-checked {
-      color: var(--te-datasource-toolbar-breadcrumb-text-color);
-      .svg-icon {
-        color: var(--te-datasource-common-border-color-primary);
-      }
+        &.not-allowed {
+            cursor: not-allowed;
+        }
+
+        &:not(:last-child) {
+            margin-right: 24px;
+        }
+
+        &.is-checked {
+            color: var(--te-datasource-toolbar-breadcrumb-text-color);
+            .svg-icon {
+                color: var(--te-datasource-common-border-color-primary);
+            }
+        }
+        .svg-icon {
+            font-size: 24px;
+            color: var(--te-datasource-input-icon-color);
+            margin-right: 8px;
+        }
     }
-    .svg-icon {
-      font-size: 24px;
-      color: var(--te-datasource-input-icon-color);
-      margin-right: 8px;
-    }
-  }
 }
 </style>

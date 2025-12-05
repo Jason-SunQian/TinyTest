@@ -1,133 +1,163 @@
 <template>
-  <tiny-dialog-box
-    :visible="visible"
-    :title="t('designer.settings.events.addEvent.title')"
-    width="400px"
-    :append-to-body="true"
-    :close-on-click-modal="false"
-    @close="closeDialog"
-  >
-    <tiny-form
-      ref="ruleForm"
-      :model="formData"
-      :rules="rules"
-      label-width="80px"
-      :inline-message="true"
-      validate-type="text"
-      label-position="left"
-      class="add-custom-event-form"
+    <tiny-dialog-box
+        :visible="visible"
+        :title="t('designer.settings.events.addEvent.title')"
+        width="400px"
+        :append-to-body="true"
+        :close-on-click-modal="false"
+        @close="closeDialog"
     >
-      <tiny-form-item :label="t('designer.settings.events.addEvent.eventName')" prop="eventName" required>
-        <tiny-input v-model="formData.eventName" :placeholder="t('designer.settings.events.addEvent.eventNamePlaceholder')"></tiny-input>
-      </tiny-form-item>
-      <tiny-form-item :label="t('designer.settings.events.addEvent.eventDescription')" prop="eventDescription" required>
-        <tiny-input v-model="formData.eventDescription"></tiny-input>
-      </tiny-form-item>
-    </tiny-form>
-    <template #footer>
-      <div class="footer">
-        <tiny-button @click="closeDialog">{{ t('designer.settings.events.addEvent.cancel') }}</tiny-button>
-        <tiny-button type="primary" @click="addMethod">{{ t('designer.settings.events.addEvent.confirm') }}</tiny-button>
-      </div>
-    </template>
-  </tiny-dialog-box>
+        <tiny-form
+            ref="ruleForm"
+            :model="formData"
+            :rules="rules"
+            label-width="80px"
+            :inline-message="true"
+            validate-type="text"
+            label-position="left"
+            class="add-custom-event-form"
+        >
+            <tiny-form-item
+                :label="t('designer.settings.events.addEvent.eventName')"
+                prop="eventName"
+                required
+            >
+                <tiny-input
+                    v-model="formData.eventName"
+                    :placeholder="
+                        t(
+                            'designer.settings.events.addEvent.eventNamePlaceholder'
+                        )
+                    "
+                />
+            </tiny-form-item>
+            <tiny-form-item
+                :label="t('designer.settings.events.addEvent.eventDescription')"
+                prop="eventDescription"
+                required
+            >
+                <tiny-input v-model="formData.eventDescription" />
+            </tiny-form-item>
+        </tiny-form>
+        <template #footer>
+            <div class="footer">
+                <tiny-button @click="closeDialog">{{
+                    t('designer.settings.events.addEvent.cancel')
+                }}</tiny-button>
+                <tiny-button type="primary" @click="addMethod">{{
+                    t('designer.settings.events.addEvent.confirm')
+                }}</tiny-button>
+            </div>
+        </template>
+    </tiny-dialog-box>
 </template>
 
-<script setup>
+<!-- eslint-disable vue/block-lang, vue/define-props-declaration, vue/require-typed-object-prop, vue/define-emits-declaration, vue/require-typed-ref -->
+<script setup lang="ts">
 /* metaService: engine.setting.event.AddEventsDialog */
-import { reactive, ref, defineProps, defineEmits } from 'vue'
+import { reactive, ref, defineProps, defineEmits } from 'vue';
 import {
-  Input as TinyInput,
-  Form as TinyForm,
-  FormItem as TinyFormItem,
-  Button as TinyButton,
-  DialogBox as TinyDialogBox
-} from '@opentiny/vue'
-import { checkEvent } from '../commonjs/events'
-import { useDesignerI18n } from '@/services/i18nService'
+    Input as TinyInput,
+    Form as TinyForm,
+    FormItem as TinyFormItem,
+    Button as TinyButton,
+    DialogBox as TinyDialogBox
+} from '@opentiny/vue';
 
-const { t } = useDesignerI18n()
+import { useDesignerI18n } from '@/services/i18nService';
+
+import { checkEvent } from '../commonjs/events';
 
 const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false
-  },
-  componentEvents: {
-    type: Object,
-    default: () => ({})
-  }
-})
+    visible: {
+        type: Boolean,
+        default: false
+    },
+    componentEvents: {
+        type: Object,
+        default: () => ({})
+    }
+});
 
-const emits = defineEmits(['closeDialog', 'addEvent'])
+const emits = defineEmits(['closeDialog', 'addEvent']);
+
+const { t } = useDesignerI18n();
 
 const formData = reactive({
-  eventDescription: '',
-  eventName: ''
-})
+    eventDescription: '',
+    eventName: ''
+});
 
-const ruleForm = ref(null)
+const ruleForm = ref(null);
 
 const eventNameValidator = (rule, value, callback) => {
-  if (props.componentEvents[formData.eventName]) {
-    callback(new Error(t('designer.settings.events.addEvent.eventNameExists')))
+    if (props.componentEvents[formData.eventName]) {
+        callback(
+            new Error(t('designer.settings.events.addEvent.eventNameExists'))
+        );
 
-    return
-  }
+        return;
+    }
 
-  if (!checkEvent(formData.eventName)) {
-    callback(new Error(t('designer.settings.events.addEvent.invalidEventName')))
+    if (!checkEvent(formData.eventName)) {
+        callback(
+            new Error(t('designer.settings.events.addEvent.invalidEventName'))
+        );
 
-    return
-  }
+        return;
+    }
 
-  callback()
-}
+    callback();
+};
 
 const rules = {
-  eventDescription: [
-    {
-      required: true,
-      message: t('designer.settings.events.addEvent.required')
-    }
-  ],
-  eventName: [
-    { required: true, message: t('designer.settings.events.addEvent.required') },
-    {
-      validator: eventNameValidator
-    }
-  ]
-}
+    eventDescription: [
+        {
+            required: true,
+            message: t('designer.settings.events.addEvent.required')
+        }
+    ],
+    eventName: [
+        {
+            required: true,
+            message: t('designer.settings.events.addEvent.required')
+        },
+        {
+            validator: eventNameValidator
+        }
+    ]
+};
 
 const closeDialog = () => {
-  emits('closeDialog')
-}
+    emits('closeDialog');
+};
 
 const addMethod = () => {
-  if (!ruleForm.value) {
-    return
-  }
-
-  ruleForm.value.validate((valid) => {
-    if (!valid) {
-      return
+    if (!ruleForm.value) {
+        return;
     }
 
-    const { eventName, eventDescription } = formData
+    ruleForm.value.validate(valid => {
+        if (!valid) {
+            return;
+        }
 
-    emits('addEvent', { eventName, eventDescription })
-  })
-}
+        const { eventName, eventDescription } = formData;
+
+        emits('addEvent', { eventName, eventDescription });
+    });
+};
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .add-custom-event-form.add-custom-event-form {
-  :deep(.tiny-form-item__label) {
-    padding-left: 0;
-  }
+    :deep(.tiny-form-item__label) {
+        padding-left: 0;
+    }
 }
 .footer {
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 }
 </style>

@@ -1,5 +1,3 @@
 export default {
-  id: 'engine.setting.event'
-}
-
-
+    id: 'engine.setting.event'
+};

@@ -11,10 +11,14 @@
  */
 
 /* metaService: engine.plugins.state.js-http */
-import { getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
+import { getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register';
 
 // 状态管理 —— 更新全局变量
 export const updateGlobalState = (appId, params) =>
-  getMetaApi(META_SERVICE.Http).post(`/app-center/api/apps/update/${appId}`, params)
+    getMetaApi(META_SERVICE.Http).post(
+        `/app-center/api/apps/update/${appId}`,
+        params
+    );
 
-export const requestGlobalState = (appId) => getMetaApi(META_SERVICE.Http).get(`/app-center/api/apps/schema/${appId}`)
+export const requestGlobalState = appId =>
+    getMetaApi(META_SERVICE.Http).get(`/app-center/api/apps/schema/${appId}`);

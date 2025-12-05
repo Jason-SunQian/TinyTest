@@ -11,29 +11,29 @@
  */
 
 /* metaService: engine.setting.styles.cssConvert */
-import { utils } from '@opentiny/tiny-engine-utils'
+import { utils } from '@opentiny/tiny-engine-utils';
 
-const { camelize } = utils
+const { camelize } = utils;
 
 export const styleStrRemoveRoot = (str = '') =>
-  typeof str === 'string'
-    ? str
-        ?.replace(/:root|[\r\n{}]/gi, '')
-        .replace(/\s{2,}/g, ' ')
-        .replace(/"/g, "'")
-        .trim()
-    : ''
+    typeof str === 'string'
+        ? str
+              ?.replace(/:root|[\r\n{}]/gi, '')
+              .replace(/\s{2,}/g, ' ')
+              .replace(/"/g, "'")
+              .trim()
+        : '';
 
 export const styleStr2Obj = (str = '') => {
-  const obj = {}
-  const list = styleStrRemoveRoot(str).split(';')
+    const obj = {};
+    const list = styleStrRemoveRoot(str).split(';');
 
-  list.forEach((item) => {
-    const arr = item.split(/:\s?/)
-    if (arr.length === 2) {
-      obj[camelize(arr[0].trim())] = arr[1].trim()
-    }
-  })
+    list.forEach(item => {
+        const arr = item.split(/:\s?/);
+        if (arr.length === 2) {
+            obj[camelize(arr[0].trim())] = arr[1].trim();
+        }
+    });
 
-  return obj
-}
+    return obj;
+};

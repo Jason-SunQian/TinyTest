@@ -1,7 +1,7 @@
-import entry from './src/Main.vue'
-import metaData from './meta'
+import entry from './src/Main.vue';
+import metaData from './meta';
 
 export default {
-  ...metaData,
-  entry
-}
+    ...metaData,
+    entry
+};

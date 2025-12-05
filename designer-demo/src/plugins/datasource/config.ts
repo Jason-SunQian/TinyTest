@@ -12,42 +12,42 @@
 
 /* metaService: engine.plugins.collections.config */
 export const getFieldTypeOptions = (t: (key: string) => string) => [
-  {
-    name: t('designer.datasource.string'),
-    icon: 'text',
-    type: 'string',
-    value: ''
-  },
-  {
-    name: t('designer.datasource.date'),
-    icon: 'datepick',
-    type: 'date',
-    value: ''
-  },
-  {
-    name: t('designer.datasource.counter'),
-    icon: 'numeric',
-    type: 'number',
-    value: ''
-  },
-  {
-    name: t('designer.datasource.textLink'),
-    icon: 'link',
-    type: 'link',
-    value: ''
-  },
-  {
-    name: t('designer.datasource.switch'),
-    icon: 'switch',
-    type: 'switch',
-    value: ''
-  },
-  {
-    name: t('designer.datasource.slider'),
-    icon: 'dragger',
-    type: 'slider',
-    value: ''
-  }
-]
+    {
+        name: t('designer.datasource.string'),
+        icon: 'text',
+        type: 'string',
+        value: ''
+    },
+    {
+        name: t('designer.datasource.date'),
+        icon: 'datepick',
+        type: 'date',
+        value: ''
+    },
+    {
+        name: t('designer.datasource.counter'),
+        icon: 'numeric',
+        type: 'number',
+        value: ''
+    },
+    {
+        name: t('designer.datasource.textLink'),
+        icon: 'link',
+        type: 'link',
+        value: ''
+    },
+    {
+        name: t('designer.datasource.switch'),
+        icon: 'switch',
+        type: 'switch',
+        value: ''
+    },
+    {
+        name: t('designer.datasource.slider'),
+        icon: 'dragger',
+        type: 'slider',
+        value: ''
+    }
+];
 
-export default getFieldTypeOptions
+export default getFieldTypeOptions;

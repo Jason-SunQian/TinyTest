@@ -1,2 +1,2 @@
-export { getComponentDetail } from './getComponentDetail'
-export { getComponentList } from './getComponentList'
+export { getComponentDetail } from './getComponentDetail';
+export { getComponentList } from './getComponentList';

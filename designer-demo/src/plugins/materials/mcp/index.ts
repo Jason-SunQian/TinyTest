@@ -1,5 +1,5 @@
-import { getComponentDetail, getComponentList } from './tools'
+import { getComponentDetail, getComponentList } from './tools';
 
 export default {
-  tools: [getComponentDetail, getComponentList]
-}
+    tools: [getComponentDetail, getComponentList]
+};

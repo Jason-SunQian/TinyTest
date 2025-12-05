@@ -1,7 +1,6 @@
-import MyInputConfigurator from './MyInputConfigurator.vue'
+import MyInputConfigurator from './MyInputConfigurator.vue';
 
 export const configurators = {
-  MyInputConfigurator
-}
-
-
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    MyInputConfigurator
+};

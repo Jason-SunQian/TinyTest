@@ -1,78 +1,89 @@
 <template>
-  <div class="background-image">
-    <tiny-input v-model="imageInput" placeholder="none" class="image-conent" @change="imageChange">
-      <template #suffix>
-        <tiny-file-upload
-          ref="upload"
-          size="small"
-          :show-file-list="false"
-          :action="action"
-          :before-upload="beforeUpload"
+    <div class="background-image">
+        <tiny-input
+            v-model="imageInput"
+            placeholder="none"
+            class="image-conent"
+            @change="imageChange"
         >
-          <template #trigger>
-            <!-- <icon-fileupload /> -->
-          </template>
-        </tiny-file-upload>
-      </template>
-    </tiny-input>
-  </div>
+            <template #suffix>
+                <tiny-file-upload
+                    ref="upload"
+                    size="small"
+                    :show-file-list="false"
+                    :action="action"
+                    :before-upload="beforeUpload"
+                >
+                    <template #trigger>
+                        <!-- <icon-fileupload /> -->
+                    </template>
+                </tiny-file-upload>
+            </template>
+        </tiny-input>
+    </div>
 </template>
 
-<script>
+<!-- eslint-disable vue/block-lang, vue/component-api-style, @typescript-eslint/naming-convention, vue/require-explicit-emits -->
+<script lang="ts">
 /* metaService: engine.setting.styles.ImageSelect */
-import { toRefs, reactive } from 'vue'
-import { Input, FileUpload } from '@opentiny/vue'
-import { useProperties } from '@opentiny/tiny-engine-meta-register'
+import { toRefs, reactive } from 'vue';
+import { Input, FileUpload } from '@opentiny/vue';
+import { useProperties } from '@opentiny/tiny-engine-meta-register';
 
 export default {
-  components: {
-    TinyInput: Input,
-    TinyFileUpload: FileUpload
-  },
-  props: {
-    name: {
-      type: String,
-      default: ''
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyInput: Input,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyFileUpload: FileUpload
     },
-    modelValue: {
-      type: String,
-      default: ''
-    }
-  },
-  setup(props, { emit }) {
-    const state = reactive({
-      imageInput: props.modelValue,
-      action: 'http://localhost:3000/api/upload'
-    })
+    props: {
+        name: {
+            type: String,
+            default: ''
+        },
+        modelValue: {
+            type: String,
+            default: ''
+        }
+    },
+    emits: ['change'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const state = reactive({
+            imageInput: props.modelValue,
+            action: 'http://localhost:3000/api/upload'
+        });
 
-    const { setProp } = useProperties()
+        const { setProp } = useProperties();
 
-    const imageChange = (val) => {
-      emit('change', val)
-      setProp(props.name, val)
-    }
+        const imageChange = val => {
+            emit('change', val);
+            setProp(props.name, val);
+        };
 
-    const beforeUpload = (file) => {
-      state.imageInput = file.name
-      return true
-    }
+        const beforeUpload = file => {
+            state.imageInput = file.name;
+            return true;
+        };
 
-    return {
-      ...toRefs(state),
-      imageChange,
-      beforeUpload
+        return {
+            ...toRefs(state),
+            imageChange,
+            beforeUpload
+        };
     }
-  }
-}
+};
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .background-image {
-  width: 100%;
-  .icon {
-    font-size: 20px;
-    color: var(--te-styles-common-text-color-secondary);
-    margin-right: 4px;
-  }
+    width: 100%;
+    .icon {
+        font-size: 20px;
+        color: var(--te-styles-common-text-color-secondary);
+        margin-right: 4px;
+    }
 }
 </style>

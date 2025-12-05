@@ -1,53 +1,55 @@
 <template>
-  <video-guide :title="title" :src="videoSrc" :cover="img">
-    <template #video>
-      <slot name="video"></slot>
-    </template>
-  </video-guide>
+    <video-guide :title="title" :src="videoSrc" :cover="img">
+        <template #video>
+            <slot name="video" />
+        </template>
+    </video-guide>
 </template>
 
 <script lang="ts">
 /* metaService: engine.plugins.blockmanage.BlockGuide */
-import { VideoGuide } from '@opentiny/tiny-engine-common'
+import { VideoGuide } from '@opentiny/tiny-engine-common';
 
 export default {
-  components: {
-    VideoGuide
-  },
-  props: {
-    title: {
-      type: String,
-      default: ''
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        VideoGuide
     },
-    video: {
-      type: String,
-      default: ''
+    props: {
+        title: {
+            type: String,
+            default: ''
+        },
+        video: {
+            type: String,
+            default: ''
+        }
+    },
+    // eslint-disable-next-line vue/component-api-style
+    setup(props) {
+        return {
+            videoSrc: props.video,
+            img: ''
+        };
     }
-  },
-  setup(props) {
-    return {
-      videoSrc: props.video,
-      img: ''
-    }
-  }
-}
+};
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .block-guide {
-  display: inline-block;
-  padding: 12px;
-  :deep(.content) {
     display: inline-block;
-    div:nth-child(1) {
-      display: inline;
+    padding: 12px;
+    :deep(.content) {
+        display: inline-block;
+        div:nth-child(1) {
+            display: inline;
+        }
+        div:nth-child(2) {
+            float: right;
+        }
+        .guide-video {
+            display: block;
+        }
     }
-    div:nth-child(2) {
-      float: right;
-    }
-    .guide-video {
-      display: block;
-    }
-  }
 }
 </style>

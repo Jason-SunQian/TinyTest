@@ -1,84 +1,100 @@
 <template>
-  <block-history-list :history="list" @preview="previewHistory" @restore="restoreHistory"></block-history-list>
+    <block-history-list
+        :history="list"
+        @preview="previewHistory"
+        @restore="restoreHistory"
+    />
 </template>
 
 <script lang="ts">
 /* metaService: engine.plugins.appmanage.PageHistory */
-import { ref, watchEffect } from 'vue'
-import BlockHistoryList from '@/components/i18n-wrappers/BlockHistoryList/index.vue'
-import { previewPage } from '@opentiny/tiny-engine-common/js/preview'
-import { usePage, useBlock, useModal, getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
-import { fetchPageHistory } from './http'
+import { ref, watchEffect } from 'vue';
+import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
+import {
+    usePage,
+    useBlock,
+    useModal,
+    getMetaApi,
+    META_SERVICE
+} from '@opentiny/tiny-engine-meta-register';
+
+import BlockHistoryList from '@/components/i18n-wrappers/BlockHistoryList/index.vue';
+
+import { fetchPageHistory } from './http';
 
 export default {
-  components: {
-    BlockHistoryList
-  },
-  props: {
-    curPageData: {
-      type: Object,
-      default: () => ({})
-    }
-  },
-  emits: ['restorePage'],
-  setup(props, { emit }) {
-    const { pageSettingState, getFamily } = usePage()
-    const { getDateFromNow } = useBlock()
-    const { confirm } = useModal()
-    const list = ref([])
-
-    const getHistoryList = (pageId) => {
-      const { id, version } = getMetaApi(META_SERVICE.GlobalService).getBaseInfo()
-      const params = version ? `&app=${id}&version=${version}` : ''
-
-      if (pageId) {
-        fetchPageHistory(pageId + params).then((data) => {
-          if (!data) {
-            return
-          }
-          data.forEach((item) => {
-            item.backupTitle = item.message
-            item.backupTime = getDateFromNow(new Date(item.time))
-          })
-          list.value = data.reverse()
-        })
-      } else {
-        list.value = []
-      }
-    }
-
-    watchEffect(() => {
-      const pageId = pageSettingState.currentPageData?.id || ''
-      getHistoryList(pageId)
-    })
-
-    const previewHistory = async (item) => {
-      if (item) {
-        const params = {
-          ...item,
-          id: Number(item.page),
-          history: item.id
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        BlockHistoryList
+    },
+    props: {
+        curPageData: {
+            type: Object as () => Record<string, unknown>,
+            default: () => ({})
         }
-        params.ancestors = await getFamily(params)
-        previewPage(params, true)
-      }
-    }
+    },
+    emits: ['restorePage'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const { pageSettingState, getFamily } = usePage();
+        const { getDateFromNow } = useBlock();
+        const { confirm } = useModal();
+        const list = ref([]);
 
-    const restoreHistory = (item) => {
-      confirm({
-        title: '提示',
-        message: '您即将还原历史页面，是否继续还原？',
-        exec: () => {
-          emit('restorePage', item)
-        }
-      })
-    }
+        const getHistoryList = pageId => {
+            const { id, version } = getMetaApi(
+                META_SERVICE.GlobalService
+            ).getBaseInfo();
+            const params = version ? `&app=${id}&version=${version}` : '';
 
-    return {
-      list,
-      previewHistory,
-      restoreHistory
+            if (pageId) {
+                fetchPageHistory(pageId + params).then(data => {
+                    if (!data) {
+                        return;
+                    }
+                    data.forEach(item => {
+                        item.backupTitle = item.message;
+                        item.backupTime = getDateFromNow(new Date(item.time));
+                    });
+                    list.value = data.reverse();
+                });
+            } else {
+                list.value = [];
+            }
+        };
+
+        watchEffect(() => {
+            const pageId = pageSettingState.currentPageData?.id || '';
+            getHistoryList(pageId);
+        });
+
+        const previewHistory = async item => {
+            if (item) {
+                const params = {
+                    ...item,
+                    id: Number(item.page),
+                    history: item.id
+                };
+                params.ancestors = await getFamily(params);
+                previewPage(params, true);
+            }
+        };
+
+        const restoreHistory = item => {
+            confirm({
+                title: '提示',
+                message: '您即将还原历史页面，是否继续还原？',
+                exec: () => {
+                    emit('restorePage', item);
+                }
+            });
+        };
+
+        return {
+            list,
+            previewHistory,
+            restoreHistory
+        };
     }
-  }
-}
+};
 </script>

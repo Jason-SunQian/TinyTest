@@ -1,117 +1,164 @@
 <template>
-  <div class="send-service">
-    <div class="use-service">
-      <div class="life-cycle-alert">
-        如果接口存在跨域、鉴权等情况，则请手动将响应数据，粘贴至下方的“请求结果”编辑器中。*
-        如果不存在上述情况，完善以上信息，点击此按钮，编辑器将请求该接口，响应的数据，将自动填充至下方的“请求结果”编辑器中。
-      </div>
-    </div>
-  </div>
-  <div>
-    <remote-data-adapter-form
-      v-model="state.shouldFetch"
-      name="是否可以发起请求的计算函数（shouldFetch）"
-    ></remote-data-adapter-form>
-    <remote-data-adapter-form v-model="state.willFetch" name="请求参数处理函数（willFetch）"></remote-data-adapter-form>
-    <remote-data-adapter-form v-model="state.dataHandler" name="请求完成回调函数（dataHandler）">
-      <template #title>
-        <tiny-popover placement="top" trigger="hover">
-          <div>为了支持mock数据和表格快捷生成字段功能，数据源最终返回的格式建议是：</div>
-          <div><code>{ code: string, msg: string, data: {items: any[], total: number} }</code></div>
-          <template #reference>
-            <div>
-              <svg-icon name="flow-help-center"></svg-icon>
+    <div class="send-service">
+        <div class="use-service">
+            <div class="life-cycle-alert">
+                {{ t('designer.datasource.corsAuthTip') }}
             </div>
-          </template>
-        </tiny-popover>
-      </template>
-    </remote-data-adapter-form>
-    <remote-data-adapter-form
-      v-model="state.errorHandler"
-      name="请求失败后的回调函数（errorHandler）"
-    ></remote-data-adapter-form>
-  </div>
+        </div>
+    </div>
+    <div>
+        <remote-data-adapter-form
+            v-model="state.shouldFetch"
+            :name="t('designer.datasource.shouldFetchFunction')"
+        />
+        <remote-data-adapter-form
+            v-model="state.willFetch"
+            :name="t('designer.datasource.willFetchFunction')"
+        />
+        <remote-data-adapter-form
+            v-model="state.dataHandler"
+            :name="t('designer.datasource.dataHandlerFunction')"
+        >
+            <template #title>
+                <tiny-popover placement="top" trigger="hover">
+                    <div>
+                        {{ t('designer.datasource.dataSourceFormatTip') }}
+                    </div>
+                    <div>
+                        <code>{{
+                            t('designer.datasource.dataSourceFormatExample')
+                        }}</code>
+                    </div>
+                    <template #reference>
+                        <div>
+                            <svg-icon name="flow-help-center" />
+                        </div>
+                    </template>
+                </tiny-popover>
+            </template>
+        </remote-data-adapter-form>
+        <remote-data-adapter-form
+            v-model="state.errorHandler"
+            :name="t('designer.datasource.errorHandlerFunction')"
+        />
+    </div>
 </template>
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceRemoteDataAdapter */
-import { reactive, ref, watch } from 'vue'
-import { Popover } from '@opentiny/vue'
-import { constants } from '@opentiny/tiny-engine-utils'
-import RemoteDataAdapterForm from './RemoteDataAdapterForm.vue'
+import { reactive, ref, watch } from 'vue';
+import { Popover } from '@opentiny/vue';
+import { constants } from '@opentiny/tiny-engine-utils';
 
-const { DEFAULT_INTERCEPTOR } = constants
+import { useDesignerI18n } from '@/services/i18nService';
 
-const dataHandler = ref(null)
-const willFetch = ref(null)
-const shouldFetch = ref(null)
-const errorHandler = ref(null)
+import RemoteDataAdapterForm from './RemoteDataAdapterForm.vue';
+
+const { DEFAULT_INTERCEPTOR } = constants;
+
+// eslint-disable-next-line vue/require-typed-ref
+const dataHandler = ref(null);
+// eslint-disable-next-line vue/require-typed-ref
+const willFetch = ref(null);
+// eslint-disable-next-line vue/require-typed-ref
+const shouldFetch = ref(null);
+// eslint-disable-next-line vue/require-typed-ref
+const errorHandler = ref(null);
 
 export default {
-  components: {
-    TinyPopover: Popover,
-    RemoteDataAdapterForm
-  },
-  props: {
-    modelValue: {
-      type: Object,
-      default: () => ({})
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyPopover: Popover,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        RemoteDataAdapterForm
+    },
+    props: {
+        modelValue: {
+            type: Object as () => Record<string, unknown>,
+            default: () => ({})
+        }
+    },
+    emits: ['sendRequst', 'update:modelValue'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const { t } = useDesignerI18n();
+        const state = reactive({
+            dataHandler:
+                props.modelValue.dataHandler ||
+                DEFAULT_INTERCEPTOR.dataHandler.value,
+            willFetch:
+                props.modelValue.willFetch ||
+                DEFAULT_INTERCEPTOR.willFetch.value,
+            shouldFetch:
+                props.modelValue.shouldFetch ||
+                DEFAULT_INTERCEPTOR.shouldFetch.value,
+            errorHandler:
+                props.modelValue.errorHandler ||
+                DEFAULT_INTERCEPTOR.errorHandler.value
+        });
+
+        const getEditorValue = () => ({
+            dataHandler: { type: 'JSFunction', value: state.dataHandler },
+            willFetch: { type: 'JSFunction', value: state.willFetch },
+            shouldFetch: { type: 'JSFunction', value: state.shouldFetch },
+            errorHandler: { type: 'JSFunction', value: state.errorHandler }
+        });
+
+        watch(
+            () => [
+                state.dataHandler,
+                state.willFetch,
+                state.shouldFetch,
+                state.errorHandler
+            ],
+            // eslint-disable-next-line @typescript-eslint/no-shadow
+            ([
+                dataHandlerValue,
+                willFetchValue,
+                shouldFetchValue,
+                errorHandlerValue
+            ]) => {
+                emit('update:modelValue', {
+                    dataHandler: dataHandlerValue,
+                    willFetch: willFetchValue,
+                    shouldFetch: shouldFetchValue,
+                    errorHandler: errorHandlerValue
+                });
+            }
+        );
+
+        return {
+            state,
+            getEditorValue,
+            dataHandler,
+            willFetch,
+            shouldFetch,
+            errorHandler,
+            t
+        };
     }
-  },
-  emits: ['sendRequst', 'update:modelValue'],
-  setup(props, { emit }) {
-    const state = reactive({
-      dataHandler: props.modelValue.dataHandler || DEFAULT_INTERCEPTOR.dataHandler.value,
-      willFetch: props.modelValue.willFetch || DEFAULT_INTERCEPTOR.willFetch.value,
-      shouldFetch: props.modelValue.shouldFetch || DEFAULT_INTERCEPTOR.shouldFetch.value,
-      errorHandler: props.modelValue.errorHandler || DEFAULT_INTERCEPTOR.errorHandler.value
-    })
-
-    const getEditorValue = () => ({
-      dataHandler: { type: 'JSFunction', value: state.dataHandler },
-      willFetch: { type: 'JSFunction', value: state.willFetch },
-      shouldFetch: { type: 'JSFunction', value: state.shouldFetch },
-      errorHandler: { type: 'JSFunction', value: state.errorHandler }
-    })
-
-    watch(
-      () => [state.dataHandler, state.willFetch, state.shouldFetch, state.errorHandler],
-      ([dataHandler, willFetch, shouldFetch, errorHandler]) => {
-        emit('update:modelValue', { dataHandler, willFetch, shouldFetch, errorHandler })
-      }
-    )
-
-    return {
-      state,
-      getEditorValue,
-      dataHandler,
-      willFetch,
-      shouldFetch,
-      errorHandler
-    }
-  }
-}
+};
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .send-service {
-  .use-service {
-    margin-bottom: 0;
-  }
-  :deep(.tiny-alert) {
-    .tiny-alert__content {
-      .tiny-alert__description {
-        font-size: 14px;
-        margin-bottom: -5px;
-      }
+    .use-service {
+        margin-bottom: 0;
     }
-  }
-  .life-cycle-alert {
-    font-size: var(--te-base-font-size-base);
-    color: var(--te-datasource-common-tip-text-color);
-  }
+    :deep(.tiny-alert) {
+        .tiny-alert__content {
+            .tiny-alert__description {
+                font-size: 14px;
+                margin-bottom: -5px;
+            }
+        }
+    }
+    .life-cycle-alert {
+        font-size: var(--te-base-font-size-base);
+        color: var(--te-datasource-common-tip-text-color);
+    }
 }
 .svg-icon.plugin-icon-plugin-help {
-  font-size: 16px;
+    font-size: 16px;
 }
 </style>

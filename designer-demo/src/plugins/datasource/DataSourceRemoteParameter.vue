@@ -1,50 +1,58 @@
 <template>
-  <monaco-editor :value="modelValue" class="editor" :options="options" @change="change" />
+    <monaco-editor
+        :value="modelValue"
+        class="editor"
+        :options="options"
+        @change="change"
+    />
 </template>
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceRemoteParameter */
-import { VueMonaco } from '@opentiny/tiny-engine-common'
+import { VueMonaco } from '@opentiny/tiny-engine-common';
 
 export default {
-  components: {
-    MonacoEditor: VueMonaco
-  },
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    }
-  },
-  setup(props, { emit }) {
-    const change = (value) => {
-      if (typeof value !== 'string') {
-        return
-      }
+    components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        MonacoEditor: VueMonaco
+    },
+    props: {
+        modelValue: {
+            type: String,
+            default: ''
+        }
+    },
+    emits: ['update:modelValue'],
+    // eslint-disable-next-line vue/component-api-style
+    setup(props, { emit }) {
+        const change = value => {
+            if (typeof value !== 'string') {
+                return;
+            }
 
-      emit('update:modelValue', value)
-    }
+            emit('update:modelValue', value);
+        };
 
-    return {
-      options: {
-        language: 'json',
-        minimap: { enabled: false }
-      },
-      change
+        return {
+            options: {
+                language: 'json',
+                minimap: { enabled: false }
+            },
+            change
+        };
     }
-  }
-}
+};
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .title {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .editor {
-  height: 180px;
-  margin-top: 8px;
-  border: 1px solid var(--te-datasource-common-border-color-divider);
-  border-radius: 4px;
+    height: 180px;
+    margin-top: 8px;
+    border: 1px solid var(--te-datasource-common-border-color-divider);
+    border-radius: 4px;
 }
 </style>

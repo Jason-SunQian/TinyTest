@@ -11,234 +11,265 @@
  */
 
 /* metaService: engine.plugins.pagecontroller.js-method */
-import { ref, reactive, onActivated, nextTick, watch } from 'vue'
-import { useCanvas, useModal, useNotify } from '@opentiny/tiny-engine-meta-register'
-import { string2Ast, ast2String, insertName, formatString } from '@opentiny/tiny-engine-common/js/ast'
-import { constants } from '@opentiny/tiny-engine-utils'
-import { lint } from '@opentiny/tiny-engine-common/js/linter'
-import { isFunction } from '@opentiny/vue-renderless/grid/static'
-import { t } from '../../../services/i18nService'
+import { ref, reactive, onActivated, nextTick, watch } from 'vue';
+import {
+    useCanvas,
+    useModal,
+    useNotify
+} from '@opentiny/tiny-engine-meta-register';
+import {
+    string2Ast,
+    ast2String,
+    insertName,
+    formatString
+} from '@opentiny/tiny-engine-common/js/ast';
+import { constants } from '@opentiny/tiny-engine-utils';
+import { lint } from '@opentiny/tiny-engine-common/js/linter';
+import { isFunction } from '@opentiny/vue-renderless/grid/static';
 
-const { SCHEMA_DATA_TYPE } = constants
+import { t } from '../../../services/i18nService';
+
+const { SCHEMA_DATA_TYPE } = constants;
 
 const state = reactive({
-  linterWorker: null,
-  script: '',
-  isChanged: false,
-  hasError: false,
-  editorSelection: null,
-  completionProvider: null,
-  // 记录当前是否已经有弹窗，防止使用 ctrl + s 的时候重复弹窗
-  hasErrorPopup: false
-})
+    linterWorker: null,
+    script: '',
+    isChanged: false,
+    hasError: false,
+    editorSelection: null,
+    completionProvider: null,
+    // 记录当前是否已经有弹窗，防止使用 ctrl + s 的时候重复弹窗
+    hasErrorPopup: false
+});
 
-const monaco = ref(null)
+// eslint-disable-next-line vue/require-typed-ref
+const monaco = ref(null);
 
-let scriptAst = null
+let scriptAst = null;
 
+// eslint-disable-next-line
 export const getMethods = () => {
-  const pageSchema = useCanvas().getSchema?.() || {}
+    const pageSchema = useCanvas().getSchema?.() || {};
 
-  pageSchema.methods = pageSchema?.methods || {}
-  return pageSchema.methods
-}
+    pageSchema.methods = pageSchema?.methods || {};
+    return pageSchema.methods;
+};
 
-export const getMethodNameList = () => (useCanvas().pageState.pageSchema && Object.keys(getMethods())) || []
+const getMethodNameListFn = () =>
+    (useCanvas().pageState.pageSchema && Object.keys(getMethods())) || [];
 
-export const getMethodContentList = () => Object.values(getMethods()).map((method) => method.value)
+const getMethodContentListFn = () =>
+    Object.values(getMethods()).map(method => method.value);
 
 const getScriptString = () => {
-  const list = Object.entries(getMethods()).map(([name, method]) => insertName(name, method.value))
-  const script = list.join(`\n`)
-  try {
-    scriptAst = string2Ast(script)
-  } catch (error) {
-    useNotify({
-      type: 'error',
-      message: t('designer.script.staticCheckError', { error })
-    })
-  }
-  return script
-}
+    const list = Object.entries(getMethods()).map(([name, method]) =>
+        insertName(name, method.value)
+    );
+    const script = list.join(`\n`);
+    try {
+        scriptAst = string2Ast(script);
+    } catch (error) {
+        useNotify({
+            type: 'error',
+            message: t('designer.script.staticCheckError', { error })
+        });
+    }
+    return script;
+};
 
-const change = (value) => {
-  const lineBreakPattern = /\r\n/g
-  // 使用 prettier 格式化之后，换行符会变成 \n
-  // monaco 传入的 value 在 window下，换行符会变成 \r\n
-  // 对比需要抹平换行符带来的差异
-  state.isChanged = value.replace(lineBreakPattern, '\n') !== state.script.replace(lineBreakPattern, '\n')
+const change = value => {
+    const lineBreakPattern = /\r\n/g;
+    // 使用 prettier 格式化之后，换行符会变成 \n
+    // monaco 传入的 value 在 window下，换行符会变成 \r\n
+    // 对比需要抹平换行符带来的差异
+    state.isChanged =
+        value.replace(lineBreakPattern, '\n') !==
+        state.script.replace(lineBreakPattern, '\n');
 
-  if (!monaco.value) {
-    return
-  }
-
-  // 用户在线编辑代码内容变化时，发起 ESLint 静态检查
-  const monacoModel = monaco.value.getEditor().getModel()
-  lint(monacoModel, state.linterWorker)
-}
-
-export const saveMethod = ({ name, content }) => {
-  if (!name) {
-    return
-  }
-
-  const methods = getMethods()
-
-  const methodItem = {
-    type: SCHEMA_DATA_TYPE.JSFunction,
-    value: content
-  }
-
-  useCanvas().updateSchema({ methods: { ...methods, [name]: methodItem } })
-}
-
-const saveMethods = async () => {
-  const { message } = useModal()
-  if (!state.isChanged || state.hasErrorPopup) {
-    return false
-  }
-
-  if (state.hasError) {
-    state.hasErrorPopup = true
-    message({
-      status: 'error',
-      message: t('designer.script.staticCheckErrorSave'),
-      exec: () => {
-        state.hasErrorPopup = false
-      }
-    })
-
-    return false
-  }
-
-  const editorContent = monaco.value.getEditor().getValue()
-  const ast = string2Ast(editorContent)
-  const newMethods = {}
-
-  ast.program.body.forEach((declaration, index) => {
-    const name = declaration?.id?.name
-
-    // 前一个方法的尾部注释和后一个方法的头部注释指向相同引用时，删除尾部注释, 解决注释重复生成问题
-    if (
-      ast.program.body[index + 1]?.leadingComments &&
-      declaration.trailingComments === ast.program.body[index + 1].leadingComments
-    ) {
-      delete declaration.trailingComments
+    if (!monaco.value) {
+        return;
     }
 
-    const content = formatString(ast2String(declaration).trim(), 'javascript')
+    // 用户在线编辑代码内容变化时，发起 ESLint 静态检查
+    const monacoModel = monaco.value.getEditor().getModel();
+    lint(monacoModel, state.linterWorker);
+};
 
-    if (name) {
-      newMethods[name] = {
+const saveMethodFn = ({ name, content }) => {
+    if (!name) {
+        return;
+    }
+
+    const methods = getMethods();
+
+    const methodItem = {
         type: SCHEMA_DATA_TYPE.JSFunction,
         value: content
-      }
+    };
+
+    useCanvas().updateSchema({ methods: { ...methods, [name]: methodItem } });
+};
+
+const saveMethods = async () => {
+    const { message } = useModal();
+    if (!state.isChanged || state.hasErrorPopup) {
+        return false;
     }
-  })
 
-  useCanvas().updateSchema({ methods: newMethods })
-  useCanvas().setSaved(false)
+    if (state.hasError) {
+        state.hasErrorPopup = true;
+        message({
+            status: 'error',
+            message: t('designer.script.staticCheckErrorSave'),
+            exec: () => {
+                state.hasErrorPopup = false;
+            }
+        });
 
-  // 这里需要先置空，再设置回来真正的值, 目的是让 monaco 感知到变化, 更新内容。
-  const newScript = getScriptString()
-  state.script = ''
-  await nextTick()
-  state.script = newScript
-  state.isChanged = false
-
-  useNotify({
-    type: 'success',
-    message: t('designer.script.saveSuccess')
-  })
-
-  return true
-}
-
-const close = (emit) => (callback) => {
-  const { confirm } = useModal()
-  const callbackFn = isFunction(callback) ? callback : () => emit('close')
-  if (!state.isChanged) {
-    callbackFn(true)
-    return
-  }
-  confirm({
-    title: t('designer.script.tip'),
-    message: t('designer.script.unsavedChanges'),
-    exec() {
-      callbackFn(saveMethods())
-    },
-    cancel() {
-      callbackFn(true)
+        return false;
     }
-  })
-}
+
+    const editorContent = monaco.value.getEditor().getValue();
+    const ast = string2Ast(editorContent);
+    const newMethods = {};
+
+    ast.program.body.forEach((declaration, index) => {
+        const name = declaration?.id?.name;
+
+        // 前一个方法的尾部注释和后一个方法的头部注释指向相同引用时，删除尾部注释, 解决注释重复生成问题
+        if (
+            ast.program.body[index + 1]?.leadingComments &&
+            declaration.trailingComments ===
+                ast.program.body[index + 1].leadingComments
+        ) {
+            delete declaration.trailingComments;
+        }
+
+        const content = formatString(
+            ast2String(declaration).trim(),
+            'javascript'
+        );
+
+        if (name) {
+            newMethods[name] = {
+                type: SCHEMA_DATA_TYPE.JSFunction,
+                value: content
+            };
+        }
+    });
+
+    useCanvas().updateSchema({ methods: newMethods });
+    useCanvas().setSaved(false);
+
+    // 这里需要先置空，再设置回来真正的值, 目的是让 monaco 感知到变化, 更新内容。
+    const newScript = getScriptString();
+    state.script = '';
+    await nextTick();
+    state.script = newScript;
+    state.isChanged = false;
+
+    useNotify({
+        type: 'success',
+        message: t('designer.script.saveSuccess')
+    });
+
+    return true;
+};
+
+const close = emit => callback => {
+    const { confirm } = useModal();
+    const callbackFn = isFunction(callback) ? callback : () => emit('close');
+    if (!state.isChanged) {
+        callbackFn(true);
+        return;
+    }
+    confirm({
+        title: t('designer.script.tip'),
+        message: t('designer.script.unsavedChanges'),
+        exec() {
+            callbackFn(saveMethods());
+        },
+        cancel() {
+            callbackFn(true);
+        }
+    });
+};
 
 const setEditorSelection = () => {
-  if (!state.editorSelection || !monaco.value) {
-    return
-  }
-
-  const editor = monaco.value.getEditor()
-
-  editor.setSelection(state.editorSelection)
-  editor.focus()
-
-  const top = editor.getTopForLineNumber(state.editorSelection.startLineNumber - 1)
-
-  editor.setScrollPosition(
-    {
-      scrollLeft: 0,
-      scrollTop: top
-    },
-    0
-  )
-}
-
-export const highlightMethod = (name) => {
-  if (!name) {
-    return
-  }
-
-  const declarations = scriptAst?.program.body.filter((declaration) => name === declaration?.id?.name)
-
-  if (declarations.length === 0) {
-    return
-  }
-
-  const loc = declarations[0]?.loc
-
-  if (loc) {
-    state.editorSelection = {
-      startColumn: loc.start.column,
-      startLineNumber: loc.start.line,
-      endColumn: loc.end.column + 1,
-      endLineNumber: loc.end.line
+    if (!state.editorSelection || !monaco.value) {
+        return;
     }
-  }
 
-  if (state.editorSelection) {
-    setEditorSelection()
-  }
-}
+    const editor = monaco.value.getEditor();
+
+    editor.setSelection(state.editorSelection);
+    editor.focus();
+
+    const top = editor.getTopForLineNumber(
+        state.editorSelection.startLineNumber - 1
+    );
+
+    editor.setScrollPosition(
+        {
+            scrollLeft: 0,
+            scrollTop: top
+        },
+        0
+    );
+};
+
+const highlightMethodFn = name => {
+    if (!name) {
+        return;
+    }
+
+    const declarations = scriptAst?.program.body.filter(
+        declaration => name === declaration?.id?.name
+    );
+
+    if (declarations.length === 0) {
+        return;
+    }
+
+    const loc = declarations[0]?.loc;
+
+    if (loc) {
+        state.editorSelection = {
+            startColumn: loc.start.column,
+            startLineNumber: loc.start.line,
+            endColumn: loc.end.column + 1,
+            endLineNumber: loc.end.line
+        };
+    }
+
+    if (state.editorSelection) {
+        setEditorSelection();
+    }
+};
 
 export default ({ emit }) => {
-  watch(getScriptString, (newScript) => {
-    state.script = newScript
-  })
+    watch(getScriptString, newScript => {
+        state.script = newScript;
+    });
 
-  onActivated(() => {
-    nextTick(() => {
-      state.script = getScriptString()
-      monaco.value?.focus()
-      window.dispatchEvent(new Event('resize'))
-    })
-  })
+    onActivated(() => {
+        nextTick(() => {
+            state.script = getScriptString();
+            monaco.value?.focus();
+            window.dispatchEvent(new Event('resize'));
+        });
+    });
 
-  return {
-    state,
-    monaco,
-    change,
-    saveMethods,
-    close: close(emit)
-  }
-}
+    return {
+        state,
+        monaco,
+        change,
+        saveMethods,
+        close: close(emit)
+    };
+};
+
+export const getMethodNameList = getMethodNameListFn;
+export const getMethodContentList = getMethodContentListFn;
+export const saveMethod = saveMethodFn;
+export const highlightMethod = highlightMethodFn;

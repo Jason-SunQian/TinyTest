@@ -1,3 +1,3 @@
 export default {
-  id: 'engine.plugins.customMaterials.block'
-}
+    id: 'engine.plugins.customMaterials.block'
+};

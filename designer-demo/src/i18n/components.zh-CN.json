@@ -1,58 +1,58 @@
 {
-  "designer": {
-    "common": {
-      "viewDetails": "查看详情"
-    },
-    "components": {
-      "searchEmpty": {
-        "noData": "暂无数据"
-      },
-      "pluginPanel": {
-        "expand": "展开",
-        "collapse": "折叠",
-        "pin": "固定面板",
-        "unpin": "解除固定面板"
-      },
-      "pluginSetting": {
-        "save": "保存",
-        "addData": "新增数据",
-        "collapse": "收起",
-        "fullscreen": "全屏查看"
-      },
-      "lifeCycles": {
-        "addPageLifecycle": "添加页面生命周期",
-        "addBlockLifecycle": "添加区块生命周期",
-        "save": "保存",
-        "search": "搜索",
-        "tip": "提示",
-        "deleteConfirm": "您确定要删除 {name} 吗？",
-        "lintError": "代码静态检查有错误，请先修改后再保存"
-      },
-      "pluginBlockList": {
-        "blockName": "区块名称",
-        "createTime": "创建时间",
-        "creator": "创建人",
-        "addBlock": "添加区块",
-        "unpublished": "未发布",
-        "versionList": "版本列表",
-        "remove": "移除",
-        "preview": "预览图"
-      },
-      "metaListItems": {
-        "index": "序号",
-        "selection": "复选框",
-        "radio": "单选框",
-        "expand": "展开行"
-      },
-      "blockHistoryList": {
-        "version": "版本号",
-        "publishTime": "发布时间",
-        "description": "描述",
-        "operation": "操作",
-        "latest": "最新",
-        "preview": "预览",
-        "restore": "还原"
-      }
+    "designer": {
+        "common": {
+            "viewDetails": "查看详情"
+        },
+        "components": {
+            "searchEmpty": {
+                "noData": "暂无数据"
+            },
+            "pluginPanel": {
+                "expand": "展开",
+                "collapse": "折叠",
+                "pin": "固定面板",
+                "unpin": "解除固定面板"
+            },
+            "pluginSetting": {
+                "save": "保存",
+                "addData": "新增数据",
+                "collapse": "收起",
+                "fullscreen": "全屏查看"
+            },
+            "lifeCycles": {
+                "addPageLifecycle": "添加页面生命周期",
+                "addBlockLifecycle": "添加区块生命周期",
+                "save": "保存",
+                "search": "搜索",
+                "tip": "提示",
+                "deleteConfirm": "您确定要删除 {name} 吗？",
+                "lintError": "代码静态检查有错误，请先修改后再保存"
+            },
+            "pluginBlockList": {
+                "blockName": "区块名称",
+                "createTime": "创建时间",
+                "creator": "创建人",
+                "addBlock": "添加区块",
+                "unpublished": "未发布",
+                "versionList": "版本列表",
+                "remove": "移除",
+                "preview": "预览图"
+            },
+            "metaListItems": {
+                "index": "序号",
+                "selection": "复选框",
+                "radio": "单选框",
+                "expand": "展开行"
+            },
+            "blockHistoryList": {
+                "version": "版本号",
+                "publishTime": "发布时间",
+                "description": "描述",
+                "operation": "操作",
+                "latest": "最新",
+                "preview": "预览",
+                "restore": "还原"
+            }
+        }
     }
-  }
 }

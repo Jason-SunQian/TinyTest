@@ -11,55 +11,65 @@
  */
 
 /* metaService: engine.service.translate.useTranslate */
-import { reactive, ref } from 'vue'
-import { utils } from '@opentiny/tiny-engine-utils'
-import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments'
-import { constants } from '@opentiny/tiny-engine-utils'
-import { generateI18n } from '@opentiny/tiny-engine-common/js/vscodeGenerateFile'
-import { PROP_DATA_TYPE } from '@opentiny/tiny-engine-common/js/constants'
-import { useResource, useCanvas, getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register'
+import { reactive, ref } from 'vue';
+import { utils, constants } from '@opentiny/tiny-engine-utils';
+import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
+import { generateI18n } from '@opentiny/tiny-engine-common/js/vscodeGenerateFile';
+import { PROP_DATA_TYPE } from '@opentiny/tiny-engine-common/js/constants';
+import {
+    useResource,
+    useCanvas,
+    getMetaApi,
+    META_SERVICE
+} from '@opentiny/tiny-engine-meta-register';
 
-const { HOST_TYPE } = constants
+const { HOST_TYPE } = constants;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const state = reactive<{ langs: Record<string, any> }>({
-  langs: {}
-})
+    langs: {}
+});
 
-const currentLanguage = ref('zh_CN')
+const currentLanguage = ref('zh_CN');
 const i18nResource = reactive<{
-  messages: Record<string, any>
-  locales: any[]
-  [x: string]: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    messages: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    locales: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [x: string]: any;
 }>({
-  messages: {},
-  locales: []
-})
-const i18nApi = '/app-center/api/i18n/entries'
+    messages: {},
+    locales: []
+});
+const i18nApi = '/app-center/api/i18n/entries';
 const globalParams = {
-  host: '',
-  host_type: ''
-}
+    host: '',
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+    host_type: ''
+};
 
-const getLangs = () => state.langs
+const getLangs = () => state.langs;
 
 const setLangs = (newLangs = {}) => {
-  state.langs = newLangs
-}
+    state.langs = newLangs;
+};
 
 const removeI18n = (key = []) => {
-  if (!key.length) {
-    return
-  }
+    if (!key.length) {
+        return;
+    }
 
-  const langs = getLangs()
-  key.forEach((element) => {
-    delete langs[element]
-  })
+    const langs = getLangs();
+    key.forEach(element => {
+        delete langs[element];
+    });
 
-  getMetaApi(META_SERVICE.Http).post(`${i18nApi}/bulk/delete`, {
-    ...globalParams,
-    key_in: key
-  })
-}
+    getMetaApi(META_SERVICE.Http).post(`${i18nApi}/bulk/delete`, {
+        ...globalParams,
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+        key_in: key
+    });
+};
 
 /**
  *
@@ -68,203 +78,238 @@ const removeI18n = (key = []) => {
  * @returns
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ensureI18n = (obj: { [x: string]: any; key: string }, send?: boolean) => {
-  const { locales } = i18nResource
-  const contents = Object.fromEntries(locales.map(({ lang }) => [lang, obj[lang] || '']))
-  const langs = getLangs()
-  const key = obj.key || utils.guid()
+    const { locales } = i18nResource;
+    const contents = Object.fromEntries(
+        locales.map(({ lang }) => [lang, obj[lang] || ''])
+    );
+    const langs = getLangs();
+    const key = obj.key || utils.guid();
 
-  if (send) {
-    const exist = langs[key]
+    if (send) {
+        const exist = langs[key];
 
-    if (globalParams.host) {
-      getMetaApi(META_SERVICE.Http).post(`${i18nApi}/${exist ? 'update' : 'create'}`, {
-        ...globalParams,
-        key,
-        contents
-      })
+        if (globalParams.host) {
+            getMetaApi(META_SERVICE.Http).post(
+                `${i18nApi}/${exist ? 'update' : 'create'}`,
+                {
+                    ...globalParams,
+                    key,
+                    contents
+                }
+            );
+        }
+
+        locales.forEach(lang => {
+            if (i18nResource[lang]?.[key]) {
+                i18nResource[lang][key] = contents[lang];
+            }
+        });
+
+        // VsCode环境生成本地国际化
+        if (isVsCodeEnv) {
+            generateI18n({
+                key,
+                contents
+            });
+        }
     }
 
-    locales.forEach((lang) => {
-      if (i18nResource[lang]?.[key]) {
-        i18nResource[lang][key] = contents[lang]
-      }
-    })
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const messages: Record<string, any> = {};
+        Object.entries(contents).forEach(([locale, message]) => {
+            messages[locale] = {
+                [key]: message
+            };
+        });
 
-    // VsCode环境生成本地国际化
-    if (isVsCodeEnv) {
-      generateI18n({
-        key,
-        contents
-      })
+        useCanvas().canvasApi.value?.setLocales?.(messages, true);
+    } catch (e) {
+        // 不需要处理，有报错的词条会在画布初始化的时候统一调setLocales这个方法
     }
-  }
 
-  try {
-    const messages: Record<string, any> = {}
-    Object.entries(contents).forEach(([locale, message]) => {
-      messages[locale] = {
-        [key]: message
-      }
-    })
+    langs[key] = { key, ...contents, type: PROP_DATA_TYPE.I18N };
 
-    useCanvas().canvasApi.value?.setLocales?.(messages, true)
-  } catch (e) {
-    // 不需要处理，有报错的词条会在画布初始化的时候统一调setLocales这个方法
-  }
-
-  langs[key] = { key, ...contents, type: PROP_DATA_TYPE.I18N }
-
-  return langs[contents.key]
-}
+    return langs[contents.key];
+};
 
 const getI18nData = () => {
-  return getMetaApi(META_SERVICE.Http).get(i18nApi, {
-    params: { ...globalParams, _limit: -1 }
-  })
+    return getMetaApi(META_SERVICE.Http).get(i18nApi, {
+        params: { ...globalParams, _limit: -1 }
+    });
+};
+
+interface I18nOptions {
+    init?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    local?: any;
+    host?: string;
+    hostType?: string;
 }
 
-export interface I18nOptions {
-  init?: boolean
-  local?: any
-  host?: string
-  hostType?: string
-}
+const getI18n = async ({
+    init,
+    local
+}: I18nOptions): Promise<typeof appSchemaState.langs> => {
+    const { appSchemaState } = useResource();
 
-const getI18n = async ({ init, local }: I18nOptions): Promise<typeof appSchemaState.langs> => {
-  const { appSchemaState } = useResource()
+    if (local) {
+        const locales = appSchemaState?.langs?.locales || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const messages: Record<string, any> = {};
+        const langs = getLangs();
 
-  if (local) {
-    const locales = appSchemaState?.langs?.locales || []
-    const messages: Record<string, any> = {}
-    const langs = getLangs()
+        if (Array.isArray(locales)) {
+            locales.forEach(({ lang }) => {
+                messages[lang] = {};
 
-    if (Array.isArray(locales)) {
-      locales.forEach(({ lang }) => {
-        messages[lang] = {}
+                Object.entries(langs).forEach(([key, message]) => {
+                    messages[lang][key] = message[lang];
+                });
+            });
+        }
 
-        Object.entries(langs).forEach(([key, message]) => {
-          messages[lang][key] = message[lang]
-        })
-      })
+        return { locales, messages };
     }
+    const i18n = init ? appSchemaState.langs : await getI18nData();
 
-    return { locales, messages }
-  } else {
-    const i18n = init ? appSchemaState.langs : await getI18nData()
-
-    return i18n
-  }
-}
+    return i18n;
+};
 
 const initI18n = async ({ host, hostType, init, local }: I18nOptions) => {
-  globalParams.host = host || ''
-  const hostTypeVar = 'host_type'
-  globalParams[hostTypeVar] = hostType || HOST_TYPE.App
+    globalParams.host = host || '';
+    const hostTypeVar = 'host_type';
+    globalParams[hostTypeVar] = hostType || HOST_TYPE.App;
 
-  const { locales = [], messages = {} } = await getI18n({ host, hostType, init, local })
+    const { locales = [], messages = {} } = await getI18n({
+        host,
+        hostType,
+        init,
+        local
+    });
 
-  const langs = locales.map((item) => item.lang)
+    const langs = locales.map(item => item.lang);
 
-  const firstLangData = messages[langs[0] || 'zh_CN']
+    const firstLangData = messages[langs[0] || 'zh_CN'];
 
-  i18nResource.locales = locales
-  i18nResource.messages = messages
+    i18nResource.locales = locales;
+    i18nResource.messages = messages;
 
-  Object.keys(firstLangData || {}).forEach((key) => {
-    const i18n = { key }
+    Object.keys(firstLangData || {}).forEach(key => {
+        const i18n = { key };
 
-    langs.forEach((lang) => messages[lang] && Object.assign(i18n, { [lang]: messages[lang][key] }))
-    ensureI18n(i18n)
-  })
-}
+        langs.forEach(
+            lang =>
+                messages[lang] &&
+                Object.assign(i18n, { [lang]: messages[lang][key] })
+        );
+        ensureI18n(i18n);
+    });
+};
 
 const initAppI18n = async (appId: string) => {
-  if (appId) {
-    await initI18n({
-      host: appId,
-      hostType: HOST_TYPE.App
-    })
-    useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages)
-  }
-}
+    if (appId) {
+        await initI18n({
+            host: appId,
+            hostType: HOST_TYPE.App
+        });
+        useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages);
+    }
+};
 
 const initBlockI18n = async (blockId: string) => {
-  if (blockId) {
-    await initI18n({
-      host: blockId,
-      hostType: HOST_TYPE.Block
-    })
-    useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages)
-  }
-}
+    if (blockId) {
+        await initI18n({
+            host: blockId,
+            hostType: HOST_TYPE.Block
+        });
+        useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages);
+    }
+};
 
 const initBlockLocalI18n = async (langs = {}) => {
-  setLangs(langs)
-  await initI18n({
-    host: '',
-    hostType: HOST_TYPE.Block,
-    local: true
-  })
-  useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages)
-}
+    setLangs(langs);
+    await initI18n({
+        host: '',
+        hostType: HOST_TYPE.Block,
+        local: true
+    });
+    useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages);
+};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const format = (str = '', params: Record<string, any> = {}) =>
-  str.replace(/\$\{(.+?)\}/g, (_substr, key: string) => params[key] || '')
+    str.replace(/\$\{(.+?)\}/g, (_substr, key: string) => params[key] || '');
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const translate = (obj: { [x: string]: any }) => {
-  const { type, key = utils.guid() } = obj || {}
+    const { type, key = utils.guid() } = obj || {};
 
-  if (type === PROP_DATA_TYPE.I18N) {
-    const langs = getLangs()
-    const i18n = langs[key]
-    const langData = i18n || obj
+    if (type === PROP_DATA_TYPE.I18N) {
+        const langs = getLangs();
+        const i18n = langs[key];
+        const langData = i18n || obj;
 
-    return format(langData[currentLanguage.value] || langData.key, obj.params)
-  }
+        return format(
+            langData[currentLanguage.value] || langData.key,
+            obj.params
+        );
+    }
 
-  return obj
-}
+    return obj;
+};
 
-const getData = () => i18nResource.messages
+const getData = () => i18nResource.messages;
 
-const batchCreateI18n = ({ host, hostType }: Pick<I18nOptions, 'host' | 'hostType'>) => {
-  if (!host) {
-    return
-  }
+const batchCreateI18n = ({
+    host,
+    hostType
+}: Pick<I18nOptions, 'host' | 'hostType'>) => {
+    if (!host) {
+        return;
+    }
 
-  globalParams.host = host
-  globalParams.host_type = hostType || ''
+    globalParams.host = host;
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+    globalParams.host_type = hostType || '';
 
-  const { locales } = i18nResource
-  const langs = getLangs()
+    const { locales } = i18nResource;
+    const langs = getLangs();
 
-  const entries = Object.entries(langs).map(([key, message]) => ({
-    key,
-    contents: Object.fromEntries(locales.map(({ lang }) => [lang, message[lang]]))
-  }))
+    const entries = Object.entries(langs).map(([key, message]) => ({
+        key,
+        contents: Object.fromEntries(
+            locales.map(({ lang }) => [lang, message[lang]])
+        )
+    }));
 
-  getMetaApi(META_SERVICE.Http).post(`${i18nApi}/batch/create`, {
-    ...globalParams,
-    entries
-  })
-}
+    getMetaApi(META_SERVICE.Http).post(`${i18nApi}/batch/create`, {
+        ...globalParams,
+        entries
+    });
+};
 
 export default () => {
-  return {
-    i18nResource,
-    currentLanguage,
-    getLangs,
-    setLangs,
-    getData,
-    translate,
-    removeI18n,
-    ensureI18n,
-    initI18n,
-    batchCreateI18n,
-    initAppI18n,
-    initBlockI18n,
-    getI18nData,
-    initBlockLocalI18n
-  }
-}
+    return {
+        i18nResource,
+        currentLanguage,
+        getLangs,
+        setLangs,
+        getData,
+        translate,
+        removeI18n,
+        ensureI18n,
+        initI18n,
+        batchCreateI18n,
+        initAppI18n,
+        initBlockI18n,
+        getI18nData,
+        initBlockLocalI18n
+    };
+};
+
+export type { I18nOptions };
+
+export type { I18nOptions };

@@ -10,52 +10,53 @@
  *
  */
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export const CSS_TYPE = {
-  Css: 'css',
-  Style: 'style'
-}
+    Css: 'css',
+    Style: 'style'
+};
 
 export const DISPLAY_TYPE = {
-  Flex: 'flex',
-  Grid: 'grid',
-  Block: 'block',
-  Inline: 'inline',
-  Invisible: 'none',
-  InlineBlock: 'inline-block'
-}
+    Flex: 'flex',
+    Grid: 'grid',
+    Block: 'block',
+    Inline: 'inline',
+    Invisible: 'none',
+    InlineBlock: 'inline-block'
+};
 
 export const DISPLAY_TEXT = {
-  Flex: '弹性布局',
-  Grid: '网格布局',
-  Block: '块级布局',
-  Inline: '内联',
-  Invisible: '隐藏',
-  InlineBlock: '内联块级'
-}
+    Flex: '弹性布局',
+    Grid: '网格布局',
+    Block: '块级布局',
+    Inline: '内联',
+    Invisible: '隐藏',
+    InlineBlock: '内联块级'
+};
 
 export const OVERFLOW_TYPE = {
-  Auto: 'auto',
-  Scroll: 'scroll',
-  Hidden: 'hidden',
-  Visible: 'visible'
-}
+    Auto: 'auto',
+    Scroll: 'scroll',
+    Hidden: 'hidden',
+    Visible: 'visible'
+};
 
 export const RADIUS_SETTING = {
-  Single: 'single',
-  Multiple: 'multiple'
-}
+    Single: 'single',
+    Multiple: 'multiple'
+};
 
 export const BORDER_SETTING = {
-  All: 'all',
-  Top: 'top',
-  Right: 'right',
-  Bottom: 'bottom',
-  Left: 'left'
-}
+    All: 'all',
+    Top: 'top',
+    Right: 'right',
+    Bottom: 'bottom',
+    Left: 'left'
+};
 
 export const BORDER_STYLE_TYPE = {
-  None: 'none',
-  Solid: 'solid',
-  Dashed: 'dashed',
-  Dotted: 'dotted'
-}
+    None: 'none',
+    Solid: 'solid',
+    Dashed: 'dashed',
+    Dotted: 'dotted'
+};

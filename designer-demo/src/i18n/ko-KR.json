@@ -1,240 +1,240 @@
 {
-  "designer": {
-    "toolbar": {
-      "page": "페이지",
-      "chineseEnglishSwitch": "언어 전환",
-      "save": "저장",
-      "generateCode": "코드 생성",
-      "preview": "미리보기",
-      "undo": "실행 취소",
-      "redo": "다시 실행",
-      "clean": "지우기",
-      "fullscreen": "전체화면",
-      "refresh": "새로고침",
-      "refreshCanvas": "캔버스 새로고침",
-      "refreshConfirm": "{type}이(가) 저장되지 않았습니다. 계속 새로고침하시겠습니까?",
-      "collaboration": "협업",
-      "lock": "잠금",
-      "unlock": "잠금 해제",
-      "setting": "설정",
-      "themeSwitch": "테마 전환",
-      "publish": "게시",
-      "saving": "저장 중",
-      "saveSetting": "저장 설정",
-      "autoSave": "자동 저장",
-      "saveInterval": "저장 간격",
-      "setAndSave": "설정하고 저장",
-      "schemaDiff": "Schema 로컬과 온라인 차이",
-      "fiveMinutes": "5분",
-      "tenMinutes": "10분",
-      "fifteenMinutes": "15분",
-      "codeGenerating": "코드 생성 중",
-      "codeGenerationFailed": "코드 생성 실패",
-      "codeSaving": "코드 저장 중",
-      "codeSaveSuccess": "코드 저장 성공",
-      "codeSaveSuccessMessage": "{count}개 파일을 저장했습니다",
-      "codeSaveFailed": "코드 저장 실패",
-      "blockSetting": "블록 설정",
-      "pageSetting": "페이지 설정",
-      "media": {
-        "canvasSettings": "캔버스 설정",
-        "width": "너비",
-        "scale": "확대/축소",
-        "freeLayout": "자유 레이아웃",
-        "addLargeBreakpoint": "큰 중단점 추가",
-        "hoverBreakpointTip": "중단점 위에 마우스를 올려 자세한 정보를 확인하세요",
-        "devices": {
-          "largeScreen": {
-            "title": "대형 화면",
-            "subTitle": "1200px 이상",
-            "content": "여기에 추가된 스타일은 1200픽셀 이상에 적용되며, 더 큰 중단점에서 편집되지 않는 한 적용됩니다."
-          },
-          "desktop": {
-            "title": "데스크톱",
-            "subTitle": "기본 중단점",
-            "content": "데스크톱 스타일은 더 크거나 작은 중단점에서 편집되지 않는 한 모든 중단점에 적용됩니다. 여기서 레이아웃을 시작하세요."
-          },
-          "tablet": {
-            "title": "태블릿",
-            "subTitle": "992px 이하",
-            "content": "여기에 추가된 스타일은 992픽셀 이하에 적용되며, 더 작은 중단점에서 편집되지 않는 한 적용됩니다."
-          },
-          "landscapeMobile": {
-            "title": "가로 모드 모바일",
-            "subTitle": "768px 이하",
-            "content": "여기에 추가된 스타일은 768픽셀 이하에 적용되며, 더 작은 중단점에서 편집되지 않는 한 적용됩니다."
-          },
-          "mobile": {
-            "title": "세로 모드 모바일",
-            "subTitle": "480px 이하",
-            "content": "여기에 추가된 스타일은 480픽셀 이하에 적용됩니다."
-          }
-        }
-      }
-    },
-    "settings": {
-      "props": {
-        "title": "속성",
-        "emptyComponent": "아직 컴포넌트를 캔버스로 끌어오지 않았습니다",
-        "emptySelection": "캔버스에서 컴포넌트를 선택하세요"
-      },
-      "styles": {
-        "title": "스타일",
-        "inlinePanel": "인라인 스타일",
-        "inlineButton": "인라인 스타일 편집",
-        "inlinePlaceholder": "인라인 스타일 편집",
-        "inlineBound": "바인딩됨: {value}",
-        "groups": {
-          "layout": "레이아웃",
-          "spacing": "간격",
-          "size": "크기",
-          "position": "위치",
-          "typography": "타이포그래피",
-          "background": "배경",
-          "border": "테두리",
-          "effects": "효과"
+    "designer": {
+        "toolbar": {
+            "page": "페이지",
+            "chineseEnglishSwitch": "언어 전환",
+            "save": "저장",
+            "generateCode": "코드 생성",
+            "preview": "미리보기",
+            "undo": "실행 취소",
+            "redo": "다시 실행",
+            "clean": "지우기",
+            "fullscreen": "전체화면",
+            "refresh": "새로고침",
+            "refreshCanvas": "캔버스 새로고침",
+            "refreshConfirm": "{type}이(가) 저장되지 않았습니다. 계속 새로고침하시겠습니까?",
+            "collaboration": "협업",
+            "lock": "잠금",
+            "unlock": "잠금 해제",
+            "setting": "설정",
+            "themeSwitch": "테마 전환",
+            "publish": "게시",
+            "saving": "저장 중",
+            "saveSetting": "저장 설정",
+            "autoSave": "자동 저장",
+            "saveInterval": "저장 간격",
+            "setAndSave": "설정하고 저장",
+            "schemaDiff": "Schema 로컬과 온라인 차이",
+            "fiveMinutes": "5분",
+            "tenMinutes": "10분",
+            "fifteenMinutes": "15분",
+            "codeGenerating": "코드 생성 중",
+            "codeGenerationFailed": "코드 생성 실패",
+            "codeSaving": "코드 저장 중",
+            "codeSaveSuccess": "코드 저장 성공",
+            "codeSaveSuccessMessage": "{count}개 파일을 저장했습니다",
+            "codeSaveFailed": "코드 저장 실패",
+            "blockSetting": "블록 설정",
+            "pageSetting": "페이지 설정",
+            "media": {
+                "canvasSettings": "캔버스 설정",
+                "width": "너비",
+                "scale": "확대/축소",
+                "freeLayout": "자유 레이아웃",
+                "addLargeBreakpoint": "큰 중단점 추가",
+                "hoverBreakpointTip": "중단점 위에 마우스를 올려 자세한 정보를 확인하세요",
+                "devices": {
+                    "largeScreen": {
+                        "title": "대형 화면",
+                        "subTitle": "1200px 이상",
+                        "content": "여기에 추가된 스타일은 1200픽셀 이상에 적용되며, 더 큰 중단점에서 편집되지 않는 한 적용됩니다."
+                    },
+                    "desktop": {
+                        "title": "데스크톱",
+                        "subTitle": "기본 중단점",
+                        "content": "데스크톱 스타일은 더 크거나 작은 중단점에서 편집되지 않는 한 모든 중단점에 적용됩니다. 여기서 레이아웃을 시작하세요."
+                    },
+                    "tablet": {
+                        "title": "태블릿",
+                        "subTitle": "992px 이하",
+                        "content": "여기에 추가된 스타일은 992픽셀 이하에 적용되며, 더 작은 중단점에서 편집되지 않는 한 적용됩니다."
+                    },
+                    "landscapeMobile": {
+                        "title": "가로 모드 모바일",
+                        "subTitle": "768px 이하",
+                        "content": "여기에 추가된 스타일은 768픽셀 이하에 적용되며, 더 작은 중단점에서 편집되지 않는 한 적용됩니다."
+                    },
+                    "mobile": {
+                        "title": "세로 모드 모바일",
+                        "subTitle": "480px 이하",
+                        "content": "여기에 추가된 스타일은 480픽셀 이하에 적용됩니다."
+                    }
+                }
+            }
         },
-        "effects": {
-          "opacity": "불투명도",
-          "outline": "윤곽선",
-          "width": "너비",
-          "offset": "오프셋",
-          "color": "색상",
-          "cursor": "커서",
-          "selectPlaceholder": "선택하세요",
-          "outlineNone": "none - 없음",
-          "outlineSolid": "solid - 실선",
-          "outlineDashed": "dashed - 파선",
-          "outlineDotted": "dotted - 점선"
+        "settings": {
+            "props": {
+                "title": "속성",
+                "emptyComponent": "아직 컴포넌트를 캔버스로 끌어오지 않았습니다",
+                "emptySelection": "캔버스에서 컴포넌트를 선택하세요"
+            },
+            "styles": {
+                "title": "스타일",
+                "inlinePanel": "인라인 스타일",
+                "inlineButton": "인라인 스타일 편집",
+                "inlinePlaceholder": "인라인 스타일 편집",
+                "inlineBound": "바인딩됨: {value}",
+                "groups": {
+                    "layout": "레이아웃",
+                    "spacing": "간격",
+                    "size": "크기",
+                    "position": "위치",
+                    "typography": "타이포그래피",
+                    "background": "배경",
+                    "border": "테두리",
+                    "effects": "효과"
+                },
+                "effects": {
+                    "opacity": "불투명도",
+                    "outline": "윤곽선",
+                    "width": "너비",
+                    "offset": "오프셋",
+                    "color": "색상",
+                    "cursor": "커서",
+                    "selectPlaceholder": "선택하세요",
+                    "outlineNone": "none - 없음",
+                    "outlineSolid": "solid - 실선",
+                    "outlineDashed": "dashed - 파선",
+                    "outlineDotted": "dotted - 점선"
+                },
+                "common": {
+                    "reset": "재설정",
+                    "resetTip": "재설정하면 초기값으로 돌아갑니다."
+                },
+                "size": {
+                    "width": "너비",
+                    "height": "높이",
+                    "minWidth": "최소 너비",
+                    "minHeight": "최소 높이",
+                    "maxWidth": "최대 너비",
+                    "maxHeight": "최대 높이",
+                    "overflow": "오버플로",
+                    "fit": "오브젝트 맞춤",
+                    "objectPosition": "위치",
+                    "objectPositionTooltip": "오브젝트 위치 설정"
+                },
+                "fitOptions": {
+                    "fill": "fill - 채우기",
+                    "contain": "contain - 포함",
+                    "cover": "cover - 덮기",
+                    "none": "none - 없음",
+                    "scaleDown": "scale-down - 축소"
+                },
+                "overflowOptions": {
+                    "visible": "visible - 보이기",
+                    "hidden": "hidden - 숨기기",
+                    "scroll": "overflow - 스크롤",
+                    "auto": "auto - 자동"
+                }
+            }
+        },
+        "leftPanel": {
+            "materials": "자재",
+            "outlineTree": "개요 트리",
+            "pageManagement": "페이지 관리",
+            "blockManagement": "블록 관리",
+            "dataSource": "데이터 소스",
+            "bridge": "브리지",
+            "i18n": "국제화",
+            "pageJS": "페이지 JS",
+            "state": "상태",
+            "schema": "Schema",
+            "help": "도움말",
+            "robot": "로봇",
+            "searchPlaceholder": "키워드를 입력하여 검색하세요",
+            "toggleView": "뷰 전환",
+            "createBlock": "블록 생성",
+            "viewBlock": "블록 보기"
+        },
+        "rightPanel": {
+            "properties": "속성",
+            "styles": "스타일",
+            "events": "이벤트",
+            "selectComponentTip": "캔버스에서 컴포넌트를 선택하세요",
+            "pinPanel": "패널 고정",
+            "closePanel": "패널 닫기",
+            "panelOptions": "패널 옵션"
+        },
+        "canvas": {
+            "emptyCanvas": "빈 캔버스",
+            "dragComponentHere": "컴포넌트를 여기로 드래그하세요",
+            "selectComponent": "컴포넌트 선택",
+            "componentSettings": "컴포넌트 설정",
+            "noSelectedNode": "선택된 노드가 없습니다",
+            "createBlock": "블록 생성",
+            "routeJump": "라우트 점프",
+            "routeJumpEdit": "라우트 점프 편집",
+            "routeJumpNotBound": "라우트 점프 페이지가 바인딩되지 않음",
+            "tooltipInfo": "툴팁 정보",
+            "popupTitle": "팝업 제목",
+            "tooltipContent": "툴팁 내용"
         },
         "common": {
-          "reset": "재설정",
-          "resetTip": "재설정하면 초기값으로 돌아갑니다."
+            "confirm": "확인",
+            "cancel": "취소",
+            "ok": "확인",
+            "close": "닫기",
+            "save": "저장",
+            "delete": "삭제",
+            "edit": "편집",
+            "add": "추가",
+            "search": "검색",
+            "filter": "필터",
+            "refresh": "새로고침",
+            "loading": "로딩 중...",
+            "noData": "데이터 없음",
+            "operation": "작업",
+            "status": "상태",
+            "name": "이름",
+            "description": "설명",
+            "type": "타입",
+            "required": "필수",
+            "optional": "선택사항",
+            "publish": "게시",
+            "unfixPanel": "패널 고정 해제",
+            "fixPanel": "패널 고정",
+            "pleaseSelect": "선택하세요",
+            "tip": "팁",
+            "block": "블록",
+            "page": "페이지",
+            "pageLocked": "클릭한 페이지가 {username}에 의해 잠겨있어 일시적으로 편집할 수 없습니다. 잠금 해제를 요청하세요.",
+            "pageNotSaved": "현재 페이지가 저장되지 않았습니다. 전환을 계속하시겠습니까?",
+            "createPageFirst": "먼저 페이지를 생성하세요",
+            "saveCurrentPageFirst": "먼저 현재 페이지를 저장하세요"
         },
-        "size": {
-          "width": "너비",
-          "height": "높이",
-          "minWidth": "최소 너비",
-          "minHeight": "최소 높이",
-          "maxWidth": "최대 너비",
-          "maxHeight": "최대 높이",
-          "overflow": "오버플로",
-          "fit": "오브젝트 맞춤",
-          "objectPosition": "위치",
-          "objectPositionTooltip": "오브젝트 위치 설정"
+        "preview": {
+            "debugMode": "디버그 모드"
         },
-        "fitOptions": {
-          "fill": "fill - 채우기",
-          "contain": "contain - 포함",
-          "cover": "cover - 덮기",
-          "none": "none - 없음",
-          "scaleDown": "scale-down - 축소"
-        },
-        "overflowOptions": {
-          "visible": "visible - 보이기",
-          "hidden": "hidden - 숨기기",
-          "scroll": "overflow - 스크롤",
-          "auto": "auto - 자동"
+        "block": {
+            "sortByTimeDesc": "시간 내림차순",
+            "sortByTimeAsc": "시간 오름차순",
+            "sortByAlphabetAsc": "알파벳 오름차순",
+            "sortByAlphabetDesc": "알파벳 내림차순",
+            "published": "게시됨",
+            "draft": "초안",
+            "grid": "그리드",
+            "list": "목록",
+            "createGroupFailed": "블록 그룹 생성 실패: {error}",
+            "deleteGroupSuccess": "{groupName} 그룹 삭제 성공!",
+            "deleteGroupFailed": "블록 그룹 삭제 실패: {error}",
+            "enterNewGroupName": "새 그룹명을 입력하세요",
+            "confirmDeleteGroup": "이 그룹을 삭제하시겠습니까?",
+            "newGroupTitle": "새 그룹",
+            "groupName": "그룹명",
+            "enterGroupName": "그룹명을 입력하세요",
+            "unnamedGroup": "이름 없는 그룹",
+            "groupNameRule": "중국어, 숫자, 영문자, '-' 또는 '_'만 허용",
+            "groupNameRequired": "그룹명은 필수입니다"
         }
-      }
-    },
-    "leftPanel": {
-      "materials": "자재",
-      "outlineTree": "개요 트리",
-      "pageManagement": "페이지 관리",
-      "blockManagement": "블록 관리",
-      "dataSource": "데이터 소스",
-      "bridge": "브리지",
-      "i18n": "국제화",
-      "pageJS": "페이지 JS",
-      "state": "상태",
-      "schema": "Schema",
-      "help": "도움말",
-      "robot": "로봇",
-      "searchPlaceholder": "키워드를 입력하여 검색하세요",
-      "toggleView": "뷰 전환",
-      "createBlock": "블록 생성",
-      "viewBlock": "블록 보기"
-    },
-    "rightPanel": {
-      "properties": "속성",
-      "styles": "스타일",
-      "events": "이벤트",
-      "selectComponentTip": "캔버스에서 컴포넌트를 선택하세요",
-      "pinPanel": "패널 고정",
-      "closePanel": "패널 닫기",
-      "panelOptions": "패널 옵션"
-    },
-    "canvas": {
-      "emptyCanvas": "빈 캔버스",
-      "dragComponentHere": "컴포넌트를 여기로 드래그하세요",
-      "selectComponent": "컴포넌트 선택",
-      "componentSettings": "컴포넌트 설정",
-      "noSelectedNode": "선택된 노드가 없습니다",
-      "createBlock": "블록 생성",
-      "routeJump": "라우트 점프",
-      "routeJumpEdit": "라우트 점프 편집",
-      "routeJumpNotBound": "라우트 점프 페이지가 바인딩되지 않음",
-      "tooltipInfo": "툴팁 정보",
-      "popupTitle": "팝업 제목",
-      "tooltipContent": "툴팁 내용"
-    },
-    "common": {
-      "confirm": "확인",
-      "cancel": "취소",
-      "ok": "확인",
-      "close": "닫기",
-      "save": "저장",
-      "delete": "삭제",
-      "edit": "편집",
-      "add": "추가",
-      "search": "검색",
-      "filter": "필터",
-      "refresh": "새로고침",
-      "loading": "로딩 중...",
-      "noData": "데이터 없음",
-      "operation": "작업",
-      "status": "상태",
-      "name": "이름",
-      "description": "설명",
-      "type": "타입",
-      "required": "필수",
-      "optional": "선택사항",
-      "publish": "게시",
-      "unfixPanel": "패널 고정 해제",
-      "fixPanel": "패널 고정",
-      "pleaseSelect": "선택하세요",
-      "tip": "팁",
-      "block": "블록",
-      "page": "페이지",
-      "pageLocked": "클릭한 페이지가 {username}에 의해 잠겨있어 일시적으로 편집할 수 없습니다. 잠금 해제를 요청하세요.",
-      "pageNotSaved": "현재 페이지가 저장되지 않았습니다. 전환을 계속하시겠습니까?",
-      "createPageFirst": "먼저 페이지를 생성하세요",
-      "saveCurrentPageFirst": "먼저 현재 페이지를 저장하세요"
-    },
-    "preview": {
-      "debugMode": "디버그 모드"
-    },
-    "block": {
-      "sortByTimeDesc": "시간 내림차순",
-      "sortByTimeAsc": "시간 오름차순",
-      "sortByAlphabetAsc": "알파벳 오름차순",
-      "sortByAlphabetDesc": "알파벳 내림차순",
-      "published": "게시됨",
-      "draft": "초안",
-      "grid": "그리드",
-      "list": "목록",
-      "createGroupFailed": "블록 그룹 생성 실패: {error}",
-      "deleteGroupSuccess": "{groupName} 그룹 삭제 성공!",
-      "deleteGroupFailed": "블록 그룹 삭제 실패: {error}",
-      "enterNewGroupName": "새 그룹명을 입력하세요",
-      "confirmDeleteGroup": "이 그룹을 삭제하시겠습니까?",
-      "newGroupTitle": "새 그룹",
-      "groupName": "그룹명",
-      "enterGroupName": "그룹명을 입력하세요",
-      "unnamedGroup": "이름 없는 그룹",
-      "groupNameRule": "중국어, 숫자, 영문자, '-' 또는 '_'만 허용",
-      "groupNameRequired": "그룹명은 필수입니다"
     }
-  }
 }

@@ -1,221 +1,321 @@
+<!-- eslint-disable vue/max-lines-per-block, vue/block-lang -->
 <template>
-  <div class="draggable-tree" @dragleave="handleDragLeaveContainer">
-    <div
-      v-for="row in rows"
-      :key="row.id"
-      v-show="!row.collapsed"
-      :class="[
-        'tree-row',
-        'flex-center',
-        {
-          active: activesComputed.includes(row.id),
-          dragging: draggingState.hovering?.id === row.id,
-          'border-all': draggingState.hovering?.id === row.id && draggingState.position === 'center',
-          forbid: draggingState.forbidInsert
-        }
-      ]"
-      :draggable="draggable ? 'true' : undefined"
-      @click="handleClickRow($event, row)"
-      @mouseenter="handleMouseEnterRow(row)"
-      @dragstart="handleDragStart($event, row)"
-      @dragover="handleDragOver($event, row)"
-      @dragenter="handleDragOver($event, row)"
-      @drop="handleDrop"
-      @dragend="handleDragEnd"
-    >
-      <div class="content flex-center" :style="{ paddingLeft: `${12 * row.level}px` }">
-        <span v-if="!row.hasChildren" class="expand-icon"></span>
-        <svg-icon
-          v-if="row.hasChildren"
-          name="dropdown"
-          :class="['expand-icon', { rotate: collapseMap[row.id] }]"
-          @click.stop="switchCollapse(row.id)"
-        ></svg-icon>
+    <div class="draggable-tree" @dragleave="handleDragLeaveContainer">
         <div
-          :class="[
-            'slot-content',
-            'flex-center',
-            {
-              [draggingState.borderClass]: draggingState.hovering?.id === row.id && draggingState.position !== 'center',
-              forbid: draggingState.forbidInsert
-            }
-          ]"
+            v-for="row in rows"
+            v-show="!row.collapsed"
+            :key="row.id"
+            :class="[
+                'tree-row',
+                'flex-center',
+                {
+                    active: activesComputed.includes(row.id),
+                    dragging: draggingState.hovering?.id === row.id,
+                    'border-all':
+                        draggingState.hovering?.id === row.id &&
+                        draggingState.position === 'center',
+                    forbid: draggingState.forbidInsert
+                }
+            ]"
+            :draggable="draggable ? 'true' : undefined"
+            @click="handleClickRow($event, row)"
+            @mouseenter="handleMouseEnterRow(row)"
+            @dragstart="handleDragStart($event, row)"
+            @dragover="handleDragOver($event, row)"
+            @dragenter="handleDragOver($event, row)"
+            @drop="handleDrop"
+            @dragend="handleDragEnd"
         >
-          <slot name="content" v-bind="row"></slot>
+            <div
+                class="content flex-center"
+                :style="{ paddingLeft: `${12 * row.level}px` }"
+            >
+                <span v-if="!row.hasChildren" class="expand-icon" />
+                <svg-icon
+                    v-if="row.hasChildren"
+                    name="dropdown"
+                    :class="['expand-icon', { rotate: collapseMap[row.id] }]"
+                    @click.stop="switchCollapse(row.id)"
+                />
+                <div
+                    :class="[
+                        'slot-content',
+                        'flex-center',
+                        {
+                            [draggingState.borderClass]:
+                                draggingState.hovering?.id === row.id &&
+                                draggingState.position !== 'center',
+                            forbid: draggingState.forbidInsert
+                        }
+                    ]"
+                >
+                    <slot name="content" v-bind="row" />
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </template>
 
+<!-- eslint-disable vue/define-props-declaration, vue/require-typed-object-prop, vue/require-default-prop, vue/define-emits-declaration, vue/max-lines-per-block -->
 <script lang="ts" setup>
 /* metaService: engine.plugins.outlinetree.custom.DraggableTree */
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue';
 
 const props = defineProps({
-  data: { type: Array, default: () => [] },
-  active: { type: String },
-  actives: { type: Array, default: () => [] },
-  idKey: { type: String, default: 'id' },
-  labelKey: { type: String, default: 'label' },
-  childrenKey: { type: String, default: 'children' },
-  draggable: { type: Boolean, default: false },
-  disallowDrop: { type: Function, default: () => false }
-})
+    // eslint-disable-next-line vue/require-typed-object-prop
+    data: { type: Array, default: () => [] },
+    // eslint-disable-next-line vue/require-default-prop
+    active: { type: String, default: undefined },
+    // eslint-disable-next-line vue/require-typed-object-prop
+    actives: { type: Array, default: () => [] },
+    idKey: { type: String, default: 'id' },
+    labelKey: { type: String, default: 'label' },
+    childrenKey: { type: String, default: 'children' },
+    draggable: { type: Boolean, default: false },
+    disallowDrop: { type: Function, default: () => false }
+});
+
+const emit = defineEmits(['click', 'mouseenter', 'drop']);
 
 const activesComputed = computed(() => {
-  if (props.actives.length === 0 && props.active) return [props.active]
-  return props.actives
-})
+    if (props.actives.length === 0 && props.active) return [props.active];
+    return props.actives;
+});
 
-const normalizeDataItem = (dataItem) => {
-  const { idKey, labelKey, childrenKey } = props
-  const id = dataItem[idKey]
-  const label = dataItem[labelKey]
-  const children = dataItem[childrenKey]
-  const result = { id, label, rawData: dataItem }
-  if (Array.isArray(children)) {
-    result.children = children.map((child) => normalizeDataItem(child))
-  }
-  return result
-}
+const normalizeDataItem = dataItem => {
+    const { idKey, labelKey, childrenKey } = props;
+    const id = dataItem[idKey];
+    const label = dataItem[labelKey];
+    const children = dataItem[childrenKey];
+    const result = { id, label, rawData: dataItem };
+    if (Array.isArray(children)) {
+        result.children = children.map(child => normalizeDataItem(child));
+    }
+    return result;
+};
 
-const normalizeData = (data) => {
-  if (!Array.isArray(data)) return []
-  return data.map((item) => normalizeDataItem(item))
-}
+const normalizeData = data => {
+    if (!Array.isArray(data)) return [];
+    return data.map(item => normalizeDataItem(item));
+};
 
-const normalizedData = computed(() => normalizeData(props.data))
+const normalizedData = computed(() => normalizeData(props.data));
 
 const useCollapseMap = () => {
-  const collapseMap = ref({})
-  const setCollapse = (id, value) => { collapseMap.value[id] = value }
-  const switchCollapse = (id) => { collapseMap.value[id] = !collapseMap.value[id] }
-  return { collapseMap, setCollapse, switchCollapse }
-}
+    const collapseMap = ref({});
+    const setCollapse = (id, value) => {
+        collapseMap.value[id] = value;
+    };
+    const switchCollapse = id => {
+        collapseMap.value[id] = !collapseMap.value[id];
+    };
+    return { collapseMap, setCollapse, switchCollapse };
+};
 
-const { collapseMap, setCollapse, switchCollapse } = useCollapseMap()
+const { collapseMap, setCollapse, switchCollapse } = useCollapseMap();
 
 const flattenNode = (node, parentId, level = 0, collapsed = false) => {
-  const { children, ...rest } = node
-  const descendantNodes = (children || [])
-    .map((child) => flattenNode(child, node.id, level + 1, collapsed || collapseMap.value[node.id]))
-    .flat()
-  const rowItem = { ...rest, parentId, level, hasChildren: children?.length > 0, collapsed }
-  descendantNodes.forEach((n) => { if (!n.parent) n.parent = rowItem })
-  return [rowItem].concat(descendantNodes)
-}
+    const { children, ...rest } = node;
+    const descendantNodes = (children || [])
+        .map(child =>
+            flattenNode(
+                child,
+                node.id,
+                level + 1,
+                collapsed || collapseMap.value[node.id]
+            )
+        )
+        .flat();
+    const rowItem = {
+        ...rest,
+        parentId,
+        level,
+        hasChildren: children?.length > 0,
+        collapsed
+    };
+    descendantNodes.forEach(n => {
+        if (!n.parent) n.parent = rowItem;
+    });
+    return [rowItem].concat(descendantNodes);
+};
 
-const flattenNodes = (nodes) => {
-  const dummyNode = { children: nodes }
-  return flattenNode(dummyNode, null, -1).slice(1)
-}
+const flattenNodes = nodes => {
+    const dummyNode = { children: nodes };
+    return flattenNode(dummyNode, null, -1).slice(1);
+};
 
-const rows = computed(() => flattenNodes(normalizedData.value))
+const rows = computed(() => flattenNodes(normalizedData.value));
 
-const emit = defineEmits(['click', 'mouseenter', 'drop'])
-const handleClickRow = (event, row) => emit('click', event, row)
-const handleMouseEnterRow = (row) => emit('mouseenter', row)
+const handleClickRow = (event, row) => {
+    emit('click', event, row);
+};
+const handleMouseEnterRow = row => {
+    emit('mouseenter', row);
+};
 
 const useDraggingState = () => {
-  const initialState = { dragged: null, hovering: null, position: '', borderClass: '', forbidInsert: false }
-  const draggingState = reactive({ ...initialState })
-  const resetDraggingState = () => { Object.assign(draggingState, initialState) }
-  return { draggingState, resetDraggingState }
-}
+    const initialState = {
+        dragged: null,
+        hovering: null,
+        position: '',
+        borderClass: '',
+        forbidInsert: false
+    };
+    const draggingState = reactive({ ...initialState });
+    const resetDraggingState = () => {
+        Object.assign(draggingState, initialState);
+    };
+    return { draggingState, resetDraggingState };
+};
 
-const { draggingState, resetDraggingState } = useDraggingState()
+const { draggingState, resetDraggingState } = useDraggingState();
 
 const handleDragStart = (event, row) => {
-  if (!props.draggable) return
-  event.dataTransfer.setDragImage(new Image(), 0, 0)
-  draggingState.dragged = row
-  if (row.hasChildren) setCollapse(row.id, true)
-}
+    if (!props.draggable) return;
+    event.dataTransfer.setDragImage(new Image(), 0, 0);
+    draggingState.dragged = row;
+    if (row.hasChildren) setCollapse(row.id, true);
+};
 
-const getPositionData = (event) => {
-  const rect = event.currentTarget.getBoundingClientRect()
-  const offsetY = event.clientY - rect.top
-  const threshold = 8
-  if (offsetY <= threshold) return { position: 'top', borderClass: 'border-top' }
-  if (offsetY >= rect.height - threshold) return { position: 'bottom', borderClass: 'border-bottom' }
-  return { position: 'center', borderClass: 'border-all' }
-}
+const getPositionData = event => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const offsetY = event.clientY - rect.top;
+    const threshold = 8;
+    if (offsetY <= threshold)
+        return { position: 'top', borderClass: 'border-top' };
+    if (offsetY >= rect.height - threshold)
+        return { position: 'bottom', borderClass: 'border-bottom' };
+    return { position: 'center', borderClass: 'border-all' };
+};
 
 const handleDragOver = (event, row) => {
-  if (!props.draggable) return
-  const data = getPositionData(event)
-  if (row.id === rows.value[0].id && data.position !== 'center') {
-    event.preventDefault(); return
-  }
-  if (props.disallowDrop({ dragged: draggingState.dragged, target: row, position: data.position })) {
-    Object.assign(draggingState, { ...data, hovering: row, forbidInsert: true }); return
-  }
-  event.preventDefault()
-  Object.assign(draggingState, { ...data, hovering: row, forbidInsert: false })
-}
+    if (!props.draggable) return;
+    const data = getPositionData(event);
+    if (row.id === rows.value[0].id && data.position !== 'center') {
+        event.preventDefault();
+        return;
+    }
+    if (
+        props.disallowDrop({
+            dragged: draggingState.dragged,
+            target: row,
+            position: data.position
+        })
+    ) {
+        Object.assign(draggingState, {
+            ...data,
+            hovering: row,
+            forbidInsert: true
+        });
+        return;
+    }
+    event.preventDefault();
+    Object.assign(draggingState, {
+        ...data,
+        hovering: row,
+        forbidInsert: false
+    });
+};
 
 const handleDrop = () => {
-  if (!props.draggable || draggingState.forbidInsert) return
-  const { dragged, hovering, position } = draggingState
-  emit('drop', { dragged, target: hovering, position })
-}
+    if (!props.draggable || draggingState.forbidInsert) return;
+    const { dragged, hovering, position } = draggingState;
+    emit('drop', { dragged, target: hovering, position });
+};
 
-const handleDragEnd = () => { resetDraggingState() }
+const handleDragEnd = () => {
+    resetDraggingState();
+};
 
-const handleDragLeaveContainer = (event) => {
-  if (!props.draggable) return
-  const rect = event.currentTarget.getBoundingClientRect()
-  const threshold = 4
-  if (
-    event.clientX <= rect.left + threshold ||
-    event.clientX >= rect.right - threshold ||
-    event.clientY <= rect.top + threshold ||
-    event.clientY >= rect.bottom - threshold
-  ) {
-    Object.assign(draggingState, { hovering: null })
-  }
-}
+const handleDragLeaveContainer = event => {
+    if (!props.draggable) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const threshold = 4;
+    if (
+        event.clientX <= rect.left + threshold ||
+        event.clientX >= rect.right - threshold ||
+        event.clientY <= rect.top + threshold ||
+        event.clientY >= rect.bottom - threshold
+    ) {
+        Object.assign(draggingState, { hovering: null });
+    }
+};
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .draggable-tree {
-  .tree-row {
-    height: 24px;
-    width: fit-content;
-    min-width: 100%;
-    padding: 0 8px;
+    .tree-row {
+        height: 24px;
+        width: fit-content;
+        min-width: 100%;
+        padding: 0 8px;
 
-    &,
-    * {
-      cursor: pointer;
+        &,
+        * {
+            cursor: pointer;
+        }
+        &:hover,
+        &.active {
+            background-color: var(--te-common-bg-container);
+        }
+        &.dragging {
+            background-color: var(--te-common-bg-info);
+            &.forbid {
+                background-color: var(--te-common-bg-error);
+            }
+        }
+
+        & > * {
+            flex-shrink: 0;
+        }
     }
-    &:hover,
-    &.active {
-      background-color: var(--te-common-bg-container);
+    .content {
+        flex: 1;
+        height: 100%;
     }
-    &.dragging {
-      background-color: var(--te-common-bg-info);
-      &.forbid {
-        background-color: var(--te-common-bg-error);
-      }
+    .rotate {
+        transform: rotate(-90deg);
+    }
+    .expand-icon {
+        font-size: 16px;
+        width: 16px;
+        margin-right: 4px;
+    }
+    .slot-content {
+        flex: 1;
+        height: 100%;
+        padding: 0 4px;
     }
 
-    & > * {
-      flex-shrink: 0;
+    .border-top {
+        box-shadow: inset 0 2px 0 0 var(--te-common-text-checked);
+        &.forbid {
+            box-shadow: inset 0 2px 0 0 var(--te-common-color-error);
+        }
     }
-  }
-  .content { flex: 1; height: 100%; }
-  .rotate { transform: rotate(-90deg); }
-  .expand-icon { font-size: 16px; width: 16px; margin-right: 4px; }
-  .slot-content { flex: 1; height: 100%; padding: 0 4px; }
-
-  .border-top { box-shadow: inset 0 2px 0 0 var(--te-common-text-checked); &.forbid { box-shadow: inset 0 2px 0 0 var(--te-common-color-error); } }
-  .border-bottom { box-shadow: inset 0 -2px 0 0 var(--te-common-text-checked); &.forbid { box-shadow: inset 0 -2px 0 0 var(--te-common-color-error); } }
-  .border-all { outline: 1px solid var(--te-common-text-checked); outline-offset: -1px; &.forbid { outline: 1px solid var(--te-common-color-error); } }
+    .border-bottom {
+        box-shadow: inset 0 -2px 0 0 var(--te-common-text-checked);
+        &.forbid {
+            box-shadow: inset 0 -2px 0 0 var(--te-common-color-error);
+        }
+    }
+    .border-all {
+        outline: 1px solid var(--te-common-text-checked);
+        outline-offset: -1px;
+        &.forbid {
+            outline: 1px solid var(--te-common-color-error);
+        }
+    }
 }
-svg { color: var(--te-common-icon-secondary); &:hover { color: var(--te-common-icon-hover); } }
-.flex-center { display: flex; align-items: center; }
+svg {
+    color: var(--te-common-icon-secondary);
+    &:hover {
+        color: var(--te-common-icon-hover);
+    }
+}
+.flex-center {
+    display: flex;
+    align-items: center;
+}
 </style>
-
-

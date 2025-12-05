@@ -11,73 +11,76 @@
  */
 
 /* metaService: engine.setting.styles.useEditor */
-import { reactive, watch } from 'vue'
-import { useHistory, useCanvas } from '@opentiny/tiny-engine-meta-register'
-import { obj2StyleStr, styleStrRemoveRoot } from './cssConvert'
-import { CSS_TYPE } from './cssType'
+import { reactive, watch } from 'vue';
+import { useHistory, useCanvas } from '@opentiny/tiny-engine-meta-register';
+
+import { obj2StyleStr, styleStrRemoveRoot } from './cssConvert';
+import { CSS_TYPE } from './cssType';
 
 // TODO: 确认是否还有地方引用，没有就删除了
 export default ({ style, pageState }) => {
-  const { addHistory } = useHistory()
+    const { addHistory } = useHistory();
 
-  // 编辑器状态
-  const editor = reactive({
-    type: '',
-    show: false,
-    created: false,
-    content: ''
-  })
+    // 编辑器状态
+    const editor = reactive({
+        type: '',
+        show: false,
+        created: false,
+        content: ''
+    });
 
-  // 关闭编辑器
-  const close = () => {
-    editor.show = false
-  }
+    // 关闭编辑器
+    const close = () => {
+        editor.show = false;
+    };
 
-  // 打开编辑器
-  const open = (type = CSS_TYPE.Style) => {
-    if (!editor.created) {
-      editor.created = true
-    }
+    // 打开编辑器
+    const open = (type = CSS_TYPE.Style) => {
+        if (!editor.created) {
+            editor.created = true;
+        }
 
-    editor.show = true
-    editor.type = type
+        editor.show = true;
+        editor.type = type;
 
-    if (type === CSS_TYPE.Style) {
-      editor.content = obj2StyleStr(style.value)
-    } else if (type === CSS_TYPE.Css) {
-      editor.content = pageState.pageSchema.css || ''
-    }
-  }
+        if (type === CSS_TYPE.Style) {
+            editor.content = obj2StyleStr(style.value);
+        } else if (type === CSS_TYPE.Css) {
+            editor.content = pageState.pageSchema.css || '';
+        }
+    };
 
-  // 保存编辑器内容，并回写到 schema
-  const save = (content) => {
-    if (editor.type === CSS_TYPE.Style) {
-      if (pageState.currentSchema?.props) {
-        pageState.currentSchema.props.style = styleStrRemoveRoot(content)
-        addHistory()
-      }
-    } else if (editor.type === CSS_TYPE.Css) {
-      const { updateSchema } = useCanvas()
-      updateSchema({ css: content })
+    // 保存编辑器内容，并回写到 schema
+    const save = content => {
+        if (editor.type === CSS_TYPE.Style) {
+            if (pageState.currentSchema?.props) {
+                pageState.currentSchema.props.style = styleStrRemoveRoot(
+                    content
+                );
+                addHistory();
+            }
+        } else if (editor.type === CSS_TYPE.Css) {
+            const { updateSchema } = useCanvas();
+            updateSchema({ css: content });
 
-      addHistory()
-    }
-  }
+            addHistory();
+        }
+    };
 
-  // 监听 style 对象的变化，更新编辑器内容
-  watch(
-    () => style.value,
-    () => {
-      if (editor.show && editor.type === CSS_TYPE.Style) {
-        editor.content = obj2StyleStr(style.value)
-      }
-    }
-  )
+    // 监听 style 对象的变化，更新编辑器内容
+    watch(
+        () => style.value,
+        () => {
+            if (editor.show && editor.type === CSS_TYPE.Style) {
+                editor.content = obj2StyleStr(style.value);
+            }
+        }
+    );
 
-  return {
-    editor,
-    open,
-    save,
-    close
-  }
-}
+    return {
+        editor,
+        open,
+        save,
+        close
+    };
+};

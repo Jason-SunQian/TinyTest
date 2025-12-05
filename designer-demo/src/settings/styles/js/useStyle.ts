@@ -11,354 +11,396 @@
  */
 
 /* metaService: engine.setting.styles.useStyle */
-import { computed, reactive, watch } from 'vue'
-import { useCanvas, useHistory, useProperties as useProps, getOptions } from '@opentiny/tiny-engine-meta-register'
-import { formatString } from '@opentiny/tiny-engine-common/js/ast'
-import { constants, utils } from '@opentiny/tiny-engine-utils'
-import { parser, stringify, getSelectorArr } from './parser'
+import { computed, reactive, watch } from 'vue';
+import {
+    useCanvas,
+    useHistory,
+    useProperties as useProps,
+    getOptions
+} from '@opentiny/tiny-engine-meta-register';
+import { formatString } from '@opentiny/tiny-engine-common/js/ast';
+import { constants, utils } from '@opentiny/tiny-engine-utils';
 
-const { EXPRESSION_TYPE } = constants
-const { generateRandomLetters, parseExpression } = utils
+import { parser, stringify, getSelectorArr } from './parser';
+
+const { EXPRESSION_TYPE } = constants;
+const { generateRandomLetters, parseExpression } = utils;
 
 const state = reactive({
-  // 当前选中节点的  style，解析成对象返回
-  style: {},
-  // 编辑器显示的行内样式字符串
-  styleContent: formatString(`:root {\n \n}`, 'css'),
-  // 编辑器显示的全局样式字符串
-  cssContent: '',
-  pageCssObject: {},
-  currentClassSelector: '',
-  existClassSelectors: [],
-  className: {
-    classNameList: '',
-    mouseState: ''
-  },
-  cssParseList: [],
-  selectors: [],
-  styleObject: {},
-  currentClassNameList: [],
-  currentIdList: [],
-  selectorOptionLists: [],
-  schemaUpdateKey: 0,
-  inlineBtnText: '',
-  lineStyleDisable: true,
-  propertiesList: '',
-  bindModelValue: null
-})
+    // 当前选中节点的  style，解析成对象返回
+    style: {},
+    // 编辑器显示的行内样式字符串
+    styleContent: formatString(`:root {\n \n}`, 'css'),
+    // 编辑器显示的全局样式字符串
+    cssContent: '',
+    pageCssObject: {},
+    currentClassSelector: '',
+    existClassSelectors: [],
+    className: {
+        classNameList: '',
+        mouseState: ''
+    },
+    cssParseList: [],
+    selectors: [],
+    styleObject: {},
+    currentClassNameList: [],
+    currentIdList: [],
+    selectorOptionLists: [],
+    schemaUpdateKey: 0,
+    inlineBtnText: '',
+    lineStyleDisable: true,
+    propertiesList: '',
+    bindModelValue: null
+});
 
 const getCurrentClassSelector = () => {
-  let res = `${state.className.classNameList}`
-  const mouseState = state.className.mouseState
-
-  if (mouseState) {
-    res += `:${mouseState}`
-  }
-
-  return res
-}
-
-// 根据当前选中的组件，随机生成一个 css 类名
-export const genRandomClassNames = (componentName: any) => {
-  return `.${componentName}-${generateRandomLetters(5)}`.toLowerCase()
-}
-
-const getPropsFromExpression = (propValue: { value: string }) => {
-  let res: any[] = []
-
-  try {
-    const expressRes = parseExpression(propValue?.value)
-
-    if (Array.isArray(expressRes)) {
-      res = expressRes
-        .map((item) => {
-          if (typeof item === 'string') {
-            return item
-          }
-
-          if (typeof item === 'object') {
-            return Object.keys(item)
-          }
-
-          return null
-        })
-        .flat()
-        .filter(Boolean)
-    } else if (typeof expressRes === 'string' && expressRes) {
-      res = [expressRes]
-    }
-  } catch (e) {
-    // 不做处理
-  }
-
-  return res
-}
-
-const parseClassOrIdProps = (propValue: any) => {
-  if (typeof propValue === 'string' && propValue) {
-    return propValue.split(' ').filter(Boolean)
-  }
-
-  const res = []
-
-  if (propValue?.type === EXPRESSION_TYPE.JS_EXPRESSION) {
-    return getPropsFromExpression(propValue)
-  }
-
-  return res
-}
-
-const getClassNameAndIdList = (schema: { props: { className: any; id: any } }) => {
-  let classNameList: any[] = []
-  let idList: any[] = []
-
-  if (!schema) {
-    return {
-      classNameList,
-      idList
-    }
-  }
-
-  const classNameStr = schema?.props?.className
-  const idStr = schema?.props?.id
-
-  classNameList = parseClassOrIdProps(classNameStr)
-  idList = parseClassOrIdProps(idStr)
-
-  return {
-    classNameList,
-    idList
-  }
-}
-
-export const initStylePanelWatch = () => {
-  watch(
-    () => [
-      useCanvas().getCurrentSchema?.(),
-      state.schemaUpdateKey,
-      useProps().propsUpdateKey?.value,
-      useCanvas()?.getSchema?.()
-    ],
-    ([curSchema], [oldCurSchema] = []) => {
-      const { getCurrentSchema, getSchema } = useCanvas()
-      let schema = getCurrentSchema()
-
-      if (!schema || Object.keys(schema).length === 0) {
-        schema = getSchema?.()
-      }
-
-      if (!schema) {
-        return
-      }
-
-      // 获取当前选中组件的类名以及 id 列表
-      const { classNameList, idList } = getClassNameAndIdList(schema)
-
-      state.currentClassNameList = classNameList.map((item) => `.${item}`)
-      state.currentIdList = idList.map((item) => `#${item}`)
-
-      // 变化了相当于重新选中了，需要重置当前选中的 className 以及样式面板的样式
-      if (curSchema !== oldCurSchema) {
-        state.className = {
-          classNameList: '',
-          mouseState: ''
-        }
-        state.style = {}
-      }
-
-      state.styleContent = formatString(`:root {\n ${schema?.props?.style || ''}\n}`, 'css')
-    },
-    {
-      deep: true
-    }
-  )
-
-  // 监听全局样式的变化，重新解析
-  watch(
-    () => useCanvas().getPageSchema?.()?.css,
-    (value) => {
-      state.cssContent = value || ''
-
-      // 解析css
-      const { parseList, selectors, styleObject } = parser(value)
-
-      state.cssParseList = parseList
-      state.selectors = selectors
-      state.styleObject = styleObject
-    }
-  )
-
-  // 计算当前类名下拉列表
-  watch(
-    () => [state.currentClassNameList, state.currentIdList, state.styleObject],
-    () => {
-      let list = []
-
-      const classNameListOptions = state.currentClassNameList.map((item) => ({ label: item, value: item }))
-      const idListOptions = state.currentIdList.map((item) => ({ label: item, value: item }))
-
-      list = list.concat(classNameListOptions, idListOptions)
-
-      Object.values(state.styleObject).forEach((value) => {
-        const selectorArr = getSelectorArr(value.pureSelector)
-
-        if (selectorArr.length <= 1) {
-          return
-        }
-
-        const isComboSelector = selectorArr.every(
-          (item) => state.currentClassNameList.includes(item) || state.currentIdList.includes(item)
-        )
-
-        if (isComboSelector) {
-          list.push({ label: value.pureSelector, value: value.pureSelector })
-        }
-      })
-
-      // 默认选择的类
-      let defaultSelector = ''
-      let defaultMouseState = ''
-      const curClassName = state.className.classNameList
-
-      if (list.find(({ value }) => value === curClassName)) {
-        defaultSelector = curClassName
-        defaultMouseState = state.className.mouseState
-      } else if (list.length) {
-        defaultSelector = list.at(-1).value
-      }
-
-      state.selectorOptionLists = list
-
-      state.className = {
-        classNameList: defaultSelector,
-        mouseState: defaultMouseState
-      }
-    }
-  )
-
-  // 计算当前样式面板展示的样式
-  watch(
-    () => state.className,
-    () => {
-      const { classNameList, mouseState } = state.className
-
-      if (!classNameList) {
-        return
-      }
-
-      const matchStyles = Object.values(state.styleObject).filter(
-        (value) => value.pureSelector === classNameList && value.mouseState === mouseState
-      )
-      const style = matchStyles.length ? matchStyles[0].rules : {}
-      state.style = { ...style }
-    },
-    {
-      deep: true
-    }
-  )
-}
-
-export const updateGlobalStyleStr = (styleStr: string) => {
-  const { updateSchema } = useCanvas()
-
-  updateSchema({ css: styleStr })
-  state.schemaUpdateKey++
-}
-
-const updateGlobalStyle = (newSelector: string) => {
-  let currentSelector = getCurrentClassSelector()
-
-  const mouseState = state.className.mouseState
-
-  if (newSelector) {
-    currentSelector = newSelector
+    let res = `${state.className.classNameList}`;
+    const { mouseState } = state.className;
 
     if (mouseState) {
-      currentSelector += `:${mouseState}`
+        res += `:${mouseState}`;
     }
-  }
 
-  state.styleObject[currentSelector] = {
-    ...(state.styleObject[currentSelector] || {}),
-    rules: { ...state.style }
-  }
+    return res;
+};
 
-  if (!Object.keys(state.style).length) {
-    delete state.styleObject[currentSelector]
-  }
+// 根据当前选中的组件，随机生成一个 css 类名
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const genRandomClassNames = (componentName: any) => {
+    return `.${componentName}-${generateRandomLetters(5)}`.toLowerCase();
+};
 
-  const styleStr = formatString(stringify(state.cssParseList, state.styleObject), 'css')
+const getPropsFromExpression = (propValue: { value: string }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let res: any[] = [];
 
-  updateGlobalStyleStr(styleStr)
-}
+    try {
+        const expressRes = parseExpression(propValue?.value);
+
+        if (Array.isArray(expressRes)) {
+            res = expressRes
+                .map(item => {
+                    if (typeof item === 'string') {
+                        return item;
+                    }
+
+                    if (typeof item === 'object') {
+                        return Object.keys(item);
+                    }
+
+                    return null;
+                })
+                .flat()
+                .filter(Boolean);
+        } else if (typeof expressRes === 'string' && expressRes) {
+            res = [expressRes];
+        }
+    } catch (e) {
+        // 不做处理
+    }
+
+    return res;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parseClassOrIdProps = (propValue: any) => {
+    if (typeof propValue === 'string' && propValue) {
+        return propValue.split(' ').filter(Boolean);
+    }
+
+    const res = [];
+
+    if (propValue?.type === EXPRESSION_TYPE.JS_EXPRESSION) {
+        return getPropsFromExpression(propValue);
+    }
+
+    return res;
+};
+
+const getClassNameAndIdList = (schema: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    props: { className: any; id: any };
+}) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let classNameList: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let idList: any[] = [];
+
+    if (!schema) {
+        return {
+            classNameList,
+            idList
+        };
+    }
+
+    const classNameStr = schema?.props?.className;
+    const idStr = schema?.props?.id;
+
+    classNameList = parseClassOrIdProps(classNameStr);
+    idList = parseClassOrIdProps(idStr);
+
+    return {
+        classNameList,
+        idList
+    };
+};
+
+const initStylePanelWatch = () => {
+    watch(
+        () => [
+            useCanvas().getCurrentSchema?.(),
+            state.schemaUpdateKey,
+            useProps().propsUpdateKey?.value,
+            useCanvas()?.getSchema?.()
+        ],
+        ([curSchema], [oldCurSchema] = []) => {
+            const { getCurrentSchema, getSchema } = useCanvas();
+            let schema = getCurrentSchema();
+
+            if (!schema || Object.keys(schema).length === 0) {
+                schema = getSchema?.();
+            }
+
+            if (!schema) {
+                return;
+            }
+
+            // 获取当前选中组件的类名以及 id 列表
+            const { classNameList, idList } = getClassNameAndIdList(schema);
+
+            state.currentClassNameList = classNameList.map(item => `.${item}`);
+            state.currentIdList = idList.map(item => `#${item}`);
+
+            // 变化了相当于重新选中了，需要重置当前选中的 className 以及样式面板的样式
+            if (curSchema !== oldCurSchema) {
+                state.className = {
+                    classNameList: '',
+                    mouseState: ''
+                };
+                state.style = {};
+            }
+
+            state.styleContent = formatString(
+                `:root {\n ${schema?.props?.style || ''}\n}`,
+                'css'
+            );
+        },
+        {
+            deep: true
+        }
+    );
+
+    // 监听全局样式的变化，重新解析
+    watch(
+        () => useCanvas().getPageSchema?.()?.css,
+        value => {
+            state.cssContent = value || '';
+
+            // 解析css
+            const { parseList, selectors, styleObject } = parser(value);
+
+            state.cssParseList = parseList;
+            state.selectors = selectors;
+            state.styleObject = styleObject;
+        }
+    );
+
+    // 计算当前类名下拉列表
+    watch(
+        () => [
+            state.currentClassNameList,
+            state.currentIdList,
+            state.styleObject
+        ],
+        () => {
+            let list = [];
+
+            const classNameListOptions = state.currentClassNameList.map(
+                item => ({ label: item, value: item })
+            );
+            const idListOptions = state.currentIdList.map(item => ({
+                label: item,
+                value: item
+            }));
+
+            list = list.concat(classNameListOptions, idListOptions);
+
+            Object.values(state.styleObject).forEach(value => {
+                const selectorArr = getSelectorArr(value.pureSelector);
+
+                if (selectorArr.length <= 1) {
+                    return;
+                }
+
+                const isComboSelector = selectorArr.every(
+                    item =>
+                        state.currentClassNameList.includes(item) ||
+                        state.currentIdList.includes(item)
+                );
+
+                if (isComboSelector) {
+                    list.push({
+                        label: value.pureSelector,
+                        value: value.pureSelector
+                    });
+                }
+            });
+
+            // 默认选择的类
+            let defaultSelector = '';
+            let defaultMouseState = '';
+            const curClassName = state.className.classNameList;
+
+            if (list.find(({ value }) => value === curClassName)) {
+                defaultSelector = curClassName;
+                defaultMouseState = state.className.mouseState;
+            } else if (list.length) {
+                defaultSelector = list.at(-1).value;
+            }
+
+            state.selectorOptionLists = list;
+
+            state.className = {
+                classNameList: defaultSelector,
+                mouseState: defaultMouseState
+            };
+        }
+    );
+
+    // 计算当前样式面板展示的样式
+    watch(
+        () => state.className,
+        () => {
+            const { classNameList, mouseState } = state.className;
+
+            if (!classNameList) {
+                return;
+            }
+
+            const matchStyles = Object.values(state.styleObject).filter(
+                value =>
+                    value.pureSelector === classNameList &&
+                    value.mouseState === mouseState
+            );
+            const style = matchStyles.length ? matchStyles[0].rules : {};
+            state.style = { ...style };
+        },
+        {
+            deep: true
+        }
+    );
+};
+
+const updateGlobalStyleStr = (styleStr: string) => {
+    const { updateSchema } = useCanvas();
+
+    updateSchema({ css: styleStr });
+    state.schemaUpdateKey++;
+};
+
+const updateGlobalStyle = (newSelector: string) => {
+    let currentSelector = getCurrentClassSelector();
+
+    const { mouseState } = state.className;
+
+    if (newSelector) {
+        currentSelector = newSelector;
+
+        if (mouseState) {
+            currentSelector += `:${mouseState}`;
+        }
+    }
+
+    state.styleObject[currentSelector] = {
+        ...(state.styleObject[currentSelector] || {}),
+        rules: { ...state.style }
+    };
+
+    if (!Object.keys(state.style).length) {
+        delete state.styleObject[currentSelector];
+    }
+
+    const styleStr = formatString(
+        stringify(state.cssParseList, state.styleObject),
+        'css'
+    );
+
+    updateGlobalStyleStr(styleStr);
+};
 
 // 更新 style 对象到 schema
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateStyle = (properties: any) => {
-  const { canvasApi, getSchema: getCanvasPageSchema } = useCanvas()
-  const { getSchema } = useProps()
-  const { addHistory } = useHistory()
-  const { updateRect } = canvasApi.value
-  const schema = getSchema() || getCanvasPageSchema()
-  const pageOptions = getOptions('engine.plugins.appmanage')
-  const materialsOptions = getOptions('engine.plugins.materials')
-  const baseClassGroup = [
-    `.${pageOptions.pageBaseStyle.className}`,
-    `.${materialsOptions.blockBaseStyle.className}`,
-    `.${materialsOptions.componentBaseStyle.className}`
-  ]
-  schema.props = schema.props || {}
+    const { canvasApi, getSchema: getCanvasPageSchema } = useCanvas();
+    const { getSchema } = useProps();
+    const { addHistory } = useHistory();
+    const { updateRect } = canvasApi.value;
+    const schema = getSchema() || getCanvasPageSchema();
+    const pageOptions = getOptions('engine.plugins.appmanage');
+    const materialsOptions = getOptions('engine.plugins.materials');
+    const baseClassGroup = [
+        `.${pageOptions.pageBaseStyle.className}`,
+        `.${materialsOptions.blockBaseStyle.className}`,
+        `.${materialsOptions.componentBaseStyle.className}`
+    ];
+    schema.props = schema.props || {};
 
-  if (properties) {
-    Object.entries(properties).forEach(([key, value]) => {
-      state.style[key] = value
-    })
-  }
-
-  const currentSelector = getCurrentClassSelector()
-  let randomClassName = ''
-
-  const classNames = schema.props.className || ''
-
-  // 不存在选择器，需要生成一个随机类名，添加到当前选中组件中，然后写入到全局样式
-  if ((!currentSelector || baseClassGroup.includes(currentSelector)) && typeof classNames === 'string') {
-    randomClassName = genRandomClassNames(schema?.componentName || 'component')
-    let newClassNames = randomClassName.slice(1)
-
-    if (classNames) {
-      newClassNames = `${classNames} ${newClassNames}`
+    if (properties) {
+        Object.entries(properties).forEach(([key, value]) => {
+            state.style[key] = value;
+        });
     }
 
-    schema.props.className = newClassNames
-    state.className.classNameList = randomClassName
-  }
+    const currentSelector = getCurrentClassSelector();
+    let randomClassName = '';
 
-  // 更新到全局样式
-  updateGlobalStyle(randomClassName)
+    const classNames = schema.props.className || '';
 
-  addHistory()
-  updateRect()
-}
+    // 不存在选择器，需要生成一个随机类名，添加到当前选中组件中，然后写入到全局样式
+    if (
+        (!currentSelector || baseClassGroup.includes(currentSelector)) &&
+        typeof classNames === 'string'
+    ) {
+        randomClassName = genRandomClassNames(
+            schema?.componentName || 'component'
+        );
+        let newClassNames = randomClassName.slice(1);
 
-export default () => {
-  return {
-    state,
-    updateStyle,
-    initStylePanelWatch
-  }
-}
+        if (classNames) {
+            newClassNames = `${classNames} ${newClassNames}`;
+        }
+
+        schema.props.className = newClassNames;
+        state.className.classNameList = randomClassName;
+    }
+
+    // 更新到全局样式
+    updateGlobalStyle(randomClassName);
+
+    addHistory();
+    updateRect();
+};
+
+const useStyle = () => {
+    return {
+        state,
+        updateStyle,
+        initStylePanelWatch
+    };
+};
 
 const getTextOfValue = (value: string) => {
-  const basicValueMap = {
-    auto: 'auto',
-    none: 'none'
-  }
+    const basicValueMap = {
+        auto: 'auto',
+        none: 'none'
+    };
 
-  if (basicValueMap[value] || /^\d+(\.\d+)?%$/.test(value)) {
-    return value
-  }
+    if (basicValueMap[value] || /^\d+(\.\d+)?%$/.test(value)) {
+        return value;
+    }
 
-  return String(Number.parseInt(value) || '')
-}
+    return String(Number.parseInt(value) || '');
+};
 
 /**
  * 根据 style 对象生成样式属性对象 properties
@@ -369,41 +411,57 @@ const getTextOfValue = (value: string) => {
  *   setting  // 属性是否已设置值
  * }
  */
-export const useProperties = ({ names, parseNumber }) => {
-  const properties = computed(() => {
-    const newProperties = {}
+const useProperties = ({ names, parseNumber }) => {
+    const properties = computed(() => {
+        const newProperties = {};
 
-    if (Array.isArray(names) && state.style) {
-      names.forEach((name) => {
-        const value = state.style[name]
-        let text = value || ''
+        if (Array.isArray(names) && state.style) {
+            names.forEach(name => {
+                const value = state.style[name];
+                let text = value || '';
 
-        if (parseNumber) {
-          text = getTextOfValue(value)
+                if (parseNumber) {
+                    text = getTextOfValue(value);
+                }
+
+                // 属性名
+                // 界面显示的值
+                // 属性原始值
+                // 属性是否已设置值
+                newProperties[name] = {
+                    name,
+                    text,
+                    value,
+                    setting: Boolean(value)
+                };
+            });
         }
 
-        newProperties[name] = {
-          name, // 属性名
-          text, // 界面显示的值
-          value, // 属性原始值
-          setting: Boolean(value) // 属性是否已设置值
-        }
-      })
-    }
+        return newProperties;
+    });
 
-    return newProperties
-  })
+    const getProperty = (styleName: string) => properties.value[styleName];
+    const getSettingFlag = (styleName: string) =>
+        Boolean(properties.value[styleName]?.setting);
+    const getPropertyText = (styleName: string) =>
+        properties.value[styleName]?.text;
+    const getPropertyValue = (styleName: string) =>
+        properties.value[styleName]?.value;
 
-  const getProperty = (styleName: string) => properties.value[styleName]
-  const getSettingFlag = (styleName: string) => Boolean(properties.value[styleName]?.setting)
-  const getPropertyText = (styleName: string) => properties.value[styleName]?.text
-  const getPropertyValue = (styleName: string) => properties.value[styleName]?.value
+    return {
+        properties,
+        getProperty,
+        getSettingFlag,
+        getPropertyText,
+        getPropertyValue
+    };
+};
 
-  return {
-    properties,
-    getProperty,
-    getSettingFlag,
-    getPropertyText,
-    getPropertyValue
-  }
-}
+// 导出语句应该在文件末尾
+export {
+    genRandomClassNames,
+    initStylePanelWatch,
+    updateGlobalStyleStr,
+    useProperties
+};
+export default useStyle;

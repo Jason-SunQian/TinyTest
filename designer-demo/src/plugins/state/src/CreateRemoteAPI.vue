@@ -1,323 +1,385 @@
+<!-- eslint-disable-next-line -->
 <template>
-  <tiny-form ref="createData" class="create-form" label-position="left" label-width="20%">
-    <tiny-form-item label="名称">
-      <tiny-input v-model="state.createData.name" placeholder="只能包含数字字母及下划线"></tiny-input>
-      <div v-if="errorMessage" class="error-tip">{{ errorMessage }}</div>
-    </tiny-form-item>
+    <tiny-form
+        ref="createData"
+        class="create-form"
+        label-position="left"
+        label-width="20%"
+    >
+        <tiny-form-item :label="t('designer.state.name')">
+            <tiny-input
+                v-model="state.createData.name"
+                :placeholder="t('designer.state.namePlaceholder')"
+            />
+            <div v-if="errorMessage" class="error-tip">{{ errorMessage }}</div>
+        </tiny-form-item>
 
-    <tiny-form-item label="描述">
-      <tiny-input v-model="state.createData.description" placeholder="请输入"></tiny-input>
-    </tiny-form-item>
+        <tiny-form-item :label="t('designer.state.description')">
+            <tiny-input
+                v-model="state.createData.description"
+                :placeholder="t('designer.common.pleaseInput')"
+            />
+        </tiny-form-item>
 
-    <tiny-form-item label="请求地址">
-      <div class="textarea-warp">
-        <tiny-input
-          v-model="state.createData.options.url"
-          type="textarea"
-          resize="none"
-          placeholder="请输入"
-        ></tiny-input>
-      </div>
-    </tiny-form-item>
-
-    <tiny-form-item label="请求方式">
-      <tiny-button-group v-model="state.createData.options.method" :data="state.requestData"></tiny-button-group>
-    </tiny-form-item>
-  </tiny-form>
-
-  <div class="create-config">
-    <div>
-      <div class="title">请求参数</div>
-      <monaco-editor
-        ref="paramsEditor"
-        class="monaco-editor"
-        :value="JSON.stringify(state.createData.options.params, null, 2)"
-        :options="state.options"
-      />
-    </div>
-    <div>
-      <div class="title">启用服务</div>
-      <tiny-switch v-model="state.createData.options.isSync" class="send-request"></tiny-switch>
-      <span class="use-service"><span>* </span> 页面初始化时是否加载该服务</span>
-    </div>
-    <div class="send-service">
-      <tiny-button type="info">发送请求</tiny-button>
-      <div class="use-service">
-        <meta-description type="warning">
-          <template #content>
-            <div>
-              <span>* </span>
-              完善以上信息，点击按钮编辑器将自动发送该服务，服务响应的数据将填充至下面的编辑器中,否则需要手动将响应数据填充至下面的编辑器中
+        <tiny-form-item :label="t('designer.state.requestUrl')">
+            <div class="textarea-warp">
+                <tiny-input
+                    v-model="state.createData.options.url"
+                    type="textarea"
+                    resize="none"
+                    :placeholder="t('designer.common.pleaseInput')"
+                />
             </div>
-          </template>
-        </meta-description>
-      </div>
-    </div>
-    <div>
-      <div class="data-wrap title">
-        <div>数据处理</div>
-        <tiny-popover placement="bottom-start" trigger="hover" popperClass="data-source-popper data-remote-popper">
-          <template #reference>
-            <span class="icon">
-              <icon-plus class="icon-plus"></icon-plus>
-            </span>
-          </template>
+        </tiny-form-item>
 
-          <ul>
-            <li v-for="(item, index) in state.datapool" :key="index" @click="addFunction(item)">
-              {{ item.name }}
-            </li>
-          </ul>
-        </tiny-popover>
-      </div>
+        <tiny-form-item :label="t('designer.state.requestMethod')">
+            <tiny-button-group
+                v-model="state.createData.options.method"
+                :data="state.requestData"
+            />
+        </tiny-form-item>
+    </tiny-form>
 
-      <create-function
-        v-if="isFetchShow"
-        ref="fetchEditor"
-        :name="state.datapool[0].name"
-        :value="state.createData.options.didFetch?.source"
-        @remove="removeFunction(state.datapool[0])"
-      />
-      <create-function
-        v-if="isFitShow"
-        ref="fitEditor"
-        :name="state.datapool[1].name"
-        :value="state.createData.options.fit?.source"
-        @remove="removeFunction(state.datapool[1])"
-      />
+    <div class="create-config">
+        <div>
+            <div class="title">{{ t('designer.state.requestParams') }}</div>
+            <monaco-editor
+                ref="paramsEditor"
+                class="monaco-editor"
+                :value="
+                    JSON.stringify(state.createData.options.params, null, 2)
+                "
+                :options="state.options"
+            />
+        </div>
+        <div>
+            <div class="title">{{ t('designer.state.enableService') }}</div>
+            <tiny-switch
+                v-model="state.createData.options.isSync"
+                class="send-request"
+            />
+            <span class="use-service"><span>* </span>
+                {{ t('designer.state.loadServiceOnInit') }}</span>
+        </div>
+        <div class="send-service">
+            <tiny-button type="info">{{
+                t('designer.state.sendRequest')
+            }}</tiny-button>
+            <div class="use-service">
+                <meta-description type="warning">
+                    <template #content>
+                        <div>
+                            <span>* </span>
+                            {{ t('designer.state.sendRequestTip') }}
+                        </div>
+                    </template>
+                </meta-description>
+            </div>
+        </div>
+        <div>
+            <div class="data-wrap title">
+                <div>{{ t('designer.state.dataProcessing') }}</div>
+                <tiny-popover
+                    placement="bottom-start"
+                    trigger="hover"
+                    popper-class="data-source-popper data-remote-popper"
+                >
+                    <template #reference>
+                        <span class="icon">
+                            <icon-plus class="icon-plus" />
+                        </span>
+                    </template>
+
+                    <ul>
+                        <li
+                            v-for="(item, index) in state.datapool"
+                            :key="index"
+                            @click="addFunction(item)"
+                        >
+                            {{ item.name }}
+                        </li>
+                    </ul>
+                </tiny-popover>
+            </div>
+
+            <create-function
+                v-if="isFetchShow"
+                ref="fetchEditor"
+                :name="state.datapool[0].name"
+                :value="state.createData.options.didFetch?.source"
+                @remove="removeFunction(state.datapool[0])"
+            />
+            <create-function
+                v-if="isFitShow"
+                ref="fitEditor"
+                :name="state.datapool[1].name"
+                :value="state.createData.options.fit?.source"
+                @remove="removeFunction(state.datapool[1])"
+            />
+        </div>
     </div>
-  </div>
 </template>
-
+<!-- eslint-disable-next-line -->
 <script lang="ts">
 /* metaService: engine.plugins.state.CreateRemoteAPI */
-import { getCurrentInstance, reactive } from 'vue'
-import { ButtonGroup, Form, FormItem, Input, Popover, Switch, Button } from '@opentiny/vue'
-import { VueMonaco as MonacoEditor, MetaDescription } from '@opentiny/tiny-engine-common'
-import { iconPlus } from '@opentiny/vue-icon'
-import CreateFunction from './CreateRemoteFunction.vue'
+/* eslint-disable max-lines */
+import { getCurrentInstance, reactive } from 'vue';
+import {
+    ButtonGroup,
+    Form,
+    FormItem,
+    Input,
+    Popover,
+    Switch,
+    Button
+} from '@opentiny/vue';
+import {
+    VueMonaco as MonacoEditor,
+    MetaDescription
+} from '@opentiny/tiny-engine-common';
+import { iconPlus } from '@opentiny/vue-icon';
+
+import { useDesignerI18n } from '@/services/i18nService';
+
+import CreateFunction from './CreateRemoteFunction.vue';
 
 export default {
-  components: {
-    MonacoEditor,
-    CreateFunction,
-    TinyForm: Form,
-    TinyFormItem: FormItem,
-    TinyInput: Input,
-    TinySwitch: Switch,
-    TinyButtonGroup: ButtonGroup,
-    TinyPopover: Popover,
-    IconPlus: iconPlus(),
-    TinyButton: Button,
-    MetaDescription
-  },
-  props: {
-    createData: {
-      type: Object,
-      default: () => ({ options: {} })
+    components: {
+        // eslint-disable-next-line
+        MonacoEditor,
+        // eslint-disable-next-line
+        CreateFunction,
+        // eslint-disable-next-line
+        TinyForm: Form,
+        // eslint-disable-next-line
+        TinyFormItem: FormItem,
+        // eslint-disable-next-line
+        TinyInput: Input,
+        // eslint-disable-next-line
+        TinySwitch: Switch,
+        // eslint-disable-next-line
+        TinyButtonGroup: ButtonGroup,
+        // eslint-disable-next-line
+        TinyPopover: Popover,
+        // eslint-disable-next-line
+        IconPlus: iconPlus(),
+        // eslint-disable-next-line
+        TinyButton: Button,
+        // eslint-disable-next-line
+        MetaDescription
     },
-    errorMessage: {
-      type: String
-    },
-    isFitShow: {
-      type: Boolean
-    },
-    isFetchShow: {
-      type: Boolean
-    }
-  },
-  setup(props, { emit }) {
-    const instance = getCurrentInstance()
-
-    const state = reactive({
-      createData: props.createData,
-      options: {
-        language: 'javascript',
-        minimap: { enabled: false }
-      },
-      requestData: [
-        { text: 'JSONP', value: 'JSONP' },
-        { text: 'GET', value: 'GET' },
-        { text: 'POST', value: 'POST' },
-        { text: 'PUT', value: 'PUT' },
-        { text: 'DELETE', value: 'DELETE' }
-      ],
-      datapool: [
-        {
-          id: 'didFetch',
-          name: '请求完成回调函数（didFetch）'
+    props: {
+        createData: {
+            type: Object as () => Record<string, unknown>,
+            default: () => ({ options: {} })
         },
-        {
-          id: 'fit',
-          name: '请求返回时的数据适配（fit）'
+        errorMessage: {
+            type: String,
+            default: ''
+        },
+        isFitShow: {
+            type: Boolean
+        },
+        isFetchShow: {
+            type: Boolean
         }
-      ]
-    })
+    },
+    emits: ['addFunction', 'removeFunction'],
+    // eslint-disable-next-line
+    setup(props, { emit }) {
+        const { t } = useDesignerI18n();
+        const instance = getCurrentInstance();
 
-    const addFunction = (item) => {
-      emit('addFunction', item)
-    }
+        const state = reactive({
+            createData: props.createData,
+            options: {
+                language: 'javascript',
+                minimap: { enabled: false }
+            },
+            requestData: [
+                { text: 'JSONP', value: 'JSONP' },
+                { text: 'GET', value: 'GET' },
+                { text: 'POST', value: 'POST' },
+                { text: 'PUT', value: 'PUT' },
+                { text: 'DELETE', value: 'DELETE' }
+            ],
+            datapool: [
+                {
+                    id: 'didFetch',
+                    name: t('designer.state.didFetchCallback')
+                },
+                {
+                    id: 'fit',
+                    name: t('designer.state.fitAdapter')
+                }
+            ]
+        });
 
-    const removeFunction = (item) => {
-      emit('removeFunction', item)
-    }
+        const addFunction = item => {
+            emit('addFunction', item);
+        };
 
-    const getParamsEditor = () => {
-      return instance.refs.paramsEditor
-    }
+        const removeFunction = item => {
+            emit('removeFunction', item);
+        };
 
-    const getFitEditor = () => {
-      return instance.refs.fitEditor?.getEditor()
-    }
+        const getParamsEditor = () => {
+            return instance.refs.paramsEditor;
+        };
 
-    const getFetchEditor = () => {
-      return instance.refs.fetchEditor?.getEditor()
-    }
+        const getFitEditor = () => {
+            return instance.refs.fitEditor?.getEditor();
+        };
 
-    return {
-      state,
-      addFunction,
-      removeFunction,
-      getParamsEditor,
-      getFitEditor,
-      getFetchEditor
+        const getFetchEditor = () => {
+            return instance.refs.fetchEditor?.getEditor();
+        };
+
+        return {
+            state,
+            addFunction,
+            removeFunction,
+            getParamsEditor,
+            getFitEditor,
+            getFetchEditor,
+            t
+        };
     }
-  }
-}
+};
 </script>
-
-<style lang="less" scoped>
+<!-- eslint-disable-next-line -->
+<style lang="scss" scoped>
 .create-form {
-  padding: 12px;
+    padding: 12px;
 
-  .error-tip {
-    color: var(--te-state-common-error-color);
-    margin-top: 4px;
-    font-size: 12px;
-  }
-
-  .textarea-warp {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  .tiny-button-group {
-    width: 100%;
-  }
-
-  :deep(.tiny-group-item) {
-    display: flex;
-    width: 100%;
-    button {
-      position: relative;
-      min-width: inherit;
-      padding: 0 4px;
-      margin: 0;
-      width: 100%;
+    .error-tip {
+        color: var(--te-state-common-error-color);
+        margin-top: 4px;
+        font-size: 12px;
     }
-    li {
-      flex: 1 1 0;
-      &:not(:last-child) {
-        button:before {
-          content: '';
-          display: inline-block;
-          width: 1px;
-          height: 100%;
-          position: absolute;
-          top: 0;
-          right: 0;
-          z-index: 99;
+
+    .textarea-warp {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .tiny-button-group {
+        width: 100%;
+    }
+
+    :deep(.tiny-group-item) {
+        display: flex;
+        width: 100%;
+        button {
+            position: relative;
+            min-width: inherit;
+            padding: 0 4px;
+            margin: 0;
+            width: 100%;
         }
-      }
+        li {
+            flex: 1 1 0;
+            &:not(:last-child) {
+                button:before {
+                    content: '';
+                    display: inline-block;
+                    width: 1px;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    z-index: 99;
+                }
+            }
+        }
     }
-  }
 }
 
 .create-config {
-  .title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    background: var(--te-state-tip-bg-color);
-    border-top: 1px solid var(--te-state-common-border-color);
-    border-bottom: 1px solid var(--te-state-common-border-color);
-    color: var(--te-state-common-label-text-color);
-  }
-
-  .use-service {
-    color: var(--te-state-common-label-text-color);
-    font-size: 12px;
-    margin-top: 10px;
-
-    span {
-      color: var(--te-state-common-error-color);
+    .title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--te-state-tip-bg-color);
+        border-top: 1px solid var(--te-state-common-border-color);
+        border-bottom: 1px solid var(--te-state-common-border-color);
+        color: var(--te-state-common-label-text-color);
     }
-  }
-
-  .send-service {
-    text-align: right;
-    border-top: 1px solid var(--te-state-common-border-color);
-    padding: 20px 10px;
-    margin-bottom: 10px;
 
     .use-service {
-      text-align: left;
-      padding-top: 5px;
+        color: var(--te-state-common-label-text-color);
+        font-size: 12px;
+        margin-top: 10px;
 
-      div {
-        margin-bottom: 5px;
-      }
+        span {
+            color: var(--te-state-common-error-color);
+        }
     }
 
-    .title {
-      margin-bottom: 10px;
-    }
-  }
+    .send-service {
+        text-align: right;
+        border-top: 1px solid var(--te-state-common-border-color);
+        padding: 20px 10px;
+        margin-bottom: 10px;
 
-  .send-request {
-    margin: 12px;
-  }
+        .use-service {
+            text-align: left;
+            padding-top: 5px;
 
-  .data-wrap {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+            div {
+                margin-bottom: 5px;
+            }
+        }
 
-    & > span {
-      line-height: 1;
-    }
-
-    .icon-plus {
-      cursor: pointer;
-      color: var(--te-state-remote-icon-color);
-      outline: none;
+        .title {
+            margin-bottom: 10px;
+        }
     }
 
-    .icon {
-      width: 20px;
-      height: 20px;
-      color: var(--te-state-common-label-text-color);
-      font-size: 16px;
-      border-radius: 2px;
-      margin-right: 8px;
-      cursor: pointer;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      transition: 0.3s;
-
-      &:hover {
-        color: var(--te-state-common-icon-color-hover);
-        background: var(--te-state-common-bg-color-hover);
-      }
+    .send-request {
+        margin: 12px;
     }
-  }
 
-  .monaco-editor {
-    height: 80px;
-    margin-top: 8px;
-  }
+    .data-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        & > span {
+            line-height: 1;
+        }
+
+        .icon-plus {
+            cursor: pointer;
+            color: var(--te-state-remote-icon-color);
+            outline: none;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            color: var(--te-state-common-label-text-color);
+            font-size: 16px;
+            border-radius: 2px;
+            margin-right: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+
+            &:hover {
+                color: var(--te-state-common-icon-color-hover);
+                background: var(--te-state-common-bg-color-hover);
+            }
+        }
+    }
+
+    .monaco-editor {
+        height: 80px;
+        margin-top: 8px;
+    }
 }
 </style>
