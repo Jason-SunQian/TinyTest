@@ -126,7 +126,7 @@ import { CloseIcon } from '@opentiny/tiny-engine-common';
 
 import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
 
-import { useDesignerI18n } from '../../../services/i18nService';
+import { useDesignerI18n } from '@/services/i18nService';
 
 import DataSourceList from './DataSourceList.vue';
 import CreateVariable from './CreateVariable.vue';

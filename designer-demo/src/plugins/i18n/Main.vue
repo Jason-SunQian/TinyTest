@@ -245,7 +245,7 @@ import { utils, constants } from '@opentiny/tiny-engine-utils';
 
 import { PluginPanel, SearchEmpty } from '@/components/i18n-wrappers';
 
-import { useDesignerI18n } from '../../../services/i18nService';
+import { useDesignerI18n } from '@/services/i18nService';
 /* eslint-disable max-lines */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { OPEN_DELAY } = constants;

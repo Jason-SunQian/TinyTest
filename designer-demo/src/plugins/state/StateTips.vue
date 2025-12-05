@@ -27,7 +27,7 @@
 
 <!-- eslint-disable vue/block-lang, @typescript-eslint/naming-convention, vue/define-props-declaration -->
 <script setup lang="ts">
-import { useDesignerI18n } from '../../../services/i18nService';
+import { useDesignerI18n } from '@/services/i18nService';
 
 const props = defineProps({
     type: {

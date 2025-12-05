@@ -63,7 +63,7 @@ import { BindI18n } from '@opentiny/tiny-engine-common';
 import { useTranslate } from '@opentiny/tiny-engine-meta-register';
 import { constants } from '@opentiny/tiny-engine-utils';
 
-import { useDesignerI18n } from '../../../services/i18nService';
+import { useDesignerI18n } from '@/services/i18nService';
 
 const { OPEN_DELAY } = constants;
 

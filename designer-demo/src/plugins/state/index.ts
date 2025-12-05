@@ -1,5 +1,5 @@
-import Main from './src/Main.vue';
-import './src/styles/vars.scss';
+import Main from './Main.vue';
+import './styles/vars.scss';
 
 export default {
     id: 'engine.plugins.state',

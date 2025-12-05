@@ -1,6 +1,6 @@
-import Main from './src/Main.vue';
-import { translateService } from './src/composable/index';
-import './src/styles/vars.scss';
+import Main from './Main.vue';
+import { translateService } from './composable/index';
+import './styles/vars.scss';
 
 export default {
     id: 'engine.plugins.i18n',
