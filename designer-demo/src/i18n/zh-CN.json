@@ -84,7 +84,8 @@
             "blockManagement": "区块管理",
             "dataSource": "数据源",
             "bridge": "桥接",
-            "i18n": "国际化"
+            "i18n": "国际化",
+            "searchPlaceholder": "请输入关键字搜索"
         },
         "settings": {
             "repeat": "重复",
@@ -483,17 +484,6 @@
                 }
             }
         },
-        "common": {
-            "pageJS": "页面JS",
-            "state": "状态",
-            "schema": "Schema",
-            "help": "帮助",
-            "robot": "机器人",
-            "searchPlaceholder": "请输入关键字搜索",
-            "toggleView": "切换视图",
-            "createBlock": "新建区块",
-            "viewBlock": "查看区块"
-        },
         "materials": {
             "title": "物料",
             "component": "组件",
@@ -540,6 +530,15 @@
             "tooltipContent": "提示内容"
         },
         "common": {
+            "pageJS": "页面JS",
+            "state": "状态",
+            "schema": "Schema",
+            "help": "帮助",
+            "robot": "机器人",
+            "searchPlaceholder": "请输入关键字搜索",
+            "toggleView": "切换视图",
+            "createBlock": "新建区块",
+            "viewBlock": "查看区块",
             "confirm": "确认",
             "cancel": "取消",
             "ok": "确定",

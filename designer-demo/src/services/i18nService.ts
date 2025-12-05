@@ -48,11 +48,30 @@ export const loadDesignerI18n = () => {
         try {
             // 合并自定义翻译到TinyEngine的国际化系统中
             Object.keys(designerI18n).forEach(locale => {
-                instance.global.mergeLocaleMessage(
-                    locale,
-                    (designerI18n as any)[locale]
-                );
+                const localeData = (designerI18n as any)[locale];
+                instance.global.mergeLocaleMessage(locale, localeData);
                 console.log(`✅ 已加载语言: ${locale}`);
+                
+                // 验证关键翻译是否存在
+                const messages = instance.global.messages[locale];
+                const hasSearchPlaceholder = instance.global.te?.('designer.leftPanel.searchPlaceholder', locale);
+                if (hasSearchPlaceholder) {
+                    const translated = instance.global.t('designer.leftPanel.searchPlaceholder', locale);
+                    console.log(`✅ ${locale} leftPanel.searchPlaceholder: "${translated}"`);
+                } else {
+                    console.warn(`⚠️ ${locale} leftPanel.searchPlaceholder 未找到`);
+                    console.log('合并前的数据:', localeData?.designer?.leftPanel);
+                    console.log('合并后的数据:', messages?.designer?.leftPanel);
+                    
+                    // 如果 mergeLocaleMessage 没有深度合并，手动合并 leftPanel
+                    if (localeData?.designer?.leftPanel && messages?.designer) {
+                        messages.designer.leftPanel = {
+                            ...messages.designer.leftPanel,
+                            ...localeData.designer.leftPanel
+                        };
+                        console.log('手动合并后的 leftPanel:', messages.designer.leftPanel);
+                    }
+                }
             });
             console.log('✅ 设计器界面国际化配置已加载');
 
@@ -73,11 +92,22 @@ export const loadDesignerI18n = () => {
                         instance.global.t('designer.leftPanel.materials')
                     );
                     console.log(
+                        '搜索占位符:',
+                        instance.global.t('designer.leftPanel.searchPlaceholder')
+                    );
+                    console.log(
+                        '搜索:',
+                        instance.global.t('designer.common.search')
+                    );
+                    console.log(
                         '中英文切换:',
                         instance.global.t(
                             'designer.toolbar.chineseEnglishSwitch'
                         )
                     );
+                    // 检查 leftPanel 对象
+                    const messages = instance.global.messages[instance.global.locale.value];
+                    console.log('leftPanel 对象:', messages?.designer?.leftPanel);
                 };
                 (window as any).switchToEnglish = () => {
                     instance.global.locale.value = 'en_US';

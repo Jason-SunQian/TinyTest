@@ -84,7 +84,8 @@
             "blockManagement": "Block Management",
             "dataSource": "Data Source",
             "bridge": "Bridge",
-            "i18n": "Internationalization"
+            "i18n": "Internationalization",
+            "searchPlaceholder": "Please enter keywords to search"
         },
         "settings": {
             "repeat": "Repeat",
@@ -483,17 +484,6 @@
                 }
             }
         },
-        "common": {
-            "pageJS": "Page JS",
-            "state": "State",
-            "schema": "Schema",
-            "help": "Help",
-            "robot": "Robot",
-            "searchPlaceholder": "Please enter keywords to search",
-            "toggleView": "Toggle View",
-            "createBlock": "Create Block",
-            "viewBlock": "View Block"
-        },
         "materials": {
             "title": "Materials",
             "component": "Components",
@@ -540,6 +530,15 @@
             "tooltipContent": "Tooltip Content"
         },
         "common": {
+            "pageJS": "Page JS",
+            "state": "State",
+            "schema": "Schema",
+            "help": "Help",
+            "robot": "Robot",
+            "searchPlaceholder": "Please enter keywords to search",
+            "toggleView": "Toggle View",
+            "createBlock": "Create Block",
+            "viewBlock": "View Block",
             "confirm": "Confirm",
             "cancel": "Cancel",
             "ok": "OK",

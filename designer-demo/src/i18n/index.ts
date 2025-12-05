@@ -5,12 +5,15 @@ import koKR from './ko-KR.json';
 import componentsZhCN from './components.zh-CN.json';
 import componentsEnUS from './components.en-US.json';
 
-// 简单合并：保留所有原有配置，只添加新的 common 和 components
+// 合并：保留所有原有配置，合并 common 对象而不是覆盖
 const mergedZhCN = {
     ...zhCN,
     designer: {
         ...zhCN.designer,
-        common: componentsZhCN.designer?.common || {},
+        common: {
+            ...zhCN.designer?.common,
+            ...componentsZhCN.designer?.common
+        },
         components: componentsZhCN.designer?.components || {}
     }
 };
@@ -19,7 +22,10 @@ const mergedEnUS = {
     ...enUS,
     designer: {
         ...enUS.designer,
-        common: componentsEnUS.designer?.common || {},
+        common: {
+            ...enUS.designer?.common,
+            ...componentsEnUS.designer?.common
+        },
         components: componentsEnUS.designer?.components || {}
     }
 };
