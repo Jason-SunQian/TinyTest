@@ -218,7 +218,7 @@ export default {
             }
 
             const { id } = pageSettingState.currentPageData;
-            
+
             if (!id) {
                 useNotify({
                     message: t('designer.page.pageIdMissing'),

@@ -9,7 +9,7 @@ import {
 } from '../config/languages';
 import type { LanguageConfig } from '../config/languages';
 
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any, no-console, import/exports-last */
 let warned = false;
 const getI18nInstance = () => {
     const inst = (window as any).lowcodeI18n;
@@ -21,7 +21,7 @@ const getI18nInstance = () => {
 
 // 单例：等待 i18n 实例就绪
 let i18nReadyPromise: Promise<any> | null = null;
-export const whenI18nReady = (): Promise<any> => {
+const whenI18nReady = (): Promise<any> => {
     if (i18nReadyPromise) return i18nReadyPromise;
     i18nReadyPromise = new Promise(resolve => {
         const tryGet = () => {
@@ -46,7 +46,7 @@ const setDefaultLocale = (instance: any) => {
     instance.global.locale.value = DEFAULT_LANGUAGE;
 };
 
-export const loadDesignerI18n = () => {
+const loadDesignerI18n = () => {
     const tryLoadI18n = (): boolean => {
         const instance: any = getI18nInstance();
         if (!instance) {
@@ -57,31 +57,47 @@ export const loadDesignerI18n = () => {
         try {
             // 先设置默认语言，确保在加载翻译之前就设置好语言
             setDefaultLocale(instance);
-            
+
             // 合并自定义翻译到TinyEngine的国际化系统中
             Object.keys(designerI18n).forEach(locale => {
                 const localeData = (designerI18n as any)[locale];
                 instance.global.mergeLocaleMessage(locale, localeData);
                 console.log(`✅ 已加载语言: ${locale}`);
-                
+
                 // 验证关键翻译是否存在
                 const messages = instance.global.messages[locale];
-                const hasSearchPlaceholder = instance.global.te?.('designer.leftPanel.searchPlaceholder', locale);
+                const hasSearchPlaceholder = instance.global.te?.(
+                    'designer.leftPanel.searchPlaceholder',
+                    locale
+                );
                 if (hasSearchPlaceholder) {
-                    const translated = instance.global.t('designer.leftPanel.searchPlaceholder', locale);
-                    console.log(`✅ ${locale} leftPanel.searchPlaceholder: "${translated}"`);
+                    const translated = instance.global.t(
+                        'designer.leftPanel.searchPlaceholder',
+                        locale
+                    );
+                    console.log(
+                        `✅ ${locale} leftPanel.searchPlaceholder: "${translated}"`
+                    );
                 } else {
-                    console.warn(`⚠️ ${locale} leftPanel.searchPlaceholder 未找到`);
-                    console.log('合并前的数据:', localeData?.designer?.leftPanel);
+                    console.warn(
+                        `⚠️ ${locale} leftPanel.searchPlaceholder 未找到`
+                    );
+                    console.log(
+                        '合并前的数据:',
+                        localeData?.designer?.leftPanel
+                    );
                     console.log('合并后的数据:', messages?.designer?.leftPanel);
-                    
+
                     // 如果 mergeLocaleMessage 没有深度合并，手动合并 leftPanel
                     if (localeData?.designer?.leftPanel && messages?.designer) {
                         messages.designer.leftPanel = {
                             ...messages.designer.leftPanel,
                             ...localeData.designer.leftPanel
                         };
-                        console.log('手动合并后的 leftPanel:', messages.designer.leftPanel);
+                        console.log(
+                            '手动合并后的 leftPanel:',
+                            messages.designer.leftPanel
+                        );
                     }
                 }
             });
@@ -146,8 +162,7 @@ export const loadDesignerI18n = () => {
     return tryLoadI18n();
 };
 
-
-export const switchLanguage = (locale: string) => {
+const switchLanguage = (locale: string) => {
     try {
         if (!isLanguageSupported(locale)) {
             return false;
@@ -166,22 +181,24 @@ export const switchLanguage = (locale: string) => {
     }
 };
 
-export const getCurrentLanguage = (): string => {
+const getCurrentLanguage = (): string => {
     try {
         const instance: any = getI18nInstance();
         const current = instance?.global?.locale?.value;
-        return current && isLanguageSupported(current) ? current : DEFAULT_LANGUAGE;
+        return current && isLanguageSupported(current)
+            ? current
+            : DEFAULT_LANGUAGE;
     } catch (error) {
         return DEFAULT_LANGUAGE;
     }
 };
 
-export const getSupportedLanguages = (): LanguageConfig[] => {
+const getSupportedLanguages = (): LanguageConfig[] => {
     return getEnabledLanguages();
 };
 
 // 统一对外：在组件中使用国际化
-export const useDesignerI18n = () => {
+const useDesignerI18n = () => {
     const instance = getI18nInstance();
 
     // localeRef 默认先占位，实例就绪后切到真实的 vue-i18n ref
@@ -228,7 +245,7 @@ export const useDesignerI18n = () => {
 };
 
 // 为了兼容现有代码（例如 useI18n.ts）继续提供命名导出 t
-export const t = (key: string, params: Record<string, any> = {}) => {
+const t = (key: string, params: Record<string, any> = {}) => {
     const inst: any = getI18nInstance();
     if (!inst?.global) return key;
 
@@ -239,4 +256,15 @@ export const t = (key: string, params: Record<string, any> = {}) => {
         return tt ? tt(key, params) : key;
     }
     return key;
+};
+
+// 所有导出语句放在文件末尾
+export {
+    whenI18nReady,
+    loadDesignerI18n,
+    switchLanguage,
+    getCurrentLanguage,
+    getSupportedLanguages,
+    useDesignerI18n,
+    t
 };

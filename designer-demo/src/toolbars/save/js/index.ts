@@ -1,4 +1,6 @@
+/* eslint-disable import/order */
 import { reactive, ref } from 'vue';
+
 import {
     useBlock,
     useCanvas,
@@ -12,6 +14,7 @@ import {
 import { constants } from '@opentiny/tiny-engine-utils';
 import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http';
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
+
 import { goSave } from '../../../composable/useVSCodeBridge';
 import { t as translate } from '../../../services/i18nService';
 
@@ -43,7 +46,7 @@ const saveBlock = async (pageSchema: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
-    
+
     // VSCode 环境下，使用 goSave 保存
     if (isVsCodeEnv) {
         isLoading.value = true;
@@ -53,13 +56,19 @@ const savePage = async (pageSchema: any) => {
                     {
                         pageId: currentPage.id,
                         pageSchema,
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                         pageData: { ...currentPage, page_content: pageSchema }
                     },
                     (success, error) => {
                         if (success) {
                             resolve();
                         } else {
-                            reject(error || new Error(translate('designer.vscode.saveFailed')));
+                            reject(
+                                error ||
+                                    new Error(
+                                        translate('designer.vscode.saveFailed')
+                                    )
+                            );
                         }
                     }
                 );
@@ -70,7 +79,10 @@ const savePage = async (pageSchema: any) => {
             useNotify()({
                 type: 'error',
                 title: translate('designer.vscode.saveFailed'),
-                message: error instanceof Error ? error.message : translate('designer.vscode.saveFailed')
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : translate('designer.vscode.saveFailed')
             });
             throw error;
         } finally {

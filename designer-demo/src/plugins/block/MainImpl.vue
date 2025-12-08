@@ -138,7 +138,7 @@
                     @icon-click="openSettingPanel"
                 />
             </div>
-            <block-setting/>
+            <block-setting />
             <div class="block-footer">
                 <tiny-dropdown trigger="click" @item-click="changeType">
                     <span>
@@ -163,10 +163,7 @@
         v-model="state.editVisible"
         :initial-value="state.groupInitialValue"
     />
-    <save-new-block
-        :box-visibility="boxVisibility"
-        @close="close"
-    />
+    <save-new-block :box-visibility="boxVisibility" @close="close" />
 </template>
 
 <!-- eslint-disable vue/max-lines-per-block -->
@@ -599,7 +596,9 @@ export default {
     justify-content: space-between;
     :deep(.tiny-dropdown) {
         color: var(--te-block-panel-footer-text-color);
-        .tiny-dropdown__trigger:not(.tiny-dropdown__caret-button):not(.is-disabled):hover {
+        .tiny-dropdown__trigger:not(.tiny-dropdown__caret-button):not(
+                .is-disabled
+            ):hover {
             color: var(--te-block-panel-footer-text-color);
         }
         .tiny-dropdown__suffix-inner {

@@ -4,19 +4,27 @@
  * 采用 RPC 风格，支持 callback 回调
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/naming-convention, camelcase, import/order, @typescript-eslint/no-use-before-define */
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import { setGlobalMonacoEditorTheme } from '@opentiny/tiny-engine-common';
-import { switchLanguage, t as translate } from '../services/i18nService';
+
 import { getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register';
+
+import { switchLanguage, t as translate } from '../services/i18nService';
 
 // 消息类型定义
 interface VSCodeMessage {
     source: 'vscode' | 'designer';
-    method: string; // 方法名
-    requestId?: string; // 请求ID，用于 callback 匹配
-    params?: any; // 参数
-    result?: any; // 返回结果（用于 callback）
-    error?: any; // 错误信息
+    // 方法名
+    method: string;
+    // 请求ID，用于 callback 匹配
+    requestId?: string;
+    // 参数
+    params?: any;
+    // 返回结果（用于 callback）
+    result?: any;
+    // 错误信息
+    error?: any;
 }
 
 // 初始化配置类型
@@ -35,6 +43,7 @@ interface SaveData {
 }
 
 // 语言代码映射（VSCode 可能使用简写）
+// eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
 const LANGUAGE_MAP: Record<string, string> = {
     zh: 'zh_CN',
     en: 'en_US',
@@ -47,6 +56,7 @@ const LANGUAGE_MAP: Record<string, string> = {
 };
 
 // Callback 映射表：requestId -> callback
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const callbackMap = new Map<string, (result?: any, error?: any) => void>();
 
 // 生成唯一请求ID
@@ -68,7 +78,10 @@ const sendMessageToVSCode = (message: Omit<VSCodeMessage, 'source'>) => {
     if (window.parent && window.parent !== window) {
         // 在 iframe 中，通过 postMessage 发送到父窗口
         window.parent.postMessage(fullMessage, '*');
-    } else if (typeof window !== 'undefined' && (window as any).acquireVsCodeApi) {
+    } else if (
+        typeof window !== 'undefined' &&
+        (window as any).acquireVsCodeApi
+    ) {
         // 如果直接运行在 webview 中（非 iframe），使用 VSCode API
         const vscode = (window as any).acquireVsCodeApi();
         vscode.postMessage(fullMessage);
@@ -108,7 +121,9 @@ const handleVSCodeMessage = (event: MessageEvent) => {
 
         default:
             // eslint-disable-next-line no-console
-            console.warn(`${translate('designer.vscode.unknownMethodCall')}: ${method}`);
+            console.warn(
+                `${translate('designer.vscode.unknownMethodCall')}: ${method}`
+            );
             break;
     }
 };
@@ -175,7 +190,10 @@ export const getInitData = (callback: (data: InitData) => void) => {
     callbackMap.set(requestId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            console.error(translate('designer.vscode.getInitDataFailed'), error);
+            console.error(
+                translate('designer.vscode.getInitDataFailed'),
+                error
+            );
             callback({});
         } else {
             callback(result || {});
@@ -193,11 +211,17 @@ export const getInitData = (callback: (data: InitData) => void) => {
  * @param data 要保存的数据
  * @param callback 可选的回调函数，接收保存结果
  */
-export const goSave = (data: SaveData, callback?: (success: boolean, error?: any) => void) => {
+export const goSave = (
+    data: SaveData,
+    callback?: (success: boolean, error?: any) => void
+) => {
     if (!isVsCodeEnv) {
         // eslint-disable-next-line no-console
         console.warn(translate('designer.vscode.vscodeEnvRequired'));
-        callback?.(false, new Error(translate('designer.vscode.vscodeEnvRequired')));
+        callback?.(
+            false,
+            new Error(translate('designer.vscode.vscodeEnvRequired'))
+        );
         return;
     }
 
@@ -223,11 +247,16 @@ export const goSave = (data: SaveData, callback?: (success: boolean, error?: any
  * 设计器调用插件：预览
  * @param callback 可选的回调函数，接收预览结果
  */
-export const goPreview = (callback?: (success: boolean, error?: any) => void) => {
+export const goPreview = (
+    callback?: (success: boolean, error?: any) => void
+) => {
     if (!isVsCodeEnv) {
         // eslint-disable-next-line no-console
         console.warn(translate('designer.vscode.vscodeEnvRequired'));
-        callback?.(false, new Error(translate('designer.vscode.vscodeEnvRequired')));
+        callback?.(
+            false,
+            new Error(translate('designer.vscode.vscodeEnvRequired'))
+        );
         return;
     }
 
@@ -261,7 +290,7 @@ export const initVSCodeBridge = () => {
 
     // 延迟请求初始化数据
     setTimeout(() => {
-        getInitData((data) => {
+        getInitData(data => {
             // 处理初始化数据
             if (data.language) {
                 const mappedLang = LANGUAGE_MAP[data.language] || data.language;

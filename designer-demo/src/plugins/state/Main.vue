@@ -125,7 +125,6 @@ import { iconSearch } from '@opentiny/vue-icon';
 import { CloseIcon } from '@opentiny/tiny-engine-common';
 
 import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
-
 import { useDesignerI18n } from '@/services/i18nService';
 
 import DataSourceList from './DataSourceList.vue';

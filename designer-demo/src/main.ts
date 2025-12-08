@@ -1,11 +1,13 @@
 /**
  * 迁移自 src/main.js，无类型改动，保持行为一致
  */
+/* eslint-disable import/order */
+import { DEFAULT_LANGUAGE } from '@/config/languages';
+
 import { configurators } from './configurators';
 import 'virtual:svg-icons-register';
 import { loadDesignerI18n, switchLanguage } from './services/i18nService';
 import { startPageStatusGuard } from './composable/pageStatusGuard';
-import { DEFAULT_LANGUAGE } from '@/config/languages';
 import { initVSCodeBridge } from './composable/useVSCodeBridge';
 
 async function startApp() {
