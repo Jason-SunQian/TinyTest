@@ -1,6 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types */
 declare module '@opentiny/tiny-engine-meta-register' {
-    import { Ref } from 'vue';
-
     // Hook functions
     export function useCanvas(): any;
     export function useMessage(): {

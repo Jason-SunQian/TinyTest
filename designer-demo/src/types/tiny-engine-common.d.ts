@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 declare module '@opentiny/tiny-engine-common' {
-    import { Component } from 'vue';
+    import type { Component } from 'vue';
 
     export const VueMonaco: Component;
     export const ToolbarBase: Component;
@@ -30,6 +31,7 @@ declare module '@opentiny/tiny-engine-common' {
     export * from './dist/index.js';
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module '@opentiny/tiny-engine-common/js/http' {
     export const handlePageUpdate: (updateParams: {
         id: string;

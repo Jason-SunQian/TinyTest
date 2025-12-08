@@ -21,12 +21,12 @@ VSCode 插件 <--> Webview HTML <--> iframe (设计器)
 
 ```typescript
 interface VSCodeMessage {
-    source: 'vscode' | 'designer';  // 消息来源
-    method: string;                 // 方法名
-    requestId?: string;              // 请求ID，用于 callback 匹配
-    params?: any;                    // 参数
-    result?: any;                    // 返回结果（用于 callback）
-    error?: any;                     // 错误信息
+    source: 'vscode' | 'designer'; // 消息来源
+    method: string; // 方法名
+    requestId?: string; // 请求ID，用于 callback 匹配
+    params?: any; // 参数
+    result?: any; // 返回结果（用于 callback）
+    error?: any; // 错误信息
 }
 ```
 
@@ -39,19 +39,22 @@ interface VSCodeMessage {
 获取初始化数据（语言、主题等）。
 
 **参数：**
+
 - `callback: (data: InitData) => void` - 回调函数，接收初始化数据
 
 **示例：**
+
 ```typescript
 import { getInitData } from '@/composable/useVSCodeBridge';
 
-getInitData((data) => {
+getInitData(data => {
     console.log('语言:', data.language);
     console.log('主题:', data.theme);
 });
 ```
 
 **VSCode 插件响应：**
+
 ```typescript
 // 插件收到消息后，通过 callback 返回数据
 panel.webview.postMessage({
@@ -70,42 +73,52 @@ panel.webview.postMessage({
 保存数据到本地文件。
 
 **参数：**
+
 - `data: SaveData` - 要保存的数据
-  ```typescript
-  interface SaveData {
-      pageId?: string;
-      pageSchema?: any;
-      pageData?: any;
-      [key: string]: any;
-  }
-  ```
+    ```typescript
+    interface SaveData {
+        pageId?: string;
+        pageSchema?: any;
+        pageData?: any;
+        [key: string]: any;
+    }
+    ```
 - `callback?: (success: boolean, error?: any) => void` - 可选的回调函数
 
 **示例：**
+
 ```typescript
 import { goSave } from '@/composable/useVSCodeBridge';
 
-goSave({
-    pageId: '123',
-    pageSchema: { /* schema 数据 */ },
-    pageData: { /* 页面数据 */ }
-}, (success, error) => {
-    if (success) {
-        console.log('保存成功');
-    } else {
-        console.error('保存失败:', error);
+goSave(
+    {
+        pageId: '123',
+        pageSchema: {
+            /* schema 数据 */
+        },
+        pageData: {
+            /* 页面数据 */
+        }
+    },
+    (success, error) => {
+        if (success) {
+            console.log('保存成功');
+        } else {
+            console.error('保存失败:', error);
+        }
     }
-});
+);
 ```
 
 **VSCode 插件响应：**
+
 ```typescript
 // 插件保存成功后，通过 callback 返回结果
 panel.webview.postMessage({
     source: 'vscode',
     method: 'goSave',
     requestId: message.requestId,
-    result: true  // 或 { success: true }
+    result: true // 或 { success: true }
 });
 ```
 
@@ -114,9 +127,11 @@ panel.webview.postMessage({
 由插件发起预览。
 
 **参数：**
+
 - `callback?: (success: boolean, error?: any) => void` - 可选的回调函数
 
 **示例：**
+
 ```typescript
 import { goPreview } from '@/composable/useVSCodeBridge';
 
@@ -130,6 +145,7 @@ goPreview((success, error) => {
 ```
 
 **VSCode 插件响应：**
+
 ```typescript
 // 插件启动预览后，通过 callback 返回结果
 panel.webview.postMessage({
@@ -147,9 +163,11 @@ panel.webview.postMessage({
 设置设计器主题。
 
 **参数：**
+
 - `theme: string` - 主题名称，如 `'light'` 或 `'dark'`
 
 **VSCode 插件调用：**
+
 ```typescript
 panel.webview.postMessage({
     command: 'sendToDesigner',
@@ -168,9 +186,11 @@ panel.webview.postMessage({
 设置设计器语言。
 
 **参数：**
+
 - `language: string` - 语言代码，支持简写（`zh`, `en`）或完整代码（`zh_CN`, `en_US`）
 
 **VSCode 插件调用：**
+
 ```typescript
 panel.webview.postMessage({
     command: 'sendToDesigner',
@@ -189,7 +209,7 @@ panel.webview.postMessage({
 支持完整代码和简写：
 
 | 简写 | 完整代码 |
-|------|----------|
+| ---- | -------- |
 | zh   | zh_CN    |
 | en   | en_US    |
 | ja   | ja_JP    |
@@ -238,7 +258,7 @@ panel.webview.postMessage({
 // 监听来自 VSCode 扩展的消息
 window.addEventListener('message', event => {
     const message = event.data;
-    
+
     if (message.command === 'sendToDesigner') {
         // 转发消息到 iframe
         const iframe = document.getElementById('designerFrame');
@@ -251,7 +271,7 @@ window.addEventListener('message', event => {
 // 监听来自 iframe 的消息
 window.addEventListener('message', event => {
     const message = event.data;
-    
+
     if (message.source === 'designer') {
         // 转发到 VSCode 扩展
         vscode.postMessage({
@@ -266,34 +286,38 @@ window.addEventListener('message', event => {
 
 ```typescript
 // 处理来自设计器的消息
-this._panel.webview.onDidReceiveMessage(
-    message => {
-        if (message.command === 'designerMessage') {
-            const { method, requestId, params } = message.data;
-            
-            switch (method) {
-                case 'getInitData':
-                    // 获取初始化数据
-                    const initData = {
-                        language: vscode.workspace.getConfiguration().get('designer.language', 'en_US'),
-                        theme: vscode.workspace.getConfiguration().get('designer.theme', 'light')
-                    };
-                    
-                    // 通过 callback 返回数据
-                    this._panel.webview.postMessage({
-                        command: 'sendToDesigner',
-                        data: {
-                            source: 'vscode',
-                            method: 'getInitData',
-                            requestId: requestId,
-                            result: initData
-                        }
-                    });
-                    break;
-                    
-                case 'goSave':
-                    // 保存数据到本地文件
-                    this._handleSave(params).then(() => {
+this._panel.webview.onDidReceiveMessage(message => {
+    if (message.command === 'designerMessage') {
+        const { method, requestId, params } = message.data;
+
+        switch (method) {
+            case 'getInitData':
+                // 获取初始化数据
+                const initData = {
+                    language: vscode.workspace
+                        .getConfiguration()
+                        .get('designer.language', 'en_US'),
+                    theme: vscode.workspace
+                        .getConfiguration()
+                        .get('designer.theme', 'light')
+                };
+
+                // 通过 callback 返回数据
+                this._panel.webview.postMessage({
+                    command: 'sendToDesigner',
+                    data: {
+                        source: 'vscode',
+                        method: 'getInitData',
+                        requestId: requestId,
+                        result: initData
+                    }
+                });
+                break;
+
+            case 'goSave':
+                // 保存数据到本地文件
+                this._handleSave(params)
+                    .then(() => {
                         this._panel.webview.postMessage({
                             command: 'sendToDesigner',
                             data: {
@@ -303,7 +327,8 @@ this._panel.webview.onDidReceiveMessage(
                                 result: true
                             }
                         });
-                    }).catch(error => {
+                    })
+                    .catch(error => {
                         this._panel.webview.postMessage({
                             command: 'sendToDesigner',
                             data: {
@@ -314,26 +339,25 @@ this._panel.webview.onDidReceiveMessage(
                             }
                         });
                     });
-                    break;
-                    
-                case 'goPreview':
-                    // 启动预览
-                    this._handlePreview().then(() => {
-                        this._panel.webview.postMessage({
-                            command: 'sendToDesigner',
-                            data: {
-                                source: 'vscode',
-                                method: 'goPreview',
-                                requestId: requestId,
-                                result: true
-                            }
-                        });
+                break;
+
+            case 'goPreview':
+                // 启动预览
+                this._handlePreview().then(() => {
+                    this._panel.webview.postMessage({
+                        command: 'sendToDesigner',
+                        data: {
+                            source: 'vscode',
+                            method: 'goPreview',
+                            requestId: requestId,
+                            result: true
+                        }
                     });
-                    break;
-            }
+                });
+                break;
         }
     }
-);
+});
 ```
 
 ### 插件端调用设计器方法
@@ -377,25 +401,30 @@ public switchLanguage(language: string) {
 import { getInitData, goSave, goPreview } from '@/composable/useVSCodeBridge';
 
 // 获取初始化数据
-getInitData((data) => {
+getInitData(data => {
     console.log('初始化数据:', data);
 });
 
 // 保存数据
 const handleSave = () => {
-    goSave({
-        pageId: '123',
-        pageSchema: { /* ... */ }
-    }, (success, error) => {
-        if (success) {
-            console.log('保存成功');
+    goSave(
+        {
+            pageId: '123',
+            pageSchema: {
+                /* ... */
+            }
+        },
+        (success, error) => {
+            if (success) {
+                console.log('保存成功');
+            }
         }
-    });
+    );
 };
 
 // 预览
 const handlePreview = () => {
-    goPreview((success) => {
+    goPreview(success => {
         if (success) {
             console.log('预览已启动');
         }
