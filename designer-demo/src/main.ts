@@ -3,8 +3,9 @@
  */
 import { configurators } from './configurators';
 import 'virtual:svg-icons-register';
-import { loadDesignerI18n } from './services/i18nService';
+import { loadDesignerI18n, switchLanguage } from './services/i18nService';
 import { startPageStatusGuard } from './composable/pageStatusGuard';
+import {DEFAULT_LANGUAGE} from "@/config/languages";
 
 async function startApp() {
     const registry = await import('../registry');
@@ -24,9 +25,8 @@ async function startApp() {
                 loadDesignerI18n();
             },
             appCreated: () => {
-                // eslint-disable-next-line no-console
-                console.log('✅ designer-demo 应用创建完成');
-                // 可以在这里添加其他初始化逻辑
+                // 强制设置为英文
+                switchLanguage(DEFAULT_LANGUAGE);
                 startPageStatusGuard();
             }
         }

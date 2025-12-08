@@ -3,8 +3,8 @@ import type { Ref } from 'vue';
 
 import designerI18n from '../i18n';
 import {
+    DEFAULT_LANGUAGE,
     getEnabledLanguages,
-    getLanguageByCode,
     isLanguageSupported
 } from '../config/languages';
 import type { LanguageConfig } from '../config/languages';
@@ -37,6 +37,15 @@ export const whenI18nReady = (): Promise<any> => {
     return i18nReadyPromise;
 };
 
+// 强制设置默认语言为英文
+const setDefaultLocale = (instance: any) => {
+    if (!instance?.global?.locale) {
+        return;
+    }
+    // 直接强制设置为英文
+    instance.global.locale.value = DEFAULT_LANGUAGE;
+};
+
 export const loadDesignerI18n = () => {
     const tryLoadI18n = (): boolean => {
         const instance: any = getI18nInstance();
@@ -46,6 +55,9 @@ export const loadDesignerI18n = () => {
         }
 
         try {
+            // 先设置默认语言，确保在加载翻译之前就设置好语言
+            setDefaultLocale(instance);
+            
             // 合并自定义翻译到TinyEngine的国际化系统中
             Object.keys(designerI18n).forEach(locale => {
                 const localeData = (designerI18n as any)[locale];
@@ -75,56 +87,54 @@ export const loadDesignerI18n = () => {
             });
             console.log('✅ 设计器界面国际化配置已加载');
 
-            if (import.meta.env.MODE === 'development') {
-                (window as any).testDesignerI18n = () => {
-                    console.log('=== 测试设计器界面国际化 ===');
-                    console.log('当前语言:', instance.global.locale.value);
-                    console.log(
-                        '页面:',
-                        instance.global.t('designer.toolbar.page')
-                    );
-                    console.log(
-                        '保存:',
-                        instance.global.t('designer.toolbar.save')
-                    );
-                    console.log(
-                        '物料:',
-                        instance.global.t('designer.leftPanel.materials')
-                    );
-                    console.log(
-                        '搜索占位符:',
-                        instance.global.t('designer.leftPanel.searchPlaceholder')
-                    );
-                    console.log(
-                        '搜索:',
-                        instance.global.t('designer.common.search')
-                    );
-                    console.log(
-                        '中英文切换:',
-                        instance.global.t(
-                            'designer.toolbar.chineseEnglishSwitch'
-                        )
-                    );
-                    // 检查 leftPanel 对象
-                    const messages = instance.global.messages[instance.global.locale.value];
-                    console.log('leftPanel 对象:', messages?.designer?.leftPanel);
-                };
-                (window as any).switchToEnglish = () => {
-                    instance.global.locale.value = 'en_US';
-                    console.log('已切换到英文');
-                    (window as any).testDesignerI18n();
-                };
-                (window as any).switchToChinese = () => {
-                    instance.global.locale.value = 'zh_CN';
-                    console.log('已切换到中文');
-                    (window as any).testDesignerI18n();
-                };
+            // 再次确保语言设置正确（在加载翻译后）
+            setDefaultLocale(instance);
 
-                console.log('🎯 开发环境国际化测试功能已启用:');
-                console.log('  - testDesignerI18n() - 测试国际化');
-                console.log('  - switchToEnglish() - 切换到英文');
-                console.log('  - switchToChinese() - 切换到中文');
-            }
+            // if (import.meta.env.MODE === 'development') {
+            //     (window as any).testDesignerI18n = () => {
+            //         console.log('=== 测试设计器界面国际化 ===');
+            //         console.log('当前语言:', instance.global.locale.value);
+            //         console.log(
+            //             '页面:',
+            //             instance.global.t('designer.toolbar.page')
+            //         );
+            //         console.log(
+            //             '保存:',
+            //             instance.global.t('designer.toolbar.save')
+            //         );
+            //         console.log(
+            //             '物料:',
+            //             instance.global.t('designer.leftPanel.materials')
+            //         );
+            //         console.log(
+            //             '搜索占位符:',
+            //             instance.global.t('designer.leftPanel.searchPlaceholder')
+            //         );
+            //         console.log(
+            //             '搜索:',
+            //             instance.global.t('designer.common.search')
+            //         );
+            //         console.log(
+            //             '中英文切换:',
+            //             instance.global.t(
+            //                 'designer.toolbar.chineseEnglishSwitch'
+            //             )
+            //         );
+            //         // 检查 leftPanel 对象
+            //         const messages = instance.global.messages[instance.global.locale.value];
+            //         console.log('leftPanel 对象:', messages?.designer?.leftPanel);
+            //     };
+            //     (window as any).switchToEnglish = () => {
+            //         instance.global.locale.value = 'en_US';
+            //         console.log('已切换到英文');
+            //         (window as any).testDesignerI18n();
+            //     };
+            //     (window as any).switchToChinese = () => {
+            //         instance.global.locale.value = 'zh_CN';
+            //         console.log('已切换到中文');
+            //         (window as any).testDesignerI18n();
+            //     };
+            // }
 
             return true;
         } catch (error) {
@@ -136,25 +146,22 @@ export const loadDesignerI18n = () => {
     return tryLoadI18n();
 };
 
+
 export const switchLanguage = (locale: string) => {
     try {
-        // 检查语言是否支持
         if (!isLanguageSupported(locale)) {
-            console.warn(`不支持的语言: ${locale}`);
             return false;
         }
 
         const instance: any = getI18nInstance();
         if (instance?.global?.locale) {
             instance.global.locale.value = locale;
-            const langConfig = getLanguageByCode(locale);
-            console.log(`语言已切换到: ${langConfig?.name || locale}`);
+            const STORAGE_KEY = 'tiny-engine-designer-locale';
+            localStorage.setItem(STORAGE_KEY, locale);
             return true;
         }
-        console.warn('i18n实例未初始化');
         return false;
     } catch (error) {
-        console.error('切换语言失败:', error);
         return false;
     }
 };
@@ -163,10 +170,9 @@ export const getCurrentLanguage = (): string => {
     try {
         const instance: any = getI18nInstance();
         const current = instance?.global?.locale?.value;
-        return current && isLanguageSupported(current) ? current : 'zh_CN';
+        return current && isLanguageSupported(current) ? current : DEFAULT_LANGUAGE;
     } catch (error) {
-        console.error('获取当前语言失败:', error);
-        return 'zh_CN';
+        return DEFAULT_LANGUAGE;
     }
 };
 
@@ -179,7 +185,7 @@ export const useDesignerI18n = () => {
     const instance = getI18nInstance();
 
     // localeRef 默认先占位，实例就绪后切到真实的 vue-i18n ref
-    const localeRef: Ref<string> | any = shallowRef<string>('zh_CN');
+    const localeRef: Ref<string> | any = shallowRef<string>(DEFAULT_LANGUAGE);
 
     if (instance?.global?.locale) {
         // 初始化时同步一次当前语言

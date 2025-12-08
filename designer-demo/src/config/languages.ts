@@ -14,16 +14,16 @@ export interface LanguageConfig {
 // 默认支持的语言列表
 export const DEFAULT_LANGUAGES: LanguageConfig[] = [
     {
-        code: 'zh_CN',
-        name: '中文',
-        nameEn: 'Chinese',
-        flag: '🇨🇳'
-    },
-    {
         code: 'en_US',
         name: 'English',
         nameEn: 'English',
         flag: '🇺🇸'
+    },
+    {
+        code: 'zh_CN',
+        name: '中文',
+        nameEn: 'Chinese',
+        flag: '🇨🇳'
     },
     {
         code: 'ja_JP',
@@ -64,7 +64,7 @@ export const ENABLED_LANGUAGES: LanguageConfig[] = [
 ];
 
 // 默认语言
-export const DEFAULT_LANGUAGE = 'zh_CN';
+export const DEFAULT_LANGUAGE = 'en_US';
 
 // 语言代码映射（用于TinyEngine兼容）
 /* eslint-disable @typescript-eslint/naming-convention, camelcase */

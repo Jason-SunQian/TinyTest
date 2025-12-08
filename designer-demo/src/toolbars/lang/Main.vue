@@ -96,10 +96,10 @@ export default {
         });
 
         const currentLanguageName = computed(
-            () => currentLanguageConfig.value?.name || '中文'
+            () => currentLanguageConfig.value?.name || '英文'
         );
         const currentLanguageFlag = computed(
-            () => currentLanguageConfig.value?.flag || '🇨🇳'
+            () => currentLanguageConfig.value?.flag || '🇺🇸'
         );
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
