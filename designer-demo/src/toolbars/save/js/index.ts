@@ -11,6 +11,9 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { constants } from '@opentiny/tiny-engine-utils';
 import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http';
+import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
+import { goSave } from '../../../composable/useVSCodeBridge';
+import { t as translate } from '../../../services/i18nService';
 
 const { publish } = useMessage();
 const { PAGE_STATUS, AUTO_SAVED } = constants;
@@ -40,6 +43,43 @@ const saveBlock = async (pageSchema: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
+    
+    // VSCode 环境下，使用 goSave 保存
+    if (isVsCodeEnv) {
+        isLoading.value = true;
+        try {
+            await new Promise<void>((resolve, reject) => {
+                goSave(
+                    {
+                        pageId: currentPage.id,
+                        pageSchema,
+                        pageData: { ...currentPage, page_content: pageSchema }
+                    },
+                    (success, error) => {
+                        if (success) {
+                            resolve();
+                        } else {
+                            reject(error || new Error(translate('designer.vscode.saveFailed')));
+                        }
+                    }
+                );
+            });
+            // 发布页面保存事件，通知其他组件进行相应处理
+            publish({ topic: 'page-saved' });
+        } catch (error) {
+            useNotify()({
+                type: 'error',
+                title: translate('designer.vscode.saveFailed'),
+                message: error instanceof Error ? error.message : translate('designer.vscode.saveFailed')
+            });
+            throw error;
+        } finally {
+            isLoading.value = false;
+        }
+        return;
+    }
+
+    // 非 VSCode 环境，使用原有方式保存
     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     const params = { page_content: pageSchema };
     isLoading.value = true;

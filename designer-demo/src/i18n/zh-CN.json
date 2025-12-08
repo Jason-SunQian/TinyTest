@@ -35,6 +35,8 @@
             "codeSaveSuccess": "代码保存成功",
             "codeSaveSuccessMessage": "保存了 {count} 个文件",
             "codeSaveFailed": "代码保存失败",
+            "previewFailed": "预览失败",
+            "vscodeEnvRequired": "非 VSCode 环境，无法执行此操作",
             "blockSetting": "区块设置",
             "pageSetting": "页面设置",
             "media": {
@@ -1114,6 +1116,18 @@
             "deleteFolderFailed": "删除文件夹失败！",
             "delete": "删除",
             "restorePage": "还原页面"
+        },
+        "vscode": {
+            "previewFailed": "预览失败",
+            "saveFailed": "保存失败",
+            "vscodeEnvRequired": "非 VSCode 环境，无法执行此操作",
+            "unknownMethodCall": "未知的方法调用",
+            "setThemeFailed": "设置主题失败",
+            "getInitDataFailed": "获取初始化数据失败",
+            "goSaveFailed": "保存失败",
+            "goPreviewFailed": "预览失败",
+            "themeParamEmpty": "theme 参数为空",
+            "languageParamEmpty": "language 参数为空"
         },
         "configurators": {
             "myInputConfigurator": {
