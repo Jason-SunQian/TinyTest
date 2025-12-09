@@ -88,12 +88,15 @@ export default {
 
         // 监听 i18n 实例的语言变化，同步更新 currentLanguage
         const syncLanguageFromI18n = () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const instance: any = (window as any).lowcodeI18n;
             if (instance?.global?.locale?.value) {
                 const newLang = instance.global.locale.value;
                 if (newLang !== currentLanguage.value) {
                     // eslint-disable-next-line no-console
-                    console.log(`[Lang Toolbar] Syncing language from i18n: ${currentLanguage.value} → ${newLang}`);
+                    console.log(
+                        `[Lang Toolbar] Syncing language from i18n: ${currentLanguage.value} → ${newLang}`
+                    );
                     currentLanguage.value = newLang;
                 }
             }

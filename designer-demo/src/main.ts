@@ -8,7 +8,10 @@ import { configurators } from './configurators';
 import 'virtual:svg-icons-register';
 import { loadDesignerI18n, switchLanguage } from './services/i18nService';
 import { startPageStatusGuard } from './composable/pageStatusGuard';
-import { initVSCodeBridge, checkIsVSCodeEnvironment } from './composable/useVSCodeBridge';
+import {
+    initVSCodeBridge,
+    checkIsVSCodeEnvironment
+} from './composable/useVSCodeBridge';
 
 async function startApp() {
     const registry = await import('../registry');
@@ -40,7 +43,7 @@ async function startApp() {
                     // 非 VSCode 环境，使用默认语言
                     switchLanguage(DEFAULT_LANGUAGE);
                 }
-                
+
                 startPageStatusGuard();
             }
         }

@@ -86,7 +86,10 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
         if (vscode) {
             vscode.postMessage(pluginMessage);
             // eslint-disable-next-line no-console
-            console.log(`[VSCode Bridge] → ${command}`, data !== undefined ? { data } : '');
+            console.log(
+                `[VSCode Bridge] → ${command}`,
+                data !== undefined ? { data } : ''
+            );
             return;
         }
 
@@ -98,12 +101,17 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
             };
             window.parent.postMessage(messageToSend, '*');
             // eslint-disable-next-line no-console
-            console.log(`[VSCode Bridge] → ${command} (iframe)`, data !== undefined ? { data } : '');
+            console.log(
+                `[VSCode Bridge] → ${command} (iframe)`,
+                data !== undefined ? { data } : ''
+            );
             return;
         }
 
         // eslint-disable-next-line no-console
-        console.error('[VSCode Bridge] Failed to send message: No communication channel available');
+        console.error(
+            '[VSCode Bridge] Failed to send message: No communication channel available'
+        );
     } catch (error) {
         // eslint-disable-next-line no-console
         console.error('[VSCode Bridge] Error sending message:', error);
@@ -119,11 +127,18 @@ const handleVSCodeMessage = (event: MessageEvent) => {
 
     // 处理插件返回的回调消息（通过 webview HTML 转发）
     // 插件返回格式：{ command: callbackId, data?: unknown }
-    if (message.command && typeof message.command === 'string' && callbackMap.has(message.command)) {
+    if (
+        message.command &&
+        typeof message.command === 'string' &&
+        callbackMap.has(message.command)
+    ) {
         const callback = callbackMap.get(message.command)!;
         callbackMap.delete(message.command);
         // eslint-disable-next-line no-console
-        console.log(`[VSCode Bridge] ← callback: ${message.command}`, message.data !== undefined ? { data: message.data } : '');
+        console.log(
+            `[VSCode Bridge] ← callback: ${message.command}`,
+            message.data !== undefined ? { data: message.data } : ''
+        );
         try {
             callback(message.data, undefined);
         } catch (error) {
@@ -134,7 +149,11 @@ const handleVSCodeMessage = (event: MessageEvent) => {
     }
 
     // 处理未匹配的 callback
-    if (message.command && typeof message.command === 'string' && !callbackMap.has(message.command)) {
+    if (
+        message.command &&
+        typeof message.command === 'string' &&
+        !callbackMap.has(message.command)
+    ) {
         // eslint-disable-next-line no-console
         console.warn('[VSCode Bridge] Unknown callback:', message.command);
         return;
@@ -145,7 +164,10 @@ const handleVSCodeMessage = (event: MessageEvent) => {
     if (message.source === 'vscode' && message.method) {
         const vscodeMessage = message as VSCodeToDesignerMessage;
         // eslint-disable-next-line no-console
-        console.log(`[VSCode Bridge] ← ${vscodeMessage.method}`, vscodeMessage.params ? { params: vscodeMessage.params } : '');
+        console.log(
+            `[VSCode Bridge] ← ${vscodeMessage.method}`,
+            vscodeMessage.params ? { params: vscodeMessage.params } : ''
+        );
         try {
             switch (vscodeMessage.method) {
                 case 'setTheme':
@@ -158,7 +180,9 @@ const handleVSCodeMessage = (event: MessageEvent) => {
 
                 default:
                     // eslint-disable-next-line no-console
-                    console.warn(`[VSCode Bridge] Unknown method: ${vscodeMessage.method}`);
+                    console.warn(
+                        `[VSCode Bridge] Unknown method: ${vscodeMessage.method}`
+                    );
                     break;
             }
         } catch (error) {
@@ -210,7 +234,9 @@ const handleSetLanguage = (language: string) => {
 
     const mappedLang = LANGUAGE_MAP[language] || language;
     // eslint-disable-next-line no-console
-    console.log(`[VSCode Bridge] Language mapping: "${language}" → "${mappedLang}"`);
+    console.log(
+        `[VSCode Bridge] Language mapping: "${language}" → "${mappedLang}"`
+    );
     switchLanguage(mappedLang);
 };
 
@@ -226,7 +252,7 @@ export const getInitData = (callback: (data: InitData) => void) => {
     }
 
     const callbackId = generateRequestId();
-    
+
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
@@ -251,15 +277,12 @@ export const goSave = (
 ) => {
     const isVSCode = checkIsVSCodeEnvironment();
     if (!isVSCode) {
-        callback?.(
-            false,
-            new Error('Not in VSCode environment, cannot save')
-        );
+        callback?.(false, new Error('Not in VSCode environment, cannot save'));
         return;
     }
 
     const callbackId = generateRequestId();
-    
+
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
@@ -290,7 +313,7 @@ export const goPreview = (
     }
 
     const callbackId = generateRequestId();
-    
+
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
@@ -332,22 +355,30 @@ export const checkIsVSCodeEnvironment = (): boolean => {
  */
 export const initVSCodeBridge = () => {
     const isVSCode = checkIsVSCodeEnvironment();
-    
+
     if (!isVSCode) {
         // eslint-disable-next-line no-console
-        console.warn('[VSCode Bridge] Not in VSCode environment, communication disabled');
+        console.warn(
+            '[VSCode Bridge] Not in VSCode environment, communication disabled'
+        );
         return;
     }
 
     // 检查通信通道
     const vscode = getVSCodeApi();
-    const communicationMethod = vscode ? 'window.vscode.postMessage' : 
-                                 (window.parent && window.parent !== window ? 'window.parent.postMessage (iframe)' : 'none');
-    
+    const communicationMethod = vscode
+        ? 'window.vscode.postMessage'
+        : window.parent && window.parent !== window
+        ? 'window.parent.postMessage (iframe)'
+        : 'none';
+
     // 监听消息
     window.addEventListener('message', handleVSCodeMessage);
     // eslint-disable-next-line no-console
-    console.log('[VSCode Bridge] Initialized, communication method:', communicationMethod);
+    console.log(
+        '[VSCode Bridge] Initialized, communication method:',
+        communicationMethod
+    );
 
     // 立即请求初始化数据（不延迟，避免显示默认语言）
     // 使用 nextTick 确保消息监听器已注册
@@ -360,39 +391,65 @@ export const initVSCodeBridge = () => {
             if (data.language) {
                 const mappedLang = LANGUAGE_MAP[data.language] || data.language;
                 // eslint-disable-next-line no-console
-                console.log(`[VSCode Bridge] Language mapping: "${data.language}" → "${mappedLang}"`);
+                console.log(
+                    `[VSCode Bridge] Language mapping: "${data.language}" → "${mappedLang}"`
+                );
                 // eslint-disable-next-line no-console
-                console.log('[VSCode Bridge] Calling switchLanguage with:', mappedLang);
-                
+                console.log(
+                    '[VSCode Bridge] Calling switchLanguage with:',
+                    mappedLang
+                );
+
                 // 获取当前语言（用于对比）
                 const instance: any = (window as any).lowcodeI18n;
                 const beforeLang = instance?.global?.locale?.value;
                 // eslint-disable-next-line no-console
-                console.log('[VSCode Bridge] Language before switchLanguage:', beforeLang);
-                
+                console.log(
+                    '[VSCode Bridge] Language before switchLanguage:',
+                    beforeLang
+                );
+
                 const result = switchLanguage(mappedLang);
-                
+
                 // 立即验证语言是否真的改变了
                 const afterLang = instance?.global?.locale?.value;
                 // eslint-disable-next-line no-console
-                console.log('[VSCode Bridge] Language immediately after switchLanguage:', afterLang, 'Expected:', mappedLang, 'Match:', afterLang === mappedLang);
-                
+                console.log(
+                    '[VSCode Bridge] Language immediately after switchLanguage:',
+                    afterLang,
+                    'Expected:',
+                    mappedLang,
+                    'Match:',
+                    afterLang === mappedLang
+                );
+
                 // 延迟再次验证，看是否有其他地方覆盖了
                 setTimeout(() => {
                     const finalLang = instance?.global?.locale?.value;
                     // eslint-disable-next-line no-console
-                    console.log('[VSCode Bridge] Language 100ms after switchLanguage:', finalLang, 'Expected:', mappedLang, 'Match:', finalLang === mappedLang);
+                    console.log(
+                        '[VSCode Bridge] Language 100ms after switchLanguage:',
+                        finalLang,
+                        'Expected:',
+                        mappedLang,
+                        'Match:',
+                        finalLang === mappedLang
+                    );
                     if (finalLang !== mappedLang) {
                         // eslint-disable-next-line no-console
-                        console.warn('[VSCode Bridge] Language was changed after switchLanguage! Something is overriding it.');
+                        console.warn(
+                            '[VSCode Bridge] Language was changed after switchLanguage! Something is overriding it.'
+                        );
                     }
                 }, 100);
-                
+
                 // eslint-disable-next-line no-console
                 console.log('[VSCode Bridge] switchLanguage result:', result);
             } else {
                 // eslint-disable-next-line no-console
-                console.warn('[VSCode Bridge] No language data received from VSCode');
+                console.warn(
+                    '[VSCode Bridge] No language data received from VSCode'
+                );
             }
 
             if (data.theme) {

@@ -44,17 +44,21 @@ const setDefaultLocale = (instance: any) => {
         return;
     }
     // 检查是否在 VSCode 环境中
-    const isVSCode = typeof window !== 'undefined' && 
-        ((window as any).vscode || (window as any).vscodeBridge || 
-         (window.parent && window.parent !== window));
-    
+    const isVSCode =
+        typeof window !== 'undefined' &&
+        ((window as any).vscode ||
+            (window as any).vscodeBridge ||
+            (window.parent && window.parent !== window));
+
     // 如果在 VSCode 环境中，不强制设置默认语言，让 VSCode 插件来控制
     if (isVSCode) {
         // eslint-disable-next-line no-console
-        console.log('[i18nService] VSCode environment detected, skipping default locale setting');
+        console.log(
+            '[i18nService] VSCode environment detected, skipping default locale setting'
+        );
         return;
     }
-    
+
     // 直接强制设置为英文（仅非 VSCode 环境）
     instance.global.locale.value = DEFAULT_LANGUAGE;
 };
@@ -179,7 +183,10 @@ const switchLanguage = (locale: string) => {
     try {
         if (!isLanguageSupported(locale)) {
             // eslint-disable-next-line no-console
-            console.warn('[i18nService] switchLanguage: Language not supported:', locale);
+            console.warn(
+                '[i18nService] switchLanguage: Language not supported:',
+                locale
+            );
             return false;
         }
 
@@ -190,11 +197,16 @@ const switchLanguage = (locale: string) => {
             const STORAGE_KEY = 'tiny-engine-designer-locale';
             localStorage.setItem(STORAGE_KEY, locale);
             // eslint-disable-next-line no-console
-            console.log(`[i18nService] switchLanguage: ${oldLocale} → ${locale}, current value:`, instance.global.locale.value);
+            console.log(
+                `[i18nService] switchLanguage: ${oldLocale} → ${locale}, current value:`,
+                instance.global.locale.value
+            );
             return true;
         }
         // eslint-disable-next-line no-console
-        console.warn('[i18nService] switchLanguage: i18n instance not available');
+        console.warn(
+            '[i18nService] switchLanguage: i18n instance not available'
+        );
         return false;
     } catch (error) {
         // eslint-disable-next-line no-console
