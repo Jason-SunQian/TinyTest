@@ -1108,14 +1108,7 @@
         "vscode": {
             "previewFailed": "Preview failed",
             "saveFailed": "Save failed",
-            "vscodeEnvRequired": "Non-VSCode environment, cannot perform this operation",
-            "unknownMethodCall": "Unknown method call",
-            "setThemeFailed": "Failed to set theme",
-            "getInitDataFailed": "Failed to get initialization data",
-            "goSaveFailed": "Save failed",
-            "goPreviewFailed": "Preview failed",
-            "themeParamEmpty": "Theme parameter is empty",
-            "languageParamEmpty": "Language parameter is empty"
+            "vscodeEnvRequired": "Non-VSCode environment, cannot perform this operation"
         },
         "configurators": {
             "myInputConfigurator": {

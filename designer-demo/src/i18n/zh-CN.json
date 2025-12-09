@@ -1120,14 +1120,7 @@
         "vscode": {
             "previewFailed": "预览失败",
             "saveFailed": "保存失败",
-            "vscodeEnvRequired": "非 VSCode 环境，无法执行此操作",
-            "unknownMethodCall": "未知的方法调用",
-            "setThemeFailed": "设置主题失败",
-            "getInitDataFailed": "获取初始化数据失败",
-            "goSaveFailed": "保存失败",
-            "goPreviewFailed": "预览失败",
-            "themeParamEmpty": "theme 参数为空",
-            "languageParamEmpty": "language 参数为空"
+            "vscodeEnvRequired": "非 VSCode 环境，无法执行此操作"
         },
         "configurators": {
             "myInputConfigurator": {

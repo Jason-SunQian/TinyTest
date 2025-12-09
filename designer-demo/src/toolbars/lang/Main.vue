@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onUnmounted } from 'vue';
 import { Popover } from '@opentiny/vue';
 import { ToolbarBase } from '@opentiny/tiny-engine-common';
 
@@ -86,6 +86,32 @@ export default {
             getSupportedLanguages()
         );
 
+        // 监听 i18n 实例的语言变化，同步更新 currentLanguage
+        const syncLanguageFromI18n = () => {
+            const instance: any = (window as any).lowcodeI18n;
+            if (instance?.global?.locale?.value) {
+                const newLang = instance.global.locale.value;
+                if (newLang !== currentLanguage.value) {
+                    // eslint-disable-next-line no-console
+                    console.log(`[Lang Toolbar] Syncing language from i18n: ${currentLanguage.value} → ${newLang}`);
+                    currentLanguage.value = newLang;
+                }
+            }
+        };
+
+        // 初始同步
+        syncLanguageFromI18n();
+
+        // 定期检查 i18n 实例的语言变化（因为无法直接 watch i18n 实例）
+        const checkInterval = setInterval(() => {
+            syncLanguageFromI18n();
+        }, 200);
+
+        // 组件卸载时清除定时器
+        onUnmounted(() => {
+            clearInterval(checkInterval);
+        });
+
         // 当前语言配置
         const currentLanguageConfig = computed(() => {
             return (
@@ -115,7 +141,7 @@ export default {
         // 监听语言变化
         watch(currentLanguage, newLang => {
             // eslint-disable-next-line no-console
-            console.log(`语言已切换到: ${newLang}`);
+            console.log(`[Lang Toolbar] Language changed to: ${newLang}`);
         });
 
         return {

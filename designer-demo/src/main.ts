@@ -8,7 +8,7 @@ import { configurators } from './configurators';
 import 'virtual:svg-icons-register';
 import { loadDesignerI18n, switchLanguage } from './services/i18nService';
 import { startPageStatusGuard } from './composable/pageStatusGuard';
-import { initVSCodeBridge } from './composable/useVSCodeBridge';
+import { initVSCodeBridge, checkIsVSCodeEnvironment } from './composable/useVSCodeBridge';
 
 async function startApp() {
     const registry = await import('../registry');
@@ -30,8 +30,17 @@ async function startApp() {
                 initVSCodeBridge();
             },
             appCreated: () => {
-                // 强制设置为英文（如果 VSCode 没有提供配置，则使用默认值）
-                switchLanguage(DEFAULT_LANGUAGE);
+                // 在 VSCode 环境中，先设置为英文（避免显示中文），然后等待 VSCode 插件配置
+                // 如果不在 VSCode 环境中，则使用默认语言
+                if (checkIsVSCodeEnvironment()) {
+                    // VSCode 环境：先设置为英文，避免初始化时显示中文
+                    // getInitData 回调会在收到 VSCode 配置后更新语言（如果有的话）
+                    switchLanguage(DEFAULT_LANGUAGE);
+                } else {
+                    // 非 VSCode 环境，使用默认语言
+                    switchLanguage(DEFAULT_LANGUAGE);
+                }
+                
                 startPageStatusGuard();
             }
         }
