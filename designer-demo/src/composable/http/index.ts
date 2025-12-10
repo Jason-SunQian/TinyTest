@@ -51,8 +51,23 @@ const createVSCodeHttpAdapter = () => {
             // 动态导入，避免循环依赖
             const { proxyHttpRequest } = await import('../useVSCodeBridge');
             
+            // 构建完整的URL（axios可能已经处理了baseURL，但我们需要确保URL格式正确）
+            let requestUrl = config.url || '';
+            
+            // 如果URL是绝对路径（以/开头），保持原样；否则可能需要添加baseURL
+            // 在VSCode环境下，baseURL通常是空字符串，所以相对路径就是相对于根路径
+            if (!requestUrl.startsWith('http://') && !requestUrl.startsWith('https://')) {
+                // 确保URL以/开头（相对路径）
+                if (!requestUrl.startsWith('/')) {
+                    requestUrl = '/' + requestUrl;
+                }
+            }
+            
+            // eslint-disable-next-line no-console
+            console.log(`[HTTP Service] Proxying ${config.method?.toUpperCase() || 'GET'} ${requestUrl} via VSCode Bridge`);
+            
             const response = await proxyHttpRequest({
-                url: config.url || '',
+                url: requestUrl,
                 method: config.method || 'get',
                 params: config.params,
                 data: config.data,
@@ -100,7 +115,23 @@ const preRequest = (config: any) => {
 
     if (isVsCodeEnv) {
         config.baseURL = '';
-        // adapter会在axiosConfig中设置，这里不需要处理
+        
+        // 确保adapter已经设置（防止某些请求在adapter设置之前发送）
+        const http = HttpService.apis.getHttp();
+        if (http) {
+            const adapter = createVSCodeHttpAdapter();
+            if (adapter && (http.defaults as any).adapter !== adapter) {
+                (http.defaults as any).adapter = adapter;
+            }
+        }
+        
+        // 如果config中没有adapter，尝试设置（某些情况下axios会使用config.adapter而不是defaults.adapter）
+        if (!config.adapter) {
+            const adapter = createVSCodeHttpAdapter();
+            if (adapter) {
+                config.adapter = adapter;
+            }
+        }
     }
 
     return config;
@@ -217,6 +248,8 @@ const customizeHttpService = () => {
         const adapter = createVSCodeHttpAdapter();
         if (adapter) {
             (axiosConfig as any).adapter = adapter;
+            // eslint-disable-next-line no-console
+            console.log('[HTTP Service] VSCode adapter created and set in axiosConfig');
         } else {
             // eslint-disable-next-line no-console
             console.warn('[HTTP Service] Failed to create VSCode adapter');
@@ -233,18 +266,29 @@ const customizeHttpService = () => {
 
     HttpService.apis.setOptions(options);
     
-    // 在设置options后，再次检查并设置adapter（因为HttpService可能在setOptions后才初始化）
+    // 在设置options后，确保adapter被正确设置（因为HttpService可能在setOptions后才初始化）
     if (isVsCodeEnv) {
-        // 延迟设置adapter，确保HttpService已经初始化
-        setTimeout(() => {
+        // 使用更可靠的方式确保adapter被设置
+        const ensureAdapter = () => {
             const http = HttpService.apis.getHttp();
             if (http) {
                 const adapter = createVSCodeHttpAdapter();
                 if (adapter) {
-                    (http.defaults as any).adapter = adapter;
+                    // 检查是否已经设置了adapter
+                    if ((http.defaults as any).adapter !== adapter) {
+                        (http.defaults as any).adapter = adapter;
+                        // eslint-disable-next-line no-console
+                        console.log('[HTTP Service] VSCode adapter set on axios instance');
+                    }
                 }
+            } else {
+                // 如果HttpService还没初始化，稍后重试
+                setTimeout(ensureAdapter, 50);
             }
-        }, 100);
+        };
+        
+        // 立即尝试设置，如果失败则延迟重试
+        ensureAdapter();
     }
 
     return HttpService;

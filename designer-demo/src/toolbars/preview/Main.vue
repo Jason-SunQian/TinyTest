@@ -14,11 +14,13 @@
 /* metaService: engine.toolbars.preview.Main */
 import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
 import { useLayout, useNotify, getOptions } from '@opentiny/tiny-engine-meta-register';
-import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import { ToolbarBase } from '@opentiny/tiny-engine-common';
 
 import { useDesignerI18n } from '../../services/i18nService';
-import { goPreview } from '../../composable/useVSCodeBridge';
+import {
+    goPreview,
+    checkIsVSCodeEnvironment
+} from '../../composable/useVSCodeBridge';
 
 export default {
     components: {
@@ -68,14 +70,21 @@ export default {
                 return;
             }
 
+            // 检测是否在 VSCode 环境中
+            const isVSCode = checkIsVSCodeEnvironment();
+
             // VSCode 环境下，使用 goPreview 由插件发起预览
-            if (isVsCodeEnv) {
+            if (isVSCode) {
                 goPreview((success, error) => {
                     if (!success) {
                         useNotify({
                             type: 'error',
                             message: error?.message || t('designer.vscode.previewFailed')
                         });
+                    } else {
+                        // 预览成功，可以添加成功提示（如果需要）
+                        // eslint-disable-next-line no-console
+                        console.log('[Preview] Preview opened successfully in VSCode');
                     }
                 });
                 return;
