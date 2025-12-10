@@ -70,7 +70,7 @@ const generateRequestId = (): string => {
 
 /**
  * 向 VSCode 插件发送消息
- * 设计器在 iframe 中运行，需要通过 postMessage 与父窗口通信
+ * 设计器直接运行在 VSCode webview 中（不是 iframe），通过 window.vscode.postMessage 直接通信
  * 消息格式需要匹配插件期望的 WebviewMessage 格式：{ command, callback }
  * 如果需要传递数据，可以通过扩展属性传递（虽然类型定义中没有，但运行时可以传递）
  */
@@ -84,37 +84,24 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
     try {
         const vscode = getVSCodeApi();
         if (vscode) {
-            vscode.postMessage(pluginMessage);
             // eslint-disable-next-line no-console
             console.log(
                 `[VSCode Bridge] → ${command}`,
+                callback,
                 data !== undefined ? { data } : ''
             );
-            return;
-        }
-
-        // 如果在 iframe 中运行（备用方案）
-        if (window.parent && window.parent !== window) {
-            const messageToSend = {
-                source: 'designer',
-                ...pluginMessage
-            };
-            window.parent.postMessage(messageToSend, '*');
-            // eslint-disable-next-line no-console
-            console.log(
-                `[VSCode Bridge] → ${command} (iframe)`,
-                data !== undefined ? { data } : ''
-            );
+            vscode.postMessage(pluginMessage);
             return;
         }
 
         // eslint-disable-next-line no-console
         console.error(
-            '[VSCode Bridge] Failed to send message: No communication channel available'
+            '[VSCode Bridge] Failed to send message: VSCode API not available'
         );
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('[VSCode Bridge] Error sending message:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('[VSCode Bridge] Error sending message:', errorMessage);
         throw error;
     }
 };
@@ -127,6 +114,7 @@ const handleVSCodeMessage = (event: MessageEvent) => {
 
     // 处理插件返回的回调消息（通过 webview HTML 转发）
     // 插件返回格式：{ command: callbackId, data?: unknown }
+    // 注意：不在这里输出日志，让各个方法的回调自己决定如何输出详细日志
     if (
         message.command &&
         typeof message.command === 'string' &&
@@ -134,16 +122,16 @@ const handleVSCodeMessage = (event: MessageEvent) => {
     ) {
         const callback = callbackMap.get(message.command)!;
         callbackMap.delete(message.command);
-        // eslint-disable-next-line no-console
-        console.log(
-            `[VSCode Bridge] ← callback: ${message.command}`,
-            message.data !== undefined ? { data: message.data } : ''
-        );
+        
+        // 检查响应中是否包含错误
+        const hasError = message.data && typeof message.data === 'object' && 'error' in message.data;
+        
         try {
-            callback(message.data, undefined);
+            callback(message.data, hasError ? message.data : undefined);
         } catch (error) {
             // eslint-disable-next-line no-console
-            console.error('[VSCode Bridge] Error executing callback:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('[VSCode Bridge] Error executing callback:', errorMessage);
         }
         return;
     }
@@ -154,8 +142,7 @@ const handleVSCodeMessage = (event: MessageEvent) => {
         typeof message.command === 'string' &&
         !callbackMap.has(message.command)
     ) {
-        // eslint-disable-next-line no-console
-        console.warn('[VSCode Bridge] Unknown callback:', message.command);
+        // 静默忽略未知回调，避免日志噪音
         return;
     }
 
@@ -187,7 +174,8 @@ const handleVSCodeMessage = (event: MessageEvent) => {
             }
         } catch (error) {
             // eslint-disable-next-line no-console
-            console.error('[VSCode Bridge] Error processing command:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('[VSCode Bridge] Error processing command:', errorMessage);
         }
         return;
     }
@@ -220,7 +208,8 @@ const handleSetTheme = (theme: string) => {
         }
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('[VSCode Bridge] Failed to set theme:', error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('[VSCode Bridge] Failed to set theme:', errorMessage);
     }
 };
 
@@ -233,10 +222,6 @@ const handleSetLanguage = (language: string) => {
     }
 
     const mappedLang = LANGUAGE_MAP[language] || language;
-    // eslint-disable-next-line no-console
-    console.log(
-        `[VSCode Bridge] Language mapping: "${language}" → "${mappedLang}"`
-    );
     switchLanguage(mappedLang);
 };
 
@@ -256,9 +241,12 @@ export const getInitData = (callback: (data: InitData) => void) => {
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            console.error('[VSCode Bridge] getInitData error:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error(`[VSCode Bridge] getInitData ← error:`, errorMessage);
             callback({});
         } else {
+            // eslint-disable-next-line no-console
+            console.log(`[VSCode Bridge] getInitData ← success:`, result);
             callback((result as InitData) || {});
         }
     });
@@ -286,9 +274,12 @@ export const goSave = (
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            console.error('[VSCode Bridge] goSave error:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error(`[VSCode Bridge] goSave ← error:`, errorMessage);
             callback?.(false, error);
         } else {
+            // eslint-disable-next-line no-console
+            console.log(`[VSCode Bridge] goSave ← success`);
             callback?.(true, undefined);
         }
     });
@@ -317,9 +308,12 @@ export const goPreview = (
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            console.error('[VSCode Bridge] goPreview error:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error(`[VSCode Bridge] goPreview ← error:`, errorMessage);
             callback?.(false, error);
         } else {
+            // eslint-disable-next-line no-console
+            console.log(`[VSCode Bridge] goPreview ← success`);
             callback?.(true, undefined);
         }
     });
@@ -339,11 +333,8 @@ export const checkIsVSCodeEnvironment = (): boolean => {
         return true;
     }
 
+    // 兼容旧版本的 vscodeBridge（如果存在）
     if ((window as any).vscodeBridge) {
-        return true;
-    }
-
-    if (window.parent && window.parent !== window) {
         return true;
     }
 
@@ -364,100 +355,71 @@ export const initVSCodeBridge = () => {
         return;
     }
 
-    // 检查通信通道
-    const vscode = getVSCodeApi();
-    const communicationMethod = vscode
-        ? 'window.vscode.postMessage'
-        : window.parent && window.parent !== window
-        ? 'window.parent.postMessage (iframe)'
-        : 'none';
-
     // 监听消息
     window.addEventListener('message', handleVSCodeMessage);
-    // eslint-disable-next-line no-console
-    console.log(
-        '[VSCode Bridge] Initialized, communication method:',
-        communicationMethod
-    );
 
     // 立即请求初始化数据（不延迟，避免显示默认语言）
     // 使用 nextTick 确保消息监听器已注册
     Promise.resolve().then(() => {
-        // eslint-disable-next-line no-console
-        console.log('[VSCode Bridge] Requesting initial data...');
         getInitData(data => {
-            // eslint-disable-next-line no-console
-            console.log('[VSCode Bridge] getInitData callback received:', data);
             if (data.language) {
                 const mappedLang = LANGUAGE_MAP[data.language] || data.language;
-                // eslint-disable-next-line no-console
-                console.log(
-                    `[VSCode Bridge] Language mapping: "${data.language}" → "${mappedLang}"`
-                );
-                // eslint-disable-next-line no-console
-                console.log(
-                    '[VSCode Bridge] Calling switchLanguage with:',
-                    mappedLang
-                );
-
-                // 获取当前语言（用于对比）
-                const instance: any = (window as any).lowcodeI18n;
-                const beforeLang = instance?.global?.locale?.value;
-                // eslint-disable-next-line no-console
-                console.log(
-                    '[VSCode Bridge] Language before switchLanguage:',
-                    beforeLang
-                );
-
-                const result = switchLanguage(mappedLang);
-
-                // 立即验证语言是否真的改变了
-                const afterLang = instance?.global?.locale?.value;
-                // eslint-disable-next-line no-console
-                console.log(
-                    '[VSCode Bridge] Language immediately after switchLanguage:',
-                    afterLang,
-                    'Expected:',
-                    mappedLang,
-                    'Match:',
-                    afterLang === mappedLang
-                );
-
-                // 延迟再次验证，看是否有其他地方覆盖了
-                setTimeout(() => {
-                    const finalLang = instance?.global?.locale?.value;
-                    // eslint-disable-next-line no-console
-                    console.log(
-                        '[VSCode Bridge] Language 100ms after switchLanguage:',
-                        finalLang,
-                        'Expected:',
-                        mappedLang,
-                        'Match:',
-                        finalLang === mappedLang
-                    );
-                    if (finalLang !== mappedLang) {
-                        // eslint-disable-next-line no-console
-                        console.warn(
-                            '[VSCode Bridge] Language was changed after switchLanguage! Something is overriding it.'
-                        );
-                    }
-                }, 100);
-
-                // eslint-disable-next-line no-console
-                console.log('[VSCode Bridge] switchLanguage result:', result);
-            } else {
-                // eslint-disable-next-line no-console
-                console.warn(
-                    '[VSCode Bridge] No language data received from VSCode'
-                );
+                switchLanguage(mappedLang);
             }
 
             if (data.theme) {
-                // eslint-disable-next-line no-console
-                console.log('[VSCode Bridge] Setting theme:', data.theme);
                 handleSetTheme(data.theme);
             }
         });
+    });
+};
+
+/**
+ * 设计器调用插件：HTTP请求代理
+ * 在VSCode环境中，通过插件代理HTTP请求到本地mockServer，解决跨域问题
+ * @param config HTTP请求配置
+ * @returns Promise<响应数据>
+ */
+export const proxyHttpRequest = (
+    config: {
+        url: string;
+        method?: string;
+        params?: any;
+        data?: any;
+        headers?: any;
+    }
+): Promise<any> => {
+    const isVSCode = checkIsVSCodeEnvironment();
+    
+    if (!isVSCode) {
+        return Promise.reject(
+            new Error('Not in VSCode environment, cannot proxy request')
+        );
+    }
+
+    return new Promise((resolve, reject) => {
+        const callbackId = generateRequestId();
+
+        callbackMap.set(callbackId, (result, error) => {
+            if (error) {
+                // eslint-disable-next-line no-console
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(
+                    `[VSCode Bridge] proxyHttpRequest ← ${config.method || 'GET'} ${config.url} error:`,
+                    errorMessage
+                );
+                reject(error);
+            } else {
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[VSCode Bridge] proxyHttpRequest ← ${config.method || 'GET'} ${config.url} success:`,
+                    result
+                );
+                resolve(result);
+            }
+        });
+
+        sendMessageToVSCode('proxyHttpRequest', callbackId, config);
     });
 };
 
@@ -467,5 +429,6 @@ export const initVSCodeBridge = () => {
 export const vscodeBridge = {
     getInitData,
     goSave,
-    goPreview
+    goPreview,
+    proxyHttpRequest
 };
