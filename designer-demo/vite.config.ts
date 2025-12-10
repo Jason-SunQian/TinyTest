@@ -45,6 +45,9 @@ export default defineConfig(configEnv => {
                 '@': path.resolve(__dirname, './src')
             }
         },
+        optimizeDeps: {
+            exclude: ['source-map-js']
+        },
         server: {
             port: 8090
         },

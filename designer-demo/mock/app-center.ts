@@ -600,7 +600,7 @@ export default [
                                                                     'TinyButton',
                                                                 props: {
                                                                     type: 'primary',
-                                                                    children:
+                                                                    text:
                                                                         '下一步: 网络配置'
                                                                 },
                                                                 id: 'next-button'

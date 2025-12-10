@@ -75,50 +75,29 @@ const loadDesignerI18n = () => {
             // 先设置默认语言，确保在加载翻译之前就设置好语言
             setDefaultLocale(instance);
 
+            // 配置 i18n 警告选项，减少不必要的警告
+            // vue-i18n 在找不到 key 时会回退到其他语言，这是正常行为
+            // 我们只在生产环境完全禁用警告，开发环境保留但减少噪音
+            if (instance.global && import.meta.env.PROD) {
+                // 生产环境：完全禁用缺失 key 的警告
+                instance.global.missingWarn = false;
+                instance.global.fallbackWarn = false;
+            }
+
             // 合并自定义翻译到TinyEngine的国际化系统中
             Object.keys(designerI18n).forEach(locale => {
                 const localeData = (designerI18n as any)[locale];
                 instance.global.mergeLocaleMessage(locale, localeData);
-                console.log(`✅ 已加载语言: ${locale}`);
-
-                // 验证关键翻译是否存在
-                const messages = instance.global.messages[locale];
-                const hasSearchPlaceholder = instance.global.te?.(
-                    'designer.leftPanel.searchPlaceholder',
-                    locale
-                );
-                if (hasSearchPlaceholder) {
-                    const translated = instance.global.t(
-                        'designer.leftPanel.searchPlaceholder',
-                        locale
-                    );
-                    console.log(
-                        `✅ ${locale} leftPanel.searchPlaceholder: "${translated}"`
-                    );
-                } else {
-                    console.warn(
-                        `⚠️ ${locale} leftPanel.searchPlaceholder 未找到`
-                    );
-                    console.log(
-                        '合并前的数据:',
-                        localeData?.designer?.leftPanel
-                    );
-                    console.log('合并后的数据:', messages?.designer?.leftPanel);
-
-                    // 如果 mergeLocaleMessage 没有深度合并，手动合并 leftPanel
-                    if (localeData?.designer?.leftPanel && messages?.designer) {
-                        messages.designer.leftPanel = {
-                            ...messages.designer.leftPanel,
-                            ...localeData.designer.leftPanel
-                        };
-                        console.log(
-                            '手动合并后的 leftPanel:',
-                            messages.designer.leftPanel
-                        );
-                    }
+                
+                // 只在开发环境输出详细日志
+                if (import.meta.env.DEV) {
+                    console.log(`✅ 已加载语言: ${locale}`);
                 }
             });
-            console.log('✅ 设计器界面国际化配置已加载');
+            
+            if (import.meta.env.DEV) {
+                console.log('✅ 设计器界面国际化配置已加载');
+            }
 
             // 再次确保语言设置正确（在加载翻译后）
             setDefaultLocale(instance);

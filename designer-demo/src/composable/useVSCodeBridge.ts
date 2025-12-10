@@ -348,10 +348,13 @@ export const initVSCodeBridge = () => {
     const isVSCode = checkIsVSCodeEnvironment();
 
     if (!isVSCode) {
-        // eslint-disable-next-line no-console
-        console.warn(
-            '[VSCode Bridge] Not in VSCode environment, communication disabled'
-        );
+        // 只在开发环境输出 debug 信息，避免生产环境警告
+        if (import.meta.env.DEV) {
+            // eslint-disable-next-line no-console
+            console.debug(
+                '[VSCode Bridge] Not in VSCode environment, communication disabled'
+            );
+        }
         return;
     }
 
