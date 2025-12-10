@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import { HttpService } from '@opentiny/tiny-engine';
 import { useBroadcastChannel } from '@vueuse/core';
 import { constants } from '@opentiny/tiny-engine-utils';
+import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 import Login from './Login.vue';
 
@@ -29,8 +30,9 @@ const showError = (url?: string, message?: string) => {
 };
 
 // VSCode环境下的HTTP请求代理adapter
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let vscodeHttpAdapter: any = null;
+let vscodeHttpAdapter:
+    | ((config: InternalAxiosRequestConfig) => Promise<unknown>)
+    | null = null;
 
 // 初始化VSCode HTTP adapter
 const createVSCodeHttpAdapter = () => {
@@ -40,32 +42,39 @@ const createVSCodeHttpAdapter = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isVsCodeEnv = (window as any).vscode || (window as any).vscodeBridge;
-    
+
     if (!isVsCodeEnv) {
         return null;
     }
 
     // 创建自定义adapter
-    vscodeHttpAdapter = async (config: any) => {
+    vscodeHttpAdapter = async (config: InternalAxiosRequestConfig) => {
         try {
             // 动态导入，避免循环依赖
             const { proxyHttpRequest } = await import('../useVSCodeBridge');
-            
+
             // 构建完整的URL（axios可能已经处理了baseURL，但我们需要确保URL格式正确）
             let requestUrl = config.url || '';
-            
+
             // 如果URL是绝对路径（以/开头），保持原样；否则可能需要添加baseURL
             // 在VSCode环境下，baseURL通常是空字符串，所以相对路径就是相对于根路径
-            if (!requestUrl.startsWith('http://') && !requestUrl.startsWith('https://')) {
+            if (
+                !requestUrl.startsWith('http://') &&
+                !requestUrl.startsWith('https://')
+            ) {
                 // 确保URL以/开头（相对路径）
                 if (!requestUrl.startsWith('/')) {
-                    requestUrl = '/' + requestUrl;
+                    requestUrl = `/${requestUrl}`;
                 }
             }
-            
+
             // eslint-disable-next-line no-console
-            console.log(`[HTTP Service] Proxying ${config.method?.toUpperCase() || 'GET'} ${requestUrl} via VSCode Bridge`);
-            
+            console.log(
+                `[HTTP Service] Proxying ${
+                    config.method?.toUpperCase() || 'GET'
+                } ${requestUrl} via VSCode Bridge`
+            );
+
             const response = await proxyHttpRequest({
                 url: requestUrl,
                 method: config.method || 'get',
@@ -73,27 +82,38 @@ const createVSCodeHttpAdapter = () => {
                 data: config.data,
                 headers: config.headers
             });
-            
+
             // mockServer返回的格式通常是 { data: {...}, locale: 'zh-cn' }
             // 我们需要保持这个格式，让preResponse拦截器处理
             // 返回符合axios响应格式的数据
+            // response 已经是 { data: {...}, locale: 'zh-cn' } 格式
             return {
-                data: response, // response 已经是 { data: {...}, locale: 'zh-cn' } 格式
+                data: response,
                 status: 200,
                 statusText: 'OK',
                 headers: {},
-                config: config
+                config
             };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             // eslint-disable-next-line no-console
-            console.error(`[HTTP Service] ${config.method?.toUpperCase() || 'GET'} ${config.url} failed:`, error?.message || error);
+            console.error(
+                `[HTTP Service] ${config.method?.toUpperCase() || 'GET'} ${
+                    config.url
+                } failed:`,
+                error?.message || error
+            );
             // 如果代理失败，返回错误响应
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const errorResponse = {
                 data: { error: error?.message || 'Request failed' },
-                status: error?.status || 500,
-                statusText: error?.statusText || 'Internal Server Error',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                status: (error as any)?.status || 500,
+                statusText:
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (error as any)?.statusText || 'Internal Server Error',
                 headers: {},
-                config: config
+                config
             };
             return Promise.reject(errorResponse);
         }
@@ -102,9 +122,12 @@ const createVSCodeHttpAdapter = () => {
     return vscodeHttpAdapter;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const preRequest = (config: any) => {
-    const isDevelopEnv = import.meta.env.MODE?.includes('dev');
+const preRequest = (
+    config: InternalAxiosRequestConfig
+): InternalAxiosRequestConfig => {
+    const isDevelopEnv = (import.meta.env.MODE as string | undefined)?.includes(
+        'dev'
+    );
 
     if (isDevelopEnv && config.url.match(/\/generate\//)) {
         config.baseURL = '';
@@ -115,20 +138,23 @@ const preRequest = (config: any) => {
 
     if (isVsCodeEnv) {
         config.baseURL = '';
-        
+
         // 确保adapter已经设置（防止某些请求在adapter设置之前发送）
         const http = HttpService.apis.getHttp();
         if (http) {
             const adapter = createVSCodeHttpAdapter();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (adapter && (http.defaults as any).adapter !== adapter) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (http.defaults as any).adapter = adapter;
             }
         }
-        
+
         // 如果config中没有adapter，尝试设置（某些情况下axios会使用config.adapter而不是defaults.adapter）
         if (!config.adapter) {
             const adapter = createVSCodeHttpAdapter();
             if (adapter) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 config.adapter = adapter;
             }
         }
@@ -137,8 +163,9 @@ const preRequest = (config: any) => {
     return config;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const preResponse = (res: any) => {
+const preResponse = (
+    res: AxiosResponse<{ data?: unknown; error?: { message?: string } }>
+) => {
     if (res.data?.error) {
         showError(res.config?.url, res?.data?.error?.message);
         return Promise.reject(res.data.error);
@@ -146,13 +173,13 @@ const preResponse = (res: any) => {
 
     // 返回 res.data.data，这是mockServer的标准格式
     const result = res.data?.data;
-    
+
     // 如果result是undefined或null，可能是数据格式问题
     if (result === undefined || result === null) {
         // eslint-disable-next-line no-console
         console.warn(`[HTTP Service] Empty response for ${res.config?.url}`);
     }
-    
+
     return result;
 };
 
@@ -240,32 +267,37 @@ const getConfig = (env = import.meta.env) => {
 const customizeHttpService = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isVsCodeEnv = (window as any).vscode || (window as any).vscodeBridge;
-    
+
     const axiosConfig = getConfig();
-    
+
     // 在VSCode环境中，设置自定义adapter来代理HTTP请求
     if (isVsCodeEnv) {
         const adapter = createVSCodeHttpAdapter();
         if (adapter) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (axiosConfig as any).adapter = adapter;
             // eslint-disable-next-line no-console
-            console.log('[HTTP Service] VSCode adapter created and set in axiosConfig');
+            console.log(
+                '[HTTP Service] VSCode adapter created and set in axiosConfig'
+            );
         } else {
             // eslint-disable-next-line no-console
             console.warn('[HTTP Service] Failed to create VSCode adapter');
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options = {
         axiosConfig,
         interceptors: {
             request: [preRequest],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             response: [[preResponse, errorResponse]]
         }
     };
 
     HttpService.apis.setOptions(options);
-    
+
     // 在设置options后，确保adapter被正确设置（因为HttpService可能在setOptions后才初始化）
     if (isVsCodeEnv) {
         // 使用更可靠的方式确保adapter被设置
@@ -275,19 +307,25 @@ const customizeHttpService = () => {
                 const adapter = createVSCodeHttpAdapter();
                 if (adapter) {
                     // 检查是否已经设置了adapter
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if ((http.defaults as any).adapter !== adapter) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (http.defaults as any).adapter = adapter;
                         // eslint-disable-next-line no-console
-                        console.log('[HTTP Service] VSCode adapter set on axios instance');
+                        console.log(
+                            '[HTTP Service] VSCode adapter set on axios instance'
+                        );
                     }
                 }
             } else {
                 // 如果HttpService还没初始化，稍后重试
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setTimeout(ensureAdapter, 50);
             }
         };
-        
+
         // 立即尝试设置，如果失败则延迟重试
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ensureAdapter();
     }
 

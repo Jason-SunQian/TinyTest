@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names, vue/html-self-closing, vue/require-typed-object-prop -->
 <template>
     <div class="toolbar-preview">
         <toolbar-base
@@ -5,15 +6,18 @@
             :icon="options.icon?.default || options?.icon"
             :options="options"
             @click-api="preview"
-        >
-        </toolbar-base>
+        />
     </div>
 </template>
 
 <script lang="ts">
 /* metaService: engine.toolbars.preview.Main */
 import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
-import { useLayout, useNotify, getOptions } from '@opentiny/tiny-engine-meta-register';
+import {
+    useLayout,
+    useNotify,
+    getOptions
+} from '@opentiny/tiny-engine-meta-register';
 import { ToolbarBase } from '@opentiny/tiny-engine-common';
 
 import { useDesignerI18n } from '../../services/i18nService';
@@ -29,6 +33,7 @@ export default {
     },
     props: {
         options: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         }
@@ -37,10 +42,11 @@ export default {
     setup() {
         // 统一的国际化钩子：t、locale均可用
         const { t } = useDesignerI18n();
-        
+
         const preview = async () => {
             const metaId = 'engine.toolbars.preview';
-            const { beforePreview, previewMethod, afterPreview } = getOptions(metaId);
+            const { beforePreview, previewMethod, afterPreview } =
+                getOptions(metaId);
 
             try {
                 if (typeof beforePreview === 'function') {
@@ -79,12 +85,16 @@ export default {
                     if (!success) {
                         useNotify({
                             type: 'error',
-                            message: error?.message || t('designer.vscode.previewFailed')
+                            message:
+                                error?.message ||
+                                t('designer.vscode.previewFailed')
                         });
                     } else {
                         // 预览成功，可以添加成功提示（如果需要）
                         // eslint-disable-next-line no-console
-                        console.log('[Preview] Preview opened successfully in VSCode');
+                        console.log(
+                            '[Preview] Preview opened successfully in VSCode'
+                        );
                     }
                 });
                 return;
@@ -118,4 +128,3 @@ export default {
     // 可以添加自定义样式
 }
 </style>
-

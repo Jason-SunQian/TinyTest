@@ -66,23 +66,23 @@ previewPage();
 import CustomPreview from './src/toolbars/preview/Main.vue';
 
 export default {
-  // 禁用官方Preview插件
-  [META_APP.Preview]: false,
-  // 使用自定义Preview插件
-  'engine.toolbars.customPreview': {
-    id: 'engine.toolbars.preview',
-    title: 'Preview',
-    icon: 'preview',
-    entry: CustomPreview,
-    options: {
-      icon: {
-        default: 'preview'
-      },
-      renderType: 'icon',
-      previewUrl: ''
+    // 禁用官方Preview插件
+    [META_APP.Preview]: false,
+    // 使用自定义Preview插件
+    'engine.toolbars.customPreview': {
+        id: 'engine.toolbars.preview',
+        title: 'Preview',
+        icon: 'preview',
+        entry: CustomPreview,
+        options: {
+            icon: {
+                default: 'preview'
+            },
+            renderType: 'icon',
+            previewUrl: ''
+        }
     }
-  }
-}
+};
 ```
 
 ---
@@ -93,17 +93,17 @@ export default {
 
 ```json
 {
-  "designer": {
-    "toolbar": {
-      "preview": "预览"  // 或 "Preview"
-    },
-    "vscode": {
-      "previewFailed": "预览失败"  // 或 "Preview failed"
-    },
-    "common": {
-      "createPageFirst": "请先创建页面"  // 或 "Please create a page first"
+    "designer": {
+        "toolbar": {
+            "preview": "预览" // 或 "Preview"
+        },
+        "vscode": {
+            "previewFailed": "预览失败" // 或 "Preview failed"
+        },
+        "common": {
+            "createPageFirst": "请先创建页面" // 或 "Please create a page first"
+        }
     }
-  }
 }
 ```
 
@@ -113,8 +113,8 @@ export default {
 
 ### 1. VSCode 环境支持
 
-- **VSCode 环境**: 使用 `goPreview` 由插件发起预览
-- **浏览器环境**: 使用原有的 `previewPage` 函数
+-   **VSCode 环境**: 使用 `goPreview` 由插件发起预览
+-   **浏览器环境**: 使用原有的 `previewPage` 函数
 
 ### 2. 统一的国际化
 
@@ -129,7 +129,9 @@ const previewText = t('designer.toolbar.preview');
 支持 `beforePreview`、`previewMethod`、`afterPreview` 等配置选项：
 
 ```typescript
-const { beforePreview, previewMethod, afterPreview } = getOptions('engine.toolbars.preview');
+const { beforePreview, previewMethod, afterPreview } = getOptions(
+    'engine.toolbars.preview'
+);
 ```
 
 ---
@@ -148,22 +150,21 @@ const { beforePreview, previewMethod, afterPreview } = getOptions('engine.toolba
 
 ```javascript
 // 开发者工具 Console
-import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments'
-console.log('Is VSCode:', isVsCodeEnv)
+import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
+console.log('Is VSCode:', isVsCodeEnv);
 ```
 
 ### 检查预览功能
 
 ```javascript
 // 开发者工具 Console
-import { goPreview } from '@/composable/useVSCodeBridge'
+import { goPreview } from '@/composable/useVSCodeBridge';
 goPreview((success, error) => {
-  console.log('Preview result:', success, error)
-})
+    console.log('Preview result:', success, error);
+});
 ```
 
 ---
 
 **创建时间**: 2025-01-XX  
 **状态**: ✅ 已完成并验证
-
