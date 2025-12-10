@@ -11,6 +11,7 @@ import customUseBreadcrumb from './src/toolbars/breadcrumb/composable/useBreadcr
 import CustomClean from './src/toolbars/clean/Main.vue';
 import CustomRefresh from './src/toolbars/refresh/Main.vue';
 import CustomMedia from './src/toolbars/media/Main.vue';
+import CustomPreview from './src/toolbars/preview/Main.vue';
 import CustomProps from './src/settings/props/Main.vue';
 import CustomOutlineTree from './src/plugins/tree/Main.vue';
 import CustomBlockManage from './src/plugins/block/Main.vue';
@@ -72,6 +73,22 @@ export default {
         title: 'Lang',
         icon: 'cn-en',
         entry: CustomLang
+    },
+    // 禁用官方Preview插件
+    [META_APP.Preview]: false,
+    // 使用自定义Preview插件
+    'engine.toolbars.customPreview': {
+        id: 'engine.toolbars.preview',
+        title: 'Preview',
+        icon: 'preview',
+        entry: CustomPreview,
+        options: {
+            icon: {
+                default: 'preview'
+            },
+            renderType: 'icon',
+            previewUrl: ''
+        }
     },
     // 禁用官方 OutlineTree 并注册自定义版本
     [META_APP.OutlineTree]: false,
@@ -348,7 +365,7 @@ export default {
                             META_APP.RedoUndo,
                             META_APP.Clean
                         ],
-                        [META_APP.Preview],
+                        ['engine.toolbars.customPreview'],
                         [META_APP.Save]
                     ],
                     collapse: [[META_APP.Refresh]]
