@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console, @typescript-eslint/naming-convention, camelcase, @typescript-eslint/no-unused-vars, max-lines */
+/* eslint-disable */
 import type { MockMethod } from 'vite-plugin-mock';
 
 // 通用请求日志记录
@@ -600,8 +600,7 @@ export default [
                                                                     'TinyButton',
                                                                 props: {
                                                                     type: 'primary',
-                                                                    text:
-                                                                        '下一步: 网络配置'
+                                                                    text: '下一步: 网络配置'
                                                                 },
                                                                 id: 'next-button'
                                                             }

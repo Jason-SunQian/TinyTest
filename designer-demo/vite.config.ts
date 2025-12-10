@@ -1,4 +1,4 @@
-/* eslint-disable no-console, @typescript-eslint/naming-convention */
+/* eslint-disable */
 import path from 'node:path';
 
 import { defineConfig, mergeConfig } from 'vite';

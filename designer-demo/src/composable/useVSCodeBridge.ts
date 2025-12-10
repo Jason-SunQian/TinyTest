@@ -4,7 +4,7 @@
  * 采用 RPC 风格，支持 callback 回调
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/naming-convention, camelcase, import/order, @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/naming-convention, camelcase, import/order, @typescript-eslint/no-use-before-define, no-console */
 import { setGlobalMonacoEditorTheme } from '@opentiny/tiny-engine-common';
 
 import { getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register';
@@ -100,7 +100,8 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
         );
     } catch (error) {
         // eslint-disable-next-line no-console
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage =
+            error instanceof Error ? error.message : String(error);
         console.error('[VSCode Bridge] Error sending message:', errorMessage);
         throw error;
     }
@@ -122,16 +123,23 @@ const handleVSCodeMessage = (event: MessageEvent) => {
     ) {
         const callback = callbackMap.get(message.command)!;
         callbackMap.delete(message.command);
-        
+
         // 检查响应中是否包含错误
-        const hasError = message.data && typeof message.data === 'object' && 'error' in message.data;
-        
+        const hasError =
+            message.data &&
+            typeof message.data === 'object' &&
+            'error' in message.data;
+
         try {
             callback(message.data, hasError ? message.data : undefined);
         } catch (error) {
             // eslint-disable-next-line no-console
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error('[VSCode Bridge] Error executing callback:', errorMessage);
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
+            console.error(
+                '[VSCode Bridge] Error executing callback:',
+                errorMessage
+            );
         }
         return;
     }
@@ -174,8 +182,12 @@ const handleVSCodeMessage = (event: MessageEvent) => {
             }
         } catch (error) {
             // eslint-disable-next-line no-console
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error('[VSCode Bridge] Error processing command:', errorMessage);
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
+            console.error(
+                '[VSCode Bridge] Error processing command:',
+                errorMessage
+            );
         }
         return;
     }
@@ -208,7 +220,8 @@ const handleSetTheme = (theme: string) => {
         }
     } catch (error) {
         // eslint-disable-next-line no-console
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage =
+            error instanceof Error ? error.message : String(error);
         console.error('[VSCode Bridge] Failed to set theme:', errorMessage);
     }
 };
@@ -241,7 +254,8 @@ export const getInitData = (callback: (data: InitData) => void) => {
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
             console.error(`[VSCode Bridge] getInitData ← error:`, errorMessage);
             callback({});
         } else {
@@ -274,7 +288,8 @@ export const goSave = (
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
             console.error(`[VSCode Bridge] goSave ← error:`, errorMessage);
             callback?.(false, error);
         } else {
@@ -308,7 +323,8 @@ export const goPreview = (
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
             // eslint-disable-next-line no-console
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
             console.error(`[VSCode Bridge] goPreview ← error:`, errorMessage);
             callback?.(false, error);
         } else {
@@ -383,17 +399,15 @@ export const initVSCodeBridge = () => {
  * @param config HTTP请求配置
  * @returns Promise<响应数据>
  */
-export const proxyHttpRequest = (
-    config: {
-        url: string;
-        method?: string;
-        params?: any;
-        data?: any;
-        headers?: any;
-    }
-): Promise<any> => {
+export const proxyHttpRequest = (config: {
+    url: string;
+    method?: string;
+    params?: any;
+    data?: any;
+    headers?: any;
+}): Promise<any> => {
     const isVSCode = checkIsVSCodeEnvironment();
-    
+
     if (!isVSCode) {
         return Promise.reject(
             new Error('Not in VSCode environment, cannot proxy request')
@@ -406,16 +420,21 @@ export const proxyHttpRequest = (
         callbackMap.set(callbackId, (result, error) => {
             if (error) {
                 // eslint-disable-next-line no-console
-                const errorMessage = error instanceof Error ? error.message : String(error);
+                const errorMessage =
+                    error instanceof Error ? error.message : String(error);
                 console.error(
-                    `[VSCode Bridge] proxyHttpRequest ← ${config.method || 'GET'} ${config.url} error:`,
+                    `[VSCode Bridge] proxyHttpRequest ← ${
+                        config.method || 'GET'
+                    } ${config.url} error:`,
                     errorMessage
                 );
                 reject(error);
             } else {
                 // eslint-disable-next-line no-console
                 console.log(
-                    `[VSCode Bridge] proxyHttpRequest ← ${config.method || 'GET'} ${config.url} success:`,
+                    `[VSCode Bridge] proxyHttpRequest ← ${
+                        config.method || 'GET'
+                    } ${config.url} success:`,
                     result
                 );
                 resolve(result);

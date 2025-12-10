@@ -88,13 +88,13 @@ const loadDesignerI18n = () => {
             Object.keys(designerI18n).forEach(locale => {
                 const localeData = (designerI18n as any)[locale];
                 instance.global.mergeLocaleMessage(locale, localeData);
-                
+
                 // 只在开发环境输出详细日志
                 if (import.meta.env.DEV) {
                     console.log(`✅ 已加载语言: ${locale}`);
                 }
             });
-            
+
             if (import.meta.env.DEV) {
                 console.log('✅ 设计器界面国际化配置已加载');
             }
