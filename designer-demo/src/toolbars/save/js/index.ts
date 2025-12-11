@@ -13,9 +13,11 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { constants } from '@opentiny/tiny-engine-utils';
 import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http';
-import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 
-import { goSave } from '../../../composable/useVSCodeBridge';
+import {
+    goSave,
+    checkIsVSCodeEnvironment
+} from '../../../composable/useVSCodeBridge';
 import { t as translate } from '../../../services/i18nService';
 
 const { publish } = useMessage();
@@ -47,8 +49,11 @@ const saveBlock = async (pageSchema: any) => {
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
 
+    // 检测是否在 VSCode 环境中
+    const isVSCode = checkIsVSCodeEnvironment();
+
     // VSCode 环境下，使用 goSave 保存
-    if (isVsCodeEnv) {
+    if (isVSCode) {
         isLoading.value = true;
         try {
             await new Promise<void>((resolve, reject) => {
