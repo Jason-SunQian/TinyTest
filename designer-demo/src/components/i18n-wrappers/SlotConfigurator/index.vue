@@ -212,6 +212,8 @@ export default {
   }
   .slot-switch {
     flex: 1;
+    display: flex;
+    align-items: center;
   }
   .help-icon {
     margin-left: 3px;
@@ -248,8 +250,9 @@ export default {
 .e__switch-core::after {
   content: '';
   position: absolute;
-  top: 1px;
+  top: 50%;
   left: 1px;
+  transform: translateY(-50%);
   border-radius: 100%;
   transition: all 0.3s;
   width: 16px;
@@ -264,6 +267,7 @@ export default {
 .e__switch.e_is-checked .e__switch-core::after {
   left: 100%;
   margin-left: -17px;
+  transform: translateY(-50%);
 }
 </style>
 
