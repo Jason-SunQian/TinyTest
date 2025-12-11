@@ -1,4 +1,4 @@
-import { shallowRef } from 'vue';
+import { computed } from 'vue';
 import type { Ref } from 'vue';
 
 import designerI18n from '../i18n';
@@ -212,24 +212,16 @@ const getSupportedLanguages = (): LanguageConfig[] => {
 
 // 统一对外：在组件中使用国际化
 const useDesignerI18n = () => {
-    const instance = getI18nInstance();
-
-    // localeRef 默认先占位，实例就绪后切到真实的 vue-i18n ref
-    const localeRef: Ref<string> | any = shallowRef<string>(DEFAULT_LANGUAGE);
-
-    if (instance?.global?.locale) {
-        // 初始化时同步一次当前语言
-        localeRef.value = instance.global.locale.value;
-        // 定时同步（避免跨实例 watch 复杂度）
-        setTimeout(() => {
-            localeRef.value = instance.global.locale.value;
-        }, 0);
-    } else {
-        // 实例未就绪时，等待后同步当前语言
-        whenI18nReady().then(inst => {
-            localeRef.value = inst.global.locale.value;
-        });
-    }
+    // 使用 computed 来响应式地获取当前语言，确保能响应语言切换
+    // 如果实例存在，直接使用 i18n.global.locale（它本身是响应式的）
+    // 如果实例不存在，使用默认值
+    const localeRef: Ref<string> = computed(() => {
+        const inst = getI18nInstance();
+        if (inst?.global?.locale) {
+            return inst.global.locale.value;
+        }
+        return DEFAULT_LANGUAGE;
+    });
 
     const t = (key: string, params: Record<string, any> = {}) => {
         const inst: any = getI18nInstance();

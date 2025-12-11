@@ -13,6 +13,13 @@ export { default as LifeCycles } from './LifeCycles/index.vue';
 export { default as BlockHistoryList } from './BlockHistoryList/index.vue';
 export { default as LinkButton } from './LinkButton/index.vue';
 export { default as PluginPanel } from './PluginPanel/index.vue';
+export { default as ConfigRender } from './ConfigRender/index.vue';
+export { default as ConfigItem } from './ConfigItem/index.vue';
+export { default as ConfigGroup } from './ConfigGroup/index.vue';
+export { default as GroupItemConfigurator } from './GroupItemConfigurator/index.vue';
+export { default as ArrayItemConfigurator } from './ArrayItemConfigurator/index.vue';
+export { default as CodeConfigurator } from './CodeConfigurator/index.vue';
+export { default as SlotConfigurator } from './SlotConfigurator/index.vue';
 // export { default as PluginSetting } from './PluginSetting/index.vue'
 // export { default as PluginBlockList } from './PluginBlockList/index.vue'
 // export { default as MetaListItems } from './MetaListItems/index.vue'

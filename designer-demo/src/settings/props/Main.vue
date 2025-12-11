@@ -24,11 +24,11 @@
 /* metaService: engine.setting.props.Main */
 import { computed, watchEffect, ref, reactive, provide } from 'vue';
 import {
-    ConfigRender,
     BlockDescription,
     BlockLinkField,
     PluginPanel
 } from '@opentiny/tiny-engine-common';
+import { ConfigRender } from '@/components/i18n-wrappers';
 import {
     useCanvas,
     useProperty,

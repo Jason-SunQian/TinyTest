@@ -170,10 +170,10 @@ import {
 } from '@opentiny/vue';
 import { iconChevronLeft, iconPlusCircle } from '@opentiny/vue-icon';
 import {
-    ConfigItem,
     MetaListItems,
     MetaCodeEditor
 } from '@opentiny/tiny-engine-common';
+import { ConfigItem } from '@/components/i18n-wrappers';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 
 import {
