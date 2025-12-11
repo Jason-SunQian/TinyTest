@@ -182,7 +182,7 @@ export const openCommon = async () => {
     ) {
         useNotify()({
             type: 'error',
-            title: '保存失败',
+            title: translate('designer.vscode.saveFailed'),
             message: ERR_MSG[curPageState]
         });
         return;

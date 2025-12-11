@@ -5,6 +5,7 @@ import { constants } from '@opentiny/tiny-engine-utils';
 import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 import Login from './Login.vue';
+import { useDesignerI18n } from '@/services/i18nService';
 
 const LOGIN_EXPIRED_CODE = 401;
 const { BROADCAST_CHANNEL } = constants;
@@ -22,10 +23,14 @@ const procession: any = {
 let loginVM: any = null;
 
 const showError = (url?: string, message?: string) => {
+    const { locale } = useDesignerI18n();
+    const isEn = locale.value === 'en_US';
     globalNotify({
         type: 'error',
-        title: '接口报错',
-        message: `报错接口: ${url} \n报错信息: ${message ?? ''}`
+        title: isEn ? 'API Error' : '接口报错',
+        message: isEn
+            ? `Error API: ${url}\nError message: ${message ?? ''}`
+            : `报错接口: ${url} \n报错信息: ${message ?? ''}`
     });
 };
 
