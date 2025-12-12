@@ -304,9 +304,11 @@ export const goSave = (
 
 /**
  * 设计器调用插件：预览
+ * @param data 要预览的页面数据（格式与 goSave 相同）
  * @param callback 可选的回调函数，接收预览结果
  */
 export const goPreview = (
+    data: SaveData,
     callback?: (success: boolean, error?: any) => void
 ) => {
     const isVSCode = checkIsVSCodeEnvironment();
@@ -334,7 +336,7 @@ export const goPreview = (
         }
     });
 
-    sendMessageToVSCode('goPreview', callbackId);
+    sendMessageToVSCode('goPreview', callbackId, data);
 };
 
 /**

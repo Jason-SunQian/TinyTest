@@ -16,7 +16,8 @@ import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
 import {
     useLayout,
     useNotify,
-    getOptions
+    getOptions,
+    useCanvas
 } from '@opentiny/tiny-engine-meta-register';
 import { ToolbarBase } from '@opentiny/tiny-engine-common';
 
@@ -81,22 +82,34 @@ export default {
 
             // VSCode 环境下，使用 goPreview 由插件发起预览
             if (isVSCode) {
-                goPreview((success, error) => {
-                    if (!success) {
-                        useNotify({
-                            type: 'error',
-                            message:
-                                error?.message ||
-                                t('designer.vscode.previewFailed')
-                        });
-                    } else {
-                        // 预览成功，可以添加成功提示（如果需要）
-                        // eslint-disable-next-line no-console
-                        console.log(
-                            '[Preview] Preview opened successfully in VSCode'
-                        );
+                // 获取当前页面数据和 schema（与保存时相同）
+                const { currentPage } = useCanvas().pageState;
+                const pageSchema = useCanvas().getSchema();
+
+                goPreview(
+                    {
+                        pageId: currentPage.id,
+                        pageSchema,
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                        pageData: { ...currentPage, page_content: pageSchema }
+                    },
+                    (success, error) => {
+                        if (!success) {
+                            useNotify({
+                                type: 'error',
+                                message:
+                                    error?.message ||
+                                    t('designer.vscode.previewFailed')
+                            });
+                        } else {
+                            // 预览成功，可以添加成功提示（如果需要）
+                            // eslint-disable-next-line no-console
+                            console.log(
+                                '[Preview] Preview opened successfully in VSCode'
+                            );
+                        }
                     }
-                });
+                );
                 return;
             }
 
