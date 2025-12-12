@@ -9,8 +9,9 @@
         />
     </div>
 </template>
-
+<!-- eslint-disable-next-line -->
 <script lang="ts">
+/* eslint-disable max-lines */
 /* metaService: engine.toolbars.preview.Main */
 import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
 import {

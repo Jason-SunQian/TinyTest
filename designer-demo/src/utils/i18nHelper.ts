@@ -227,10 +227,7 @@ function translateChinesePropertyName(zhText: string): string {
  * @returns 首字母大写的字符串，如 'Label Width'
  * 注意：如果字符串包含中文，在英文环境下返回空字符串
  */
-function formatPropertyName(
-    str: string,
-    currentLocale?: string
-): string {
+function formatPropertyName(str: string, currentLocale?: string): string {
     if (!str || typeof str !== 'string') {
         return str || '';
     }
