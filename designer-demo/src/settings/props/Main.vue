@@ -28,13 +28,13 @@ import {
     BlockLinkField,
     PluginPanel
 } from '@opentiny/tiny-engine-common';
-import { ConfigRender } from '@/components/i18n-wrappers';
 import {
     useCanvas,
     useProperty,
     useLayout
 } from '@opentiny/tiny-engine-meta-register';
 
+import { ConfigRender } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import Empty from './components/Empty.vue';

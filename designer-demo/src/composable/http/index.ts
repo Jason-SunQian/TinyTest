@@ -4,8 +4,9 @@ import { useBroadcastChannel } from '@vueuse/core';
 import { constants } from '@opentiny/tiny-engine-utils';
 import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
-import Login from './Login.vue';
 import { useDesignerI18n } from '@/services/i18nService';
+
+import Login from './Login.vue';
 
 const LOGIN_EXPIRED_CODE = 401;
 const { BROADCAST_CHANNEL } = constants;

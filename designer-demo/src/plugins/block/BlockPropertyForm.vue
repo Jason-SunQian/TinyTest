@@ -169,12 +169,10 @@ import {
     Tooltip as TinyTooltip
 } from '@opentiny/vue';
 import { iconChevronLeft, iconPlusCircle } from '@opentiny/vue-icon';
-import {
-    MetaListItems,
-    MetaCodeEditor
-} from '@opentiny/tiny-engine-common';
-import { ConfigItem } from '@/components/i18n-wrappers';
+import { MetaListItems, MetaCodeEditor } from '@opentiny/tiny-engine-common';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+
+import { ConfigItem } from '@/components/i18n-wrappers';
 
 import {
     getEditProperty,

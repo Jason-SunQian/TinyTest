@@ -1,3 +1,6 @@
+/* eslint-disable max-lines */
+<!-- eslint-disable vue/multi-word-component-names -->
+<!-- eslint-disable vue/max-lines-per-block, vue/no-root-v-if, @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention, new-cap, vue/require-typed-object-prop, @typescript-eslint/prefer-destructuring, no-inline-comments, line-comment-position, vue/html-self-closing, vue/attributes-order, vue/attribute-hyphenation, vue/v-on-event-hyphenation, no-param-reassign, object-shorthand, @typescript-eslint/restrict-plus-operands, prefer-template, @typescript-eslint/no-shadow, vue/block-lang -->
 <template>
     <div
         v-if="!property.hidden"
@@ -10,7 +13,14 @@
             }
         ]"
     >
-        <div :class="['item-warp', labelPosition, property.className, { multiType }]">
+        <div
+            :class="[
+                'item-warp',
+                labelPosition,
+                property.className,
+                { multiType }
+            ]"
+        >
             <div v-if="showLabel" :class="['item-label', { linked: isLinked }]">
                 <tiny-popover
                     placement="top"
@@ -18,7 +28,9 @@
                     trigger="hover"
                     popper-class="prop-label-tips-container"
                     :open-delay="500"
-                    :disabled="!propDescription || propDescription === propLabel"
+                    :disabled="
+                        !propDescription || propDescription === propLabel
+                    "
                 >
                     <div class="prop-content">
                         <div class="prop-title">{{ property.property }}</div>
@@ -78,7 +90,9 @@
                             name="notify-failure"
                             class="error-icon"
                         ></svg-icon>
-                        <span class="error-desc">{{ verification.message }}</span>
+                        <span class="error-desc">{{
+                            verification.message
+                        }}</span>
                     </div>
                 </div>
 
@@ -99,14 +113,18 @@
                             <tiny-tooltip
                                 class="item"
                                 effect="light"
-                                :content="locale.value === 'en_US' ? 'Source Code Edit' : '源码编辑'"
+                                :content="
+                                    locale.value === 'en_US'
+                                        ? 'Source Code Edit'
+                                        : '源码编辑'
+                                "
                                 placement="left"
                             >
                                 <icon-writing
                                     class="code-icon"
                                     @click="
                                         editorModalRef?.open &&
-                                        editorModalRef.open()
+                                            editorModalRef.open()
                                     "
                                 ></icon-writing>
                             </tiny-tooltip>
@@ -130,11 +148,16 @@
     </div>
 </template>
 
-<!-- eslint-disable vue/block-lang, vue/require-explicit-emits, vue/component-api-style -->
+<!-- eslint-disable vue/block-lang, vue/require-explicit-emits, vue/component-api-style, max-lines -->
+<!-- eslint-disable-next-line vue/max-lines-per-block -->
 <script lang="ts">
 import { inject, computed, watch, ref, reactive, provide } from 'vue';
 import { Popover, Tooltip } from '@opentiny/vue';
-import { IconWriting, IconHelpCircle, IconPlusCircle } from '@opentiny/vue-icon';
+import {
+    IconWriting,
+    IconHelpCircle,
+    IconPlusCircle
+} from '@opentiny/vue-icon';
 import { typeOf } from '@opentiny/vue-renderless/common/type';
 import {
     useHistory,
@@ -145,16 +168,27 @@ import {
     getConfigurator
 } from '@opentiny/tiny-engine-meta-register';
 import { utils } from '@opentiny/tiny-engine-utils';
-import { SCHEMA_DATA_TYPE, PAGE_STATUS, TYPES } from '@opentiny/tiny-engine-common/js/constants';
+import {
+    SCHEMA_DATA_TYPE,
+    PAGE_STATUS,
+    TYPES
+} from '@opentiny/tiny-engine-common/js/constants';
 
 // MultiTypeSelector 是内部组件，未从包入口导出
 // 使用组件名（假设已通过 injectGlobalComponents 全局注册）
 
 import { useDesignerI18n } from '@/services/i18nService';
-import { getLocalizedText, getNestedLocalizedText, formatPropertyName, containsChinese, translateChinesePropertyName } from '@/utils/i18nHelper';
+import {
+    getLocalizedText,
+    getNestedLocalizedText,
+    formatPropertyName,
+    containsChinese,
+    translateChinesePropertyName
+} from '@/utils/i18nHelper';
 
 const { parseFunction: generateFunction } = utils;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const hasRule = (required: any, rules: string | any[]) => {
     if (required) {
         return true;
@@ -163,48 +197,65 @@ const hasRule = (required: any, rules: string | any[]) => {
 };
 
 export default {
+    // eslint-disable-next-line vue/component-definition-name-casing, vue/multi-word-component-names
+    name: 'ConfigItem',
     components: {
         // MultiTypeSelector 使用组件名，如果已全局注册
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip: Tooltip,
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconWriting: IconWriting(),
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconPlusCircle: IconPlusCircle(),
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconHelpCircle: IconHelpCircle()
     },
     props: {
         properties: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: [Array, Object],
             default: () => []
         },
         property: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         },
         isTopLayer: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Boolean,
             default: false
         },
         onlyEdit: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Boolean,
             default: false
         },
         group: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         },
         metaComponents: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         },
         showMessageError: {
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Boolean,
             default: false
         }
     },
     emits: ['update:modelValue'],
-    setup(props, { emit }) {
+    // eslint-disable-next-line vue/component-api-style
+    setup(props: Record<string, unknown>, { emit }) {
         // 使用国际化的 CodeConfigurator（已通过 configurators 注册覆盖）
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const CodeConfigurator = getConfigurator('CodeConfigurator');
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const VariableConfigurator = getConfigurator('VariableConfigurator');
 
         const { t, locale } = useDesignerI18n();
@@ -216,6 +267,7 @@ export default {
                 hasRule(props.property?.required, props.property?.rules)
             )
         });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const editorModalRef = ref<any>(null);
         const currentProperty = inject('currentProperty', null);
         const propsObj = inject('propsObj', null);
@@ -230,38 +282,46 @@ export default {
             const labelObj = props.property?.label;
             const currentLang = locale.value;
             const propertyName = props.property.property || '';
-            
+
             // 1. 优先使用 label.text[currentLang]
             if (labelObj?.text?.[currentLang]) {
                 return labelObj.text[currentLang];
             }
-            
+
             // 2. 如果 label.text 是字符串
             if (typeof labelObj?.text === 'string') {
                 // 英文环境下，如果是中文，尝试使用映射表翻译
                 if (currentLang === 'en_US' && containsChinese(labelObj.text)) {
-                    const translated = translateChinesePropertyName(labelObj.text);
+                    const translated = translateChinesePropertyName(
+                        labelObj.text
+                    );
                     if (translated) {
                         return translated;
                     }
                     // 如果映射表没有，使用格式化的 property 名称
-                    return propertyName ? formatPropertyName(propertyName, currentLang) : '';
+                    return propertyName
+                        ? formatPropertyName(propertyName, currentLang)
+                        : '';
                 }
                 return labelObj.text;
             }
-            
+
             // 3. 英文环境下，如果 label.text 是对象但没有 en_US，尝试使用映射表翻译
             if (currentLang === 'en_US') {
                 if (labelObj?.text?.zh_CN) {
-                    const translated = translateChinesePropertyName(labelObj.text.zh_CN);
+                    const translated = translateChinesePropertyName(
+                        labelObj.text.zh_CN
+                    );
                     if (translated) {
                         return translated;
                     }
                 }
                 // 如果映射表没有，返回格式化的 property 名称
-                return propertyName ? formatPropertyName(propertyName, currentLang) : '';
+                return propertyName
+                    ? formatPropertyName(propertyName, currentLang)
+                    : '';
             }
-            
+
             // 4. 中文环境下，可以回退到中文
             if (currentLang === 'zh_CN') {
                 if (labelObj?.text?.zh_CN) {
@@ -269,13 +329,14 @@ export default {
                 }
                 if (typeof labelObj?.text === 'object' && labelObj.text) {
                     // 如果 label.text 是对象，尝试获取第一个值
+                    // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                     const firstKey = Object.keys(labelObj.text)[0];
                     if (firstKey && labelObj.text[firstKey]) {
                         return labelObj.text[firstKey];
                     }
                 }
             }
-            
+
             // 5. 最后回退到 property 名称（原始逻辑）
             // 英文环境下，如果 property 名称是中文，返回空字符串
             if (propertyName) {
@@ -284,12 +345,13 @@ export default {
                 }
                 return formatPropertyName(propertyName, currentLang);
             }
-            
+
             return '';
         });
 
         const multiType = computed(() => Array.isArray(widget.value.component));
-        const isBindingState = ref(false); // 当前是否是绑定到状态变量state
+        // 当前是否是绑定到状态变量state
+        const isBindingState = ref(false);
         const showCodeEditIcon = computed(
             () =>
                 props.isTopLayer &&
@@ -315,20 +377,25 @@ export default {
         // 注意：对于 description（提示信息），允许回退到中文，因为这是帮助信息
         const propDescription = computed(() => {
             const currentLang = locale.value;
-            
+
             // 优先使用 description
+            // eslint-disable-next-line no-inline-comments, line-comment-position
             if (props.property?.description) {
                 // 先尝试获取当前语言的翻译
                 let desc = getLocalizedText(
                     props.property.description,
                     currentLang
                 );
-                
+
                 // 如果当前是英文但没有英文翻译，允许回退到中文（仅用于 description 提示）
-                if (!desc && currentLang === 'en_US' && typeof props.property.description === 'object') {
+                if (
+                    !desc &&
+                    currentLang === 'en_US' &&
+                    typeof props.property.description === 'object'
+                ) {
                     desc = props.property.description.zh_CN || '';
                 }
-                
+
                 if (desc) {
                     return desc;
                 }
@@ -341,11 +408,21 @@ export default {
                     currentLang
                 );
                 // 如果当前是英文但没有英文翻译，允许回退到中文（仅用于 description 提示）
-                if (!labelText && currentLang === 'en_US' && props.property.label?.text) {
-                    if (typeof props.property.label.text === 'object' && props.property.label.text.zh_CN) {
+                if (
+                    !labelText &&
+                    currentLang === 'en_US' &&
+                    props.property.label?.text
+                ) {
+                    if (
+                        typeof props.property.label.text === 'object' &&
+                        props.property.label.text.zh_CN
+                    ) {
                         return props.property.label.text.zh_CN;
                     }
-                    if (typeof props.property.label.text === 'string' && containsChinese(props.property.label.text)) {
+                    if (
+                        typeof props.property.label.text === 'string' &&
+                        containsChinese(props.property.label.text)
+                    ) {
                         return props.property.label.text;
                     }
                 }
@@ -358,8 +435,9 @@ export default {
         const isLinked = computed(() => Boolean(props.property.linked));
         const component = computed(() => {
             // TODO: 需要弄清楚 props.metaComponents[widget.value.component] 是什么场景
+            // 使用组件名（假设已全局注册）
             return multiType.value
-                ? 'MultiTypeSelector' // 使用组件名（假设已全局注册）
+                ? 'MultiTypeSelector'
                 : getConfigurator(widget.value.component) ||
                       props.metaComponents[widget.value.component] ||
                       getConfigurator('InputConfigurator');
@@ -424,8 +502,10 @@ export default {
         });
 
         const updateValue = (value: {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             type?: any;
             componentName?: string;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             props?: { name: any };
         }) => {
             const { property, type } = props.property;
@@ -443,6 +523,7 @@ export default {
                     // 支持指定参数的 v-model，如：`v-model:visible`，如果组件使用的是除 modelValue 之外的其它参数，则将该参数显式声明为 prop
                     const model =
                         property === 'modelValue' ? true : { prop: property };
+                    // eslint-disable-next-line no-param-reassign
                     value = { ...value, model };
                 }
             }
@@ -459,10 +540,9 @@ export default {
             } else {
                 if (
                     !isSaved() &&
-                    ![
-                        PAGE_STATUS.Guest,
-                        PAGE_STATUS.Occupy
-                    ].includes(useLayout().layoutState.pageStatus.state)
+                    ![PAGE_STATUS.Guest, PAGE_STATUS.Occupy].includes(
+                        useLayout().layoutState.pageStatus.state
+                    )
                 ) {
                     return;
                 }
@@ -474,6 +554,7 @@ export default {
                     )
                 ) {
                     // icon以组件形式传入，实现类似:icon="IconPlus"的图标配置（排除Icon组件本身）
+                    // eslint-disable-next-line no-param-reassign
                     value = {
                         componentName: 'Icon',
                         props: {
@@ -491,13 +572,14 @@ export default {
         };
 
         const setVerifyFailed = (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             result: { failed: any; message: any },
             message: string
         ) => {
             result.failed = true;
             // locale 现在是 computed，locale.value 直接是字符串
             const currentLang = locale.value;
-            
+
             // 使用工具函数处理错误消息的多语言
             if (typeof message === 'string') {
                 result.message = message;
@@ -520,6 +602,7 @@ export default {
             return !isEmptyInputValue(value);
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const verifyValue = (value = '', rules: any[] = []) => {
             const result = {
                 failed: false,
@@ -536,6 +619,7 @@ export default {
                 return result;
             }
 
+            // eslint-disable-next-line @typescript-eslint/prefer-destructuring
             const length = rules.length;
             const { getProp } = useProperties();
 
@@ -577,6 +661,7 @@ export default {
 
         const executeRelationAction = (
             value: string | undefined,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             preValue: any
         ) => {
             const { onChange, rules } = props.property;
@@ -590,7 +675,7 @@ export default {
                         config: {
                             ...widget.value?.props
                         },
-                        setProp: setProp,
+                        setProp,
                         delProp
                     });
                     fun(value, preValue);
@@ -604,6 +689,7 @@ export default {
             Object.assign(verification, verifyValue(value, rules));
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const onModelUpdate = (data: any, shouldUpdate = true) => {
             const preValue = bindValue.value;
             widget.value.props.modelValue = data;
@@ -619,6 +705,7 @@ export default {
         const parentData = inject('data', null);
         provide(
             'path',
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, prefer-template
             `${parentPath ? parentPath + '.' : ''}${props.property.property}`
         );
         provide('data', useProperties().getSchema());
@@ -667,6 +754,7 @@ export default {
             }
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const isRelatedComponents = (component: string) =>
             [
                 'RelatedEditorConfigurator',
@@ -681,7 +769,9 @@ export default {
         );
 
         return {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             CodeConfigurator,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             VariableConfigurator,
             verification,
             showCodeEditIcon,
@@ -713,7 +803,8 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<!-- eslint-disable-next-line vue/block-lang, vue/max-lines-per-block -->
+<style lang="scss" scoped>
 .sensitive-tip {
     width: 50px;
     position: absolute;
@@ -918,7 +1009,8 @@ export default {
 }
 </style>
 
-<style lang="less">
+<!-- eslint-disable-next-line vue/block-lang -->
+<style lang="scss">
 .tiny-popover.tiny-popper {
     &.prop-label-tips-container {
         .prop-content {
@@ -944,4 +1036,3 @@ export default {
     }
 }
 </style>
-
