@@ -45,13 +45,137 @@ VSCode 插件中 Mock 接口本地化实现方案
 /app-center/api/apps/extension/*	GET/POST	Bridge/Utils 相关	从 app-schema.json 的 bridge、utils 读取/更新
 四、数据格式要求
 4.1 应用 Schema 数据格式（/app-center/v1/api/apps/schema/:id）
-{    data: {        meta: {            name: string,            tenant: number,            git_group: string,            project_name: string,            description: string,            branch: string,            is_demo: boolean | null,            global_state: Array<any>,            appId: string,            creator: string,            gmt_create: string,            gmt_modified: string        },        dataSource: {            list: Array<{                id: number,                name: string,                data: any,                tpl: any,                app: string,                desc: string | null,                created_at: string,                updated_at: string            }>,            dataHandler?: {                type: 'JSFunction',                value: string            }        },        bridge: {            list: Array<any>        },        i18n: {            list: Array<any>        },        utils: Array<any>,        componentsTree: Array<any>,  // 页面树结构        componentsMap: Array<{      // 组件映射            componentName: string,            package: string,            version: string,            exportName: string,            destructuring: boolean        }>    },    locale?: 'zh-cn'}
+
+```typescript
+{
+    data: {
+        meta: {
+            name: string,
+            tenant: number,
+            git_group: string,
+            project_name: string,
+            description: string,
+            branch: string,
+            is_demo: boolean | null,
+            global_state: Array<any>,
+            appId: string,
+            creator: string,
+            gmt_create: string,
+            gmt_modified: string
+        },
+        dataSource: {
+            list: Array<{
+                id: number,
+                name: string,
+                data: any,
+                tpl: any,
+                app: string,
+                desc: string | null,
+                created_at: string,
+                updated_at: string
+            }>,
+            dataHandler?: {
+                type: 'JSFunction',
+                value: string
+            }
+        },
+        bridge: {
+            list: Array<any>
+        },
+        i18n: {
+            list: Array<any>
+        },
+        utils: Array<any>,
+        componentsTree: Array<any>,  // 页面树结构
+        componentsMap: Array<{      // 组件映射
+            componentName: string,
+            package: string,
+            version: string,
+            exportName: string,
+            destructuring: boolean
+        }>
+    },
+    locale?: 'zh-cn'
+}
+```
 4.2 页面列表数据格式（/app-center/api/pages/list/:appId）
-{    data: Array<{        name: string,              // 页面名称        id: string,                // 页面ID（对应文件名）        app: string,               // 应用ID        route: string,             // 页面路由        page_content?: {           // 页面 Schema（可选，列表可能不包含完整内容）            componentName: 'Page',            // ... 其他 schema 字段        },        isHome: boolean,        parentId: string,        isBody: boolean,        group: string,        isPage: boolean,        occupier?: {            id: number,            username: string        }    }>}
+
+```typescript
+{
+    data: Array<{
+        name: string,              // 页面名称
+        id: string,                // 页面ID（对应文件名）
+        app: string,               // 应用ID
+        route: string,             // 页面路由
+        page_content?: {           // 页面 Schema（可选，列表可能不包含完整内容）
+            componentName: 'Page',
+            // ... 其他 schema 字段
+        },
+        isHome: boolean,
+        parentId: string,
+        isBody: boolean,
+        group: string,
+        isPage: boolean,
+        occupier?: {
+            id: number,
+            username: string
+        }
+    }>
+}
+```
 4.3 页面详情数据格式（/app-center/api/pages/detail/:id）
-{    data: {        name: string,        id: string,        app: string,        route: string,        page_content: {            // 完整的页面 Schema（必需）            componentName: 'Page',            fileName: string,            css: string,            props: Record<string, any>,            children: Array<any>,   // 组件树            methods: Record<string, any>,            state: Record<string, any>,            lifeCycles: Record<string, any>,            dataSource: {                list: Array<any>            },            inputs: Array<any>,            outputs: Array<any>,            utils: Array<any>,            bridge: Array<any>        },        isHome: boolean,        parentId: string,        isBody: boolean,        group: string,        occupier?: {            id: number,            username: string        }    }}
+
+```typescript
+{
+    data: {
+        name: string,
+        id: string,
+        app: string,
+        route: string,
+        page_content: {
+            // 完整的页面 Schema（必需）
+            componentName: 'Page',
+            fileName: string,
+            css: string,
+            props: Record<string, any>,
+            children: Array<any>,   // 组件树
+            methods: Record<string, any>,
+            state: Record<string, any>,
+            lifeCycles: Record<string, any>,
+            dataSource: {
+                list: Array<any>
+            },
+            inputs: Array<any>,
+            outputs: Array<any>,
+            utils: Array<any>,
+            bridge: Array<any>
+        },
+        isHome: boolean,
+        parentId: string,
+        isBody: boolean,
+        group: string,
+        occupier?: {
+            id: number,
+            username: string
+        }
+    }
+}
+```
 五、文件存储结构建议
-workspace-root/├── .lowcode/                    # 低代码配置目录（可选，用于存储应用级数据）│   ├── app.json                 # 应用基本信息│   └── app-schema.json          # 应用 Schema（dataSource, bridge, i18n, utils等）└── PAGE/                        # 页面目录（已存在）    ├── module1/    │   └── page1.json    ├── module2/    │   └── page2.json    ├── schama2.json             # 页面 Schema 文件    └── schama3.json
+
+```
+workspace-root/
+├── .lowcode/                    # 低代码配置目录（可选，用于存储应用级数据）
+│   ├── app.json                 # 应用基本信息
+│   └── app-schema.json          # 应用 Schema（dataSource, bridge, i18n, utils等）
+└── PAGE/                        # 页面目录（已存在）
+    ├── module1/
+    │   └── page1.json
+    ├── module2/
+    │   └── page2.json
+    ├── schama2.json             # 页面 Schema 文件
+    └── schama3.json
+```
 或者更简单的方案（推荐）：
 应用级数据：存储在 app-schema.json（与现有结构兼容）
 页面数据：直接使用现有的 PAGE 目录下的 JSON 文件
@@ -64,7 +188,40 @@ workspace-root/├── .lowcode/                    # 低代码配置目录（
 处理函数从本地文件读取或写入数据
 返回与 mock 接口相同格式的响应
 实现结构：
-// 伪代码示例proxyHttpRequest: async (message, webviewId) => {    const { url, method, params, data } = message.data;        // 路由到对应的处理函数    let responseData;        if (url.match(/^\/app-center\/v1\/api\/apps\/schema\/(.+)$/)) {        // 读取 app-schema.json        responseData = await readAppSchema(appId);    } else if (url.match(/^\/app-center\/api\/pages\/list\/(.+)$/)) {        // 扫描 PAGE 目录，读取所有 JSON 文件        responseData = await readPageList(appId);    } else if (url.match(/^\/app-center\/api\/pages\/detail\/(.+)$/)) {        // 根据 pageId 读取对应的 JSON 文件        responseData = await readPageDetail(pageId);    } else if (url.match(/^\/app-center\/api\/pages\/update\/(.+)$/)) {        // 更新对应的 JSON 文件        responseData = await updatePage(pageId, data);    } else if (url === '/platform-center/api/user/me') {        // 返回固定 mock 数据        responseData = { id: 1, username: 'Developer', ... };    }    // ... 其他接口        // 返回响应（保持 mock 格式）    sendMessageToWebview(webviewId, message.callback, {        data: responseData,        locale: 'zh-cn'  // 可选    });}
+
+```typescript
+// 伪代码示例
+proxyHttpRequest: async (message, webviewId) => {
+    const { url, method, params, data } = message.data;
+    
+    // 路由到对应的处理函数
+    let responseData;
+    
+    if (url.match(/^\/app-center\/v1\/api\/apps\/schema\/(.+)$/)) {
+        // 读取 app-schema.json
+        responseData = await readAppSchema(appId);
+    } else if (url.match(/^\/app-center\/api\/pages\/list\/(.+)$/)) {
+        // 扫描 PAGE 目录，读取所有 JSON 文件
+        responseData = await readPageList(appId);
+    } else if (url.match(/^\/app-center\/api\/pages\/detail\/(.+)$/)) {
+        // 根据 pageId 读取对应的 JSON 文件
+        responseData = await readPageDetail(pageId);
+    } else if (url.match(/^\/app-center\/api\/pages\/update\/(.+)$/)) {
+        // 更新对应的 JSON 文件
+        responseData = await updatePage(pageId, data);
+    } else if (url === '/platform-center/api/user/me') {
+        // 返回固定 mock 数据
+        responseData = { id: 1, username: 'Developer', ... };
+    }
+    // ... 其他接口
+    
+    // 返回响应（保持 mock 格式）
+    sendMessageToWebview(webviewId, message.callback, {
+        data: responseData,
+        locale: 'zh-cn'  // 可选
+    });
+}
+```
 6.2 文件操作函数设计
 需要实现的核心函数：
 readAppSchema(appId: string) - 读取应用 Schema
@@ -84,8 +241,10 @@ updateAppSchema(appId: string, schemaData: any) - 更新应用 Schema
 简单但不够灵活
 七、关键实现点
 7.1 URL 路径解析
+
 使用正则表达式或 URL 解析库提取路径参数
-例如：/app-center/api/pages/detail/1 → { path: '/app-center/api/pages/detail/:id', id: '1' }
+
+例如：`/app-center/api/pages/detail/1` → `{ path: '/app-center/api/pages/detail/:id', id: '1' }`
 7.2 数据格式转换
 确保从文件读取的数据格式与 mock 接口返回格式一致
 特别注意：响应外层需要包裹 { data: {...} } 结构
