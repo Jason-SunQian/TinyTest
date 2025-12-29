@@ -396,23 +396,21 @@ export const initVSCodeBridge = () => {
 };
 
 /**
- * 设计器调用插件：HTTP请求代理
- * 在VSCode环境中，通过插件代理HTTP请求到本地mockServer，解决跨域问题
- * @param config HTTP请求配置
+ * 设计器调用插件：通用命令调用
+ * 在VSCode环境中，通过插件执行指定的命令
+ * @param command 命令名称（如 appDetail、pageList 等）
+ * @param data 传递给插件的数据
  * @returns Promise<响应数据>
  */
-export const proxyHttpRequest = (config: {
-    url: string;
-    method?: string;
-    params?: any;
-    data?: any;
-    headers?: any;
-}): Promise<any> => {
+export const callVSCodeCommand = (
+    command: string,
+    data?: any
+): Promise<any> => {
     const isVSCode = checkIsVSCodeEnvironment();
 
     if (!isVSCode) {
         return Promise.reject(
-            new Error('Not in VSCode environment, cannot proxy request')
+            new Error('Not in VSCode environment, cannot call command')
         );
     }
 
@@ -425,26 +423,39 @@ export const proxyHttpRequest = (config: {
                 const errorMessage =
                     error instanceof Error ? error.message : String(error);
                 console.error(
-                    `[VSCode Bridge] proxyHttpRequest ← ${
-                        config.method || 'GET'
-                    } ${config.url} error:`,
+                    `[VSCode Bridge] ${command} ← error:`,
                     errorMessage
                 );
                 reject(error);
             } else {
                 // eslint-disable-next-line no-console
                 console.log(
-                    `[VSCode Bridge] proxyHttpRequest ← ${
-                        config.method || 'GET'
-                    } ${config.url} success:`,
+                    `[VSCode Bridge] ${command} ← success:`,
                     result
                 );
                 resolve(result);
             }
         });
 
-        sendMessageToVSCode('proxyHttpRequest', callbackId, config);
+        sendMessageToVSCode(command, callbackId, data);
     });
+};
+
+/**
+ * 设计器调用插件：HTTP请求代理（保留向后兼容）
+ * 在VSCode环境中，通过插件代理HTTP请求到本地mockServer，解决跨域问题
+ * @param config HTTP请求配置
+ * @returns Promise<响应数据>
+ */
+export const proxyHttpRequest = (config: {
+    url: string;
+    method?: string;
+    params?: any;
+    data?: any;
+    headers?: any;
+}): Promise<any> => {
+    // 使用新的通用函数，保持向后兼容
+    return callVSCodeCommand('proxyHttpRequest', config);
 };
 
 /**
@@ -454,5 +465,6 @@ export const vscodeBridge = {
     getInitData,
     goSave,
     goPreview,
-    proxyHttpRequest
+    proxyHttpRequest,
+    callVSCodeCommand
 };

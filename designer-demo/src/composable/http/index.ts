@@ -5,6 +5,7 @@ import { constants } from '@opentiny/tiny-engine-utils';
 import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
 import { useDesignerI18n } from '@/services/i18nService';
+import { getMockData } from '@/utils/mockData';
 
 import Login from './Login.vue';
 
@@ -35,6 +36,115 @@ const showError = (url?: string, message?: string) => {
     });
 };
 
+// URL 到 command 的映射关系（需要插件处理的接口）
+// 根据 MOCK_MIGRATION.md 第三章表格定义
+interface UrlRoute {
+    pattern: RegExp;
+    method: string;
+    command: string;
+}
+
+const urlRoutes: UrlRoute[] = [
+    // 应用级接口
+    {
+        pattern: /^\/app-center\/api\/apps\/detail\/(.+)$/,
+        method: 'get',
+        command: 'appDetail'
+    },
+    {
+        pattern: /^\/app-center\/v1\/api\/apps\/schema\/(.+)$/,
+        method: 'get',
+        command: 'appSchema'
+    },
+    {
+        pattern: /^\/app-center\/api\/apps\/update\/(.+)$/,
+        method: 'post',
+        command: 'appUpdate'
+    },
+    // 页面级接口
+    {
+        pattern: /^\/app-center\/api\/pages\/list\/(.+)$/,
+        method: 'get',
+        command: 'pageList'
+    },
+    {
+        pattern: /^\/app-center\/api\/pages\/detail\/(.+)$/,
+        method: 'get',
+        command: 'pageDetail'
+    },
+    {
+        pattern: /^\/app-center\/api\/pages\/update\/(.+)$/,
+        method: 'post',
+        command: 'pageUpdate'
+    },
+    // 数据源接口
+    {
+        pattern: /^\/app-center\/api\/sources\/list\/(.+)$/,
+        method: 'get',
+        command: 'sourceList'
+    },
+    {
+        pattern: /^\/app-center\/api\/sources\/detail\/(.+)$/,
+        method: 'get',
+        command: 'sourceDetail'
+    },
+    {
+        pattern: /^\/app-center\/api\/sources\/create$/,
+        method: 'post',
+        command: 'sourceCreate'
+    },
+    {
+        pattern: /^\/app-center\/api\/sources\/update\/(.+)$/,
+        method: 'post',
+        command: 'sourceUpdate'
+    },
+    {
+        pattern: /^\/app-center\/api\/sources\/delete\/(.+)$/,
+        method: 'get',
+        command: 'sourceDelete'
+    },
+    // i18n 接口
+    {
+        pattern: /^\/app-center\/api\/i18n\/entries\/create$/,
+        method: 'post',
+        command: 'i18nCreate'
+    },
+    {
+        pattern: /^\/app-center\/api\/i18n\/entries\/update$/,
+        method: 'post',
+        command: 'i18nUpdate'
+    },
+    // extension 接口
+    {
+        pattern: /^\/app-center\/api\/apps\/extension\/create$/,
+        method: 'post',
+        command: 'extensionCreate'
+    },
+    {
+        pattern: /^\/app-center\/api\/apps\/extension\/update$/,
+        method: 'post',
+        command: 'extensionUpdate'
+    }
+];
+
+/**
+ * 根据 URL 和 method 查找对应的 command
+ * @param url 请求 URL
+ * @param method 请求方法
+ * @returns command 名称，如果不需要插件处理则返回 null
+ */
+const findCommandForUrl = (url: string, method: string): string | null => {
+    const normalizedMethod = method.toLowerCase();
+    
+    for (const route of urlRoutes) {
+        if (route.method === normalizedMethod && route.pattern.test(url)) {
+            return route.command;
+        }
+    }
+    
+    return null;
+};
+
 // VSCode环境下的HTTP请求代理adapter
 let vscodeHttpAdapter:
     | ((config: InternalAxiosRequestConfig) => Promise<unknown>)
@@ -56,9 +166,6 @@ const createVSCodeHttpAdapter = () => {
     // 创建自定义adapter
     vscodeHttpAdapter = async (config: InternalAxiosRequestConfig) => {
         try {
-            // 动态导入，避免循环依赖
-            const { proxyHttpRequest } = await import('../useVSCodeBridge');
-
             // 构建完整的URL（axios可能已经处理了baseURL，但我们需要确保URL格式正确）
             let requestUrl = config.url || '';
 
@@ -74,25 +181,64 @@ const createVSCodeHttpAdapter = () => {
                 }
             }
 
-            // eslint-disable-next-line no-console
-            console.log(
-                `[HTTP Service] Proxying ${
-                    config.method?.toUpperCase() || 'GET'
-                } ${requestUrl} via VSCode Bridge`
-            );
+            const method = config.method || 'get';
+            const command = findCommandForUrl(requestUrl, method);
 
-            const response = await proxyHttpRequest({
-                url: requestUrl,
-                method: config.method || 'get',
-                params: config.params,
-                data: config.data,
-                headers: config.headers
-            });
+            let response: { data: any; locale?: string };
 
-            // mockServer返回的格式通常是 { data: {...}, locale: 'zh-cn' }
-            // 我们需要保持这个格式，让preResponse拦截器处理
+            if (command) {
+                // 需要插件处理的接口：使用对应的 command 调用插件
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[HTTP Service] Calling VSCode command: ${command} for ${
+                        method.toUpperCase()
+                    } ${requestUrl}`
+                );
+
+                const { callVSCodeCommand } = await import('../useVSCodeBridge');
+                
+                // 构建传递给插件的数据
+                const commandData = {
+                    url: requestUrl,
+                    method,
+                    params: config.params,
+                    data: config.data,
+                    headers: config.headers
+                };
+
+                const result = await callVSCodeCommand(command, commandData);
+                
+                // 插件返回的数据格式应该是 { data: {...}, locale?: 'zh-cn' }
+                response = result || { data: null };
+            } else {
+                // 不需要插件处理的接口：从 mock 文件读取数据
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[HTTP Service] Using mock data for ${
+                        method.toUpperCase()
+                    } ${requestUrl}`
+                );
+
+                const mockResult = await getMockData(
+                    requestUrl,
+                    method,
+                    config.params,
+                    config.data
+                );
+
+                if (mockResult) {
+                    response = mockResult;
+                } else {
+                    // 如果 mock 文件中没有找到，返回默认响应
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `[HTTP Service] No mock data found for ${method.toUpperCase()} ${requestUrl}, returning empty response`
+                    );
+                    response = { data: null };
+                }
+            }
+
             // 返回符合axios响应格式的数据
-            // response 已经是 { data: {...}, locale: 'zh-cn' } 格式
             return {
                 data: response,
                 status: 200,

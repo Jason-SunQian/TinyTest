@@ -203,63 +203,182 @@ workspace-root/
 页面 ID 映射：通过文件名映射（如 schama2.json → id: "schama2" 或通过文件内容中的 id 字段）
 ## 六、实现方案
 
-### 6.1 VSCode 插件端改造
+### 6.1 设计器端改造（核心改动）
 
-在 `webviewMessageCommands.ts` 的 `proxyHttpRequest` 处理器中：
+**改造思路：**
+- **URL 区分工作从插件端移到设计器端**：设计器根据 URL 和 method 判断是调用插件还是使用 mock 数据
+- **需要插件处理的接口**：使用对应的 command（如 `appDetail`、`pageList` 等）调用插件
+- **不需要插件处理的接口**：设计器直接从 mock 文件读取数据返回
 
-1. 解析请求 URL，提取路径和参数
-2. 根据 URL 路径路由到对应的处理函数
-3. 处理函数从本地文件读取或写入数据
-4. 返回与 mock 接口相同格式的响应
+**实现位置：**
+- `designer-demo/src/composable/http/index.ts` - HTTP adapter 实现
+- `designer-demo/src/composable/useVSCodeBridge.ts` - VSCode 通信函数
+- `designer-demo/src/utils/mockData.ts` - Mock 数据工具函数
 
 **实现结构：**
 
 ```typescript
-// 伪代码示例
-proxyHttpRequest: async (message, webviewId) => {
-    const { url, method, params, data } = message.data;
-    
-    // 路由到对应的处理函数
-    let responseData;
-    
-    if (url.match(/^\/app-center\/v1\/api\/apps\/schema\/(.+)$/)) {
-        // 读取 app-schema.json
-        responseData = await readAppSchema(appId);
-    } else if (url.match(/^\/app-center\/api\/pages\/list\/(.+)$/)) {
-        // 扫描 PAGE 目录，读取所有 JSON 文件
-        responseData = await readPageList(appId);
-    } else if (url.match(/^\/app-center\/api\/pages\/detail\/(.+)$/)) {
-        // 根据 pageId 读取对应的 JSON 文件
-        responseData = await readPageDetail(pageId);
-    } else if (url.match(/^\/app-center\/api\/pages\/update\/(.+)$/)) {
-        // 更新对应的 JSON 文件
-        responseData = await updatePage(pageId, data);
-    } else if (url === '/platform-center/api/user/me') {
-        // 返回固定 mock 数据
-        responseData = { id: 1, username: 'Developer', ... };
-    }
-    // ... 其他接口
-    
-    // 返回响应（保持 mock 格式）
-    sendMessageToWebview(webviewId, message.callback, {
-        data: responseData,
-        locale: 'zh-cn'  // 可选
-    });
-}
+// 在 createVSCodeHttpAdapter 中实现 URL 路由逻辑
+const createVSCodeHttpAdapter = () => {
+    return async (config: InternalAxiosRequestConfig) => {
+        const url = config.url;
+        const method = config.method || 'get';
+        
+        // 1. 根据 URL 和 method 查找对应的 command
+        const command = findCommandForUrl(url, method);
+        
+        if (command) {
+            // 2. 需要插件处理的接口：使用对应的 command 调用插件
+            const { callVSCodeCommand } = await import('../useVSCodeBridge');
+            const result = await callVSCodeCommand(command, {
+                url,
+                method,
+                params: config.params,
+                data: config.data,
+                headers: config.headers
+            });
+            return { data: result, status: 200, ... };
+        } else {
+            // 3. 不需要插件处理的接口：从 mock 文件读取数据
+            const { getMockData } = await import('@/utils/mockData');
+            const mockResult = await getMockData(url, method, config.params, config.data);
+            return { data: mockResult, status: 200, ... };
+        }
+    };
+};
 ```
-### 6.2 文件操作函数设计
 
-需要实现的核心函数：
+**URL 到 Command 的映射关系：**
 
-- `readAppSchema(appId: string)` - 读取应用 Schema
-- `readPageList(appId: string)` - 读取页面列表
-- `readPageDetail(pageId: string)` - 读取页面详情
-- `updatePage(pageId: string, pageData: any)` - 更新页面
-- `createPage(pageData: any)` - 创建页面
-- `deletePage(pageId: string)` - 删除页面
-- `updateAppSchema(appId: string, schemaData: any)` - 更新应用 Schema
+在 `http/index.ts` 中定义了 `urlRoutes` 数组，包含所有需要插件处理的接口映射：
 
-### 6.3 页面 ID 与文件名的映射策略
+```typescript
+const urlRoutes: UrlRoute[] = [
+    // 应用级接口
+    { pattern: /^\/app-center\/api\/apps\/detail\/(.+)$/, method: 'get', command: 'appDetail' },
+    { pattern: /^\/app-center\/v1\/api\/apps\/schema\/(.+)$/, method: 'get', command: 'appSchema' },
+    { pattern: /^\/app-center\/api\/apps\/update\/(.+)$/, method: 'post', command: 'appUpdate' },
+    // 页面级接口
+    { pattern: /^\/app-center\/api\/pages\/list\/(.+)$/, method: 'get', command: 'pageList' },
+    { pattern: /^\/app-center\/api\/pages\/detail\/(.+)$/, method: 'get', command: 'pageDetail' },
+    { pattern: /^\/app-center\/api\/pages\/update\/(.+)$/, method: 'post', command: 'pageUpdate' },
+    // 数据源接口
+    { pattern: /^\/app-center\/api\/sources\/list\/(.+)$/, method: 'get', command: 'sourceList' },
+    { pattern: /^\/app-center\/api\/sources\/detail\/(.+)$/, method: 'get', command: 'sourceDetail' },
+    { pattern: /^\/app-center\/api\/sources\/create$/, method: 'post', command: 'sourceCreate' },
+    { pattern: /^\/app-center\/api\/sources\/update\/(.+)$/, method: 'post', command: 'sourceUpdate' },
+    { pattern: /^\/app-center\/api\/sources\/delete\/(.+)$/, method: 'get', command: 'sourceDelete' },
+    // i18n 接口
+    { pattern: /^\/app-center\/api\/i18n\/entries\/create$/, method: 'post', command: 'i18nCreate' },
+    { pattern: /^\/app-center\/api\/i18n\/entries\/update$/, method: 'post', command: 'i18nUpdate' },
+    // extension 接口
+    { pattern: /^\/app-center\/api\/apps\/extension\/create$/, method: 'post', command: 'extensionCreate' },
+    { pattern: /^\/app-center\/api\/apps\/extension\/update$/, method: 'post', command: 'extensionUpdate' }
+];
+```
+
+### 6.2 VSCode 插件端改造
+
+**改造思路：**
+- 插件端不再需要根据 URL 路由，直接根据 command 处理对应的逻辑
+- 每个 command 对应一个处理函数，从本地文件读取或写入数据
+
+**实现位置：**
+- `packages/vscode/src/commands/webviewMessageCommands.ts`
+
+**实现结构：**
+
+```typescript
+// 插件端处理不同的 command
+const handleWebviewMessage = (message: WebviewMessage) => {
+    const { command, callback, data } = message;
+    
+    switch (command) {
+        case 'appDetail':
+            // 读取 app.json 或返回固定数据
+            handleAppDetail(data, callback);
+            break;
+        case 'appSchema':
+            // 读取 app-schema.json
+            handleAppSchema(data, callback);
+            break;
+        case 'pageList':
+            // 扫描 PAGE 目录，读取所有 JSON 文件
+            handlePageList(data, callback);
+            break;
+        case 'pageDetail':
+            // 根据 pageId 读取对应的 JSON 文件
+            handlePageDetail(data, callback);
+            break;
+        case 'pageUpdate':
+            // 更新对应的 JSON 文件
+            handlePageUpdate(data, callback);
+            break;
+        // ... 其他 command
+        default:
+            // 未知 command，返回错误
+            break;
+    }
+};
+```
+### 6.3 Mock 数据工具函数
+
+**实现位置：**
+- `designer-demo/src/utils/mockData.ts`
+
+**功能：**
+- 从 mock 文件中根据 URL 和 method 匹配并执行对应的 response 函数
+- 支持路径参数模式（如 `/app-center/api/pages/detail/:id`）
+- 返回标准格式：`{ data: any, locale?: string }`
+
+**使用方式：**
+
+```typescript
+import { getMockData } from '@/utils/mockData';
+
+// 获取 mock 数据
+const mockResult = await getMockData(
+    '/platform-center/api/user/me',
+    'get',
+    params,
+    data
+);
+
+// 返回格式：{ data: {...}, locale?: 'zh-cn' }
+```
+
+### 6.4 VSCode 通信函数改造
+
+**实现位置：**
+- `designer-demo/src/composable/useVSCodeBridge.ts`
+
+**新增函数：**
+- `callVSCodeCommand(command: string, data?: any)` - 通用命令调用函数，支持传入不同的 command
+
+**保留函数：**
+- `proxyHttpRequest(config)` - 保留向后兼容，内部调用 `callVSCodeCommand('proxyHttpRequest', config)`
+
+### 6.5 文件操作函数设计（插件端）
+
+插件端需要实现的核心函数：
+
+- `handleAppDetail(data, callback)` - 读取应用详情
+- `handleAppSchema(data, callback)` - 读取应用 Schema
+- `handleAppUpdate(data, callback)` - 更新应用配置
+- `handlePageList(data, callback)` - 读取页面列表
+- `handlePageDetail(data, callback)` - 读取页面详情
+- `handlePageUpdate(data, callback)` - 更新页面
+- `handleSourceList(data, callback)` - 读取数据源列表
+- `handleSourceDetail(data, callback)` - 读取数据源详情
+- `handleSourceCreate(data, callback)` - 创建数据源
+- `handleSourceUpdate(data, callback)` - 更新数据源
+- `handleSourceDelete(data, callback)` - 删除数据源
+- `handleI18nCreate(data, callback)` - 创建 i18n 条目
+- `handleI18nUpdate(data, callback)` - 更新 i18n 条目
+- `handleExtensionCreate(data, callback)` - 创建 extension
+- `handleExtensionUpdate(data, callback)` - 更新 extension
+
+### 6.6 页面 ID 与文件名的映射策略
 
 **方案 A（推荐）：通过文件内容中的 id 字段映射**
 
@@ -296,10 +415,11 @@ proxyHttpRequest: async (message, webviewId) => {
 - 创建/删除页面时，同步更新页面列表
 ## 八、优势
 
-- **设计器端无需改动**：所有请求仍通过 `proxyHttpRequest`，只是数据来源变为本地文件
+- **职责分离**：URL 路由逻辑在设计器端，插件端只需处理具体的业务逻辑
+- **易于扩展**：新增接口只需在设计器端添加 URL 映射，插件端添加对应的 command 处理函数
 - **数据格式保持一致**：返回格式与 mock 接口相同，设计器逻辑无需修改
-- **易于维护**：接口一一对应，便于定位和调试
-- **可扩展**：新增接口只需在插件端添加对应的处理函数
+- **灵活处理**：不需要插件处理的接口可以直接使用 mock 数据，减少插件复杂度
+- **向后兼容**：保留 `proxyHttpRequest` 函数，确保现有代码不受影响
 
 ## 九、注意事项
 
@@ -327,6 +447,33 @@ proxyHttpRequest: async (message, webviewId) => {
 
 - 其他辅助接口（历史、锁定等）
 
+## 十一、改造完成情况
+
+### 已完成的设计器端改造
+
+1. ✅ **Mock 数据工具函数** (`src/utils/mockData.ts`)
+   - 实现了从 mock 文件中根据 URL 和 method 匹配并执行 response 函数
+   - 支持路径参数模式匹配
+   - 支持动态导入 mock 文件
+
+2. ✅ **VSCode 通信函数改造** (`src/composable/useVSCodeBridge.ts`)
+   - 新增 `callVSCodeCommand(command, data)` 通用函数，支持传入不同的 command
+   - 保留 `proxyHttpRequest` 函数，保持向后兼容
+
+3. ✅ **HTTP Adapter 改造** (`src/composable/http/index.ts`)
+   - 实现了 URL 路由逻辑，根据 URL 和 method 判断是调用插件还是使用 mock 数据
+   - 定义了 URL 到 command 的映射关系（`urlRoutes`）
+   - 需要插件处理的接口：使用对应的 command 调用插件
+   - 不需要插件处理的接口：从 mock 文件读取数据返回
+
+### 待完成的插件端改造
+
+插件端需要根据不同的 command 实现对应的处理函数，从本地文件读取或写入数据。
+
 ---
 
-该方案保持设计器端逻辑不变，只需在插件端实现文件读写逻辑，即可实现 mock 接口的本地化替代。
+**改造说明：**
+- 该方案将 URL 区分工作从插件端移到设计器端，设计器根据 URL 判断是调用插件（使用对应的 command）还是使用 mock 数据
+- 需要插件处理的接口使用对应的 command（如 `appDetail`、`pageList` 等）调用插件
+- 不需要插件处理的接口直接从 mock 文件读取数据返回
+- 插件端不再需要根据 URL 路由，直接根据 command 处理对应的业务逻辑
