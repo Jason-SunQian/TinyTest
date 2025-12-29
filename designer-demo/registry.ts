@@ -336,7 +336,7 @@ export default {
                         top: [
                             'engine.plugins.customOutlineTree',
                             'engine.plugins.singlePage',
-                            'engine.plugins.customBlockManage',
+                            'engine.plugins.customScript',
                             'engine.plugins.customCollections',
                             'engine.plugins.customBridge',
                             'engine.plugins.customI18n',
@@ -344,7 +344,6 @@ export default {
                             'engine.plugins.customMaterials'
                         ],
                         bottom: [
-                            'engine.plugins.customScript',
                             'engine.plugins.customSchema'
                         ]
                     },
