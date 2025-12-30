@@ -15286,11 +15286,11 @@
       "blocks": [],
       "snippets": [
         {
-          "group": "custom-vant",
+          "group": "Custom-vant",
           "children": [
             {
               "name": {
-                "zh_CN": "业务卡片"
+                "zh_CN": "Biz Card"
               },
               "icon": "bem",
               "screenshot": "",
@@ -15308,7 +15308,7 @@
             },
             {
               "name": {
-                "zh_CN": "自定义按钮"
+                "zh_CN": "Button"
               },
               "icon": "button",
               "screenshot": "",
@@ -15330,7 +15330,7 @@
           "children": [
             {
               "name": {
-                "zh_CN": "按钮"
+                "zh_CN": "ElButton"
               },
               "icon": "button",
               "screenshot": "",
@@ -15349,7 +15349,7 @@
             },
             {
               "name": {
-                "zh_CN": "日期选择器"
+                "zh_CN": "Date Selector"
               },
               "icon": "datepick",
               "screenshot": "",
@@ -15359,7 +15359,7 @@
             },
             {
               "name": {
-                "zh_CN": "表单"
+                "zh_CN": "ElForm"
               },
               "icon": "form",
               "screenshot": "",
@@ -15440,7 +15440,7 @@
             },
             {
               "name": {
-                "zh_CN": "输入框"
+                "zh_CN": "ElInput"
               },
               "icon": "input",
               "screenshot": "",
@@ -15450,7 +15450,7 @@
             },
             {
               "name": {
-                "zh_CN": "表格"
+                "zh_CN": "ElTable"
               },
               "icon": "grid",
               "screenshot": "",
@@ -15503,11 +15503,11 @@
           ]
         },
         {
-          "group": "html",
+          "group": "Html",
           "children": [
             {
               "name": {
-                "zh_CN": "标题"
+                "zh_CN": "Title"
               },
               "icon": "h16",
               "screenshot": "",
@@ -15521,7 +15521,7 @@
             },
             {
               "name": {
-                "zh_CN": "段落"
+                "zh_CN": "Paragraph"
               },
               "icon": "paragraph",
               "screenshot": "",
@@ -15534,7 +15534,7 @@
             },
             {
               "name": {
-                "zh_CN": "视频"
+                "zh_CN": "Video"
               },
               "icon": "video",
               "screenshot": "",
@@ -15553,11 +15553,11 @@
           ]
         },
         {
-          "group": "general",
+          "group": "General",
           "children": [
             {
               "name": {
-                "zh_CN": "互斥按钮组"
+                "zh_CN": "Button Group"
               },
               "icon": "MutexButtons",
               "snippetName": "TinyButtonGroup",
@@ -15587,11 +15587,11 @@
           ]
         },
         {
-          "group": "容器组件",
+          "group": "Container Component",
           "children": [
             {
               "name": {
-                "zh_CN": "走马灯"
+                "zh_CN": "Merry-go-round"
               },
               "screenshot": "",
               "snippetName": "tiny-carousel",
