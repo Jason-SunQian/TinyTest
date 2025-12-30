@@ -110,13 +110,13 @@
                         :show-icon="false"
                         :editor="{ component: 'input', autoselect: true }"
                     ></tiny-grid-column>
-                    <tiny-grid-column
-                        width="160"
-                        field="zh_CN"
-                        :title="t('designer.i18n.simplifiedChinese')"
-                        :show-icon="false"
-                        :editor="{ component: 'input', autoselect: true }"
-                    ></tiny-grid-column>
+<!--                    <tiny-grid-column-->
+<!--                        width="160"-->
+<!--                        field="zh_CN"-->
+<!--                        :title="t('designer.i18n.simplifiedChinese')"-->
+<!--                        :show-icon="false"-->
+<!--                        :editor="{ component: 'input', autoselect: true }"-->
+<!--                    ></tiny-grid-column>-->
                     <tiny-grid-column
                         width="160"
                         field="en_US"
@@ -654,9 +654,9 @@ export default {
 .plugin-i18n {
     border-right: none;
     box-shadow: 6px 0px 3px 0px var(--te-i18n-panel-shadow-color);
-    width: 800px !important;
-    min-width: 800px !important;
-    max-width: 800px !important;
+    width: 500px !important;
+    min-width: 500px !important;
+    max-width: 500px !important;
 }
 .stripe-tiny-grid {
     word-wrap: break-word;
