@@ -7,8 +7,9 @@
         @close="$emit('close')"
     >
         <template #content>
+            <!-- 暂时隐藏切换标签 -->
             <tiny-tabs
-                v-if="!onlyShowDefault"
+                v-if="false"
                 v-model="activeName"
                 tab-style="button-card"
                 class="full-width-tabs"
@@ -26,7 +27,8 @@
                     />
                 </tiny-tab-item>
             </tiny-tabs>
-            <component :is="defaultComponent" v-if="onlyShowDefault" />
+            <!-- 始终显示默认组件（component），不依赖 onlyShowDefault -->
+            <component :is="defaultComponent" />
             <div ref="rightPanelRef" class="material-right-panel" />
         </template>
     </plugin-panel>
@@ -99,12 +101,11 @@ export default {
 
         const activeName = ref(activeTabId);
         const defaultComponent = computed(() => {
+            // 暂时隐藏切换功能，始终显示默认的 component
             const defaultComponentID =
                 props.registryData?.options?.defaultTabId;
-            const computedActiveTabId = onlyShowDefault.value
-                ? defaultComponentID
-                : activeName.value;
-            return getMergeMeta(computedActiveTabId)?.entry;
+            // 如果隐藏了切换标签，始终使用默认的 component
+            return getMergeMeta(defaultComponentID)?.entry;
         });
         const tabComponents = displayComponentIds.map(id => {
             const itemMeta = getMergeMeta(id);
