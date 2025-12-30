@@ -9,12 +9,12 @@
                 ><svg-icon
                     name="add"
                     class="btn-icon"
-                />新增静态数据</tiny-button>
+                />{{ t('designer.datasource.addStaticData') }}</tiny-button>
             <tiny-button
                 plain
                 :disabled="state.isBatchDeleteDisable"
                 @click.stop="batchDelete"
-                ><svg-icon class="btn-icon" name="delete" />删除</tiny-button>
+                ><svg-icon class="btn-icon" name="delete" />{{ t('designer.common.delete') }}</tiny-button>
             <tiny-button
                 plain
                 :disabled="!allowCreate"
@@ -22,13 +22,13 @@
                 ><svg-icon
                     class="btn-icon"
                     name="upload"
-                />批量导入</tiny-button>
+                />{{ t('designer.datasource.batchImport') }}</tiny-button>
             <tiny-link
                 type="primary"
                 class="download"
                 :underline="false"
                 @click="download"
-                >下载导入模板</tiny-link>
+                >{{ t('designer.datasource.downloadImportTemplate') }}</tiny-link>
         </div>
         <div class="record-list-data">
             <tiny-grid
@@ -54,10 +54,10 @@
                     <div class="empty-container">
                         <svg-icon class="empty-icon" name="empty" />
                         <p>
-                            <span>暂无数据</span>
+                            <span>{{ t('designer.datasource.noData') }}</span>
                             <span v-if="isEmptyColumn">
-                                <span>，请先</span>
-                                <span class="add-column" @click="$emit('edit')">新增字段</span>
+                                <span>{{ t('designer.datasource.pleaseAddFieldFirst') }}</span>
+                                <span class="add-column" @click="$emit('edit')">{{ t('designer.datasource.addField') }}</span>
                             </span>
                         </p>
                     </div>
@@ -110,6 +110,7 @@ import {
     getDataAfterPage
 } from './js/datasource';
 import DataSourceRecordUpload from './DataSourceRecordUpload.vue';
+import { useDesignerI18n } from '../../services/i18nService';
 
 const grid = ref(null);
 
@@ -134,6 +135,7 @@ export default {
     },
     emits: ['edit'],
     setup(props, { emit }) {
+        const { t } = useDesignerI18n();
         const { confirm } = useModal();
         const { PLUGIN_NAME, getPluginByLayout } = useLayout();
         const align = computed(() =>
@@ -175,7 +177,10 @@ export default {
                 } = item;
 
                 if (required) {
-                    rules.push({ required: true, message: `${item.name}必填` });
+                    rules.push({ 
+                        required: true, 
+                        message: `${item.name}${t('designer.datasource.required')}` 
+                    });
                 }
 
                 if (
@@ -183,13 +188,14 @@ export default {
                     max !== 0 &&
                     max >= min
                 ) {
+                    const lengthOrSize = type === 'string' 
+                        ? t('designer.datasource.length') 
+                        : t('designer.datasource.size');
                     rules.push({
                         type,
                         min,
                         max,
-                        message: `${
-                            type === 'string' ? '长度' : '大小'
-                        } 在 ${min} - ${max} 之间`
+                        message: `${lengthOrSize} ${t('designer.datasource.between')} ${min} - ${max}`
                     });
                 }
 
@@ -332,13 +338,13 @@ export default {
                                     color: 'var(--te-datasource-modal-text-color)'
                                 }
                             },
-                            '您确定要删除该条数据吗?'
+                            t('designer.datasource.confirmDeleteData')
                         )
                     ]);
                 }
             };
             confirm({
-                title: '删除数据',
+                title: t('designer.datasource.deleteData'),
                 message: messageSaved,
                 exec: () => {
                     grid.value.remove(rowData);
@@ -377,7 +383,7 @@ export default {
 
                 newColumns.push({
                     field: 'option',
-                    title: '操作',
+                    title: t('designer.datasource.operation'),
                     width: 100,
                     fixed: 'right',
                     slots: {
@@ -478,8 +484,8 @@ export default {
             }
 
             confirm({
-                title: '批量删除',
-                message: `您确定要删除${selectedData.length}条数据吗？`,
+                title: t('designer.datasource.batchDelete'),
+                message: t('designer.datasource.confirmBatchDelete', { count: selectedData.length }),
                 exec: () => {
                     grid.value.removeSelecteds();
                     state.totalData = state.totalData.filter(
@@ -585,7 +591,8 @@ export default {
             handleSizeChange,
             handleBeforeChange,
             overrideData,
-            mergeData
+            mergeData,
+            t
         };
     }
 };

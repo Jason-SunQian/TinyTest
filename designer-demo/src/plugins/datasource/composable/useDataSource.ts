@@ -16,6 +16,7 @@ import { utils } from '@opentiny/tiny-engine-utils';
 import { isEqual } from '@opentiny/vue-renderless/common/object';
 import { isEmptyObject } from '@opentiny/vue-renderless/common/type';
 import { useModal } from '@opentiny/tiny-engine-meta-register';
+import { useDesignerI18n } from '@/services/i18nService';
 
 const dataSourceState = reactive({
     dataSource: {},
@@ -155,6 +156,7 @@ const handleConfirmSave = (
 const saveDataSource = (callback: (...args: any[]) => any) => {
     const { isRecordSame, isDataSourceSame } = compareData();
     const { confirm } = useModal();
+    const { t } = useDesignerI18n();
 
     if (
         !isEmptyObject(dataSourceState.dataSource) &&
@@ -162,10 +164,10 @@ const saveDataSource = (callback: (...args: any[]) => any) => {
     ) {
         return new Promise(resolve => {
             confirm({
-                title: '提示',
+                title: t('designer.datasource.tip'),
                 message: dataSourceState.isRecordValidate
-                    ? '当前数据未保存，关闭前是否需要保存改数据'
-                    : '必填项为空，将不会被存储！',
+                    ? t('designer.datasource.dataNotSaved')
+                    : t('designer.datasource.requiredFieldEmpty'),
                 exec: () => {
                     handleConfirmSave(
                         dataSourceState,

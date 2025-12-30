@@ -81,16 +81,11 @@ import { useDesignerI18n } from '@/services/i18nService';
 const CONSTANTS = {
     REQUIRED: 'required',
     EVENT_NAME: 'change',
-    REQUIRED_TIP: '必填',
-    MIN_VALUE_TIP: '不能小于最小值',
-    MAX_VALUE_TIP: '不能大于最大值',
     MIN: 'min',
     MAX: 'max',
     FIELD_TYPE_DATE: 'date',
     FIELD_TYPE_DATETIME: 'datetime',
-    FIELD_TYPE_NUMBER: 'number',
-    MIN_LENGTH_TIP: '长度不小于',
-    MAX_LENGTH_TIP: '长度不大于'
+    FIELD_TYPE_NUMBER: 'number'
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -178,9 +173,9 @@ export default {
 
         const validateNumber = (rule, value, callback) => {
             if (rule.min > value) {
-                callback(new Error(`${CONSTANTS.MIN_VALUE_TIP}${rule.min}`));
+                callback(new Error(`${t('designer.datasource.mustNotLessThan', { min: rule.min })}`));
             } else if (rule.max < value) {
-                callback(new Error(`${CONSTANTS.MAX_VALUE_TIP}${rule.max}`));
+                callback(new Error(`${t('designer.datasource.mustNotGreaterThan', { max: rule.max })}`));
             } else {
                 callback();
             }
@@ -203,7 +198,7 @@ export default {
 
                                 fieldRules.push({
                                     [key]: format[key],
-                                    message: CONSTANTS.REQUIRED_TIP,
+                                    message: t('designer.datasource.required'),
                                     trigger: CONSTANTS.EVENT_NAME
                                 });
                             }
@@ -219,13 +214,13 @@ export default {
                                         validator: validateNumber
                                     });
                                 } else {
-                                    const str =
+                                    const message =
                                         key === CONSTANTS.MIN
-                                            ? CONSTANTS.MIN_LENGTH_TIP
-                                            : CONSTANTS.MAX_LENGTH_TIP;
+                                            ? `${t('designer.datasource.minLengthTip')}${format[key]}`
+                                            : `${t('designer.datasource.maxLengthTip')}${format[key]}`;
                                     fieldRules.push({
                                         [key]: format[key],
-                                        message: str + format[key],
+                                        message,
                                         trigger: CONSTANTS.EVENT_NAME
                                     });
                                 }

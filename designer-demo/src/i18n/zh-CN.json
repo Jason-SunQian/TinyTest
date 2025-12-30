@@ -834,7 +834,15 @@
             "enableField": "启用该字段",
             "mustNotLessThanZero": "必须不小于0",
             "mustNotLessThan": "必须不小于{min}",
-            "getRemoteFields": "获取远程字段"
+            "getRemoteFields": "获取远程字段",
+            "length": "长度",
+            "size": "大小",
+            "between": "在",
+            "copyFailed": "复制失败，请尝试手动复制",
+            "parentId": "父ID",
+            "minLengthTip": "长度不小于",
+            "maxLengthTip": "长度不大于",
+            "mustNotGreaterThan": "不能大于最大值{max}"
         },
         "bridge": {
             "title": "资源管理",

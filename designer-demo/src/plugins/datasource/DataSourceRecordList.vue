@@ -244,7 +244,7 @@ export default {
                 await toClipboard(id);
             } catch (e) {
                 useNotify({
-                    message: '复制失败，请尝试手动复制',
+                    message: t('designer.datasource.copyFailed'),
                     type: 'error'
                 });
                 throw new Error(e);
@@ -263,7 +263,10 @@ export default {
                 } = item;
 
                 if (required) {
-                    rules.push({ required: true, message: `${item.name}必填` });
+                    rules.push({ 
+                        required: true, 
+                        message: `${item.name}${t('designer.datasource.required')}` 
+                    });
                 }
 
                 if (
@@ -271,12 +274,13 @@ export default {
                     max !== 0 &&
                     max >= min
                 ) {
+                    const lengthOrSize = type === 'string' 
+                        ? t('designer.datasource.length') 
+                        : t('designer.datasource.size');
                     rules.push({
                         min,
                         max,
-                        message: `${
-                            type === 'string' ? '长度' : '大小'
-                        } 在 ${min} - ${max} 之间`
+                        message: `${lengthOrSize} ${t('designer.datasource.between')} ${min} - ${max}`
                     });
                 }
 
@@ -291,7 +295,7 @@ export default {
                 'span',
                 {
                     class: 'copy-data',
-                    title: '复制',
+                    title: t('designer.common.copy'),
                     onClick: (e: Event) => {
                         e.stopPropagation();
                         e.preventDefault();
@@ -472,7 +476,7 @@ export default {
                         renderer
                     },
                     {
-                        title: '父ID',
+                        title: t('designer.datasource.parentId'),
                         field: '_pid',
                         name: '_pid',
                         type: 'string'
@@ -499,7 +503,7 @@ export default {
 
                 newColumns.push({
                     field: 'option',
-                    title: '操作',
+                    title: t('designer.datasource.operation'),
                     width: 100,
                     fixed: 'right',
                     slots: {
@@ -611,7 +615,7 @@ export default {
         };
 
         const download = () => {
-            downloadFn(state.columns, '静态数据.xlsx');
+            downloadFn(state.columns, `${t('designer.datasource.staticData')}.xlsx`);
         };
 
         const batchDelete = () => {
@@ -624,8 +628,8 @@ export default {
             }
 
             confirm({
-                title: '批量删除',
-                message: `您确定要删除${selectedData.length}条数据吗？`,
+                title: t('designer.datasource.batchDelete'),
+                message: t('designer.datasource.confirmBatchDelete', { count: selectedData.length }),
                 exec: () => {
                     grid.value.removeSelecteds();
                     state.totalData = state.totalData.filter(

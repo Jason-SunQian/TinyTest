@@ -21,7 +21,7 @@
                         <svg-button
                             class="set-page"
                             :hover-bg-color="false"
-                            tips="设置数据源"
+                            :tips="setDataSourceTips"
                             name="setting"
                             @mousedown.stop.prevent="
                                 openDataSourceForm(item, index)
@@ -36,7 +36,7 @@
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceList */
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 import {
     useResource,
     getMetaApi,
@@ -46,6 +46,7 @@ import { SvgButton } from '@opentiny/tiny-engine-common';
 
 import { fetchDataSourceList, fetchDataSourceDetail } from './js/http';
 import { getServiceForm } from './DataSourceRemoteForm.vue';
+import { useDesignerI18n } from '../../services/i18nService';
 
 const dataSourceList = ref([]);
 const activeIndex = ref(-1);
@@ -74,6 +75,8 @@ export default {
     emits: ['edit'],
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
+        const { t } = useDesignerI18n();
+        const setDataSourceTips = computed(() => t('designer.datasource.setDataSource'));
         const state = reactive({
             currentData: { name: '', columns: [], data: [] }
         });
@@ -103,7 +106,9 @@ export default {
             openDataSourceForm,
             dataSourceList,
             activeIndex,
-            refresh
+            refresh,
+            t,
+            setDataSourceTips
         };
     }
 };

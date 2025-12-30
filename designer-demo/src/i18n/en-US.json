@@ -832,7 +832,15 @@
             "enableField": "Enable this field",
             "mustNotLessThanZero": "Must not be less than 0",
             "mustNotLessThan": "Must not be less than {min}",
-            "getRemoteFields": "Get Remote Fields"
+            "getRemoteFields": "Get Remote Fields",
+            "length": "Length",
+            "size": "Size",
+            "between": "between",
+            "copyFailed": "Copy failed, please try to copy manually",
+            "parentId": "Parent ID",
+            "minLengthTip": "Length not less than",
+            "maxLengthTip": "Length not greater than",
+            "mustNotGreaterThan": "Must not be greater than maximum value {max}"
         },
         "bridge": {
             "title": "Resource Management",
