@@ -35,12 +35,13 @@
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceFieldList */
-import { reactive, watchEffect } from 'vue';
+import { reactive, watchEffect, computed } from 'vue';
 import { IconDel } from '@opentiny/vue-icon';
 import { SvgButton } from '@opentiny/tiny-engine-common';
 
-import fieldTypes from './config';
+import { getFieldTypeOptions } from './config';
 import DataSourceFieldForm from './DataSourceFieldForm.vue';
+import { useDesignerI18n } from '../../services/i18nService';
 
 export default {
     components: {
@@ -60,6 +61,9 @@ export default {
     emits: ['update:modelValue'],
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
+        const { t } = useDesignerI18n();
+        const fieldTypes = computed(() => getFieldTypeOptions(t));
+        
         const state = reactive({
             fields: null
         });
@@ -72,11 +76,11 @@ export default {
         });
 
         const getFieldType = (type, key) => {
-            const fieldType = fieldTypes.filter(item => item.type === type);
+            const fieldType = fieldTypes.value.filter(item => item.type === type);
             if (fieldType && fieldType.length === 1) {
                 return fieldType[0][key];
             }
-            return fieldTypes[0][key];
+            return fieldTypes.value[0][key];
         };
 
         const openFieldForm = index => {
