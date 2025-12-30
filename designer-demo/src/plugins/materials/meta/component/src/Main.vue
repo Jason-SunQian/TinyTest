@@ -71,6 +71,7 @@ import { SearchEmpty, CanvasDragItem } from '@opentiny/tiny-engine-common';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 import { iconSearch } from '@opentiny/vue-icon';
 import { useMaterial, useCanvas } from '@opentiny/tiny-engine-meta-register';
+import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
@@ -96,9 +97,9 @@ export default {
         const gridTemplateColumns = ref(COMPONENT_PANEL_COLUMNS);
 
         // 获取国际化 t 函数
+        const { t } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
-        const t = i18n?.global?.t || ((key: string) => key);
 
         interface PanelState {
             isShortcutPanel: boolean;
