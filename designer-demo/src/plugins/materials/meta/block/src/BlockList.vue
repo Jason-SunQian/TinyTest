@@ -35,6 +35,7 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { PluginBlockList } from '@opentiny/tiny-engine-common';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+import { useDesignerI18n } from '@/services/i18nService';
 
 import { requestUpdateGroup, fetchGroupBlocksById } from './http';
 import {
@@ -86,9 +87,9 @@ export default {
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         // 获取国际化 t 函数
+        const { t } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
-        const t = i18n?.global?.t || ((key: string) => key);
 
         const { generateNode, getBlockByName } = useMaterial();
         const {

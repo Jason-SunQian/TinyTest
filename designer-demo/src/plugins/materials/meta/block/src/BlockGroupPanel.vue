@@ -50,6 +50,7 @@ import { Search } from '@opentiny/vue';
 import { iconSearch } from '@opentiny/vue-icon';
 import { PluginSetting } from '@opentiny/tiny-engine-common';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+import { useDesignerI18n } from '@/services/i18nService';
 import {
     useBlock,
     useLayout,
@@ -101,9 +102,9 @@ export default {
     // eslint-disable-next-line vue/component-api-style
     setup() {
         // 获取国际化 t 函数
+        const { t } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
-        const t = i18n?.global?.t || ((key: string) => key);
 
         const {
             isAllGroupId,

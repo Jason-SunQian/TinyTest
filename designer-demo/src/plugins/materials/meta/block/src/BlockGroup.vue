@@ -213,6 +213,7 @@ import {
 import { SvgButton } from '@opentiny/tiny-engine-common';
 import { REGEXP_GROUP_NAME } from '@opentiny/tiny-engine-common/js/verification';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+import { useDesignerI18n } from '@/services/i18nService';
 
 import {
     requestCreateGroup,
@@ -252,8 +253,8 @@ export default {
     emits: ['changeGroup'],
     setup(props) {
         // 获取国际化 t 函数
+        const { t } = useDesignerI18n();
         const i18n = inject(I18nInjectionKey);
-        const t = i18n?.global?.t || (key => key);
         const validateIcon = iconError();
         const panelState = inject('panelState', {});
         const {
