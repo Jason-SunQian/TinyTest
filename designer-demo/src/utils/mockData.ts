@@ -41,7 +41,10 @@ const patternToRegex = (pattern: string): RegExp => {
  * 例如: pattern='/app-center/api/pages/detail/:id', url='/app-center/api/pages/detail/123'
  * 返回: { id: '123' }
  */
-const extractParams = (pattern: string, url: string): Record<string, string> => {
+const extractParams = (
+    pattern: string,
+    url: string
+): Record<string, string> => {
     const regex = patternToRegex(pattern);
     const match = url.match(regex);
     if (!match) {
@@ -53,7 +56,8 @@ const extractParams = (pattern: string, url: string): Record<string, string> => 
     const params: Record<string, string> = {};
 
     paramNames.forEach((param, index) => {
-        const paramName = param.slice(1); // 去掉 ':'
+        // 去掉 ':'
+        const paramName = param.slice(1);
         params[paramName] = match[index + 1] || '';
     });
 
@@ -77,7 +81,7 @@ const findMockConfig = (
         }
 
         const mockUrl = mock.url || '';
-        
+
         // 如果是精确匹配
         if (mockUrl === url) {
             return mock;
@@ -105,7 +109,7 @@ const findMockConfig = (
  */
 export const getMockData = async (
     url: string,
-    method: string = 'get',
+    method = 'get',
     params?: any,
     data?: any
 ): Promise<{ data: any; locale?: string } | null> => {
@@ -120,12 +124,14 @@ export const getMockData = async (
 
         // 查找匹配的 mock 配置
         const mockConfig = findMockConfig(url, method, allMocks);
-        if (!mockConfig || !mockConfig.response) {
+        if (!mockConfig?.response) {
             return null;
         }
 
         // 提取路径参数
-        const pathParams = mockConfig.url ? extractParams(mockConfig.url, url) : {};
+        const pathParams = mockConfig.url
+            ? extractParams(mockConfig.url, url)
+            : {};
 
         // 构建查询参数对象（合并 URL 参数和路径参数）
         const query = {
@@ -155,4 +161,3 @@ export const getMockData = async (
         return null;
     }
 };
-

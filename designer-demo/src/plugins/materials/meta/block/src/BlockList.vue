@@ -34,7 +34,7 @@ import {
     META_SERVICE
 } from '@opentiny/tiny-engine-meta-register';
 import { PluginBlockList } from '@opentiny/tiny-engine-common';
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
 import { requestUpdateGroup, fetchGroupBlocksById } from './http';
@@ -89,7 +89,7 @@ export default {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const i18n: any = inject(I18nInjectionKey);
+        // const i18n: any = inject(I18nInjectionKey);
 
         const { generateNode, getBlockByName } = useMaterial();
         const {

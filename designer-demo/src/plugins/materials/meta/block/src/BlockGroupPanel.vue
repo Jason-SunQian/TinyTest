@@ -49,8 +49,6 @@ import { reactive, watch, provide, inject, ref, computed } from 'vue';
 import { Search } from '@opentiny/vue';
 import { iconSearch } from '@opentiny/vue-icon';
 import { PluginSetting } from '@opentiny/tiny-engine-common';
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
-import { useDesignerI18n } from '@/services/i18nService';
 import {
     useBlock,
     useLayout,
@@ -60,6 +58,8 @@ import {
     getMetaApi,
     META_SERVICE
 } from '@opentiny/tiny-engine-meta-register';
+
+import { useDesignerI18n } from '@/services/i18nService';
 
 import BlockGroupTransfer from './BlockGroupTransfer.vue';
 import BlockGroupFilters from './BlockGroupFilters.vue';
@@ -104,7 +104,7 @@ export default {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const i18n: any = inject(I18nInjectionKey);
+        // const i18n: any = inject(I18nInjectionKey);
 
         const {
             isAllGroupId,

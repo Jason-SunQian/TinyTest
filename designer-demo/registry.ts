@@ -343,9 +343,7 @@ export default {
                             'engine.plugins.customState',
                             'engine.plugins.customMaterials'
                         ],
-                        bottom: [
-                            'engine.plugins.customSchema'
-                        ]
+                        bottom: ['engine.plugins.customSchema']
                     },
                     right: {
                         top: [META_APP.Props, META_APP.Styles, META_APP.Event]

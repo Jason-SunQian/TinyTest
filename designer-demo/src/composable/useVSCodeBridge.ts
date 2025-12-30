@@ -86,7 +86,7 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
         if (vscode) {
             // 对于 HTTP 请求相关的 command，打印更详细的信息
             if (data?.url) {
-                const url = data.url;
+                const {url} = data;
                 const method = data.method || 'unknown';
                 // eslint-disable-next-line no-console
                 console.log(
@@ -440,7 +440,7 @@ export const callVSCodeCommand = (
             // 从 data 中提取 URL 信息用于日志
             const url = data?.url || 'unknown';
             const method = data?.method || 'unknown';
-            
+
             if (error) {
                 // eslint-disable-next-line no-console
                 const errorMessage =

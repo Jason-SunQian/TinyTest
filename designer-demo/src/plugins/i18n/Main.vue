@@ -110,13 +110,13 @@
                         :show-icon="false"
                         :editor="{ component: 'input', autoselect: true }"
                     ></tiny-grid-column>
-<!--                    <tiny-grid-column-->
-<!--                        width="160"-->
-<!--                        field="zh_CN"-->
-<!--                        :title="t('designer.i18n.simplifiedChinese')"-->
-<!--                        :show-icon="false"-->
-<!--                        :editor="{ component: 'input', autoselect: true }"-->
-<!--                    ></tiny-grid-column>-->
+                    <!--                    <tiny-grid-column -->
+                    <!--                        width="160" -->
+                    <!--                        field="zh_CN" -->
+                    <!--                        :title="t('designer.i18n.simplifiedChinese')" -->
+                    <!--                        :show-icon="false" -->
+                    <!--                        :editor="{ component: 'input', autoselect: true }" -->
+                    <!--                    ></tiny-grid-column> -->
                     <tiny-grid-column
                         width="160"
                         field="en_US"

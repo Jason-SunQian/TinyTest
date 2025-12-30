@@ -13,10 +13,10 @@
 </template>
 
 <script lang="ts">
-import { computed, inject } from 'vue';
+import { computed } from 'vue';
 import { SvgButton } from '@opentiny/tiny-engine-common';
 import { useLayout } from '@opentiny/tiny-engine-meta-register';
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
 export default {

@@ -212,7 +212,7 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { SvgButton } from '@opentiny/tiny-engine-common';
 import { REGEXP_GROUP_NAME } from '@opentiny/tiny-engine-common/js/verification';
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
 import {
@@ -254,7 +254,7 @@ export default {
     setup(props) {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
-        const i18n = inject(I18nInjectionKey);
+        // const i18n = inject(I18nInjectionKey);
         const validateIcon = iconError();
         const panelState = inject('panelState', {});
         const {

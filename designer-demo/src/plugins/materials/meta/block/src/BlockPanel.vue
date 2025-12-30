@@ -27,7 +27,7 @@
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang, vue/component-api-style -->
 <script lang="tsx">
 /* metaService: engine.plugins.materials.block.BlockPanel */
-import { onMounted, reactive, watch, provide, computed, inject } from 'vue';
+import { onMounted, reactive, watch, provide, computed } from 'vue';
 import { Search } from '@opentiny/vue';
 import { iconSearch } from '@opentiny/vue-icon';
 import {
@@ -37,7 +37,7 @@ import {
     getMetaApi,
     META_SERVICE
 } from '@opentiny/tiny-engine-meta-register';
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
 import metaData from '../meta';
@@ -86,7 +86,7 @@ export default {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const i18n: any = inject(I18nInjectionKey);
+        // const i18n: any = inject(I18nInjectionKey);
 
         const {
             addDefaultGroup,

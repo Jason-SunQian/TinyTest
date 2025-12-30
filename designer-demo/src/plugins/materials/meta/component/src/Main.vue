@@ -71,6 +71,7 @@ import { SearchEmpty, CanvasDragItem } from '@opentiny/tiny-engine-common';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 import { iconSearch } from '@opentiny/vue-icon';
 import { useMaterial, useCanvas } from '@opentiny/tiny-engine-meta-register';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
