@@ -183,6 +183,18 @@ const createVSCodeHttpAdapter = () => {
 
             const method = config.method || 'get';
             const command = findCommandForUrl(requestUrl, method);
+            
+            // 调试信息：显示当前请求的处理方式
+            // eslint-disable-next-line no-console
+            console.log(
+                `[HTTP Service] 📋 请求处理: ${method.toUpperCase()} ${requestUrl}`,
+                {
+                    isVSCodeEnv: true,
+                    command: command || 'none (使用 Mock)',
+                    originalUrl: config.url,
+                    normalizedUrl: requestUrl
+                }
+            );
 
             let response: { data: any; locale?: string };
 
@@ -190,9 +202,12 @@ const createVSCodeHttpAdapter = () => {
                 // 需要插件处理的接口：使用对应的 command 调用插件
                 // eslint-disable-next-line no-console
                 console.log(
-                    `[HTTP Service] Calling VSCode command: ${command} for ${
-                        method.toUpperCase()
-                    } ${requestUrl}`
+                    `[HTTP Service] 🔌 调用插件接口: ${method.toUpperCase()} ${requestUrl}`,
+                    {
+                        command,
+                        params: config.params,
+                        data: config.data
+                    }
                 );
 
                 const { callVSCodeCommand } = await import('../useVSCodeBridge');
@@ -210,13 +225,24 @@ const createVSCodeHttpAdapter = () => {
                 
                 // 插件返回的数据格式应该是 { data: {...}, locale?: 'zh-cn' }
                 response = result || { data: null };
+                
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[HTTP Service] ✅ 插件接口返回: ${method.toUpperCase()} ${requestUrl}`,
+                    {
+                        command,
+                        response: response.data
+                    }
+                );
             } else {
                 // 不需要插件处理的接口：从 mock 文件读取数据
                 // eslint-disable-next-line no-console
                 console.log(
-                    `[HTTP Service] Using mock data for ${
-                        method.toUpperCase()
-                    } ${requestUrl}`
+                    `[HTTP Service] 📦 使用 Mock 数据: ${method.toUpperCase()} ${requestUrl}`,
+                    {
+                        params: config.params,
+                        requestData: config.data
+                    }
                 );
 
                 const mockResult = await getMockData(
@@ -228,11 +254,23 @@ const createVSCodeHttpAdapter = () => {
 
                 if (mockResult) {
                     response = mockResult;
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        `[HTTP Service] ✅ Mock 数据返回: ${method.toUpperCase()} ${requestUrl}`,
+                        {
+                            response: mockResult.data,
+                            locale: mockResult.locale
+                        }
+                    );
                 } else {
                     // 如果 mock 文件中没有找到，返回默认响应
                     // eslint-disable-next-line no-console
                     console.warn(
-                        `[HTTP Service] No mock data found for ${method.toUpperCase()} ${requestUrl}, returning empty response`
+                        `[HTTP Service] ⚠️ 未找到 Mock 数据: ${method.toUpperCase()} ${requestUrl}, 返回空响应`,
+                        {
+                            params: config.params,
+                            requestData: config.data
+                        }
                     );
                     response = { data: null };
                 }
@@ -290,6 +328,9 @@ const preRequest = (
 
     if (isVsCodeEnv) {
         config.baseURL = '';
+        
+        // 在 VSCode 环境中，所有请求都应该被 adapter 拦截
+        // 如果看到网络请求，说明 adapter 没有正确设置
 
         // 确保adapter已经设置（防止某些请求在adapter设置之前发送）
         const http = HttpService.apis.getHttp();
@@ -299,6 +340,10 @@ const preRequest = (
             if (adapter && (http.defaults as any).adapter !== adapter) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (http.defaults as any).adapter = adapter;
+                // eslint-disable-next-line no-console
+                console.log(
+                    '[HTTP Service] ✅ VSCode adapter 已设置，所有请求将被拦截处理'
+                );
             }
         }
 
@@ -309,6 +354,15 @@ const preRequest = (
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 config.adapter = adapter;
             }
+        }
+    } else {
+        // 非 VSCode 环境提示
+        if (config.url && config.url.includes('/platform-center/api/user/me')) {
+            // eslint-disable-next-line no-console
+            console.log(
+                `[HTTP Service] ℹ️ 非 VSCode 环境: ${config.method?.toUpperCase() || 'GET'} ${config.url} 将发送到服务器`,
+                '（在 VSCode 插件环境中，此请求会被拦截并使用 Mock 数据）'
+            );
         }
     }
 

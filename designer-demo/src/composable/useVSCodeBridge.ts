@@ -84,12 +84,31 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
     try {
         const vscode = getVSCodeApi();
         if (vscode) {
-            // eslint-disable-next-line no-console
-            console.log(
-                `[VSCode Bridge] → ${command}`,
-                callback,
-                data !== undefined ? { data } : ''
-            );
+            // 对于 HTTP 请求相关的 command，打印更详细的信息
+            if (data?.url) {
+                const url = data.url;
+                const method = data.method || 'unknown';
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[VSCode Bridge] → ${command} ${method.toUpperCase()} ${url}`,
+                    {
+                        command,
+                        callback,
+                        url,
+                        method,
+                        params: data.params,
+                        requestData: data.data
+                    }
+                );
+            } else {
+                // 其他 command（如 getInitData、goSave 等），使用简单格式
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[VSCode Bridge] → ${command}`,
+                    callback,
+                    data !== undefined ? { data } : ''
+                );
+            }
             vscode.postMessage(pluginMessage);
             return;
         }
@@ -418,20 +437,34 @@ export const callVSCodeCommand = (
         const callbackId = generateRequestId();
 
         callbackMap.set(callbackId, (result, error) => {
+            // 从 data 中提取 URL 信息用于日志
+            const url = data?.url || 'unknown';
+            const method = data?.method || 'unknown';
+            
             if (error) {
                 // eslint-disable-next-line no-console
                 const errorMessage =
                     error instanceof Error ? error.message : String(error);
                 console.error(
-                    `[VSCode Bridge] ${command} ← error:`,
-                    errorMessage
+                    `[VSCode Bridge] ${command} ← error: ${method.toUpperCase()} ${url}`,
+                    {
+                        command,
+                        url,
+                        method,
+                        error: errorMessage
+                    }
                 );
                 reject(error);
             } else {
                 // eslint-disable-next-line no-console
                 console.log(
-                    `[VSCode Bridge] ${command} ← success:`,
-                    result
+                    `[VSCode Bridge] ${command} ← success: ${method.toUpperCase()} ${url}`,
+                    {
+                        command,
+                        url,
+                        method,
+                        result
+                    }
                 );
                 resolve(result);
             }
