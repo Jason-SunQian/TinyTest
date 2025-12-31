@@ -7,6 +7,7 @@
         class="data-source-form plugin-datasource"
         :fixed-name="PLUGIN_NAME.Collections"
         :align="align"
+        :style="{ zIndex: 1000, '--base-collection-panel-width': panelWidth }"
     >
         <template #header>
             <button-group>
@@ -49,7 +50,7 @@
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceForm */
-import { reactive, ref, watch, computed, camelize, capitalize } from 'vue';
+import { reactive, ref, watch, computed, camelize, capitalize, nextTick, watchEffect } from 'vue';
 import { Form, Button } from '@opentiny/vue';
 import {
     ButtonGroup,
@@ -89,7 +90,34 @@ import {
 const isOpen = ref(false);
 
 export const open = () => {
+    if (import.meta.env.DEV) {
+        console.log('[DataSourceForm] open() 被调用，设置 isOpen = true');
+    }
     isOpen.value = true;
+    if (import.meta.env.DEV) {
+        console.log('[DataSourceForm] isOpen 当前值:', isOpen.value);
+        // 使用 nextTick 确保 DOM 已更新后检查面板
+        nextTick(() => {
+            const panel = document.querySelector('.data-source-form.plugin-datasource');
+            console.log('[DataSourceForm] 面板 DOM 元素:', panel);
+            if (panel) {
+                const style = window.getComputedStyle(panel);
+                const rect = panel.getBoundingClientRect();
+                console.log('[DataSourceForm] 面板样式:', {
+                    display: style.display,
+                    visibility: style.visibility,
+                    opacity: style.opacity,
+                    position: style.position,
+                    left: style.left,
+                    right: style.right,
+                    zIndex: style.zIndex
+                });
+                console.log('[DataSourceForm] 面板位置:', rect);
+            } else {
+                console.warn('[DataSourceForm] 未找到面板 DOM 元素');
+            }
+        });
+    }
 };
 
 export const close = () => {
@@ -145,10 +173,69 @@ export default {
             activeTabName: props.activeTabName
         });
 
-        const { PLUGIN_NAME, getPluginByLayout } = useLayout();
-        const align = computed(() =>
-            getPluginByLayout(PLUGIN_NAME.Collections)
-        );
+        const { PLUGIN_NAME, getPluginByLayout, getPluginWidth, changePluginWidth } = useLayout();
+        
+        // 确保 Collections 插件的宽度正确设置，这样 PluginSetting 才能正确定位和显示
+        // 使用 watchEffect 确保在组件渲染前就设置好宽度
+        watchEffect(() => {
+            const currentWidth = getPluginWidth(PLUGIN_NAME.Collections);
+            // 如果宽度未设置或太小，设置为默认宽度
+            const defaultWidth = 280; // PLUGIN_DEFAULT_WIDTH
+            if (!currentWidth || currentWidth < 100) {
+                changePluginWidth(PLUGIN_NAME.Collections, defaultWidth);
+                if (import.meta.env.DEV) {
+                    console.log('[DataSourceForm] 初始化插件宽度:', defaultWidth);
+                }
+            }
+        });
+        
+        const align = computed(() => {
+            const layout = getPluginByLayout(PLUGIN_NAME.Collections);
+            if (import.meta.env.DEV) {
+                console.log('[DataSourceForm] align 计算:', layout, 'PLUGIN_NAME.Collections:', PLUGIN_NAME.Collections);
+            }
+            return layout;
+        });
+        
+        // 计算面板宽度，确保在 VSCode 环境中也能正确显示
+        const panelWidth = computed(() => {
+            // 尝试从 CSS 变量获取实际宽度
+            const root = document.documentElement;
+            const cssVarWidth = getComputedStyle(root).getPropertyValue('--base-collection-panel-width').trim();
+            
+            // 如果 CSS 变量有有效值且不是 calc()，直接使用
+            if (cssVarWidth && !cssVarWidth.includes('calc') && !cssVarWidth.includes('var(')) {
+                const parsedWidth = parseFloat(cssVarWidth);
+                if (parsedWidth > 100) {
+                    if (import.meta.env.DEV) {
+                        console.log('[DataSourceForm] 使用 CSS 变量宽度:', parsedWidth);
+                    }
+                    return cssVarWidth;
+                }
+            }
+            
+            // 否则，基于视口宽度动态计算（参考 base-config-page.less 的计算方式）
+            // (100vw - (280 + 280 + 40 * 2 - 1)) / 2
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            const leftPanelWidth = 280;
+            const rightPanelWidth = 280;
+            const navPanelWidth = 40;
+            const calculatedWidth = Math.floor((viewportWidth - (leftPanelWidth + rightPanelWidth + navPanelWidth * 2 - 1)) / 2);
+            
+            // 如果计算出的宽度合理，使用它；否则使用默认值 600px（参考 TutorialVideoPanel）
+            const finalWidth = calculatedWidth > 400 && calculatedWidth < 1200 ? calculatedWidth : 600;
+            
+            if (import.meta.env.DEV) {
+                console.log('[DataSourceForm] 面板宽度计算:', {
+                    cssVarWidth,
+                    viewportWidth,
+                    calculatedWidth,
+                    finalWidth
+                });
+            }
+            
+            return `${finalWidth}px`;
+        });
 
         watch(
             () => state.dataSource.name,
@@ -414,6 +501,7 @@ export default {
 
         return {
             align,
+            panelWidth,
             settingRef,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,

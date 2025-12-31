@@ -113,7 +113,7 @@ export default {
             default: () => []
         }
     },
-    emits: ['close'],
+    emits: ['close', 'fixPanel'],
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
@@ -175,23 +175,44 @@ export default {
             } else {
                 activeTabChange('field');
             }
-            saveDataSource(requestUpdateDataSource).then(() => {
-                state.editable = data !== undefined;
-                dataSourceState.dataSource = data;
-                if (data) {
-                    state.currentDataSource = data;
-                } else {
-                    clearActive();
-                    state.currentDataSource = {
-                        name: 'untitled',
-                        data: { type: 'remote', columns: [] }
-                    };
-                }
-                closeRecordForm();
+            
+            // 先设置数据源状态
+            state.editable = data !== undefined;
+            dataSourceState.dataSource = data;
+            if (data) {
+                state.currentDataSource = data;
+            } else {
+                clearActive();
+                state.currentDataSource = {
+                    name: 'untitled',
+                    data: { type: 'remote', columns: [] }
+                };
+            }
+            
+            // 先关闭其他面板
+            closeRecordForm();
+            closeGlobalDataHandler();
+            closeRemoteResult();
+            
+            // 检查 openDataSourceForm 是否存在
+            if (typeof openDataSourceForm === 'function') {
+                // 先打开面板，确保用户可以看到设置界面
                 openDataSourceForm();
-                closeGlobalDataHandler();
-                closeRemoteResult();
-            });
+                console.log('[DataSource] 面板已打开');
+            } else {
+                console.error('[DataSource] openDataSourceForm 未定义:', openDataSourceForm);
+            }
+            
+            // 然后尝试保存数据源（如果有未保存的更改）
+            // 使用 setTimeout 确保面板已经打开后再处理保存
+            setTimeout(() => {
+                const savePromise = saveDataSource(requestUpdateDataSource);
+                if (savePromise && typeof savePromise.then === 'function') {
+                    savePromise.catch(() => {
+                        // 保存失败时静默处理，不影响面板显示
+                    });
+                }
+            }, 0);
         };
 
         const openGlobalDataHanderPanel = () => {
@@ -211,6 +232,11 @@ export default {
             state.remoteData = remoteData;
             openRemoteResult();
         };
+
+        // 调试：检查 openDataSourceForm 是否可用
+        if (import.meta.env.DEV) {
+            console.log('[DataSource Main] openDataSourceForm:', typeof openDataSourceForm, openDataSourceForm);
+        }
 
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention
