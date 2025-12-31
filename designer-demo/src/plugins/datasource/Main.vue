@@ -175,7 +175,7 @@ export default {
             } else {
                 activeTabChange('field');
             }
-            
+
             // 先设置数据源状态
             state.editable = data !== undefined;
             dataSourceState.dataSource = data;
@@ -188,21 +188,15 @@ export default {
                     data: { type: 'remote', columns: [] }
                 };
             }
-            
+
             // 先关闭其他面板
             closeRecordForm();
             closeGlobalDataHandler();
             closeRemoteResult();
-            
-            // 检查 openDataSourceForm 是否存在
-            if (typeof openDataSourceForm === 'function') {
-                // 先打开面板，确保用户可以看到设置界面
-                openDataSourceForm();
-                console.log('[DataSource] 面板已打开');
-            } else {
-                console.error('[DataSource] openDataSourceForm 未定义:', openDataSourceForm);
-            }
-            
+
+            // 先打开面板，确保用户可以看到设置界面
+            openDataSourceForm();
+
             // 然后尝试保存数据源（如果有未保存的更改）
             // 使用 setTimeout 确保面板已经打开后再处理保存
             setTimeout(() => {
@@ -232,11 +226,6 @@ export default {
             state.remoteData = remoteData;
             openRemoteResult();
         };
-
-        // 调试：检查 openDataSourceForm 是否可用
-        if (import.meta.env.DEV) {
-            console.log('[DataSource Main] openDataSourceForm:', typeof openDataSourceForm, openDataSourceForm);
-        }
 
         return {
             // eslint-disable-next-line @typescript-eslint/naming-convention

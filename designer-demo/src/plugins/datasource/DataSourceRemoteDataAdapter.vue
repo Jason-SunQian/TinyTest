@@ -80,14 +80,17 @@ export default {
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
-        
+
         // 计算属性：生成完整的示例代码，避免在 i18n 消息中使用嵌套大括号
         const formatExample = computed(() => {
             const example = t('designer.datasource.dataSourceFormatExample');
             // 将 "items: any[], total: number" 替换为 "{items: any[], total: number}"
-            return `{ ${example.replace('items: any[], total: number', '{items: any[], total: number}')} }`;
+            return `{ ${example.replace(
+                'items: any[], total: number',
+                '{items: any[], total: number}'
+            )} }`;
         });
-        
+
         const state = reactive({
             dataHandler:
                 props.modelValue.dataHandler ||
