@@ -10,6 +10,9 @@ import type { MockMethod } from 'vite-plugin-mock';
 let appCenterMock: MockMethod[] | null = null;
 let platformCenterMock: MockMethod[] | null = null;
 
+// 静态资源文件缓存
+const staticFileCache = new Map<string, any>();
+
 /**
  * 加载 mock 数据
  */
@@ -100,6 +103,83 @@ const findMockConfig = (
 };
 
 /**
+ * 读取静态资源文件（如 bundle.json）
+ * 注意：在 VSCode webview 环境中，由于 CSP 限制，不能使用 fetch
+ * 因此静态资源应该通过插件读取，而不是在这里直接读取
+ * 这个方法保留用于非 VSCode 环境（如浏览器直接访问）
+ * @param url 文件路径（如 /mock/bundle.json）
+ * @returns Promise<{ data: any, locale?: string } | null>
+ */
+const loadStaticFile = async (
+    url: string
+): Promise<{ data: any; locale?: string } | null> => {
+    try {
+        // 检查是否在 VSCode 环境
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const isVSCodeEnv = (window as any).vscode || (window as any).vscodeBridge;
+        
+        if (isVSCodeEnv) {
+            // 在 VSCode 环境中，静态资源应该通过插件读取
+            // 不应该在这里使用 fetch（会违反 CSP）
+            // eslint-disable-next-line no-console
+            console.warn(
+                `[Mock Data] ⚠️ 在 VSCode 环境中，静态资源 ${url} 应该通过插件读取，而不是直接 fetch`
+            );
+            return null;
+        }
+
+        // 检查缓存
+        if (staticFileCache.has(url)) {
+            const cached = staticFileCache.get(url);
+            // eslint-disable-next-line no-console
+            console.log(`[Mock Data] 📄 从缓存加载静态文件: ${url}`);
+            return {
+                data: cached,
+                locale: 'zh-cn'
+            };
+        }
+
+        // 在非 VSCode 环境中，使用 fetch 读取静态文件
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            // eslint-disable-next-line no-console
+            console.warn(
+                `[Mock Data] ⚠️ 无法加载静态文件: ${url}, 状态码: ${response.status}`
+            );
+            return null;
+        }
+
+        const fileData = await response.json();
+
+        // 缓存文件内容
+        staticFileCache.set(url, fileData);
+
+        // eslint-disable-next-line no-console
+        console.log(`[Mock Data] ✅ 成功加载静态文件: ${url}`);
+
+        // 确保返回格式为 { data: any, locale?: string }
+        // bundle.json 的格式可能是 { data: {...} } 或直接是对象
+        if (fileData && typeof fileData === 'object' && 'data' in fileData) {
+            return {
+                data: fileData.data,
+                locale: 'zh-cn'
+            };
+        }
+
+        // 如果文件内容本身就是数据，直接返回
+        return {
+            data: fileData,
+            locale: 'zh-cn'
+        };
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`[Mock Data] ❌ 加载静态文件失败: ${url}`, error);
+        return null;
+    }
+};
+
+/**
  * 根据 URL 和 method 获取 mock 数据
  * @param url 请求 URL
  * @param method 请求方法
@@ -114,6 +194,7 @@ export const getMockData = async (
     data?: any
 ): Promise<{ data: any; locale?: string } | null> => {
     try {
+        // 继续从 mock 配置中查找
         await loadMockData();
 
         // 合并所有 mock 数据

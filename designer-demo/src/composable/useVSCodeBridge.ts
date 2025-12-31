@@ -9,7 +9,10 @@ import { setGlobalMonacoEditorTheme } from '@opentiny/tiny-engine-common';
 
 import { getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register';
 
-import { switchLanguage } from '../services/i18nService';
+import {
+    switchLanguage,
+    whenI18nReady
+} from '../services/i18nService';
 
 // 插件调用设计器的消息格式（通过 webview HTML 转发）
 interface VSCodeToDesignerMessage {
@@ -189,7 +192,8 @@ const handleVSCodeMessage = (event: MessageEvent) => {
                     break;
 
                 case 'setLanguage':
-                    handleSetLanguage(vscodeMessage.params?.language);
+                    // 不等待语言切换完成，因为这是非阻塞操作
+                    void handleSetLanguage(vscodeMessage.params?.language);
                     break;
 
                 default:
@@ -248,13 +252,23 @@ const handleSetTheme = (theme: string) => {
 /**
  * 处理设置语言
  */
-const handleSetLanguage = (language: string) => {
+const handleSetLanguage = async (language: string) => {
     if (!language) {
         return;
     }
 
     const mappedLang = LANGUAGE_MAP[language] || language;
-    switchLanguage(mappedLang);
+    try {
+        // 等待 i18n 实例准备好后再切换语言
+        await Promise.race([
+            whenI18nReady(),
+            new Promise(resolve => setTimeout(resolve, 1000))
+        ]);
+        switchLanguage(mappedLang);
+    } catch (error) {
+        // 如果等待超时或出错，仍然尝试切换
+        switchLanguage(mappedLang);
+    }
 };
 
 /**
@@ -401,10 +415,21 @@ export const initVSCodeBridge = () => {
     // 立即请求初始化数据（不延迟，避免显示默认语言）
     // 使用 nextTick 确保消息监听器已注册
     Promise.resolve().then(() => {
-        getInitData(data => {
+        getInitData(async data => {
+            // 等待 i18n 实例准备好后再切换语言，避免警告
             if (data.language) {
                 const mappedLang = LANGUAGE_MAP[data.language] || data.language;
-                switchLanguage(mappedLang);
+                try {
+                    // 等待 i18n 实例准备好（最多等待 2 秒）
+                    await Promise.race([
+                        whenI18nReady(),
+                        new Promise(resolve => setTimeout(resolve, 2000))
+                    ]);
+                    switchLanguage(mappedLang);
+                } catch (error) {
+                    // 如果等待超时或出错，仍然尝试切换（可能 i18n 已经准备好了）
+                    switchLanguage(mappedLang);
+                }
             }
 
             if (data.theme) {
