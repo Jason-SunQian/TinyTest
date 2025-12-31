@@ -114,7 +114,6 @@ export const getMockData = async (
     data?: any
 ): Promise<{ data: any; locale?: string } | null> => {
     try {
-        // 继续从 mock 配置中查找
         await loadMockData();
 
         // 合并所有 mock 数据

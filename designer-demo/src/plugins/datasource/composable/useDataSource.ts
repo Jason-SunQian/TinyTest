@@ -16,6 +16,7 @@ import { utils } from '@opentiny/tiny-engine-utils';
 import { isEqual } from '@opentiny/vue-renderless/common/object';
 import { isEmptyObject } from '@opentiny/vue-renderless/common/type';
 import { useModal } from '@opentiny/tiny-engine-meta-register';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
 const dataSourceState = reactive({

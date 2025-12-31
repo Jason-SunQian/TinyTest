@@ -173,9 +173,21 @@ export default {
 
         const validateNumber = (rule, value, callback) => {
             if (rule.min > value) {
-                callback(new Error(`${t('designer.datasource.mustNotLessThan', { min: rule.min })}`));
+                callback(
+                    new Error(
+                        `${t('designer.datasource.mustNotLessThan', {
+                            min: rule.min
+                        })}`
+                    )
+                );
             } else if (rule.max < value) {
-                callback(new Error(`${t('designer.datasource.mustNotGreaterThan', { max: rule.max })}`));
+                callback(
+                    new Error(
+                        `${t('designer.datasource.mustNotGreaterThan', {
+                            max: rule.max
+                        })}`
+                    )
+                );
             } else {
                 callback();
             }
@@ -216,8 +228,12 @@ export default {
                                 } else {
                                     const message =
                                         key === CONSTANTS.MIN
-                                            ? `${t('designer.datasource.minLengthTip')}${format[key]}`
-                                            : `${t('designer.datasource.maxLengthTip')}${format[key]}`;
+                                            ? `${t(
+                                                  'designer.datasource.minLengthTip'
+                                              )}${format[key]}`
+                                            : `${t(
+                                                  'designer.datasource.maxLengthTip'
+                                              )}${format[key]}`;
                                     fieldRules.push({
                                         [key]: format[key],
                                         message,

@@ -826,7 +826,7 @@ export default [
                 // bundle.json 已通过符号链接或复制到 mock 目录下
                 // 可以直接导入
                 const bundleModule = await import('./bundle.json');
-                
+
                 // bundle.json 的格式是 { data: {...} }，直接返回
                 const bundleData = bundleModule.default || bundleModule;
                 return bundleData;

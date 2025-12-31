@@ -263,9 +263,11 @@ export default {
                 } = item;
 
                 if (required) {
-                    rules.push({ 
-                        required: true, 
-                        message: `${item.name}${t('designer.datasource.required')}` 
+                    rules.push({
+                        required: true,
+                        message: `${item.name}${t(
+                            'designer.datasource.required'
+                        )}`
                     });
                 }
 
@@ -274,13 +276,16 @@ export default {
                     max !== 0 &&
                     max >= min
                 ) {
-                    const lengthOrSize = type === 'string' 
-                        ? t('designer.datasource.length') 
-                        : t('designer.datasource.size');
+                    const lengthOrSize =
+                        type === 'string'
+                            ? t('designer.datasource.length')
+                            : t('designer.datasource.size');
                     rules.push({
                         min,
                         max,
-                        message: `${lengthOrSize} ${t('designer.datasource.between')} ${min} - ${max}`
+                        message: `${lengthOrSize} ${t(
+                            'designer.datasource.between'
+                        )} ${min} - ${max}`
                     });
                 }
 
@@ -615,7 +620,10 @@ export default {
         };
 
         const download = () => {
-            downloadFn(state.columns, `${t('designer.datasource.staticData')}.xlsx`);
+            downloadFn(
+                state.columns,
+                `${t('designer.datasource.staticData')}.xlsx`
+            );
         };
 
         const batchDelete = () => {
@@ -629,7 +637,9 @@ export default {
 
             confirm({
                 title: t('designer.datasource.batchDelete'),
-                message: t('designer.datasource.confirmBatchDelete', { count: selectedData.length }),
+                message: t('designer.datasource.confirmBatchDelete', {
+                    count: selectedData.length
+                }),
                 exec: () => {
                     grid.value.removeSelecteds();
                     state.totalData = state.totalData.filter(

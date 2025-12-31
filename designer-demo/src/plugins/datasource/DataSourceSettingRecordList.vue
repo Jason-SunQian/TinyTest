@@ -6,29 +6,31 @@
                 plain
                 :disabled="!allowCreate"
                 @click.stop="insertNewData"
-                ><svg-icon
-                    name="add"
-                    class="btn-icon"
-                />{{ t('designer.datasource.addStaticData') }}</tiny-button>
+                ><svg-icon name="add" class="btn-icon" />{{
+                    t('designer.datasource.addStaticData')
+                }}</tiny-button>
             <tiny-button
                 plain
                 :disabled="state.isBatchDeleteDisable"
                 @click.stop="batchDelete"
-                ><svg-icon class="btn-icon" name="delete" />{{ t('designer.common.delete') }}</tiny-button>
+                ><svg-icon class="btn-icon" name="delete" />{{
+                    t('designer.common.delete')
+                }}</tiny-button>
             <tiny-button
                 plain
                 :disabled="!allowCreate"
                 @click.stop="showImportModal(true)"
-                ><svg-icon
-                    class="btn-icon"
-                    name="upload"
-                />{{ t('designer.datasource.batchImport') }}</tiny-button>
+                ><svg-icon class="btn-icon" name="upload" />{{
+                    t('designer.datasource.batchImport')
+                }}</tiny-button>
             <tiny-link
                 type="primary"
                 class="download"
                 :underline="false"
                 @click="download"
-                >{{ t('designer.datasource.downloadImportTemplate') }}</tiny-link>
+                >{{
+                    t('designer.datasource.downloadImportTemplate')
+                }}</tiny-link>
         </div>
         <div class="record-list-data">
             <tiny-grid
@@ -56,8 +58,15 @@
                         <p>
                             <span>{{ t('designer.datasource.noData') }}</span>
                             <span v-if="isEmptyColumn">
-                                <span>{{ t('designer.datasource.pleaseAddFieldFirst') }}</span>
-                                <span class="add-column" @click="$emit('edit')">{{ t('designer.datasource.addField') }}</span>
+                                <span>{{
+                                    t('designer.datasource.pleaseAddFieldFirst')
+                                }}</span>
+                                <span
+                                    class="add-column"
+                                    @click="$emit('edit')"
+                                    >{{
+                                        t('designer.datasource.addField')
+                                    }}</span>
                             </span>
                         </p>
                     </div>
@@ -177,9 +186,11 @@ export default {
                 } = item;
 
                 if (required) {
-                    rules.push({ 
-                        required: true, 
-                        message: `${item.name}${t('designer.datasource.required')}` 
+                    rules.push({
+                        required: true,
+                        message: `${item.name}${t(
+                            'designer.datasource.required'
+                        )}`
                     });
                 }
 
@@ -188,14 +199,17 @@ export default {
                     max !== 0 &&
                     max >= min
                 ) {
-                    const lengthOrSize = type === 'string' 
-                        ? t('designer.datasource.length') 
-                        : t('designer.datasource.size');
+                    const lengthOrSize =
+                        type === 'string'
+                            ? t('designer.datasource.length')
+                            : t('designer.datasource.size');
                     rules.push({
                         type,
                         min,
                         max,
-                        message: `${lengthOrSize} ${t('designer.datasource.between')} ${min} - ${max}`
+                        message: `${lengthOrSize} ${t(
+                            'designer.datasource.between'
+                        )} ${min} - ${max}`
                     });
                 }
 
@@ -485,7 +499,9 @@ export default {
 
             confirm({
                 title: t('designer.datasource.batchDelete'),
-                message: t('designer.datasource.confirmBatchDelete', { count: selectedData.length }),
+                message: t('designer.datasource.confirmBatchDelete', {
+                    count: selectedData.length
+                }),
                 exec: () => {
                     grid.value.removeSelecteds();
                     state.totalData = state.totalData.filter(
