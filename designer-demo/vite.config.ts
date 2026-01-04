@@ -47,7 +47,7 @@ export default defineConfig(configEnv => {
         },
         optimizeDeps: {
             exclude: ['source-map-js'],
-            include: ['@opentiny/tiny-engine-common']
+            // include: ['@opentiny/tiny-engine-common']
         },
         server: {
             port: 8090
