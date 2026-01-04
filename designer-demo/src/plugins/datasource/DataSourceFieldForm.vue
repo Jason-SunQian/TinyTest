@@ -38,7 +38,10 @@
                     :label="t('designer.datasource.fieldName')"
                     label-width="150px"
                 >
-                    <i18n-input v-model="state.field.title" />
+                    <i18n-input
+                        v-model="state.field.title"
+                        :placeholder="t('designer.common.pleaseInputContent')"
+                    />
                 </tiny-form-item>
                 <tiny-form-item
                     class="name-content"

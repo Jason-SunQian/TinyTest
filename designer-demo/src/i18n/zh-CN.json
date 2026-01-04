@@ -566,6 +566,7 @@
             "fixPanel": "固定面板",
             "pleaseSelect": "请选择",
             "pleaseInput": "请输入",
+            "pleaseInputContent": "请输入内容",
             "tip": "提示",
             "block": "区块",
             "page": "页面",
@@ -842,7 +843,12 @@
             "parentId": "父ID",
             "minLengthTip": "长度不小于",
             "maxLengthTip": "长度不大于",
-            "mustNotGreaterThan": "不能大于最大值{max}"
+            "mustNotGreaterThan": "不能大于最大值{max}",
+            "noData": "暂无数据",
+            "minInputChars": "最少输入字符数（包含空格）",
+            "maxInputChars": "最多输入字符数（包含空格）",
+            "minValue": "最小值",
+            "maxValue": "最大值"
         },
         "bridge": {
             "title": "资源管理",

@@ -5,7 +5,9 @@
             <tiny-form-item
                 prop="format.min"
                 :label="
-                    type === 'string' ? '最少输入字符数（包含空格）' : '最小值'
+                    type === 'string'
+                        ? t('designer.datasource.minInputChars')
+                        : t('designer.datasource.minValue')
                 "
                 label-width="300px"
             >
@@ -19,7 +21,9 @@
             <tiny-form-item
                 prop="format.max"
                 :label="
-                    type === 'string' ? '最多输入字符数（包含空格）' : '最大值'
+                    type === 'string'
+                        ? t('designer.datasource.maxInputChars')
+                        : t('designer.datasource.maxValue')
                 "
                 label-width="300px"
             >
@@ -34,9 +38,10 @@
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceFieldCheckRanger */
-import { inject } from 'vue';
+import { inject, computed } from 'vue';
 import { Numeric, FormItem } from '@opentiny/vue';
 
+import { useDesignerI18n } from '../../services/i18nService';
 import { formDataInjectionSymbols } from './DataSourceFieldForm.vue';
 export default {
     components: {
@@ -52,11 +57,13 @@ export default {
         }
     },
     // eslint-disable-next-line vue/component-api-style
-    setup() {
+    setup(props) {
+        const { t } = useDesignerI18n();
         const formData = inject(formDataInjectionSymbols);
 
         return {
-            formData
+            formData,
+            t
         };
     }
 };

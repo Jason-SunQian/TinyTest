@@ -564,6 +564,7 @@
             "fixPanel": "Fix Panel",
             "pleaseSelect": "Please Select",
             "pleaseInput": "Please Input",
+            "pleaseInputContent": "Please enter content",
             "tip": "Tip",
             "block": "Block",
             "page": "Page",
@@ -840,7 +841,12 @@
             "parentId": "Parent ID",
             "minLengthTip": "Length not less than",
             "maxLengthTip": "Length not greater than",
-            "mustNotGreaterThan": "Must not be greater than maximum value {max}"
+            "mustNotGreaterThan": "Must not be greater than maximum value {max}",
+            "noData": "No Data",
+            "minInputChars": "Minimum input characters (including spaces)",
+            "maxInputChars": "Maximum input characters (including spaces)",
+            "minValue": "Minimum value",
+            "maxValue": "Maximum value"
         },
         "bridge": {
             "title": "Resource Management",
