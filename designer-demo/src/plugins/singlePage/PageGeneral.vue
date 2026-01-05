@@ -38,9 +38,9 @@
                     "
                 ></tiny-input>
             </tiny-form-item>
-
+          <!--                v-if="pageSettingState.currentPageData.group !== 'publicPages'"-->
             <tiny-form-item
-                v-if="pageSettingState.currentPageData.group !== 'publicPages'"
+                v-if="false"
                 :label="t('designer.page.parentFolder')"
                 prop="parentId"
             >
