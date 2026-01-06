@@ -3,7 +3,7 @@
     <plugin-panel
         :title="t('designer.bridge.title')"
         class="plugin-bridge"
-        :fixed-name="PLUGIN_NAME.Bridge"
+        fixed-name="engine.plugins.customBridge"
         :fixed-panels="fixedPanels"
         :docs-content="docsContent"
         :is-show-docs-icon="true"
@@ -69,10 +69,26 @@ export default {
         const tips = computed(() => RESOURCE_TIP_I18N(t)[activedName.value]);
         const docsContent = computed(() => t('designer.bridge.docs'));
 
-        const { PLUGIN_NAME } = useLayout();
+        const { PLUGIN_NAME, changeLeftFixedPanels } = useLayout();
+
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customBridge';
+
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
 
         const panelState = reactive({
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
         provide('panelState', panelState);
 

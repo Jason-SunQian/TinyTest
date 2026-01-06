@@ -5,7 +5,7 @@
         tabindex="0"
         :title="t('designer.leftPanel.outlineTree')"
         class="outlinebox plugin-tree"
-        :fixed-name="PLUGIN_NAME.OutlineTree"
+        fixed-name="engine.plugins.customOutlineTree"
         :fixed-panels="fixedPanels"
         @close="$emit('close')"
     >
@@ -107,10 +107,13 @@ export default {
         const { t } = useDesignerI18n();
         const { pageState } = useCanvas();
         const { getMaterial } = useMaterial();
-        const { PLUGIN_NAME } = useLayout();
+        const { PLUGIN_NAME, changeLeftFixedPanels } = useLayout();
+
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customOutlineTree';
 
         const panelFixed = computed(() =>
-            props.fixedPanels?.includes(PLUGIN_NAME.OutlineTree)
+            props.fixedPanels?.includes(pluginId)
         );
 
         const { useMultiSelect, registerHotkeyEvent, removeHotkeyEvent } =
@@ -120,8 +123,21 @@ export default {
             useMultiSelect().multiSelectedStates.value.map(state => state.id)
         );
 
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
+
         const panelState = reactive({
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
         provide('panelState', panelState);
 

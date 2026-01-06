@@ -4,7 +4,7 @@
         id="data-source"
         :title="t('designer.state.title')"
         class="plugin-state"
-        :fixed-name="PLUGIN_NAME.State"
+        fixed-name="engine.plugins.customState"
         :fixed-panels="fixedPanels"
         :docs-url="docsUrl"
         :docs-content="docsContent"
@@ -196,7 +196,20 @@ export default {
         // eslint-disable-next-line vue/require-typed-ref
         const selectedKey = ref(null);
 
-        const { PLUGIN_NAME, getPluginWidth, getPluginByLayout } = useLayout();
+        const {
+            PLUGIN_NAME,
+            getPluginWidth,
+            getPluginByLayout,
+            changeLeftFixedPanels
+        } = useLayout();
+
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customState';
+
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
 
         const firstPanelOffset = computed(() => {
             return getPluginWidth(PLUGIN_NAME.State) + 1;
@@ -209,7 +222,15 @@ export default {
         });
 
         const panelState = reactive({
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
 
         provide('panelState', panelState);

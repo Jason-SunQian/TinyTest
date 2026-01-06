@@ -2,7 +2,7 @@
 <template>
     <plugin-panel
         :title="t('designer.script.title')"
-        :fixed-name="PLUGIN_NAME.Page"
+        fixed-name="engine.plugins.customScript"
         :fixed-panels="fixedPanels"
         :docs-url="docsUrl"
         :docs-content="docsContent"
@@ -87,7 +87,15 @@ export default {
             emit
         });
 
-        const { PLUGIN_NAME } = useLayout();
+        const { PLUGIN_NAME, changeLeftFixedPanels } = useLayout();
+
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customScript';
+
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
 
         // 提供国际化注入，确保子组件能正确使用 i18n
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -102,7 +110,15 @@ export default {
         }
 
         const panelState = reactive({
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
         provide('panelState', panelState);
 

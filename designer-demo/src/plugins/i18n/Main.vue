@@ -10,7 +10,7 @@
     <plugin-panel
         :title="t('designer.i18n.title')"
         class="plugin-i18n"
-        :fixed-name="PLUGIN_NAME.I18n"
+        fixed-name="engine.plugins.customI18n"
         :fixedPanels="fixedPanels"
         :docsUrl="docsUrl"
         :docsContent="docsContent"
@@ -289,11 +289,27 @@ export default {
         const { getLangs, i18nResource, currentLanguage, getI18nData } =
             useTranslate();
         const { toClipboard } = useClipboard();
-        const { PLUGIN_NAME } = useLayout();
+        const { PLUGIN_NAME, changeLeftFixedPanels } = useLayout();
         const { t } = useDesignerI18n();
 
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customI18n';
+
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
+
         const panelState = reactive({
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
         provide('panelState', panelState);
 

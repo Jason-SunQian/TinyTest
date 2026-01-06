@@ -4,7 +4,7 @@
         id="source-code"
         :title="t('designer.schema.title')"
         class="plugin-schema"
-        :fixed-name="PLUGIN_NAME.Schema"
+        fixed-name="engine.plugins.customSchema"
         :fixed-panels="fixedPanels"
         @close="close"
     >
@@ -112,7 +112,15 @@ export default {
         });
         const { subscribe, unsubscribe } = useMessage();
 
-        const { PLUGIN_NAME } = useLayout();
+        const { PLUGIN_NAME, changeLeftFixedPanels } = useLayout();
+
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customSchema';
+
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
 
         // 提供国际化注入
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,7 +134,15 @@ export default {
         }
 
         const panelState = reactive({
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
         provide('panelState', panelState);
 

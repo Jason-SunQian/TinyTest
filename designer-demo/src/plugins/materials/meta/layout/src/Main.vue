@@ -2,7 +2,7 @@
 <template>
     <plugin-panel
         :title="shortcut ? '' : title"
-        :fixed-name="PLUGIN_NAME.Materials"
+        fixed-name="engine.plugins.customMaterials"
         :fixed-panels="fixedPanels"
         @close="$emit('close')"
     >
@@ -40,7 +40,8 @@ import { reactive, provide, ref, computed } from 'vue';
 import { Tabs, TabItem } from '@opentiny/vue';
 import {
     META_APP as PLUGIN_NAME,
-    getMergeMeta
+    getMergeMeta,
+    useLayout
 } from '@opentiny/tiny-engine-meta-register';
 
 import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
@@ -76,12 +77,30 @@ export default {
     emits: ['close', 'fix-panel'],
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
+        const { changeLeftFixedPanels } = useLayout();
+
+        // 使用实际注册的插件 ID
+        const pluginId = 'engine.plugins.customMaterials';
+
+        // 直接实现固定面板功能
+        const handleFixPanel = () => {
+            changeLeftFixedPanels(pluginId);
+        };
+
         const panelState = reactive({
             isShortcutPanel: props.shortcut,
             isBlockGroupPanel: false,
             isBlockList: false,
             materialGroup: props.groupName,
-            emitEvent: emit
+            emitEvent: (eventName: string, ...args: unknown[]) => {
+                // 如果是 fixPanel 事件，直接调用 changeLeftFixedPanels
+                if (eventName === 'fixPanel' || eventName === 'fix-panel') {
+                    handleFixPanel();
+                } else {
+                    // 其他事件正常 emit
+                    emit(eventName as any, ...args);
+                }
+            }
         });
         // 使用provide传给子组件,后续可能会有调整，先暂定
         provide('panelState', panelState);
