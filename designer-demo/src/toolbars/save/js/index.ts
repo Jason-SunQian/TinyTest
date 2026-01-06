@@ -49,52 +49,52 @@ const saveBlock = async (pageSchema: any) => {
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
 
-    // 检测是否在 VSCode 环境中
-    const isVSCode = checkIsVSCodeEnvironment();
-
-    // VSCode 环境下，使用 goSave 保存
-    if (isVSCode) {
-        isLoading.value = true;
-        try {
-            await new Promise<void>((resolve, reject) => {
-                goSave(
-                    {
-                        pageId: currentPage.id,
-                        pageSchema,
-                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
-                        pageData: { ...currentPage, page_content: pageSchema }
-                    },
-                    (success, error) => {
-                        if (success) {
-                            resolve();
-                        } else {
-                            reject(
-                                error ||
-                                    new Error(
-                                        translate('designer.vscode.saveFailed')
-                                    )
-                            );
-                        }
-                    }
-                );
-            });
-            // 发布页面保存事件，通知其他组件进行相应处理
-            publish({ topic: 'page-saved' });
-        } catch (error) {
-            useNotify()({
-                type: 'error',
-                title: translate('designer.vscode.saveFailed'),
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : translate('designer.vscode.saveFailed')
-            });
-            throw error;
-        } finally {
-            isLoading.value = false;
-        }
-        return;
-    }
+    // // 检测是否在 VSCode 环境中
+    // const isVSCode = checkIsVSCodeEnvironment();
+    //
+    // // VSCode 环境下，使用 goSave 保存
+    // if (isVSCode) {
+    //     isLoading.value = true;
+    //     try {
+    //         await new Promise<void>((resolve, reject) => {
+    //             goSave(
+    //                 {
+    //                     pageId: currentPage.id,
+    //                     pageSchema,
+    //                     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+    //                     pageData: { ...currentPage, page_content: pageSchema }
+    //                 },
+    //                 (success, error) => {
+    //                     if (success) {
+    //                         resolve();
+    //                     } else {
+    //                         reject(
+    //                             error ||
+    //                                 new Error(
+    //                                     translate('designer.vscode.saveFailed')
+    //                                 )
+    //                         );
+    //                     }
+    //                 }
+    //             );
+    //         });
+    //         // 发布页面保存事件，通知其他组件进行相应处理
+    //         publish({ topic: 'page-saved' });
+    //     } catch (error) {
+    //         useNotify()({
+    //             type: 'error',
+    //             title: translate('designer.vscode.saveFailed'),
+    //             message:
+    //                 error instanceof Error
+    //                     ? error.message
+    //                     : translate('designer.vscode.saveFailed')
+    //         });
+    //         throw error;
+    //     } finally {
+    //         isLoading.value = false;
+    //     }
+    //     return;
+    // }
 
     // 非 VSCode 环境，使用原有方式保存
     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
