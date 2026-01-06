@@ -63,7 +63,7 @@
                         >
                     </template>
                 </tiny-file-upload>
-                <a class="download-btn" @click="downloadFile">
+                <a v-if="false" class="download-btn" @click="downloadFile">
                     {{ t('designer.i18n.downloadTemplate') }}
                 </a>
                 <p v-show="isLoading && notEmpty">

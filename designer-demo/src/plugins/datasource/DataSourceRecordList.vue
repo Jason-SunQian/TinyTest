@@ -40,6 +40,7 @@
                     >{{ t('designer.datasource.batchImport') }}</tiny-button
                 >
                 <tiny-link
+                    v-if="false"
                     type="primary"
                     class="download"
                     :underline="false"
