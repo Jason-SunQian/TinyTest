@@ -14,10 +14,10 @@ import {
 import { constants } from '@opentiny/tiny-engine-utils';
 import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http';
 
-import {
-    goSave,
-    checkIsVSCodeEnvironment
-} from '../../../composable/useVSCodeBridge';
+// import {
+//     goSave,
+//     checkIsVSCodeEnvironment
+// } from '../../../composable/useVSCodeBridge';
 import { t as translate } from '../../../services/i18nService';
 
 const { publish } = useMessage();

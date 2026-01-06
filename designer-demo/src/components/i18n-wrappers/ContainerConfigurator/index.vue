@@ -1,9 +1,12 @@
-<!-- eslint-disable vue/attribute-hyphenation, vue/v-on-event-hyphenation, vue/html-self-closing, vue/max-lines-per-block, vue/block-lang, import/order, @typescript-eslint/naming-convention, vue/component-api-style, vue/require-explicit-emits -->
+/* eslint-disable vue/max-lines-per-block, vue/component-api-style */
+<!-- eslint-disable vue/attribute-hyphenation, vue/v-on-event-hyphenation, vue/html-self-closing, vue/block-lang, import/order, @typescript-eslint/naming-convention, vue/require-explicit-emits, @typescript-eslint/no-shadow, @typescript-eslint/prefer-destructuring, vue/padding-line-between-blocks -->
 <template>
     <div>
         <div class="tabs-header">
             <div>{{ t('designer.configurator.tabTitle') }}</div>
-            <div class="tabs-header-id">{{ t('designer.configurator.tabValue') }}</div>
+            <div class="tabs-header-id">
+                {{ t('designer.configurator.tabValue') }}
+            </div>
         </div>
         <meta-list-items
             class="list"
@@ -38,17 +41,17 @@
             </template>
         </meta-list-items>
         <div class="bottom">
-            <div
-                class="add-btn"
-                @click="addChildren"
-            >
+            <div class="add-btn" @click="addChildren">
                 <svg-icon name="add"></svg-icon>
                 <span>{{ t('designer.configurator.addTab') }}</span>
             </div>
         </div>
     </div>
 </template>
-<script>
+
+<!-- eslint-disable vue/max-lines-per-block -->
+<script lang="ts">
+/* eslint-disable vue/max-lines-per-block */
 import { ref, onMounted } from 'vue';
 import { Input, Tooltip } from '@opentiny/vue';
 import { MetaListItems } from '@opentiny/tiny-engine-common';
@@ -75,6 +78,7 @@ export default {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip: Tooltip
     },
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         const { children: schemaChildren, componentName } =
@@ -86,10 +90,10 @@ export default {
 
         const updateChildrenToValid = () => {
             const schema = useProperties().getSchema();
-            const schemaChildren = schema.children || [];
+            const childrenList = schema.children || [];
             let hasUpdate = false;
 
-            const newChildren = schemaChildren.map(item => {
+            const newChildren = childrenList.map(item => {
                 if (!item.props) {
                     hasUpdate = true;
 
@@ -160,14 +164,14 @@ export default {
             }
 
             const schema = useProperties().getSchema();
-            const schemaChildren = schema.children;
+            const childrenList = schema.children;
 
             const { operateNode } = useCanvas();
 
-            const newNodeData = schemaChildren[oldIndex];
-            const referTargetNodeId = schemaChildren[newIndex].id;
+            const newNodeData = childrenList[oldIndex];
+            const referTargetNodeId = childrenList[newIndex].id;
 
-            operateNode({ type: 'delete', id: schemaChildren[oldIndex].id });
+            operateNode({ type: 'delete', id: childrenList[oldIndex].id });
             operateNode({
                 type: 'insert',
                 parentId: schema.id,
@@ -176,17 +180,17 @@ export default {
                 referTargetNodeId
             });
 
-            children.value = [...schemaChildren];
+            children.value = [...childrenList];
         };
 
         const onTitleUpdate = value => {
             const { operateNode } = useCanvas();
-            const id = value.id;
+            const { id, props } = value;
 
             operateNode({
                 type: 'changeProps',
                 id,
-                value: { props: value.props }
+                value: { props }
             });
         };
 
@@ -202,7 +206,8 @@ export default {
     }
 };
 </script>
-<style lang="less" scoped>
+
+<style lang="scss" scoped>
 .bottom {
     display: flex;
     align-items: center;
@@ -268,4 +273,3 @@ export default {
     }
 }
 </style>
-

@@ -38,10 +38,11 @@
 
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceFieldCheckRanger */
-import { inject, computed } from 'vue';
+import { inject } from 'vue';
 import { Numeric, FormItem } from '@opentiny/vue';
 
 import { useDesignerI18n } from '../../services/i18nService';
+
 import { formDataInjectionSymbols } from './DataSourceFieldForm.vue';
 export default {
     components: {
@@ -57,7 +58,7 @@ export default {
         }
     },
     // eslint-disable-next-line vue/component-api-style
-    setup(props) {
+    setup() {
         const { t } = useDesignerI18n();
         const formData = inject(formDataInjectionSymbols);
 
