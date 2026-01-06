@@ -531,6 +531,13 @@
             "popupTitle": "弹框标题",
             "tooltipContent": "提示内容"
         },
+        "configurator": {
+            "tabTitle": "页签标题",
+            "tabValue": "页签值",
+            "addTab": "添加标签页",
+            "delete": "删除",
+            "defaultTabTitle": "选项卡"
+        },
         "common": {
             "pageJS": "页面JS",
             "state": "状态",

@@ -529,6 +529,13 @@
             "popupTitle": "Popup Title",
             "tooltipContent": "Tooltip Content"
         },
+        "configurator": {
+            "tabTitle": "Tab Title",
+            "tabValue": "Tab Value",
+            "addTab": "Add Tab",
+            "delete": "Delete",
+            "defaultTabTitle": "Tab"
+        },
         "common": {
             "pageJS": "Page JS",
             "state": "State",
