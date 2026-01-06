@@ -21,6 +21,7 @@ export { default as ArrayItemConfigurator } from './ArrayItemConfigurator/index.
 export { default as CodeConfigurator } from './CodeConfigurator/index.vue';
 export { default as SlotConfigurator } from './SlotConfigurator/index.vue';
 export { default as ContainerConfigurator } from './ContainerConfigurator/index.vue';
+export { default as VariableConfigurator } from './VariableConfigurator/index.vue';
 // export { default as PluginSetting } from './PluginSetting/index.vue'
 // export { default as PluginBlockList } from './PluginBlockList/index.vue'
 // export { default as MetaListItems } from './MetaListItems/index.vue'

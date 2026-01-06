@@ -3,7 +3,8 @@ import {
     ArrayItemConfigurator,
     CodeConfigurator,
     SlotConfigurator,
-    ContainerConfigurator
+    ContainerConfigurator,
+    VariableConfigurator
 } from '@/components/i18n-wrappers';
 
 import MyInputConfigurator from './MyInputConfigurator.vue';
@@ -21,5 +22,7 @@ export const configurators = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     SlotConfigurator,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    ContainerConfigurator
+    ContainerConfigurator,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    VariableConfigurator
 };

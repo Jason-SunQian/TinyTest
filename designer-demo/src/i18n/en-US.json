@@ -93,7 +93,8 @@
             "props": {
                 "title": "Properties",
                 "emptyComponent": "You haven't dragged any components to the canvas yet",
-                "emptySelection": "Please select a component on the canvas"
+                "emptySelection": "Please select a component on the canvas",
+                "inlineBound": "Bound: {value}"
             },
             "styles": {
                 "title": "Styles",
@@ -1134,6 +1135,40 @@
         "configurators": {
             "myInputConfigurator": {
                 "title": "I am a custom input configurator"
+            },
+            "variableBinding": {
+                "title": "Variable Binding",
+                "description": "You can bind variables or handler functions by clicking the variable list in the left area, or you can enter complex expressions in the input mode on the right side.",
+                "variableList": "Variable List",
+                "search": "Search",
+                "variable": "Variable",
+                "pollTooltip": "After enabling scheduled updates, the page will periodically request remote data sources at runtime to achieve scheduled data updates.",
+                "pollUpdate": "Scheduled Update:",
+                "updateInterval": "Update Interval:",
+                "usage": "Usage",
+                "usageDescription1": "You can bind variables or handler functions by clicking the left area, or click the pencil button on the right to switch to input mode and enter complex expressions.",
+                "usageDescription2": "The input box supports variables by default, and the syntax is exactly the same as JS syntax.",
+                "usageExample": {
+                    "pageState": "Page State: this.state.xxx",
+                    "string": "String: \"string\"",
+                    "number": "Number: 123",
+                    "boolean": "Boolean: true / false",
+                    "object": "Object: { name: \"John\" }",
+                    "array": "Array: [\"1\", \"2\"]",
+                    "null": "Null: null"
+                },
+                "removeBinding": "Remove Binding",
+                "datasourcePrefix": "Data Source: ",
+                "categories": {
+                    "state": "State Properties",
+                    "store": "Application State",
+                    "function": "Custom Handler Functions",
+                    "utils": "Utility Classes",
+                    "bridge": "Bridge Source",
+                    "datasource": "Data Source",
+                    "loop": "Loop Variable",
+                    "slotScope": "Variables Exposed to Slots"
+                }
             }
         }
     }

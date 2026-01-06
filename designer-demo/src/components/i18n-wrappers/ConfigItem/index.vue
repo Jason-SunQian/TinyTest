@@ -69,7 +69,7 @@
                         v-if="showBindState"
                         class="binding-state text-ellipsis-multiple"
                     >
-                        {{ '已绑定：' + widget.props.modelValue?.value }}
+                        {{ t('designer.settings.props.inlineBound', { value: widget.props.modelValue?.value || '' }) }}
                     </div>
                     <component
                         v-else
@@ -797,7 +797,8 @@ export default {
             handleBlur,
             isFocus,
             isRelatedComponents,
-            labelPosition
+            labelPosition,
+            t
         };
     }
 };
