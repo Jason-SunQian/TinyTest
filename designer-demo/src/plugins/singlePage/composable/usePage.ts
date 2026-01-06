@@ -225,36 +225,48 @@ const isCurrentDataSame = () => {
         pageSettingState.currentPageDataCopy || {};
     let isEqual = true;
 
-    Object.keys(dataCopy).some(item => {
+    // 获取所有需要比较的键，包括 data 和 dataCopy 中的所有键
+    // 这样可以检测到新增字段（如 serviceName）的变化
+    const allKeys = new Set([
+        ...Object.keys(data),
+        ...Object.keys(dataCopy)
+    ]);
+
+    allKeys.forEach(item => {
         // 页面比较是否更改，为了减少判断次数，不需要判断以下字段
         if (
             ['children', 'label', 'createdBy', 'assets', 'occupier'].includes(
                 item
             )
         ) {
-            return false;
+            return;
         } else if (item === 'page_content') {
             const obj = {
-                inputs: dataCopy[item].inputs,
-                outputs: dataCopy[item].outputs,
-                lifeCycles: dataCopy[item].lifeCycles,
-                children: dataCopy[item].children
+                inputs: dataCopy[item]?.inputs,
+                outputs: dataCopy[item]?.outputs,
+                lifeCycles: dataCopy[item]?.lifeCycles,
+                children: dataCopy[item]?.children
             };
             const objCopy = {
-                inputs: data[item].inputs,
-                outputs: data[item].outputs,
-                lifeCycles: data[item].lifeCycles,
-                children: data[item].children
+                inputs: data[item]?.inputs,
+                outputs: data[item]?.outputs,
+                lifeCycles: data[item]?.lifeCycles,
+                children: data[item]?.children
             };
 
             if (JSON.stringify(obj) !== JSON.stringify(objCopy)) {
                 isEqual = false;
             }
-        } else if (!isValuesEqual(dataCopy[item], data[item])) {
-            isEqual = false;
+        } else {
+            // 对于其他字段，需要处理 undefined 的情况
+            // 如果 dataCopy 中没有该字段，默认为 undefined 或空字符串
+            const copyValue = dataCopy[item] ?? '';
+            const currentValue = data[item] ?? '';
+            
+            if (!isValuesEqual(copyValue, currentValue)) {
+                isEqual = false;
+            }
         }
-
-        return !isEqual;
     });
 
     return isEqual;
@@ -305,9 +317,18 @@ const getPageContent = () => {
 };
 
 const initCurrentPageData = (pageDetail: PageData) => {
-    pageSettingState.currentPageData = pageDetail;
-    pageSettingState.currentPageDataCopy = extend(true, {}, pageDetail);
-    pageSettingState.oldParentId = pageDetail.parentId;
+    // 确保 pageDetail 包含所有必需字段，包括 serviceName
+    // 如果服务器返回的数据没有 serviceName，设置为空字符串
+    const normalizedPageDetail = {
+        ...DEFAULT_PAGE,
+        ...pageDetail,
+        // 确保 serviceName 字段存在，如果不存在则设置为空字符串
+        serviceName: pageDetail.serviceName ?? ''
+    };
+    
+    pageSettingState.currentPageData = normalizedPageDetail;
+    pageSettingState.currentPageDataCopy = extend(true, {}, normalizedPageDetail);
+    pageSettingState.oldParentId = normalizedPageDetail.parentId;
 };
 
 const resetPageData = () => {

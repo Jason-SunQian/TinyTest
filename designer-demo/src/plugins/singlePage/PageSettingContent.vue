@@ -256,15 +256,20 @@ export default {
 
             handlePageUpdate(updateParams).then(data => {
                 if (data) {
+                    // 合并保存后的数据，确保保留当前编辑的 serviceName 等字段
+                    // 因为服务器返回的数据可能不包含所有字段
                     pageSettingState.currentPageData = {
                         ...pageSettingState.currentPageData,
-                        ...data
+                        ...data,
+                        // 确保 serviceName 字段被保留（如果服务器没有返回，使用当前值）
+                        serviceName: data.serviceName ?? pageSettingState.currentPageData.serviceName ?? ''
                     };
 
                     if (pageState?.currentPage?.id === data?.id) {
                         initData(data.page_content, data);
                     }
 
+                    // 更新 currentPageDataCopy，确保包含所有字段（包括 serviceName）
                     pageSettingState.currentPageDataCopy = extend(
                         true,
                         {},
