@@ -199,9 +199,9 @@ export default {
 
 <style lang="scss" scoped>
 .plugin-page-js-container {
-    width: 800px !important;
-    min-width: 800px !important;
-    max-width: 800px !important;
+    width: 500px !important;
+    min-width: 500px !important;
+    max-width: 500px !important;
     border-right: none;
     box-shadow: 6px 0px 3px 0px var(--te-plugin-js-panel-shadow-color);
     z-index: 999;

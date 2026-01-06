@@ -262,9 +262,9 @@ export default {
     border-right: none;
     box-shadow: 6px 0px 3px 0px var(--te-schema-panel-shadow-color);
     z-index: 1000;
-    width: 800px !important;
-    min-width: 800px !important;
-    max-width: 800px !important;
+    width: 600px !important;
+    min-width: 600px !important;
+    max-width: 600px !important;
 
     .icon-wrap {
         position: relative;
