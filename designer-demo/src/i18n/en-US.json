@@ -528,7 +528,16 @@
             "routeJumpNotBound": "Route jump page not bound",
             "tooltipInfo": "Tooltip Info",
             "popupTitle": "Popup Title",
-            "tooltipContent": "Tooltip Content"
+            "tooltipContent": "Tooltip Content",
+            "quickSettings": "Quick Settings",
+            "propertySettings": "Property Settings",
+            "selectParent": "Select Parent",
+            "moveUp": "Move Up",
+            "moveDown": "Move Down",
+            "copy": "Copy",
+            "hide": "Hide",
+            "delete": "Delete",
+            "dragToContainer": "Drop element into container"
         },
         "configurator": {
             "tabTitle": "Tab Title",

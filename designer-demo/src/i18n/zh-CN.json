@@ -530,7 +530,16 @@
             "routeJumpNotBound": "未绑定路由跳转页面",
             "tooltipInfo": "提示信息",
             "popupTitle": "弹框标题",
-            "tooltipContent": "提示内容"
+            "tooltipContent": "提示内容",
+            "quickSettings": "快捷设置",
+            "propertySettings": "属性设置",
+            "selectParent": "选择父级",
+            "moveUp": "向上移动",
+            "moveDown": "向下移动",
+            "copy": "复制",
+            "hide": "隐藏",
+            "delete": "删除",
+            "dragToContainer": "拖放元素到容器内"
         },
         "configurator": {
             "tabTitle": "页签标题",

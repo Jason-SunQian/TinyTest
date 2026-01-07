@@ -45,6 +45,10 @@ import { loadDesignerI18n } from './src/services/i18nService';
 import CustomStyles from './src/settings/styles/Main.vue';
 import StyleService from './src/settings/styles/js/index';
 import CustomEvents from './src/settings/events/index';
+// 自定义 Canvas Container（国际化）
+import CustomCanvasContainer from './src/components/canvas/container/src/CanvasContainer.vue';
+import { useMultiSelect as customUseMultiSelect } from './src/components/canvas/container/src/composables/useMultiSelect';
+import { registerHotkeyEvent as customRegisterHotkeyEvent, removeHotkeyEvent as customRemoveHotkeyEvent } from './src/components/canvas/container/src/keyboard';
 
 export default {
     [META_SERVICE.Http]: HttpService,
@@ -369,5 +373,19 @@ export default {
                 }
             }
         }
+    },
+    // 覆盖官方 Canvas，使用国际化版本的 CanvasContainer
+    'engine.canvas': {
+        metas: [
+            {
+                id: 'engine.canvas.container',
+                entry: CustomCanvasContainer,
+                api: {
+                    useMultiSelect: customUseMultiSelect,
+                    registerHotkeyEvent: customRegisterHotkeyEvent,
+                    removeHotkeyEvent: customRemoveHotkeyEvent
+                }
+            }
+        ]
     }
 };
