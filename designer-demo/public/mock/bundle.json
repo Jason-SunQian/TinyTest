@@ -496,7 +496,8 @@
                                         "defaultValue": "Buy Now",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "Button Text"
+                                                "zh_CN": "Button Text",
+                                                "en_US": "Button Text"
                                             }
                                         },
                                         "cols": 12,
@@ -891,7 +892,8 @@
                                         "defaultValue": "Button",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "Button Text"
+                                                "zh_CN": "Button Text",
+                                                "en_US": "Button Text"
                                             }
                                         },
                                         "cols": 12,
@@ -5745,7 +5747,8 @@
                                         "defaultValue": "Button文案",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "Button Text"
+                                                "zh_CN": "Button Text",
+                                                "en_US": "Button Text"
                                             }
                                         },
                                         "cols": 12,
@@ -5758,7 +5761,8 @@
                                             "props": {}
                                         },
                                         "description": {
-                                            "zh_CN": "Button Text"
+                                            "zh_CN": "Button Text",
+                                            "en_US": "Button Text"
                                         },
                                         "labelPosition": "left"
                                     },
@@ -5767,7 +5771,8 @@
                                         "type": "select",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "LargeSmall"
+                                                "zh_CN": "LargeSmall",
+                                                "en_US": "Size"
                                             }
                                         },
                                         "cols": 12,
@@ -6109,7 +6114,8 @@
                                         "property": "size",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "LargeSmall"
+                                                "zh_CN": "LargeSmall",
+                                                "en_US": "Size"
                                             }
                                         },
                                         "required": true,
@@ -6164,7 +6170,8 @@
                                         "property": "disabled",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "Disabled"
+                                                "zh_CN": "Disabled",
+                                                "en_US": "Disabled"
                                             }
                                         },
                                         "required": true,
@@ -9001,7 +9008,8 @@
                                         "property": "label",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "Label Text"
+                                                "zh_CN": "Label Text",
+                                                "en_US": "Label Text"
                                             }
                                         },
                                         "required": true,
@@ -9014,7 +9022,8 @@
                                             "props": {}
                                         },
                                         "description": {
-                                            "zh_CN": "Label Text"
+                                            "zh_CN": "Label Text",
+                                            "en_US": "Label Text"
                                         },
                                         "labelPosition": "left"
                                     },
@@ -13020,7 +13029,8 @@
                                         "property": "options",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "选项Data"
+                                                "zh_CN": "选项Data",
+                                                "en_US": "Select Data"
                                             }
                                         },
                                         "required": true,
@@ -13042,7 +13052,8 @@
                                         "property": "multiple",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "多选"
+                                                "zh_CN": "多选",
+                                                "en_US": "Multiple"
                                             }
                                         },
                                         "required": true,
