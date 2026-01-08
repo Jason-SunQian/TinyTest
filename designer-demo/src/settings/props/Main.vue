@@ -26,7 +26,7 @@
 <!-- eslint-disable vue/block-lang, vue/require-explicit-emits, vue/component-api-style, @typescript-eslint/naming-convention, vue/require-default-prop, vue/require-typed-object-prop -->
 <script lang="ts">
 /* metaService: engine.setting.props.Main */
-import { computed, watchEffect, ref, reactive, provide, watch, nextTick, onActivated, onDeactivated } from 'vue';
+import { computed, watchEffect, ref, reactive, provide, watch, nextTick } from 'vue';
 import {
     BlockDescription,
     BlockLinkField,
@@ -36,8 +36,7 @@ import {
     useCanvas,
     useProperty,
     useLayout,
-    useProperties,
-    useMessage
+    useProperties
 } from '@opentiny/tiny-engine-meta-register';
 
 import { ConfigRender } from '@/components/i18n-wrappers';
@@ -72,7 +71,6 @@ export default {
         const { pageState, getCurrentSchema, getNodeWithParentById } = useCanvas();
         const { properties } = useProperty().getProperty({ pageState });
         const { getProps } = useProperties();
-        const { subscribe, unsubscribe } = useMessage();
         const showEmptyTips = ref(false);
         const renderKey = ref(0);
         const shouldShow = ref(true);
@@ -87,9 +85,6 @@ export default {
             // 如果 pageState.properties 为空，尝试手动调用 getProps
             const currentSchema = getCurrentSchema();
             if (currentSchema && (!pageState.properties || (Array.isArray(pageState.properties) && pageState.properties.length === 0))) {
-                // eslint-disable-next-line no-console
-                console.log('[Props Plugin] pageState.properties is empty, calling getProps manually for schema:', currentSchema);
-                
                 // 获取 parent
                 const nodeWithParent = getNodeWithParentById(
                     Array.isArray(currentSchema) ? currentSchema[0]?.id : currentSchema.id
@@ -98,15 +93,10 @@ export default {
                 
                 // 手动调用 getProps
                 getProps(currentSchema, parent);
-                
-                // 等待一下，让 getProps 完成
                 await nextTick();
             }
             
             const newProps = pageState.properties || [];
-            
-            // eslint-disable-next-line no-console
-            console.log('[Props Plugin] syncProperties called, newProps:', newProps, 'length:', newProps?.length);
             
             // 先隐藏组件
             shouldShow.value = false;
@@ -129,9 +119,6 @@ export default {
             
             // 重新显示组件
             shouldShow.value = true;
-            
-            // eslint-disable-next-line no-console
-            console.log('[Props Plugin] Synced properties, renderKey:', renderKey.value, 'localProperties length:', localProperties.value.length);
         };
 
         // 使用 computed 监听 getCurrentSchema 的变化
@@ -148,18 +135,10 @@ export default {
             () => currentSchemaId.value,
             async (newId, oldId) => {
                 if (newId !== oldId && newId) {
-                    // eslint-disable-next-line no-console
-                    console.log('[Props Plugin] currentSchemaId changed:', oldId, '->', newId);
-                    
                     // 延迟同步，确保 getProps 已经执行完成
                     await nextTick();
                     await nextTick();
                     await syncProperties();
-                    
-                    // 再次延迟同步，作为兜底
-                    setTimeout(() => {
-                        syncProperties();
-                    }, 100);
                 }
             },
             { immediate: false }
@@ -172,44 +151,12 @@ export default {
                 const newLength = Array.isArray(newProps) ? newProps.length : 0;
                 const oldLength = Array.isArray(oldProps) ? oldProps.length : 0;
                 
-                // eslint-disable-next-line no-console
-                console.log('[Props Plugin] pageState.properties changed:', {
-                    oldLength,
-                    newLength,
-                    hasNewProps: !!newProps
-                });
-                
                 if (newLength !== oldLength || newProps !== oldProps) {
                     await syncProperties();
                 }
             },
             { deep: true, immediate: false }
         );
-
-        // 使用轮询检查 getCurrentSchema 的变化（作为兜底）
-        let pollingTimer: ReturnType<typeof setInterval> | null = null;
-        let lastSchemaId: string | null = null;
-        
-        onActivated(() => {
-            lastSchemaId = currentSchemaId.value;
-            
-            pollingTimer = setInterval(() => {
-                const currentId = currentSchemaId.value;
-                if (currentId !== lastSchemaId) {
-                    // eslint-disable-next-line no-console
-                    console.log('[Props Plugin] Polling detected schema change:', lastSchemaId, '->', currentId);
-                    lastSchemaId = currentId;
-                    syncProperties();
-                }
-            }, 200);
-        });
-
-        onDeactivated(() => {
-            if (pollingTimer) {
-                clearInterval(pollingTimer);
-                pollingTimer = null;
-            }
-        });
 
         // 初始化时同步一次
         nextTick(() => {
