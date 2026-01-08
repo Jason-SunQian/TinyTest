@@ -539,7 +539,20 @@
             "copy": "复制",
             "hide": "隐藏",
             "delete": "删除",
-            "dragToContainer": "拖放元素到容器内"
+            "dragToContainer": "拖放元素到容器内",
+            "modifyProperties": "修改属性",
+            "insert": "插入",
+            "insertBefore": "向前",
+            "insertMiddle": "中间",
+            "insertAfter": "向后",
+            "addParent": "添加父级",
+            "tooltip": "文字提示",
+            "popover": "弹出框",
+            "container": "容器",
+            "bindEvent": "绑定事件",
+            "batchContainer": "容器(批量)",
+            "sharedParentContainer": "容器(公共父级)",
+            "sharedParentPopover": "弹出框(公共父级)"
         },
         "configurator": {
             "tabTitle": "页签标题",

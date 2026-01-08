@@ -8,6 +8,7 @@ import { configurators } from './configurators';
 import 'virtual:svg-icons-register';
 import { loadDesignerI18n, switchLanguage } from './services/i18nService';
 import { startPageStatusGuard } from './composable/pageStatusGuard';
+import { setupCanvasI18nRenderer } from './composable/setupCanvasI18nRenderer';
 import {
     initVSCodeBridge,
     checkIsVSCodeEnvironment
@@ -45,6 +46,8 @@ async function startApp() {
                 }
 
                 startPageStatusGuard();
+                // 设置国际化的 Canvas Renderer（用于空画布提示）
+                setupCanvasI18nRenderer();
             }
         }
     });

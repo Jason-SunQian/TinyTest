@@ -537,7 +537,20 @@
             "copy": "Copy",
             "hide": "Hide",
             "delete": "Delete",
-            "dragToContainer": "Drop element into container"
+            "dragToContainer": "Drop element into container",
+            "modifyProperties": "Modify Properties",
+            "insert": "Insert",
+            "insertBefore": "Before",
+            "insertMiddle": "Middle",
+            "insertAfter": "After",
+            "addParent": "Add Parent",
+            "tooltip": "Tooltip",
+            "popover": "Popover",
+            "container": "Container",
+            "bindEvent": "Bind Event",
+            "batchContainer": "Container (Batch)",
+            "sharedParentContainer": "Container (Shared Parent)",
+            "sharedParentPopover": "Popover (Shared Parent)"
         },
         "configurator": {
             "tabTitle": "Tab Title",

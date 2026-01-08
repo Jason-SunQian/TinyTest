@@ -15,7 +15,7 @@
           <span>{{ item.name }}</span>
           <span v-if="item.items"><icon-right></icon-right></span>
         </div>
-        <ul v-if="item.items && current === item" class="sub-menu menu-item" :style="subMenuStyles">
+        <ul v-if="item.items && currentItemKey === getItemKey(item)" class="sub-menu menu-item" :style="subMenuStyles">
           <template v-for="(subItem, subIndex) in item.items" :key="subIndex">
             <li
               :class="[{ 'menu-item-disabled': subItem.check && !subItem.check?.() }]"
@@ -37,8 +37,7 @@ import { canvasState, getConfigure, getController, getCurrent, copyNode, removeN
 import { useLayout, useModal, useCanvas, usePage, getMergeMeta } from '@opentiny/tiny-engine-meta-register'
 import { iconRight } from '@opentiny/vue-icon'
 import { useMultiSelect } from '../composables/useMultiSelect'
-import { inject } from 'vue'
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
+import { useDesignerI18n } from '@/services/i18nService'
 
 const menuState = reactive({
   position: null,
@@ -53,9 +52,15 @@ const subMenuStyles = ref(null)
 // 子菜单宽度常量
 const SUB_MENU_WIDTH = 137
 
+// 需要在组件外部也能访问到 currentItemKey，所以将其提升到模块作用域
+let currentItemKeyRef = null
+
 export const closeMenu = () => {
   menuState.show = false
   current.value = null
+  if (currentItemKeyRef) {
+    currentItemKeyRef.value = null
+  }
 }
 
 export const openMenu = (event) => {
@@ -91,18 +96,16 @@ export default {
   },
   setup(props, { emit }) {
     const { multiSelectedStates, areSiblingNodes, batchAddParent, groupAddParent } = useMultiSelect()
-    // 获取国际化 t 函数
-    const i18n = inject(I18nInjectionKey)
-    const t = i18n?.global?.t || ((key) => key)
+    const { t } = useDesignerI18n()
 
-    const menus = ref([
-      { name: '修改属性', code: 'config' },
+    const menus = computed(() => [
+      { name: t('designer.canvas.modifyProperties'), code: 'config' },
       {
-        name: '插入',
+        name: t('designer.canvas.insert'),
         items: [
-          { name: '向前', code: 'insert', value: 'top' },
+          { name: t('designer.canvas.insertBefore'), code: 'insert', value: 'top' },
           {
-            name: '中间',
+            name: t('designer.canvas.insertMiddle'),
             code: 'insert',
             value: 'in',
             check() {
@@ -110,43 +113,43 @@ export default {
               return getConfigure(componentName)?.isContainer
             }
           },
-          { name: '向后', code: 'insert', value: 'bottom' }
+          { name: t('designer.canvas.insertAfter'), code: 'insert', value: 'bottom' }
         ]
       },
       {
-        name: '添加父级',
+        name: t('designer.canvas.addParent'),
         items: [
-          { name: '文字提示', code: 'wrap', value: 'TinyTooltip' },
-          { name: '弹出框', code: 'wrap', value: 'TinyPopover' },
-          { name: '容器', code: 'insert', value: 'out' }
+          { name: t('designer.canvas.tooltip'), code: 'wrap', value: 'TinyTooltip' },
+          { name: t('designer.canvas.popover'), code: 'wrap', value: 'TinyPopover' },
+          { name: t('designer.canvas.container'), code: 'insert', value: 'out' }
         ],
         code: 'addParent'
       },
-      { name: '删除', code: 'del' },
-      { name: '复制', code: 'copy' },
-      { name: '绑定事件', code: 'bindEvent' }
+      { name: t('designer.canvas.delete'), code: 'del' },
+      { name: t('designer.canvas.copy'), code: 'copy' },
+      { name: t('designer.canvas.bindEvent'), code: 'bindEvent' }
     ])
 
     // 多选菜单
-    const multiSelectMenus = ref([
-      { name: '删除', code: 'multiDel' },
-      { name: '复制', code: 'multiCopy' },
+    const multiSelectMenus = computed(() => [
+      { name: t('designer.canvas.delete'), code: 'multiDel' },
+      { name: t('designer.canvas.copy'), code: 'multiCopy' },
       {
-        name: '添加父级',
+        name: t('designer.canvas.addParent'),
         items: [
           {
-            name: '容器(批量)',
+            name: t('designer.canvas.batchContainer'),
             code: 'batchWrap',
             value: 'div'
           },
           {
-            name: '容器(公共父级)',
+            name: t('designer.canvas.sharedParentContainer'),
             code: 'groupWrap',
             value: 'div',
             check: () => areSiblingNodes()
           },
           {
-            name: '弹出框(公共父级)',
+            name: t('designer.canvas.sharedParentPopover'),
             code: 'groupWrap',
             value: 'TinyPopover',
             check: () => areSiblingNodes()
@@ -158,19 +161,35 @@ export default {
 
     // 通过画布右键快捷新建区块
     const { SaveNewBlock } = getMergeMeta('engine.plugins.blockmanage')?.components || {}
-    if (SaveNewBlock) {
-      menus.value.push({ name: t('designer.canvas.createBlock'), code: 'createBlock' })
-      multiSelectMenus.value.push({ name: t('designer.canvas.createBlock'), code: 'createBlock' })
-    }
-
-    menus.value.unshift({
-      name: t('designer.canvas.routeJump'),
-      code: 'route',
-      show: () => getCurrent()?.schema?.componentName === 'RouterLink',
-      check: () => {
-        const targetPageId = getCurrent().schema.props?.to?.name
-        return typeof targetPageId === 'number' || targetPageId
+    
+    const menusWithExtras = computed(() => {
+      const baseMenus = [...menus.value]
+      
+      if (SaveNewBlock) {
+        baseMenus.push({ name: t('designer.canvas.createBlock'), code: 'createBlock' })
       }
+
+      baseMenus.unshift({
+        name: t('designer.canvas.routeJump'),
+        code: 'route',
+        show: () => getCurrent()?.schema?.componentName === 'RouterLink',
+        check: () => {
+          const targetPageId = getCurrent().schema.props?.to?.name
+          return typeof targetPageId === 'number' || targetPageId
+        }
+      })
+      
+      return baseMenus
+    })
+
+    const multiSelectMenusWithExtras = computed(() => {
+      const baseMenus = [...multiSelectMenus.value]
+      
+      if (SaveNewBlock) {
+        baseMenus.push({ name: t('designer.canvas.createBlock'), code: 'createBlock' })
+      }
+      
+      return baseMenus
     })
 
     const isMultiSelect = computed(() => multiSelectedStates.value.length > 1)
@@ -178,7 +197,7 @@ export default {
     const filteredMenus = computed(() => {
       // 如果是多选，则展示多选菜单
       if (isMultiSelect.value) {
-        return multiSelectMenus.value.filter((item) => {
+        return multiSelectMenusWithExtras.value.filter((item) => {
           if (typeof item.show === 'function') {
             return item.show()
           }
@@ -186,7 +205,7 @@ export default {
         })
       }
 
-      return menus.value.filter((item) => {
+      return menusWithExtras.value.filter((item) => {
         if (typeof item.show === 'function') {
           return item.show()
         }
@@ -320,8 +339,25 @@ export default {
       }
     }
 
+    // 获取菜单项的唯一标识
+    const getItemKey = (item) => {
+      return item.code || item.name || JSON.stringify(item)
+    }
+
+    // 使用字符串 key 而不是对象引用来跟踪当前菜单
+    const currentItemKey = ref(null)
+    // 暴露给 closeMenu 函数
+    currentItemKeyRef = currentItemKey
+
     const onShowChildrenMenu = (menuItem) => {
-      current.value = !actionDisabled(menuItem) ? menuItem : null
+      if (actionDisabled(menuItem)) {
+        currentItemKey.value = null
+        current.value = null
+        return
+      }
+      // 使用唯一标识来匹配菜单项
+      currentItemKey.value = getItemKey(menuItem)
+      current.value = menuItem
     }
 
     const close = () => {
@@ -346,10 +382,12 @@ export default {
       boxVisibility,
       close,
       current,
+      currentItemKey,
       menuDom,
       subMenuStyles,
       actionDisabled,
-      onShowChildrenMenu
+      onShowChildrenMenu,
+      getItemKey
     }
   }
 }
