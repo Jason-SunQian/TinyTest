@@ -131,7 +131,9 @@ export default {
         border-top: 1px solid var(--te-datasource-common-border-color);
     }
     .datasource-list-item {
-        box-shadow: var(--te-datasource-tabs-border-color) 0, -1px;
+        box-shadow:
+            var(--te-datasource-tabs-border-color) 0,
+            -1px;
         height: 24px;
         line-height: 24px;
         align-items: center;

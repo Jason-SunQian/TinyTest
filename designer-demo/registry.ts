@@ -48,7 +48,10 @@ import CustomEvents from './src/settings/events/index';
 // 自定义 Canvas Container（国际化）
 import CustomCanvasContainer from './src/components/canvas/container/src/CanvasContainer.vue';
 import { useMultiSelect as customUseMultiSelect } from './src/components/canvas/container/src/composables/useMultiSelect';
-import { registerHotkeyEvent as customRegisterHotkeyEvent, removeHotkeyEvent as customRemoveHotkeyEvent } from './src/components/canvas/container/src/keyboard';
+import {
+    registerHotkeyEvent as customRegisterHotkeyEvent,
+    removeHotkeyEvent as customRemoveHotkeyEvent
+} from './src/components/canvas/container/src/keyboard';
 
 export default {
     [META_SERVICE.Http]: HttpService,

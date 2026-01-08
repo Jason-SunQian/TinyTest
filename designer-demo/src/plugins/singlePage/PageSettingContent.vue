@@ -262,7 +262,10 @@ export default {
                         ...pageSettingState.currentPageData,
                         ...data,
                         // 确保 serviceName 字段被保留（如果服务器没有返回，使用当前值）
-                        serviceName: data.serviceName ?? pageSettingState.currentPageData.serviceName ?? ''
+                        serviceName:
+                            data.serviceName ??
+                            pageSettingState.currentPageData.serviceName ??
+                            ''
                     };
 
                     if (pageState?.currentPage?.id === data?.id) {

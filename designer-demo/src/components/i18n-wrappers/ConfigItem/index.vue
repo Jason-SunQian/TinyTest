@@ -69,7 +69,11 @@
                         v-if="showBindState"
                         class="binding-state text-ellipsis-multiple"
                     >
-                        {{ t('designer.settings.props.inlineBound', { value: widget.props.modelValue?.value || '' }) }}
+                        {{
+                            t('designer.settings.props.inlineBound', {
+                                value: widget.props.modelValue?.value || ''
+                            })
+                        }}
                     </div>
                     <component
                         v-else
@@ -124,7 +128,7 @@
                                     class="code-icon"
                                     @click="
                                         editorModalRef?.open &&
-                                            editorModalRef.open()
+                                        editorModalRef.open()
                                     "
                                 ></icon-writing>
                             </tiny-tooltip>

@@ -1,3 +1,4 @@
+/* eslint-disable vue/max-lines-per-block */
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <plugin-panel
@@ -35,6 +36,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable vue/max-lines-per-block, vue/multi-word-component-names */
 /* metaService: engine.plugins.materials.layout.Main */
 import { reactive, provide, ref, computed } from 'vue';
 import { Tabs, TabItem } from '@opentiny/vue';
@@ -98,7 +100,11 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    emit(eventName as any, ...args);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (emit as (event: string, ...args: unknown[]) => void)(
+                        eventName,
+                        ...args
+                    );
                 }
             }
         });

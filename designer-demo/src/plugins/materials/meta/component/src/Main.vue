@@ -113,7 +113,7 @@ export default {
             materialState.components.filter(item => item.children.length)
         );
 
-        type Component = typeof componentsWithChildren.value[number];
+        type Component = (typeof componentsWithChildren.value)[number];
 
         // 获取组件标签的国际化文本
         const getComponentLabel = (component: Component) => {

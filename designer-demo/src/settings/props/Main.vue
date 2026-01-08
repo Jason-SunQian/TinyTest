@@ -8,9 +8,9 @@
         @close="$emit('close')"
     >
         <template #content>
-            <config-render 
+            <config-render
                 v-if="shouldShow"
-                :key="renderKey" 
+                :key="renderKey"
                 :data="localProperties"
             >
                 <template #prefix="{ data }">
@@ -23,10 +23,18 @@
     </plugin-panel>
 </template>
 
-<!-- eslint-disable vue/block-lang, vue/require-explicit-emits, vue/component-api-style, @typescript-eslint/naming-convention, vue/require-default-prop, vue/require-typed-object-prop -->
+<!-- eslint-disable vue/block-lang, vue/require-explicit-emits, vue/component-api-style, @typescript-eslint/naming-convention, vue/require-default-prop, vue/require-typed-object-prop, vue/max-lines-per-block -->
 <script lang="ts">
 /* metaService: engine.setting.props.Main */
-import { computed, watchEffect, ref, reactive, provide, watch, nextTick } from 'vue';
+import {
+    computed,
+    watchEffect,
+    ref,
+    reactive,
+    provide,
+    watch,
+    nextTick
+} from 'vue';
 import {
     BlockDescription,
     BlockLinkField,
@@ -68,44 +76,55 @@ export default {
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
-        const { pageState, getCurrentSchema, getNodeWithParentById } = useCanvas();
-        const { properties } = useProperty().getProperty({ pageState });
+        const { pageState, getCurrentSchema, getNodeWithParentById } =
+            useCanvas();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        useProperty().getProperty({ pageState });
         const { getProps } = useProperties();
         const showEmptyTips = ref(false);
         const renderKey = ref(0);
         const shouldShow = ref(true);
-        
+
         // 使用本地 ref 存储 properties，确保响应式更新
         const localProperties = ref([]);
 
         // 同步 pageState.properties 到 localProperties
         const syncProperties = async () => {
             await nextTick();
-            
+
             // 如果 pageState.properties 为空，尝试手动调用 getProps
             const currentSchema = getCurrentSchema();
-            if (currentSchema && (!pageState.properties || (Array.isArray(pageState.properties) && pageState.properties.length === 0))) {
+            if (
+                currentSchema &&
+                (!pageState.properties ||
+                    (Array.isArray(pageState.properties) &&
+                        pageState.properties.length === 0))
+            ) {
                 // 获取 parent
                 const nodeWithParent = getNodeWithParentById(
-                    Array.isArray(currentSchema) ? currentSchema[0]?.id : currentSchema.id
+                    Array.isArray(currentSchema)
+                        ? currentSchema[0]?.id
+                        : currentSchema.id
                 );
                 const parent = nodeWithParent?.parent || null;
-                
+
                 // 手动调用 getProps
                 getProps(currentSchema, parent);
                 await nextTick();
             }
-            
+
             const newProps = pageState.properties || [];
-            
+
             // 先隐藏组件
             shouldShow.value = false;
             await nextTick();
-            
+
             // 使用 JSON 深拷贝确保引用不同，触发响应式更新
             if (Array.isArray(newProps) && newProps.length > 0) {
                 try {
-                    localProperties.value = JSON.parse(JSON.stringify(newProps));
+                    localProperties.value = JSON.parse(
+                        JSON.stringify(newProps)
+                    );
                 } catch (e) {
                     // 如果 JSON 序列化失败，直接使用原值
                     localProperties.value = [...newProps];
@@ -114,9 +133,9 @@ export default {
                 localProperties.value = [];
             }
             renderKey.value = Date.now();
-            
+
             await nextTick();
-            
+
             // 重新显示组件
             shouldShow.value = true;
         };
@@ -150,7 +169,7 @@ export default {
             async (newProps, oldProps) => {
                 const newLength = Array.isArray(newProps) ? newProps.length : 0;
                 const oldLength = Array.isArray(oldProps) ? oldProps.length : 0;
-                
+
                 if (newLength !== oldLength || newProps !== oldProps) {
                     await syncProperties();
                 }

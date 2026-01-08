@@ -227,10 +227,7 @@ const isCurrentDataSame = () => {
 
     // 获取所有需要比较的键，包括 data 和 dataCopy 中的所有键
     // 这样可以检测到新增字段（如 serviceName）的变化
-    const allKeys = new Set([
-        ...Object.keys(data),
-        ...Object.keys(dataCopy)
-    ]);
+    const allKeys = new Set([...Object.keys(data), ...Object.keys(dataCopy)]);
 
     allKeys.forEach(item => {
         // 页面比较是否更改，为了减少判断次数，不需要判断以下字段
@@ -262,7 +259,7 @@ const isCurrentDataSame = () => {
             // 如果 dataCopy 中没有该字段，默认为 undefined 或空字符串
             const copyValue = dataCopy[item] ?? '';
             const currentValue = data[item] ?? '';
-            
+
             if (!isValuesEqual(copyValue, currentValue)) {
                 isEqual = false;
             }
@@ -325,9 +322,13 @@ const initCurrentPageData = (pageDetail: PageData) => {
         // 确保 serviceName 字段存在，如果不存在则设置为空字符串
         serviceName: pageDetail.serviceName ?? ''
     };
-    
+
     pageSettingState.currentPageData = normalizedPageDetail;
-    pageSettingState.currentPageDataCopy = extend(true, {}, normalizedPageDetail);
+    pageSettingState.currentPageDataCopy = extend(
+        true,
+        {},
+        normalizedPageDetail
+    );
     pageSettingState.oldParentId = normalizedPageDetail.parentId;
 };
 

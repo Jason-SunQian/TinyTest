@@ -46,7 +46,7 @@ export default defineConfig(configEnv => {
             }
         },
         optimizeDeps: {
-            exclude: ['source-map-js'],
+            exclude: ['source-map-js']
             // include: ['@opentiny/tiny-engine-common']
         },
         server: {

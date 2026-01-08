@@ -358,9 +358,7 @@ const preRequest = (
                 config.adapter = adapter;
             }
         }
-    } else if (
-        config.url?.includes('/platform-center/api/user/me')
-    ) {
+    } else if (config.url?.includes('/platform-center/api/user/me')) {
         // 非 VSCode 环境提示
         // eslint-disable-next-line no-console
         console.log(

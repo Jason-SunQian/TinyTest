@@ -702,8 +702,10 @@ export default {
             }
         }
     }
-    :deep(.tiny-grid .tiny-grid-editor, .tiny-grid__filter-wrapper
-            .tiny-grid-editor) {
+    :deep(
+        .tiny-grid .tiny-grid-editor,
+        .tiny-grid__filter-wrapper .tiny-grid-editor
+    ) {
         height: 24px;
     }
 }

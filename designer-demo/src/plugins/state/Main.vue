@@ -1,4 +1,5 @@
-<!-- eslint-disable vue/max-lines-per-block, vue/multi-word-component-names -->
+/* eslint-disable max-lines, vue/multi-word-component-names */
+<!-- eslint-disable vue/max-lines-per-block -->
 <template>
     <plugin-panel
         id="data-source"
@@ -228,7 +229,11 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    emit(eventName as any, ...args);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (emit as (event: string, ...args: unknown[]) => void)(
+                        eventName,
+                        ...args
+                    );
                 }
             }
         });

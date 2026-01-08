@@ -1,2 +1,2 @@
-export * from './src/constant'
-export * from './src/utils'
+export * from './src/constant';
+export * from './src/utils';

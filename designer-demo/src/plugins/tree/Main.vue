@@ -135,7 +135,11 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    emit(eventName as any, ...args);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (emit as (event: string, ...args: unknown[]) => void)(
+                        eventName,
+                        ...args
+                    );
                 }
             }
         });
@@ -164,7 +168,7 @@ export default {
             const clonedData = extend(true, {}, data);
             const processed = translateChild([clonedData]);
 
-            if (!processed || !processed[0]) {
+            if (!processed?.[0]) {
                 return [];
             }
 
