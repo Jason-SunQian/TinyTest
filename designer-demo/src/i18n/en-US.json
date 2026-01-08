@@ -519,6 +519,7 @@
         "canvas": {
             "emptyCanvas": "Empty Canvas",
             "dragComponentHere": "Drag components here",
+            "pageAnalyzing": "Page analyzing...",
             "selectComponent": "Select Component",
             "componentSettings": "Component Settings",
             "noSelectedNode": "No selected node",

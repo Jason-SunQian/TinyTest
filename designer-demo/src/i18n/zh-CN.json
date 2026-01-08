@@ -521,6 +521,7 @@
         "canvas": {
             "emptyCanvas": "空白画布",
             "dragComponentHere": "拖拽组件到这里",
+            "pageAnalyzing": "页面分析加载中",
             "selectComponent": "选择组件",
             "componentSettings": "组件设置",
             "noSelectedNode": "没有选中的节点",
