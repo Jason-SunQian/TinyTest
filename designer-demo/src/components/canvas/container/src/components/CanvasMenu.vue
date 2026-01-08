@@ -198,6 +198,10 @@ export default {
       // 如果是多选，则展示多选菜单
       if (isMultiSelect.value) {
         return multiSelectMenusWithExtras.value.filter((item) => {
+          // 暂时隐藏带二级菜单的选项
+          if (item.items) {
+            return false
+          }
           if (typeof item.show === 'function') {
             return item.show()
           }
@@ -206,6 +210,10 @@ export default {
       }
 
       return menusWithExtras.value.filter((item) => {
+        // 暂时隐藏带二级菜单的选项（"插入" 和 "添加父级"）
+        if (item.items) {
+          return false
+        }
         if (typeof item.show === 'function') {
           return item.show()
         }
