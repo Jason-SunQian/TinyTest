@@ -4,17 +4,20 @@ import I18nCanvasEmpty from '@/components/canvas/CanvasEmpty.vue'
 
 /**
  * 替换 VNode 中的 CanvasEmpty 组件
+ * 只处理 CanvasEmpty 组件，不递归处理其他内容，避免影响 schema 渲染
  */
 function replaceCanvasEmptyInVNode(vnode: any, i18nCanvasEmpty: any, text: string): any {
   if (!vnode) return vnode
 
-  // 如果是数组，递归处理每个元素
+  // 如果是数组，只处理数组中的 CanvasEmpty
   if (Array.isArray(vnode)) {
     return vnode.map(item => {
+      // 只检查是否是 CanvasEmpty（通过 props.placeholderText）
       if (item?.props && 'placeholderText' in item.props) {
         return h(i18nCanvasEmpty, { placeholderText: text })
       }
-      return replaceCanvasEmptyInVNode(item, i18nCanvasEmpty, text)
+      // 其他元素直接返回，不递归处理
+      return item
     })
   }
 
@@ -23,20 +26,7 @@ function replaceCanvasEmptyInVNode(vnode: any, i18nCanvasEmpty: any, text: strin
     return h(i18nCanvasEmpty, { placeholderText: text })
   }
 
-  // 如果有 children，递归处理
-  if (vnode.children) {
-    if (Array.isArray(vnode.children)) {
-      return {
-        ...vnode,
-        children: vnode.children.map((child: any) => 
-          typeof child === 'object' && child !== null
-            ? replaceCanvasEmptyInVNode(child, i18nCanvasEmpty, text)
-            : child
-        )
-      }
-    }
-  }
-
+  // 不递归处理 children，避免影响其他 VNode 结构
   return vnode
 }
 

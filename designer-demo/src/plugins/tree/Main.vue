@@ -142,6 +142,11 @@ export default {
         provide('panelState', panelState);
 
         const filterSchema = data => {
+            // 处理空数据情况
+            if (!data || (typeof data === 'object' && !data.children)) {
+                return [];
+            }
+
             const translateChild = (childData: typeof data) => {
                 // eslint-disable-next-line @typescript-eslint/no-shadow
                 childData.forEach(item => {
@@ -156,9 +161,16 @@ export default {
                 return childData;
             };
 
+            const clonedData = extend(true, {}, data);
+            const processed = translateChild([clonedData]);
+
+            if (!processed || !processed[0]) {
+                return [];
+            }
+
             return [
                 {
-                    ...translateChild([extend(true, {}, data)])[0],
+                    ...processed[0],
                     componentName: 'body',
                     id: 'body'
                 }
@@ -176,23 +188,63 @@ export default {
 
         const { subscribe, unsubscribe } = useMessage();
 
-        onActivated(() => {
-            state.pageSchema = filterSchema(pageState.pageSchema);
+        // 更新树数据的方法
+        const updateTreeData = () => {
+            const { getSchema } = useCanvas();
+            const schema = getSchema() || pageState.pageSchema;
+            if (schema) {
+                state.pageSchema = filterSchema(schema);
+            }
+        };
 
+        onActivated(() => {
+            // 立即更新一次
+            updateTreeData();
+
+            // 监听页面/区块初始化事件
+            subscribe({
+                topic: 'pageOrBlockInit',
+                subscriber: 'node-tree',
+                callback: () => {
+                    // 延迟一下确保 pageState 已更新
+                    nextTick(() => {
+                        updateTreeData();
+                    });
+                }
+            });
+
+            // 监听 schema 变更事件
             subscribe({
                 topic: 'schemaChange',
                 subscriber: 'node-tree',
                 callback: ({ operation }) => {
                     if (operation?.type !== 'changeProps') {
-                        state.pageSchema = filterSchema(pageState.pageSchema);
+                        updateTreeData();
                     }
+                }
+            });
+
+            // 监听 schema 导入事件
+            subscribe({
+                topic: 'schemaImport',
+                subscriber: 'node-tree',
+                callback: () => {
+                    updateTreeData();
                 }
             });
         });
 
         onDeactivated(() => {
             unsubscribe({
+                topic: 'pageOrBlockInit',
+                subscriber: 'node-tree'
+            });
+            unsubscribe({
                 topic: 'schemaChange',
+                subscriber: 'node-tree'
+            });
+            unsubscribe({
+                topic: 'schemaImport',
                 subscriber: 'node-tree'
             });
         });
@@ -200,8 +252,7 @@ export default {
         watch(
             () => pageState.currentSchema,
             () => {
-                const { getSchema } = useCanvas();
-                state.pageSchema = filterSchema(getSchema());
+                updateTreeData();
             }
         );
 
