@@ -168,6 +168,11 @@ const urlRoutes: UrlRoute[] = [
     },
     // extension 接口
     {
+        pattern: /^\/app-center\/api\/apps\/extension\/list$/,
+        method: 'get',
+        command: 'extensionList'
+    },
+    {
         pattern: /^\/app-center\/api\/apps\/extension\/create$/,
         method: 'post',
         command: 'extensionCreate'
@@ -233,6 +238,21 @@ const createVSCodeHttpAdapter = () => {
                 }
             }
 
+            // 提取URL路径部分（去掉查询参数和hash），用于路由匹配
+            // 例如：/app-center/api/apps/extension/list?app=1&category=utils -> /app-center/api/apps/extension/list
+            let pathForMatching = requestUrl;
+            const queryIndex = pathForMatching.indexOf('?');
+            const hashIndex = pathForMatching.indexOf('#');
+            
+            if (queryIndex !== -1 || hashIndex !== -1) {
+                const endIndex = queryIndex !== -1 && hashIndex !== -1
+                    ? Math.min(queryIndex, hashIndex)
+                    : queryIndex !== -1
+                    ? queryIndex
+                    : hashIndex;
+                pathForMatching = pathForMatching.substring(0, endIndex);
+            }
+
             const method = config.method || 'get';
 
             // 按优先级处理请求：
@@ -240,8 +260,8 @@ const createVSCodeHttpAdapter = () => {
             // 2. 插件接口 → 调用插件
             // 3. 未知接口 → 默认走插件（通过通用 proxyHttpRequest command）
 
-            const isFixedMock = isFixedMockRoute(requestUrl, method);
-            const command = findCommandForUrl(requestUrl, method);
+            const isFixedMock = isFixedMockRoute(pathForMatching, method);
+            const command = findCommandForUrl(pathForMatching, method);
 
             // 调试信息：显示当前请求的处理方式
             // eslint-disable-next-line no-console
