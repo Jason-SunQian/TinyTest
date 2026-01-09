@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { createApp } from 'vue';
 import { HttpService } from '@opentiny/tiny-engine';
 import { useBroadcastChannel } from '@vueuse/core';
@@ -70,21 +71,23 @@ const FIXED_MOCK_ROUTES: FixedMockRoute[] = [
  */
 const isFixedMockRoute = (url: string, method: string): boolean => {
     const normalizedMethod = method.toLowerCase();
-    
+
     // 1. 检查是否在固定 Mock 列表中
-    if (FIXED_MOCK_ROUTES.some(
-        route =>
-            route.method === normalizedMethod && route.pattern.test(url)
-    )) {
+    if (
+        FIXED_MOCK_ROUTES.some(
+            route =>
+                route.method === normalizedMethod && route.pattern.test(url)
+        )
+    ) {
         return true;
     }
-    
+
     // 2. 检查是否是以 /mock/ 开头的路径（本地 mock 文件）
     // 这些路径都应该走本地 mock，不需要插件处理
     if (url.startsWith('/mock/')) {
         return true;
     }
-    
+
     return false;
 };
 
@@ -243,13 +246,14 @@ const createVSCodeHttpAdapter = () => {
             let pathForMatching = requestUrl;
             const queryIndex = pathForMatching.indexOf('?');
             const hashIndex = pathForMatching.indexOf('#');
-            
+
             if (queryIndex !== -1 || hashIndex !== -1) {
-                const endIndex = queryIndex !== -1 && hashIndex !== -1
-                    ? Math.min(queryIndex, hashIndex)
-                    : queryIndex !== -1
-                    ? queryIndex
-                    : hashIndex;
+                const endIndex =
+                    queryIndex !== -1 && hashIndex !== -1
+                        ? Math.min(queryIndex, hashIndex)
+                        : queryIndex !== -1
+                        ? queryIndex
+                        : hashIndex;
                 pathForMatching = pathForMatching.substring(0, endIndex);
             }
 
@@ -270,7 +274,9 @@ const createVSCodeHttpAdapter = () => {
                 {
                     isVSCodeEnv: true,
                     isFixedMock,
-                    command: command || (isFixedMock ? 'fixed-mock' : 'proxyHttpRequest'),
+                    command:
+                        command ||
+                        (isFixedMock ? 'fixed-mock' : 'proxyHttpRequest'),
                     originalUrl: config.url,
                     normalizedUrl: requestUrl
                 }

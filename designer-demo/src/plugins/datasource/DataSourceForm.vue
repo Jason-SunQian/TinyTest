@@ -378,7 +378,7 @@ export default {
                         if (!state.dataSource.data) {
                             state.dataSource.data = {};
                         }
-                        
+
                         const editRequestData = {
                             name: state.dataSource.name,
                             data: Object.assign(state.dataSource.data, {
