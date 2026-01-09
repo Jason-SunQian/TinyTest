@@ -34,43 +34,43 @@
 | 接口路径                             | 方法 | 用途                    | 数据来源/存储                 | 状态   | 交互      | 联调完成 |
 | ------------------------------------ | ---- | ----------------------- | ----------------------------- | ------ | --------- | -------- |
 | `/app-center/api/apps/detail/:id`    | GET  | 获取应用详情            | 本地文件：app.json 或固定数据 | 需要   | appDetail | ✔️       |
-| `/app-center/v1/api/apps/schema/:id` | GET  | 获取应用 Schema（核心） | 本地文件：app-schema.json     | 需要   | appSchema |          |
+| `/app-center/v1/api/apps/schema/:id` | GET  | 获取应用 Schema（核心） | 本地文件：app-schema.json     | 需要   | appSchema | ✔️         |
 | `/app-center/api/apps/update/:id`    | POST | 更新应用配置            | 写入本地文件                  | 不确定 | appUpdate |          |
 
 ### 3.2 页面级接口（Page Level）
 
 | 接口路径                              | 方法 | 用途             | 数据来源/存储                           | 状态 | 交互       | 联调完成 |
-| ------------------------------------- | ---- | ---------------- | --------------------------------------- | ---- | ---------- | -------- |
-| `/app-center/api/pages/list/:appId`   | GET  | 获取页面列表     | 扫描本地 PAGE 目录下的 JSON 文件        | 需要 | pageList   |          |
-| `/app-center/api/pages/detail/:id`    | GET  | 获取页面详情     | 读取对应的 JSON 文件（如 schama2.json） | 需要 | pageDetail |          |
-| `/app-center/api/pages/create`        | POST | 创建新页面       | 创建新的 JSON 文件                      | 不要 |            |          |
-| `/app-center/api/pages/update/:id`    | POST | 更新页面         | 更新对应的 JSON 文件                    | 需要 | pageUpdate |          |
-| `/app-center/api/pages/delete/:id`    | GET  | 删除页面         | 删除对应的 JSON 文件                    | 不要 |            |          |
-| `/app-center/api/pages/copy`          | POST | 复制页面         | 复制 JSON 文件并重命名                  | 不要 |            |          |
-| `/app-center/api/pages/histories`     | GET  | 获取页面历史列表 | 本地历史文件或固定数据                  | 不要 |            |          |
-| `/app-center/api/pages/histories/:id` | GET  | 获取页面历史详情 | 读取历史文件                            | 不要 |            |          |
-| `/app-center/api/pageHistory/restore` | POST | 恢复页面历史     | 从历史文件恢复                          | 不要 |            |          |
+| ------------------------------------- | ---- | ---------------- | --------------------------------------- | ---- | ---------- |------|
+| `/app-center/api/pages/list/:appId`   | GET  | 获取页面列表     | 扫描本地 PAGE 目录下的 JSON 文件        | 需要 | pageList   | ✔️   |
+| `/app-center/api/pages/detail/:id`    | GET  | 获取页面详情     | 读取对应的 JSON 文件（如 schama2.json） | 需要 | pageDetail | ✔️   |
+| `/app-center/api/pages/create`        | POST | 创建新页面       | 创建新的 JSON 文件                      | 不要 |            | ——   |
+| `/app-center/api/pages/update/:id`    | POST | 更新页面         | 更新对应的 JSON 文件                    | 需要 | pageUpdate | ✔️     |
+| `/app-center/api/pages/delete/:id`    | GET  | 删除页面         | 删除对应的 JSON 文件                    | 不要 |            | ——     |
+| `/app-center/api/pages/copy`          | POST | 复制页面         | 复制 JSON 文件并重命名                  | 不要 |            |  ——    |
+| `/app-center/api/pages/histories`     | GET  | 获取页面历史列表 | 本地历史文件或固定数据                  | 不要 |            |   ——   |
+| `/app-center/api/pages/histories/:id` | GET  | 获取页面历史详情 | 读取历史文件                            | 不要 |            | ——     |
+| `/app-center/api/pageHistory/restore` | POST | 恢复页面历史     | 从历史文件恢复                          | 不要 |            |  ——    |
 
 ### 3.3 数据源接口（DataSource）
 
 | 接口路径                              | 方法 | 用途           | 数据来源/存储                                | 状态 | 交互         | 联调完成 |
 | ------------------------------------- | ---- | -------------- | -------------------------------------------- | ---- | ------------ | -------- |
-| `/app-center/api/sources/list/:appId` | GET  | 获取数据源列表 | 从 app-schema.json 的 dataSource.list 读取   | 需要 | sourceList   |          |
-| `/app-center/api/sources/detail/:id`  | GET  | 获取数据源详情 | 从 app-schema.json 的 dataSource.list 中查找 | 需要 | sourceDetail |          |
-| `/app-center/api/sources/create`      | POST | 创建数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceCreate |          |
-| `/app-center/api/sources/update/:id`  | POST | 更新数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceUpdate |          |
-| `/app-center/api/sources/delete/:id`  | GET  | 删除数据源     | 从 app-schema.json 的 dataSource.list 中删除 | 需要 | sourceDelete |          |
+| `/app-center/api/sources/list/:appId` | GET  | 获取数据源列表 | 从 app-schema.json 的 dataSource.list 读取   | 需要 | sourceList   |   ✔️       |
+| `/app-center/api/sources/detail/:id`  | GET  | 获取数据源详情 | 从 app-schema.json 的 dataSource.list 中查找 | 需要 | sourceDetail |   ✔️       |
+| `/app-center/api/sources/create`      | POST | 创建数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceCreate |  ✔️        |
+| `/app-center/api/sources/update/:id`  | POST | 更新数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceUpdate |   ✔️       |
+| `/app-center/api/sources/delete/:id`  | GET  | 删除数据源     | 从 app-schema.json 的 dataSource.list 中删除 | 需要 | sourceDelete |   ✔️       |
 
 ### 3.4 其他接口
 
-| 接口路径                           | 方法     | 用途              | 实现方式                                      | 状态 | 交互                            | 联调完成 | 联调完成 |
-| ---------------------------------- | -------- | ----------------- | --------------------------------------------- | ---- | ------------------------------- | -------- | -------- |
-| `/platform-center/api/user/me`     | GET      | 获取用户信息      | 返回固定 mock 数据                            | 不要 |                                 |          |
-| `/app-center/api/apps/canvas/lock` | GET      | 画布锁定状态      | 返回固定数据 { locked: false }                | 不要 |                                 |          |
-| `/app-center/api/schema2code`      | POST     | 代码生成          | 可暂不实现或返回固定数据                      | 不要 |                                 |          |
-| `/app-center/api/preview/metadata` | GET      | 预览元数据        | 返回固定数据                                  | 不要 |                                 |          |
-| `/app-center/api/i18n/entries/*`   | GET/POST | i18n 相关         | 从 app-schema.json 的 i18n 读取/更新          | 需要 | i18nCreate/i18nUpdate           |          |
-| `/app-center/api/apps/extension/*` | GET/POST | Bridge/Utils 相关 | 从 app-schema.json 的 bridge、utils 读取/更新 | 需要 | extensionCreate/extensionUpdate |          |
+| 接口路径                           | 方法     | 用途              | 实现方式                                      | 状态 | 交互                                            | 联调完成 | 
+| ---------------------------------- | -------- | ----------------- | --------------------------------------------- | ---- |-----------------------------------------------| -------- |
+| `/platform-center/api/user/me`     | GET      | 获取用户信息      | 返回固定 mock 数据                            | 不要 |                                               |   ✔️       |
+| `/app-center/api/apps/canvas/lock` | GET      | 画布锁定状态      | 返回固定数据 { locked: false }                | 不要 |                                               |   ✔️       |
+| `/app-center/api/schema2code`      | POST     | 代码生成          | 可暂不实现或返回固定数据                      | 不要 |                                               |     ✔️     |
+| `/app-center/api/preview/metadata` | GET      | 预览元数据        | 返回固定数据                                  | 不要 |                                               |    ✔️      |
+| `/app-center/api/i18n/entries/*`   | GET/POST | i18n 相关         | 从 app-schema.json 的 i18n 读取/更新          | 需要 | i18nCreate/i18nUpdate                         |   ✔️       |
+| `/app-center/api/apps/extension/*` | GET/POST | Bridge/Utils 相关 | 从 app-schema.json 的 bridge、utils 读取/更新 | 需要 | extensionCreate/<br/>extensionUpdate/<br/>extensionList |          |
 
 ## 四、数据格式要求
 

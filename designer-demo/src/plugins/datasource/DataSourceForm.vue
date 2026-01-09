@@ -351,7 +351,9 @@ export default {
             }
             getDataSourceName().validate(async valid => {
                 if (valid) {
-                    const columns = state.dataSource.data.columns.map(
+                    // 安全检查：确保 columns 存在，如果是 undefined 或 null，使用空数组
+                    const columnsData = state.dataSource.data?.columns || [];
+                    const columns = columnsData.map(
                         ({ name, title, type, format, field }) => {
                             return {
                                 name,
@@ -372,6 +374,11 @@ export default {
                     }
 
                     settingRef.value.saveRecord().then(record => {
+                        // 确保 state.dataSource.data 存在，如果不存在则初始化
+                        if (!state.dataSource.data) {
+                            state.dataSource.data = {};
+                        }
+                        
                         const editRequestData = {
                             name: state.dataSource.name,
                             data: Object.assign(state.dataSource.data, {
@@ -460,6 +467,10 @@ export default {
         const selectDataSourceTemplate = templateId => {
             fetchTemplateDetail(templateId).then(res => {
                 if (res && res.length > 0) {
+                    // 确保 state.dataSource.data 存在
+                    if (!state.dataSource.data) {
+                        state.dataSource.data = {};
+                    }
                     state.dataSource.data.columns = (
                         res[0].data.columns || []
                     ).map(({ title, field, name, type }) => ({

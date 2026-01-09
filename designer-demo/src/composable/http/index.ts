@@ -36,6 +36,58 @@ const showError = (url?: string, message?: string) => {
     });
 };
 
+// 固定 Mock 接口列表（必须走本地 mock，不走插件）
+// 这4个接口在插件环境下固定返回本地 mock 数据，脱离对 mockServer 的依赖
+interface FixedMockRoute {
+    pattern: RegExp;
+    method: string;
+}
+
+const FIXED_MOCK_ROUTES: FixedMockRoute[] = [
+    {
+        pattern: /^\/platform-center\/api\/user\/me$/,
+        method: 'get'
+    },
+    {
+        pattern: /^\/app-center\/api\/apps\/canvas\/lock$/,
+        method: 'get'
+    },
+    {
+        pattern: /^\/app-center\/api\/schema2code$/,
+        method: 'post'
+    },
+    {
+        pattern: /^\/app-center\/api\/preview\/metadata$/,
+        method: 'get'
+    }
+];
+
+/**
+ * 检查是否是固定 Mock 接口
+ * @param url 请求 URL
+ * @param method 请求方法
+ * @returns 如果是固定 Mock 接口返回 true，否则返回 false
+ */
+const isFixedMockRoute = (url: string, method: string): boolean => {
+    const normalizedMethod = method.toLowerCase();
+    
+    // 1. 检查是否在固定 Mock 列表中
+    if (FIXED_MOCK_ROUTES.some(
+        route =>
+            route.method === normalizedMethod && route.pattern.test(url)
+    )) {
+        return true;
+    }
+    
+    // 2. 检查是否是以 /mock/ 开头的路径（本地 mock 文件）
+    // 这些路径都应该走本地 mock，不需要插件处理
+    if (url.startsWith('/mock/')) {
+        return true;
+    }
+    
+    return false;
+};
+
 // URL 到 command 的映射关系（需要插件处理的接口）
 // 根据 MOCK_MIGRATION.md 第三章表格定义
 interface UrlRoute {
@@ -182,6 +234,13 @@ const createVSCodeHttpAdapter = () => {
             }
 
             const method = config.method || 'get';
+
+            // 按优先级处理请求：
+            // 1. 固定 Mock 接口 → 本地 mock
+            // 2. 插件接口 → 调用插件
+            // 3. 未知接口 → 默认走插件（通过通用 proxyHttpRequest command）
+
+            const isFixedMock = isFixedMockRoute(requestUrl, method);
             const command = findCommandForUrl(requestUrl, method);
 
             // 调试信息：显示当前请求的处理方式
@@ -190,7 +249,8 @@ const createVSCodeHttpAdapter = () => {
                 `[HTTP Service] 📋 请求处理: ${method.toUpperCase()} ${requestUrl}`,
                 {
                     isVSCodeEnv: true,
-                    command: command || 'none (使用 Mock)',
+                    isFixedMock,
+                    command: command || (isFixedMock ? 'fixed-mock' : 'proxyHttpRequest'),
                     originalUrl: config.url,
                     normalizedUrl: requestUrl
                 }
@@ -199,8 +259,48 @@ const createVSCodeHttpAdapter = () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let response: { data: any; locale?: string } = { data: null };
 
-            if (command) {
-                // 需要插件处理的接口：使用对应的 command 调用插件
+            if (isFixedMock) {
+                // 固定 Mock 接口：从本地 mock 文件读取数据
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[HTTP Service] 📦 固定 Mock 接口: ${method.toUpperCase()} ${requestUrl}`,
+                    {
+                        params: config.params,
+                        requestData: config.data
+                    }
+                );
+
+                const mockResult = await getMockData(
+                    requestUrl,
+                    method,
+                    config.params,
+                    config.data
+                );
+
+                if (mockResult) {
+                    response = mockResult;
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        `[HTTP Service] ✅ 固定 Mock 数据返回: ${method.toUpperCase()} ${requestUrl}`,
+                        {
+                            response: mockResult.data,
+                            locale: mockResult.locale
+                        }
+                    );
+                } else {
+                    // 如果 mock 文件中没有找到，返回默认响应
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        `[HTTP Service] ⚠️ 固定 Mock 接口未找到数据: ${method.toUpperCase()} ${requestUrl}, 返回空响应`,
+                        {
+                            params: config.params,
+                            requestData: config.data
+                        }
+                    );
+                    response = { data: null };
+                }
+            } else if (command) {
+                // 插件接口：使用对应的 command 调用插件
                 // eslint-disable-next-line no-console
                 console.log(
                     `[HTTP Service] 🔌 调用插件接口: ${method.toUpperCase()} ${requestUrl}`,
@@ -238,45 +338,45 @@ const createVSCodeHttpAdapter = () => {
                     }
                 );
             } else {
-                // 不需要插件处理的接口：从 mock 文件读取数据
+                // 未知接口：默认走插件（通过通用 proxyHttpRequest command）
                 // eslint-disable-next-line no-console
                 console.log(
-                    `[HTTP Service] 📦 使用 Mock 数据: ${method.toUpperCase()} ${requestUrl}`,
+                    `[HTTP Service] 🔄 未知接口，默认走插件: ${method.toUpperCase()} ${requestUrl}`,
                     {
                         params: config.params,
-                        requestData: config.data
+                        data: config.data
                     }
                 );
 
-                const mockResult = await getMockData(
-                    requestUrl,
-                    method,
-                    config.params,
-                    config.data
+                const { callVSCodeCommand } = await import(
+                    '../useVSCodeBridge'
                 );
 
-                if (mockResult) {
-                    response = mockResult;
-                    // eslint-disable-next-line no-console
-                    console.log(
-                        `[HTTP Service] ✅ Mock 数据返回: ${method.toUpperCase()} ${requestUrl}`,
-                        {
-                            response: mockResult.data,
-                            locale: mockResult.locale
-                        }
-                    );
-                } else {
-                    // 如果 mock 文件中没有找到，返回默认响应
-                    // eslint-disable-next-line no-console
-                    console.warn(
-                        `[HTTP Service] ⚠️ 未找到 Mock 数据: ${method.toUpperCase()} ${requestUrl}, 返回空响应`,
-                        {
-                            params: config.params,
-                            requestData: config.data
-                        }
-                    );
-                    response = { data: null };
-                }
+                // 构建传递给插件的数据
+                const commandData = {
+                    url: requestUrl,
+                    method,
+                    params: config.params,
+                    data: config.data,
+                    headers: config.headers
+                };
+
+                // 使用通用的 proxyHttpRequest command
+                const result = await callVSCodeCommand(
+                    'proxyHttpRequest',
+                    commandData
+                );
+
+                // 插件返回的数据格式应该是 { data: {...}, locale?: 'zh-cn' }
+                response = result || { data: null };
+
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[HTTP Service] ✅ 插件返回（未知接口）: ${method.toUpperCase()} ${requestUrl}`,
+                    {
+                        response: response.data
+                    }
+                );
             }
 
             // 返回符合axios响应格式的数据
