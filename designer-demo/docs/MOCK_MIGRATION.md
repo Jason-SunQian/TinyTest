@@ -8,69 +8,69 @@
 
 ### 2.1 设计器端（designer-demo）
 
--   **请求代理方式**：所有 HTTP 请求通过 `proxyHttpRequest` 代理到 VSCode 插件
--   **实现位置**：`designer-demo/src/composable/http/index.ts` 的 `createVSCodeHttpAdapter()`
--   **请求格式**：
+- **请求代理方式**：所有 HTTP 请求通过 `proxyHttpRequest` 代理到 VSCode 插件
+- **实现位置**：`designer-demo/src/composable/http/index.ts` 的 `createVSCodeHttpAdapter()`
+- **请求格式**：
     ```typescript
     {
-        url, method, params, data, headers;
+        (url, method, params, data, headers);
     }
     ```
--   **响应格式**：
+- **响应格式**：
     ```typescript
     { data: {...}, locale?: 'zh-cn' }
     ```
 
 ### 2.2 VSCode 插件端
 
--   **当前实现**：`proxyHttpRequest` 处理器将请求转发到本地 mockServer（`http://localhost:8090`）
--   **实现位置**：`packages/vscode/src/commands/webviewMessageCommands.ts`
--   **需要改造**：不再转发到 mockServer，而是根据 URL 路径从本地文件读取或写入
+- **当前实现**：`proxyHttpRequest` 处理器将请求转发到本地 mockServer（`http://localhost:8090`）
+- **实现位置**：`packages/vscode/src/commands/webviewMessageCommands.ts`
+- **需要改造**：不再转发到 mockServer，而是根据 URL 路径从本地文件读取或写入
 
 ## 三、需要实现的接口清单
 
 ### 3.1 应用级接口（App Level）
 
-| 接口路径                             | 方法 | 用途                    | 数据来源/存储                 | 状态   | 交互      |
-| ------------------------------------ | ---- | ----------------------- | ----------------------------- | ------ | --------- |
-| `/app-center/api/apps/detail/:id`    | GET  | 获取应用详情            | 本地文件：app.json 或固定数据 | 需要   | appDetail |
-| `/app-center/v1/api/apps/schema/:id` | GET  | 获取应用 Schema（核心） | 本地文件：app-schema.json     | 需要   | appSchema |
-| `/app-center/api/apps/update/:id`    | POST | 更新应用配置            | 写入本地文件                  | 不确定 | appUpdate |
+| 接口路径                             | 方法 | 用途                    | 数据来源/存储                 | 状态   | 交互      | 联调完成 |
+| ------------------------------------ | ---- | ----------------------- | ----------------------------- | ------ | --------- | -------- |
+| `/app-center/api/apps/detail/:id`    | GET  | 获取应用详情            | 本地文件：app.json 或固定数据 | 需要   | appDetail | ✔️       |
+| `/app-center/v1/api/apps/schema/:id` | GET  | 获取应用 Schema（核心） | 本地文件：app-schema.json     | 需要   | appSchema |          |
+| `/app-center/api/apps/update/:id`    | POST | 更新应用配置            | 写入本地文件                  | 不确定 | appUpdate |          |
 
 ### 3.2 页面级接口（Page Level）
 
-| 接口路径                              | 方法 | 用途             | 数据来源/存储                           | 状态 | 交互       |
-| ------------------------------------- | ---- | ---------------- | --------------------------------------- | ---- | ---------- |
-| `/app-center/api/pages/list/:appId`   | GET  | 获取页面列表     | 扫描本地 PAGE 目录下的 JSON 文件        | 需要 | pageList   |
-| `/app-center/api/pages/detail/:id`    | GET  | 获取页面详情     | 读取对应的 JSON 文件（如 schama2.json） | 需要 | pageDetail |
-| `/app-center/api/pages/create`        | POST | 创建新页面       | 创建新的 JSON 文件                      | 不要 |            |
-| `/app-center/api/pages/update/:id`    | POST | 更新页面         | 更新对应的 JSON 文件                    | 需要 | pageUpdate |
-| `/app-center/api/pages/delete/:id`    | GET  | 删除页面         | 删除对应的 JSON 文件                    | 不要 |            |
-| `/app-center/api/pages/copy`          | POST | 复制页面         | 复制 JSON 文件并重命名                  | 不要 |            |
-| `/app-center/api/pages/histories`     | GET  | 获取页面历史列表 | 本地历史文件或固定数据                  | 不要 |            |
-| `/app-center/api/pages/histories/:id` | GET  | 获取页面历史详情 | 读取历史文件                            | 不要 |            |
-| `/app-center/api/pageHistory/restore` | POST | 恢复页面历史     | 从历史文件恢复                          | 不要 |            |
+| 接口路径                              | 方法 | 用途             | 数据来源/存储                           | 状态 | 交互       | 联调完成 |
+| ------------------------------------- | ---- | ---------------- | --------------------------------------- | ---- | ---------- | -------- |
+| `/app-center/api/pages/list/:appId`   | GET  | 获取页面列表     | 扫描本地 PAGE 目录下的 JSON 文件        | 需要 | pageList   |          |
+| `/app-center/api/pages/detail/:id`    | GET  | 获取页面详情     | 读取对应的 JSON 文件（如 schama2.json） | 需要 | pageDetail |          |
+| `/app-center/api/pages/create`        | POST | 创建新页面       | 创建新的 JSON 文件                      | 不要 |            |          |
+| `/app-center/api/pages/update/:id`    | POST | 更新页面         | 更新对应的 JSON 文件                    | 需要 | pageUpdate |          |
+| `/app-center/api/pages/delete/:id`    | GET  | 删除页面         | 删除对应的 JSON 文件                    | 不要 |            |          |
+| `/app-center/api/pages/copy`          | POST | 复制页面         | 复制 JSON 文件并重命名                  | 不要 |            |          |
+| `/app-center/api/pages/histories`     | GET  | 获取页面历史列表 | 本地历史文件或固定数据                  | 不要 |            |          |
+| `/app-center/api/pages/histories/:id` | GET  | 获取页面历史详情 | 读取历史文件                            | 不要 |            |          |
+| `/app-center/api/pageHistory/restore` | POST | 恢复页面历史     | 从历史文件恢复                          | 不要 |            |          |
 
 ### 3.3 数据源接口（DataSource）
 
-| 接口路径                              | 方法 | 用途           | 数据来源/存储                                | 状态 | 交互         |
-| ------------------------------------- | ---- | -------------- | -------------------------------------------- | ---- | ------------ |
-| `/app-center/api/sources/list/:appId` | GET  | 获取数据源列表 | 从 app-schema.json 的 dataSource.list 读取   | 需要 | sourceList   |
-| `/app-center/api/sources/detail/:id`  | GET  | 获取数据源详情 | 从 app-schema.json 的 dataSource.list 中查找 | 需要 | sourceDetail |
-| `/app-center/api/sources/create`      | POST | 创建数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceCreate |
-| `/app-center/api/sources/update/:id`  | POST | 更新数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceUpdate |
-| `/app-center/api/sources/delete/:id`  | GET  | 删除数据源     | 从 app-schema.json 的 dataSource.list 中删除 | 需要 | sourceDelete |
+| 接口路径                              | 方法 | 用途           | 数据来源/存储                                | 状态 | 交互         | 联调完成 |
+| ------------------------------------- | ---- | -------------- | -------------------------------------------- | ---- | ------------ | -------- |
+| `/app-center/api/sources/list/:appId` | GET  | 获取数据源列表 | 从 app-schema.json 的 dataSource.list 读取   | 需要 | sourceList   |          |
+| `/app-center/api/sources/detail/:id`  | GET  | 获取数据源详情 | 从 app-schema.json 的 dataSource.list 中查找 | 需要 | sourceDetail |          |
+| `/app-center/api/sources/create`      | POST | 创建数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceCreate |          |
+| `/app-center/api/sources/update/:id`  | POST | 更新数据源     | 更新 app-schema.json 的 dataSource.list      | 需要 | sourceUpdate |          |
+| `/app-center/api/sources/delete/:id`  | GET  | 删除数据源     | 从 app-schema.json 的 dataSource.list 中删除 | 需要 | sourceDelete |          |
 
 ### 3.4 其他接口
 
-| 接口路径                           | 方法     | 用途              | 实现方式                                      | 状态 | 交互                            |
-| ---------------------------------- | -------- | ----------------- | --------------------------------------------- | ---- | ------------------------------- |
-| `/platform-center/api/user/me`     | GET      | 获取用户信息      | 返回固定 mock 数据                            | 不要 |                                 |
-| `/app-center/api/apps/canvas/lock` | GET      | 画布锁定状态      | 返回固定数据 { locked: false }                | 不要 |                                 |
-| `/app-center/api/schema2code`      | POST     | 代码生成          | 可暂不实现或返回固定数据                      | 不要 |                                 |
-| `/app-center/api/preview/metadata` | GET      | 预览元数据        | 返回固定数据                                  | 不要 |                                 |
-| `/app-center/api/i18n/entries/*`   | GET/POST | i18n 相关         | 从 app-schema.json 的 i18n 读取/更新          | 需要 | i18nCreate/i18nUpdate           |
-| `/app-center/api/apps/extension/*` | GET/POST | Bridge/Utils 相关 | 从 app-schema.json 的 bridge、utils 读取/更新 | 需要 | extensionCreate/extensionUpdate |
+| 接口路径                           | 方法     | 用途              | 实现方式                                      | 状态 | 交互                            | 联调完成 | 联调完成 |
+| ---------------------------------- | -------- | ----------------- | --------------------------------------------- | ---- | ------------------------------- | -------- | -------- |
+| `/platform-center/api/user/me`     | GET      | 获取用户信息      | 返回固定 mock 数据                            | 不要 |                                 |          |
+| `/app-center/api/apps/canvas/lock` | GET      | 画布锁定状态      | 返回固定数据 { locked: false }                | 不要 |                                 |          |
+| `/app-center/api/schema2code`      | POST     | 代码生成          | 可暂不实现或返回固定数据                      | 不要 |                                 |          |
+| `/app-center/api/preview/metadata` | GET      | 预览元数据        | 返回固定数据                                  | 不要 |                                 |          |
+| `/app-center/api/i18n/entries/*`   | GET/POST | i18n 相关         | 从 app-schema.json 的 i18n 读取/更新          | 需要 | i18nCreate/i18nUpdate           |          |
+| `/app-center/api/apps/extension/*` | GET/POST | Bridge/Utils 相关 | 从 app-schema.json 的 bridge、utils 读取/更新 | 需要 | extensionCreate/extensionUpdate |          |
 
 ## 四、数据格式要求
 
@@ -222,15 +222,15 @@ workspace-root/
 
 **改造思路：**
 
--   **URL 区分工作从插件端移到设计器端**：设计器根据 URL 和 method 判断是调用插件还是使用 mock 数据
--   **需要插件处理的接口**：使用对应的 command（如 `appDetail`、`pageList` 等）调用插件
--   **不需要插件处理的接口**：设计器直接从 mock 文件读取数据返回
+- **URL 区分工作从插件端移到设计器端**：设计器根据 URL 和 method 判断是调用插件还是使用 mock 数据
+- **需要插件处理的接口**：使用对应的 command（如 `appDetail`、`pageList` 等）调用插件
+- **不需要插件处理的接口**：设计器直接从 mock 文件读取数据返回
 
 **实现位置：**
 
--   `designer-demo/src/composable/http/index.ts` - HTTP adapter 实现
--   `designer-demo/src/composable/useVSCodeBridge.ts` - VSCode 通信函数
--   `designer-demo/src/utils/mockData.ts` - Mock 数据工具函数
+- `designer-demo/src/composable/http/index.ts` - HTTP adapter 实现
+- `designer-demo/src/composable/useVSCodeBridge.ts` - VSCode 通信函数
+- `designer-demo/src/utils/mockData.ts` - Mock 数据工具函数
 
 **实现结构：**
 
@@ -358,12 +358,12 @@ const urlRoutes: UrlRoute[] = [
 
 **改造思路：**
 
--   插件端不再需要根据 URL 路由，直接根据 command 处理对应的逻辑
--   每个 command 对应一个处理函数，从本地文件读取或写入数据
+- 插件端不再需要根据 URL 路由，直接根据 command 处理对应的逻辑
+- 每个 command 对应一个处理函数，从本地文件读取或写入数据
 
 **实现位置：**
 
--   `packages/vscode/src/commands/webviewMessageCommands.ts`
+- `packages/vscode/src/commands/webviewMessageCommands.ts`
 
 **实现结构：**
 
@@ -405,13 +405,13 @@ const handleWebviewMessage = (message: WebviewMessage) => {
 
 **实现位置：**
 
--   `designer-demo/src/utils/mockData.ts`
+- `designer-demo/src/utils/mockData.ts`
 
 **功能：**
 
--   从 mock 文件中根据 URL 和 method 匹配并执行对应的 response 函数
--   支持路径参数模式（如 `/app-center/api/pages/detail/:id`）
--   返回标准格式：`{ data: any, locale?: string }`
+- 从 mock 文件中根据 URL 和 method 匹配并执行对应的 response 函数
+- 支持路径参数模式（如 `/app-center/api/pages/detail/:id`）
+- 返回标准格式：`{ data: any, locale?: string }`
 
 **使用方式：**
 
@@ -433,35 +433,35 @@ const mockResult = await getMockData(
 
 **实现位置：**
 
--   `designer-demo/src/composable/useVSCodeBridge.ts`
+- `designer-demo/src/composable/useVSCodeBridge.ts`
 
 **新增函数：**
 
--   `callVSCodeCommand(command: string, data?: any)` - 通用命令调用函数，支持传入不同的 command
+- `callVSCodeCommand(command: string, data?: any)` - 通用命令调用函数，支持传入不同的 command
 
 **保留函数：**
 
--   `proxyHttpRequest(config)` - 保留向后兼容，内部调用 `callVSCodeCommand('proxyHttpRequest', config)`
+- `proxyHttpRequest(config)` - 保留向后兼容，内部调用 `callVSCodeCommand('proxyHttpRequest', config)`
 
 ### 6.5 文件操作函数设计（插件端）
 
 插件端需要实现的核心函数：
 
--   `handleAppDetail(data, callback)` - 读取应用详情
--   `handleAppSchema(data, callback)` - 读取应用 Schema
--   `handleAppUpdate(data, callback)` - 更新应用配置
--   `handlePageList(data, callback)` - 读取页面列表
--   `handlePageDetail(data, callback)` - 读取页面详情
--   `handlePageUpdate(data, callback)` - 更新页面
--   `handleSourceList(data, callback)` - 读取数据源列表
--   `handleSourceDetail(data, callback)` - 读取数据源详情
--   `handleSourceCreate(data, callback)` - 创建数据源
--   `handleSourceUpdate(data, callback)` - 更新数据源
--   `handleSourceDelete(data, callback)` - 删除数据源
--   `handleI18nCreate(data, callback)` - 创建 i18n 条目
--   `handleI18nUpdate(data, callback)` - 更新 i18n 条目
--   `handleExtensionCreate(data, callback)` - 创建 extension
--   `handleExtensionUpdate(data, callback)` - 更新 extension
+- `handleAppDetail(data, callback)` - 读取应用详情
+- `handleAppSchema(data, callback)` - 读取应用 Schema
+- `handleAppUpdate(data, callback)` - 更新应用配置
+- `handlePageList(data, callback)` - 读取页面列表
+- `handlePageDetail(data, callback)` - 读取页面详情
+- `handlePageUpdate(data, callback)` - 更新页面
+- `handleSourceList(data, callback)` - 读取数据源列表
+- `handleSourceDetail(data, callback)` - 读取数据源详情
+- `handleSourceCreate(data, callback)` - 创建数据源
+- `handleSourceUpdate(data, callback)` - 更新数据源
+- `handleSourceDelete(data, callback)` - 删除数据源
+- `handleI18nCreate(data, callback)` - 创建 i18n 条目
+- `handleI18nUpdate(data, callback)` - 更新 i18n 条目
+- `handleExtensionCreate(data, callback)` - 创建 extension
+- `handleExtensionUpdate(data, callback)` - 更新 extension
 
 ### 6.6 页面 ID 与文件名的映射策略
 
@@ -473,8 +473,8 @@ const mockResult = await getMockData(
 
 **方案 B：通过文件名映射**
 
--   约定：`{pageId}.json` 或 `schema{pageId}.json`
--   简单但不够灵活
+- 约定：`{pageId}.json` 或 `schema{pageId}.json`
+- 简单但不够灵活
 
 ## 七、关键实现点
 
@@ -486,74 +486,72 @@ const mockResult = await getMockData(
 
 ### 7.2 数据格式转换
 
--   确保从文件读取的数据格式与 mock 接口返回格式一致
--   特别注意：响应外层需要包裹 `{ data: {...} }` 结构
+- 确保从文件读取的数据格式与 mock 接口返回格式一致
+- 特别注意：响应外层需要包裹 `{ data: {...} }` 结构
 
 ### 7.3 错误处理
 
--   文件不存在 → 返回 404 错误
--   JSON 解析失败 → 返回 500 错误
--   文件写入失败 → 返回 500 错误
+- 文件不存在 → 返回 404 错误
+- JSON 解析失败 → 返回 500 错误
+- 文件写入失败 → 返回 500 错误
 
 ### 7.4 数据同步
 
--   更新页面时，同时更新应用 Schema 中的 `componentsTree`（如果页面在树中）
--   创建/删除页面时，同步更新页面列表
+- 更新页面时，同时更新应用 Schema 中的 `componentsTree`（如果页面在树中）
+- 创建/删除页面时，同步更新页面列表
 
 ## 八、优势
 
--   **职责分离**：URL 路由逻辑在设计器端，插件端只需处理具体的业务逻辑
--   **易于扩展**：新增接口只需在设计器端添加 URL 映射，插件端添加对应的 command 处理函数
--   **数据格式保持一致**：返回格式与 mock 接口相同，设计器逻辑无需修改
--   **灵活处理**：不需要插件处理的接口可以直接使用 mock 数据，减少插件复杂度
--   **向后兼容**：保留 `proxyHttpRequest` 函数，确保现有代码不受影响
+- **职责分离**：URL 路由逻辑在设计器端，插件端只需处理具体的业务逻辑
+- **易于扩展**：新增接口只需在设计器端添加 URL 映射，插件端添加对应的 command 处理函数
+- **数据格式保持一致**：返回格式与 mock 接口相同，设计器逻辑无需修改
+- **灵活处理**：不需要插件处理的接口可以直接使用 mock 数据，减少插件复杂度
+- **向后兼容**：保留 `proxyHttpRequest` 函数，确保现有代码不受影响
 
 ## 九、注意事项
 
--   **文件路径处理**：使用 VSCode 的 `vscode.workspace.fs` API 进行文件操作
--   **并发控制**：多个请求同时访问同一文件时需要考虑锁机制
--   **数据验证**：写入前验证数据格式，避免损坏文件
--   **性能优化**：页面列表可以缓存，减少文件扫描次数
+- **文件路径处理**：使用 VSCode 的 `vscode.workspace.fs` API 进行文件操作
+- **并发控制**：多个请求同时访问同一文件时需要考虑锁机制
+- **数据验证**：写入前验证数据格式，避免损坏文件
+- **性能优化**：页面列表可以缓存，减少文件扫描次数
 
 ## 十、实施优先级
 
 ### 第一阶段（核心功能）
 
--   `/app-center/v1/api/apps/schema/:id` - 应用 Schema
--   `/app-center/api/pages/list/:appId` - 页面列表
--   `/app-center/api/pages/detail/:id` - 页面详情
--   `/app-center/api/pages/update/:id` - 页面更新
+- `/app-center/v1/api/apps/schema/:id` - 应用 Schema
+- `/app-center/api/pages/list/:appId` - 页面列表
+- `/app-center/api/pages/detail/:id` - 页面详情
+- `/app-center/api/pages/update/:id` - 页面更新
 
 ### 第二阶段（完整功能）
 
--   `/app-center/api/pages/create` - 创建页面
--   `/app-center/api/pages/delete/:id` - 删除页面
--   `/app-center/api/sources/*` - 数据源相关接口
+- `/app-center/api/pages/create` - 创建页面
+- `/app-center/api/pages/delete/:id` - 删除页面
+- `/app-center/api/sources/*` - 数据源相关接口
 
 ### 第三阶段（辅助功能）
 
--   其他辅助接口（历史、锁定等）
+- 其他辅助接口（历史、锁定等）
 
 ## 十一、改造完成情况
 
 ### 已完成的设计器端改造
 
 1. ✅ **Mock 数据工具函数** (`src/utils/mockData.ts`)
-
-    - 实现了从 mock 文件中根据 URL 和 method 匹配并执行 response 函数
-    - 支持路径参数模式匹配
-    - 支持动态导入 mock 文件
+   - 实现了从 mock 文件中根据 URL 和 method 匹配并执行 response 函数
+   - 支持路径参数模式匹配
+   - 支持动态导入 mock 文件
 
 2. ✅ **VSCode 通信函数改造** (`src/composable/useVSCodeBridge.ts`)
-
-    - 新增 `callVSCodeCommand(command, data)` 通用函数，支持传入不同的 command
-    - 保留 `proxyHttpRequest` 函数，保持向后兼容
+   - 新增 `callVSCodeCommand(command, data)` 通用函数，支持传入不同的 command
+   - 保留 `proxyHttpRequest` 函数，保持向后兼容
 
 3. ✅ **HTTP Adapter 改造** (`src/composable/http/index.ts`)
-    - 实现了 URL 路由逻辑，根据 URL 和 method 判断是调用插件还是使用 mock 数据
-    - 定义了 URL 到 command 的映射关系（`urlRoutes`）
-    - 需要插件处理的接口：使用对应的 command 调用插件
-    - 不需要插件处理的接口：从 mock 文件读取数据返回
+   - 实现了 URL 路由逻辑，根据 URL 和 method 判断是调用插件还是使用 mock 数据
+   - 定义了 URL 到 command 的映射关系（`urlRoutes`）
+   - 需要插件处理的接口：使用对应的 command 调用插件
+   - 不需要插件处理的接口：从 mock 文件读取数据返回
 
 ### 待完成的插件端改造
 
@@ -563,7 +561,7 @@ const mockResult = await getMockData(
 
 **改造说明：**
 
--   该方案将 URL 区分工作从插件端移到设计器端，设计器根据 URL 判断是调用插件（使用对应的 command）还是使用 mock 数据
--   需要插件处理的接口使用对应的 command（如 `appDetail`、`pageList` 等）调用插件
--   不需要插件处理的接口直接从 mock 文件读取数据返回
--   插件端不再需要根据 URL 路由，直接根据 command 处理对应的业务逻辑
+- 该方案将 URL 区分工作从插件端移到设计器端，设计器根据 URL 判断是调用插件（使用对应的 command）还是使用 mock 数据
+- 需要插件处理的接口使用对应的 command（如 `appDetail`、`pageList` 等）调用插件
+- 不需要插件处理的接口直接从 mock 文件读取数据返回
+- 插件端不再需要根据 URL 路由，直接根据 command 处理对应的业务逻辑
