@@ -54,6 +54,7 @@ import { constants } from '@opentiny/tiny-engine-utils';
 import { Popover } from '@opentiny/vue';
 import { useBroadcastChannel } from '@vueuse/core';
 import { reactive, ref, watch } from 'vue';
+import { useDesignerI18n } from '@/services/i18nService';
 
 const { BROADCAST_CHANNEL, CANVAS_ROUTER_VIEW_SETTING_VIEW_MODE_KEY } =
     constants;
