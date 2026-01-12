@@ -49,6 +49,22 @@ const saveBlock = async (pageSchema: any) => {
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
 
+    // 如果 currentPage 为 null，尝试从 URL 获取 pageId
+    let pageId: string | null = currentPage?.id || null;
+    if (!pageId) {
+        const paramsMap = new URLSearchParams(window.location.search);
+        pageId = paramsMap.get('pageid');
+    }
+
+    if (!pageId) {
+        useNotify()({
+            type: 'error',
+            title: translate('designer.vscode.saveFailed'),
+            message: '无法获取页面 ID，保存失败'
+        });
+        return;
+    }
+
     // // 检测是否在 VSCode 环境中
     // const isVSCode = checkIsVSCodeEnvironment();
     //
@@ -59,7 +75,7 @@ const savePage = async (pageSchema: any) => {
     //         await new Promise<void>((resolve, reject) => {
     //             goSave(
     //                 {
-    //                     pageId: currentPage.id,
+    //                     pageId: pageId,
     //                     pageSchema,
     //                     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     //                     pageData: { ...currentPage, page_content: pageSchema }
@@ -101,8 +117,9 @@ const savePage = async (pageSchema: any) => {
     const params = { page_content: pageSchema };
     isLoading.value = true;
     const updateParams = {
-        id: currentPage.id,
-        params: { ...currentPage, ...params }
+        id: pageId,
+        params: { ...(currentPage || {}), id: pageId, ...params },
+        isCurEditPage: true
     };
     await handlePageUpdate(updateParams);
     isLoading.value = false;
@@ -123,10 +140,14 @@ export const saveCommon = (value?: string) => {
     const pageSchema = value ? JSON.parse(value) : useCanvas().getSchema();
     const { selectNode } = canvasApi.value;
 
+    // 保存当前 currentPage，避免在重置时丢失
+    const savedCurrentPage = pageState.currentPage;
+
     if (isBlock()) {
-        resetBlockCanvasState({ ...pageState, pageSchema });
+        resetBlockCanvasState({ ...pageState, pageSchema, loading: false });
     } else {
-        resetPageCanvasState({ ...pageState, pageSchema });
+        // 确保 currentPage 被保留，并且 loading 被设置为 false
+        resetPageCanvasState({ ...pageState, pageSchema, currentPage: savedCurrentPage, loading: false });
     }
 
     if (pageSettingState?.isAIPage) {
