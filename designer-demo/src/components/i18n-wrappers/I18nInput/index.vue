@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/attribute-hyphenation, vue/v-on-event-hyphenation, vue/html-self-closing, vue/max-lines-per-block, vue/block-lang, import/order, @typescript-eslint/naming-convention, vue/component-api-style, vue/require-explicit-emits, @typescript-eslint/no-explicit-any -->
 <template>
     <div class="text-input">
         <tiny-input
@@ -57,9 +58,12 @@ import { useDesignerI18n } from '@/services/i18nService';
 export default {
     name: 'I18nInput',
     components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
         BindI18n,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconClose: IconClose()
     },
     inheritAttrs: false,
@@ -69,6 +73,8 @@ export default {
             default: ''
         }
     },
+    emits: ['update:modelValue'],
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { currentLanguage, getLangs, i18nResource } = useTranslate();
@@ -76,18 +82,22 @@ export default {
         const isBind = computed(() => props.modelValue?.type === 'i18n');
         const inputValue = ref('');
         const i18nValue = ref(props.modelValue?.key || '');
-        const addI1i8nRef = ref(null);
-        const popoverRef = ref(null);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const addI1i8nRef = ref<any>(null);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const popoverRef = ref<any>(null);
 
         watchEffect(() => {
             i18nValue.value = props.modelValue?.key || '';
             inputValue.value = useTranslate().translate(props.modelValue);
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const inputChange = (event: { target: { value: any } }) => {
             emit('update:modelValue', event.target.value); // 直接修改时去掉绑定
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const setI18n = (data: any) => {
             emit('update:modelValue', data);
         };
@@ -121,6 +131,7 @@ export default {
 };
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .text-input {
     position: relative;

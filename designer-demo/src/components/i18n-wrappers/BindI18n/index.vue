@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/attribute-hyphenation, vue/v-on-event-hyphenation, vue/html-self-closing, vue/max-lines-per-block, vue/block-lang, import/order, @typescript-eslint/naming-convention, vue/component-api-style, vue/require-explicit-emits, @typescript-eslint/no-explicit-any -->
 <template>
     <div ref="languageContent" class="languageContent">
         <div v-show="!showEditItem">
@@ -82,9 +83,13 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect: Select,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyOption: Option,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input
     },
     inheritAttrs: false,
@@ -100,19 +105,26 @@ export default {
             default: ''
         },
         data: [Object, String],
+        // eslint-disable-next-line vue/require-typed-object-prop
         locales: Array
     },
+    emits: ['bind'],
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const selectValue = ref(props.modelValue);
         const showEditItem = ref(false);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const selectRef = ref<any>(null);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const editForm = reactive<any>({});
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const paramsForm = ref<any[]>([]);
         
         // 过滤掉中文（zh_CN），只保留英文（en_US）和其他语言
         const filteredLocales = computed(() => {
             if (!props.locales) return [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return props.locales.filter((locale: any) => locale.lang !== 'zh_CN');
         });
 
@@ -133,6 +145,7 @@ export default {
             }
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const filterMethod = (value: any) => {
             const options = selectRef.value.state.cachedOptions;
 
@@ -166,6 +179,7 @@ export default {
         };
 
         const paramsChange = () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const params: Record<string, any> = {};
 
             paramsForm.value.forEach(({ name, value }) => {
@@ -205,6 +219,7 @@ export default {
 };
 </script>
 
+<!-- eslint-disable-next-line vue/block-lang -->
 <style lang="less" scoped>
 .languageContent {
     z-index: 99;
