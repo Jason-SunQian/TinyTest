@@ -942,6 +942,16 @@
             "sortByKeyDesc": "按key倒序",
             "sortByKeyAsc": "按key正序",
             "noData": "暂无数据",
+            "bindI18n": {
+                "title": "绑定国际化",
+                "selectPlaceholder": "请选择多语言文案",
+                "paramsLabel": "国际化参数配置",
+                "unbind": "解除关联",
+                "createNew": "创建新的多语言文案",
+                "uniqueKey": "唯一键",
+                "i18nManagement": "管理",
+                "addAndBind": "添加"
+            },
             "loading": "加载中...",
             "save": "保存",
             "cancel": "取消",

@@ -4,7 +4,8 @@ import {
     CodeConfigurator,
     SlotConfigurator,
     ContainerConfigurator,
-    VariableConfigurator
+    VariableConfigurator,
+    I18nInput
 } from '@/components/i18n-wrappers';
 
 import MyInputConfigurator from './MyInputConfigurator.vue';
@@ -24,5 +25,8 @@ export const configurators = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     ContainerConfigurator,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    VariableConfigurator
+    VariableConfigurator,
+    // I18nInput 注册为 I18nConfigurator（属性面板中使用）
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    I18nConfigurator: I18nInput
 };

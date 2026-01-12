@@ -67,7 +67,8 @@
 /* metaService: engine.plugins.collections.DataSourceFieldForm */
 import { reactive, watchEffect, ref, provide, computed } from 'vue';
 import { Button, Input, FormItem, Form } from '@opentiny/vue';
-import { ButtonGroup, I18nInput } from '@opentiny/tiny-engine-common';
+import { ButtonGroup } from '@opentiny/tiny-engine-common';
+import { I18nInput } from '@/components/i18n-wrappers';
 
 import { useDesignerI18n } from '../../services/i18nService';
 

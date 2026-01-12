@@ -939,6 +939,16 @@
             "sortByKeyDesc": "Sort by key descending",
             "sortByKeyAsc": "Sort by key ascending",
             "noData": "No data",
+            "bindI18n": {
+                "title": "Bind Internationalization",
+                "selectPlaceholder": "Please select multilingual text",
+                "paramsLabel": "Internationalization Parameters",
+                "unbind": "Unbind",
+                "createNew": "Create New Text",
+                "uniqueKey": "Key",
+                "i18nManagement": "Management",
+                "addAndBind": "Add"
+            },
             "loading": "Loading...",
             "save": "Save",
             "cancel": "Cancel",
