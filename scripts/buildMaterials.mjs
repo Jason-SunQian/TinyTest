@@ -141,15 +141,24 @@ const generateComponents = () => {
 
         components.push(componentInfo)
 
-        const snippet = snippets.find((item) => item.group === category)
+        // 如果顶层没有 category，尝试从 snippets 数组中提取
+        let actualCategory = category
+        if (!actualCategory && componentSnippets && componentSnippets.length > 0) {
+          actualCategory = componentSnippets[0].category
+        }
+
+        const snippet = snippets.find((item) => item.group === actualCategory)
 
         if (snippet) {
           if (componentSnippets) {
-            snippet.children.push(componentSnippets[0])
+            // 将所有的 snippets 都添加进去，而不仅仅是第一个
+            componentSnippets.forEach((snippetItem) => {
+              snippet.children.push(snippetItem)
+            })
           }
-        } else if (category && componentInfo) {
+        } else if (actualCategory && componentInfo) {
           snippets.push({
-            group: category,
+            group: actualCategory,
             children: componentSnippets || []
           })
         }
