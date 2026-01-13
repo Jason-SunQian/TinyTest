@@ -97,8 +97,8 @@ export default {
             useMaterial();
         const gridTemplateColumns = ref(COMPONENT_PANEL_COLUMNS);
 
-        // 获取国际化 t 函数
-        const { t } = useDesignerI18n();
+        // 获取国际化 t 函数和语言
+        const { t, locale: currentLocaleRef } = useDesignerI18n();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
 
@@ -117,8 +117,19 @@ export default {
 
         // 获取组件标签的国际化文本
         const getComponentLabel = (component: Component) => {
-            const currentLocale = i18n?.global?.locale?.value || 'zh_CN';
+            const currentLocale = currentLocaleRef.value || i18n?.global?.locale?.value || 'zh_CN';
             if (component.label && typeof component.label === 'object') {
+                // 如果是英文环境，优先使用 en_US
+                if (currentLocale === 'en_US' || currentLocale === 'en-US' || currentLocale === 'en') {
+                    return (
+                        component.label.en_US ||
+                        component.label['en-US'] ||
+                        component.label.en ||
+                        component.label[currentLocale] ||
+                        component.label.zh_CN ||
+                        component.group
+                    );
+                }
                 return (
                     component.label[currentLocale] ||
                     component.label.zh_CN ||
@@ -131,11 +142,27 @@ export default {
         // 获取组件名称的国际化文本
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getComponentName = (child: any) => {
-            const currentLocale = i18n?.global?.locale?.value || 'zh_CN';
+            const currentLocale = currentLocaleRef.value || i18n?.global?.locale?.value || 'zh_CN';
+            
             if (child.name && typeof child.name === 'object') {
-                return (
-                    child.name[currentLocale] || child.name.zh_CN || child.name
-                );
+                // 检查是否是英文环境（支持多种格式）
+                const isEnglish = 
+                    currentLocale === 'en_US' || 
+                    currentLocale === 'en-US' || 
+                    currentLocale === 'en' ||
+                    String(currentLocale).toLowerCase().startsWith('en');
+                
+                if (isEnglish) {
+                    // 优先使用 en_US
+                    const enName = child.name.en_US || child.name['en-US'] || child.name.en;
+                    if (enName) {
+                        return enName;
+                    }
+                    // 如果没有英文，回退到中文
+                    return child.name.zh_CN || child.name;
+                }
+                // 中文环境使用中文
+                return child.name.zh_CN || child.name[currentLocale] || child.name;
             }
             return child.name;
         };
@@ -227,6 +254,18 @@ export default {
             }
         );
 
+        // 监听语言变化，重新计算组件列表
+        watch(
+            [currentLocaleRef, () => i18n?.global?.locale?.value],
+            ([newLocale1, newLocale2]) => {
+                const newLocale = newLocale1 || newLocale2;
+                // eslint-disable-next-line no-console
+                console.log('[Materials] Language changed to:', newLocale);
+                state.components = fetchComponents(componentsWithChildren.value, state.searchValue);
+            },
+            { immediate: false }
+        );
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const componentClick = (data: any) => {
             const { isShortcutPanel, emitEvent } = panelState;
@@ -244,6 +283,18 @@ export default {
         onMounted(() => {
             if (panelState.isShortcutPanel) {
                 gridTemplateColumns.value = SHORTCUT_PANEL_COLUMNS;
+            }
+            // 调试：输出当前语言和组件信息
+            // eslint-disable-next-line no-console
+            console.log('[Materials Component] Current locale (from useDesignerI18n):', currentLocaleRef.value);
+            // eslint-disable-next-line no-console
+            console.log('[Materials Component] Current locale (from inject):', i18n?.global?.locale?.value);
+            // eslint-disable-next-line no-console
+            console.log('[Materials Component] Components count:', componentsWithChildren.value.length);
+            if (componentsWithChildren.value.length > 0 && componentsWithChildren.value[0].children.length > 0) {
+                const firstChild = componentsWithChildren.value[0].children[0];
+                // eslint-disable-next-line no-console
+                console.log('[Materials Component] First child name:', firstChild.name, 'Resolved:', getComponentName(firstChild));
             }
         });
 
