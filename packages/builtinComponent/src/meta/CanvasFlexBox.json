@@ -2,7 +2,8 @@
   "component": {
     "icon": "FlexBox",
     "name": {
-      "zh_CN": "弹性容器"
+      "zh_CN": "弹性容器",
+      "en_US": "Flex Container"
     },
     "component": "CanvasFlexBox",
     "schema": {
@@ -204,7 +205,8 @@
   },
   "snippet": {
     "name": {
-      "zh_CN": "弹性容器"
+      "zh_CN": "弹性容器",
+      "en_US": "Flex Container"
     },
     "screenshot": "",
     "snippetName": "CanvasFlexBox",

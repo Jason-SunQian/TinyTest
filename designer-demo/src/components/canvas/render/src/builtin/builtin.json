@@ -5,7 +5,8 @@
                 {
                     "icon": "Box",
                     "name": {
-                        "zh_CN": "Box"
+                        "zh_CN": "Box",
+                        "en_US": "Box"
                     },
                     "component": "div",
                     "schema": {
@@ -13,10 +14,12 @@
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "collapse": {
                                     "number": 6,
@@ -30,10 +33,12 @@
                         "events": {
                             "onClick": {
                                 "label": {
-                                    "zh_CN": "点击事件"
+                                    "zh_CN": "点击事件",
+                                    "en_US": "Click Event"
                                 },
                                 "description": {
-                                    "zh_CN": "点击时触发的回调函数"
+                                    "zh_CN": "点击时触发的回调函数",
+                                    "en_US": "Callback function triggered on click"
                                 },
                                 "type": "event",
                                 "functionInfo": {
@@ -62,17 +67,20 @@
                 {
                     "icon": "slot",
                     "name": {
-                        "zh_CN": "Slot"
+                        "zh_CN": "Slot",
+                        "en_US": "Slot"
                     },
                     "component": "Slot",
                     "schema": {
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "collapse": {
                                     "number": 6,
@@ -86,7 +94,8 @@
                                         "type": "string",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "插槽名称"
+                                                "zh_CN": "插槽名称",
+                                                "en_US": "Slot名称"
                                             }
                                         },
                                         "cols": 12,
@@ -101,7 +110,8 @@
                                         "defaultValue": "",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "作用域参数"
+                                                "zh_CN": "作用域参数",
+                                                "en_US": "作用域参数"
                                             }
                                         },
                                         "widget": {
@@ -137,17 +147,20 @@
                 {
                     "icon": "RouterView",
                     "name": {
-                        "zh_CN": "RouterView"
+                        "zh_CN": "RouterView",
+                        "en_US": "RouterView"
                     },
                     "component": "RouterView",
                     "schema": {
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "content": []
                             }
@@ -157,17 +170,20 @@
                 {
                     "icon": "RouterLink",
                     "name": {
-                        "zh_CN": "RouterLink"
+                        "zh_CN": "RouterLink",
+                        "en_US": "RouterLink"
                     },
                     "component": "RouterLink",
                     "schema": {
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "content": [
                                     {
@@ -175,7 +191,8 @@
                                         "type": "String",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "跳转页面"
+                                                "zh_CN": "跳转页面",
+                                                "en_US": "跳转页面"
                                             }
                                         },
                                         "cols": 12,
@@ -189,7 +206,8 @@
                                         "type": "String",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "激活样式类"
+                                                "zh_CN": "激活样式类",
+                                                "en_US": "激活样式类"
                                             }
                                         },
                                         "cols": 12,
@@ -203,7 +221,8 @@
                                         "type": "String",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "准确激活样式类"
+                                                "zh_CN": "准确激活样式类",
+                                                "en_US": "准确激活样式类"
                                             }
                                         },
                                         "cols": 12,
@@ -224,7 +243,8 @@
                 {
                     "icon": "Collection",
                     "name": {
-                        "zh_CN": "Collection"
+                        "zh_CN": "Collection",
+                        "en_US": "Collection"
                     },
                     "component": "Collection",
                     "schema": {
@@ -232,10 +252,12 @@
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "collapse": {
                                     "number": 6,
@@ -250,7 +272,8 @@
                                         "defaultValue": true,
                                         "label": {
                                             "text": {
-                                                "zh_CN": "是否渲染"
+                                                "zh_CN": "是否渲染",
+                                                "en_US": "是否渲染"
                                             }
                                         },
                                         "cols": 12,
@@ -266,7 +289,8 @@
                                         "defaultValue": "",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "样式"
+                                                "zh_CN": "样式",
+                                                "en_US": "样式"
                                             }
                                         },
                                         "cols": 12,
@@ -283,7 +307,8 @@
                                         "bindState": false,
                                         "label": {
                                             "text": {
-                                                "zh_CN": "数据源"
+                                                "zh_CN": "数据源",
+                                                "en_US": "数据源"
                                             }
                                         },
                                         "cols": 12,
@@ -311,17 +336,20 @@
                 {
                     "icon": "Text",
                     "name": {
-                        "zh_CN": "Text"
+                        "zh_CN": "Text",
+                        "en_US": "Text"
                     },
                     "component": "Text",
                     "schema": {
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "collapse": {
                                     "number": 6,
@@ -336,7 +364,8 @@
                                         "defaultValue": "TinyEngine 前端可视化设计器，为设计器开发者提供定制服务，在线构建出自己专属的设计器。",
                                         "label": {
                                             "text": {
-                                                "zh_CN": "文本内容"
+                                                "zh_CN": "文本内容",
+                                                "en_US": "Text内容"
                                             }
                                         },
                                         "cols": 12,
@@ -355,10 +384,12 @@
                         "events": {
                             "onClick": {
                                 "label": {
-                                    "zh_CN": "点击事件"
+                                    "zh_CN": "点击事件",
+                                    "en_US": "Click Event"
                                 },
                                 "description": {
-                                    "zh_CN": "点击时触发的回调函数"
+                                    "zh_CN": "点击时触发的回调函数",
+                                    "en_US": "Callback function triggered on click"
                                 },
                                 "type": "event",
                                 "functionInfo": {
@@ -369,7 +400,9 @@
                             }
                         },
                         "shortcuts": {
-                            "properties": ["text"]
+                            "properties": [
+                                "text"
+                            ]
                         },
                         "contentMenu": {
                             "actions": []
@@ -382,7 +415,8 @@
                 {
                     "icon": "icon",
                     "name": {
-                        "zh_CN": "Icon"
+                        "zh_CN": "Icon",
+                        "en_US": "Icon"
                     },
                     "component": "Icon",
                     "container": false,
@@ -390,10 +424,12 @@
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "collapse": {
                                     "number": 6,
@@ -409,7 +445,8 @@
                                         "bindState": true,
                                         "label": {
                                             "text": {
-                                                "zh_CN": "图标类型"
+                                                "zh_CN": "图标类型",
+                                                "en_US": "Icon类型"
                                             }
                                         },
                                         "cols": 12,
@@ -425,10 +462,12 @@
                         "events": {
                             "onClick": {
                                 "label": {
-                                    "zh_CN": "点击事件"
+                                    "zh_CN": "点击事件",
+                                    "en_US": "Click Event"
                                 },
                                 "description": {
-                                    "zh_CN": "点击时触发的回调函数"
+                                    "zh_CN": "点击时触发的回调函数",
+                                    "en_US": "Callback function triggered on click"
                                 },
                                 "type": "event",
                                 "functionInfo": {
@@ -439,7 +478,9 @@
                             }
                         },
                         "shortcuts": {
-                            "properties": ["name"]
+                            "properties": [
+                                "name"
+                            ]
                         },
                         "contentMenu": {
                             "actions": []
@@ -452,7 +493,8 @@
                 {
                     "icon": "Image",
                     "name": {
-                        "zh_CN": "Img"
+                        "zh_CN": "Img",
+                        "en_US": "Img"
                     },
                     "component": "Img",
                     "container": false,
@@ -460,10 +502,12 @@
                         "properties": [
                             {
                                 "label": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "description": {
-                                    "zh_CN": "基础信息"
+                                    "zh_CN": "基础信息",
+                                    "en_US": "Basic Information"
                                 },
                                 "collapse": {
                                     "number": 6,
@@ -479,7 +523,8 @@
                                         "bindState": true,
                                         "label": {
                                             "text": {
-                                                "zh_CN": "src路径"
+                                                "zh_CN": "src路径",
+                                                "en_US": "src路径"
                                             }
                                         },
                                         "cols": 12,
@@ -495,10 +540,12 @@
                         "events": {
                             "onClick": {
                                 "label": {
-                                    "zh_CN": "点击事件"
+                                    "zh_CN": "点击事件",
+                                    "en_US": "Click Event"
                                 },
                                 "description": {
-                                    "zh_CN": "点击时触发的回调函数"
+                                    "zh_CN": "点击时触发的回调函数",
+                                    "en_US": "Callback function triggered on click"
                                 },
                                 "type": "event",
                                 "functionInfo": {
@@ -509,7 +556,9 @@
                             }
                         },
                         "shortcuts": {
-                            "properties": ["src"]
+                            "properties": [
+                                "src"
+                            ]
                         },
                         "contentMenu": {
                             "actions": []
@@ -524,12 +573,14 @@
                 {
                     "group": "layout",
                     "label": {
-                        "zh_CN": "布局与容器"
+                        "zh_CN": "布局与容器",
+                        "en_US": "Layout and Containers"
                     },
                     "children": [
                         {
                             "name": {
-                                "zh_CN": "盒子容器"
+                                "zh_CN": "盒子容器",
+                                "en_US": "Box Container"
                             },
                             "screenshot": "",
                             "snippetName": "Box",
@@ -544,12 +595,14 @@
                 {
                     "group": "basic",
                     "label": {
-                        "zh_CN": "基础元素"
+                        "zh_CN": "基础元素",
+                        "en_US": "Basic Elements"
                     },
                     "children": [
                         {
                             "name": {
-                                "zh_CN": "文本"
+                                "zh_CN": "文本",
+                                "en_US": "Text"
                             },
                             "screenshot": "",
                             "snippetName": "Text",
@@ -564,7 +617,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "图标"
+                                "zh_CN": "图标",
+                                "en_US": "Icon"
                             },
                             "screenshot": "",
                             "snippetName": "Icon",
@@ -578,7 +632,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "图片"
+                                "zh_CN": "图片",
+                                "en_US": "Image"
                             },
                             "screenshot": "",
                             "snippetName": "Img",
@@ -595,12 +650,14 @@
                 {
                     "group": "advanced",
                     "label": {
-                        "zh_CN": "高级元素"
+                        "zh_CN": "高级元素",
+                        "en_US": "Advanced Elements"
                     },
                     "children": [
                         {
                             "name": {
-                                "zh_CN": "插槽"
+                                "zh_CN": "插槽",
+                                "en_US": "Slot"
                             },
                             "screenshot": "",
                             "snippetName": "Slot",
@@ -612,7 +669,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "路由视图"
+                                "zh_CN": "路由视图",
+                                "en_US": "Route View"
                             },
                             "screenshot": "",
                             "snippetName": "RouterView",
@@ -624,7 +682,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "路由链接"
+                                "zh_CN": "路由链接",
+                                "en_US": "Route Link"
                             },
                             "screenshot": "",
                             "snippetName": "RouterLink",
@@ -644,7 +703,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "导航条"
+                                "zh_CN": "导航条",
+                                "en_US": "Navigation Bar"
                             },
                             "snippetName": "Navigation",
                             "icon": "navigation",
@@ -725,7 +785,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "纵向导航"
+                                "zh_CN": "纵向导航",
+                                "en_US": "Vertical Navigation"
                             },
                             "snippetName": "NavigationV",
                             "icon": "NavigationV",
@@ -850,7 +911,8 @@
                         },
                         {
                             "name": {
-                                "zh_CN": "数据源容器"
+                                "zh_CN": "数据源容器",
+                                "en_US": "Data Source Container"
                             },
                             "screenshot": "",
                             "snippetName": "Collection",

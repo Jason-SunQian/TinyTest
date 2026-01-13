@@ -115,12 +115,62 @@ export default {
 
         type Component = (typeof componentsWithChildren.value)[number];
 
+        // 分组名称翻译映射表（用于没有 label 的分组）
+        const GROUP_NAME_TRANSLATIONS: Record<string, Record<string, string>> = {
+            '容器组件': {
+                zh_CN: '容器组件',
+                en_US: 'Container Components'
+            },
+            '布局与容器': {
+                zh_CN: '布局与容器',
+                en_US: 'Layout and Containers'
+            },
+            '基础元素': {
+                zh_CN: '基础元素',
+                en_US: 'Basic Elements'
+            },
+            '高级元素': {
+                zh_CN: '高级元素',
+                en_US: 'Advanced Elements'
+            },
+            'form': {
+                zh_CN: '表单',
+                en_US: 'Form'
+            },
+            'data-display': {
+                zh_CN: '数据展示',
+                en_US: 'Data Display'
+            },
+            'table': {
+                zh_CN: '表格',
+                en_US: 'Table'
+            },
+            'layout': {
+                zh_CN: '布局',
+                en_US: 'Layout'
+            },
+            'basic': {
+                zh_CN: '基础',
+                en_US: 'Basic'
+            },
+            'advanced': {
+                zh_CN: '高级',
+                en_US: 'Advanced'
+            }
+        };
+
         // 获取组件标签的国际化文本
         const getComponentLabel = (component: Component) => {
             const currentLocale = currentLocaleRef.value || i18n?.global?.locale?.value || 'zh_CN';
+            const isEnglish = 
+                currentLocale === 'en_US' || 
+                currentLocale === 'en-US' || 
+                currentLocale === 'en' ||
+                String(currentLocale).toLowerCase().startsWith('en');
+            
             if (component.label && typeof component.label === 'object') {
                 // 如果是英文环境，优先使用 en_US
-                if (currentLocale === 'en_US' || currentLocale === 'en-US' || currentLocale === 'en') {
+                if (isEnglish) {
                     return (
                         component.label.en_US ||
                         component.label['en-US'] ||
@@ -136,6 +186,15 @@ export default {
                     component.group
                 );
             }
+            
+            // 如果没有 label，使用分组名称翻译映射表
+            if (isEnglish && GROUP_NAME_TRANSLATIONS[component.group]) {
+                return GROUP_NAME_TRANSLATIONS[component.group].en_US || component.group;
+            }
+            if (!isEnglish && GROUP_NAME_TRANSLATIONS[component.group]) {
+                return GROUP_NAME_TRANSLATIONS[component.group].zh_CN || component.group;
+            }
+            
             return component.group;
         };
 
@@ -257,10 +316,7 @@ export default {
         // 监听语言变化，重新计算组件列表
         watch(
             [currentLocaleRef, () => i18n?.global?.locale?.value],
-            ([newLocale1, newLocale2]) => {
-                const newLocale = newLocale1 || newLocale2;
-                // eslint-disable-next-line no-console
-                console.log('[Materials] Language changed to:', newLocale);
+            () => {
                 state.components = fetchComponents(componentsWithChildren.value, state.searchValue);
             },
             { immediate: false }
@@ -283,18 +339,6 @@ export default {
         onMounted(() => {
             if (panelState.isShortcutPanel) {
                 gridTemplateColumns.value = SHORTCUT_PANEL_COLUMNS;
-            }
-            // 调试：输出当前语言和组件信息
-            // eslint-disable-next-line no-console
-            console.log('[Materials Component] Current locale (from useDesignerI18n):', currentLocaleRef.value);
-            // eslint-disable-next-line no-console
-            console.log('[Materials Component] Current locale (from inject):', i18n?.global?.locale?.value);
-            // eslint-disable-next-line no-console
-            console.log('[Materials Component] Components count:', componentsWithChildren.value.length);
-            if (componentsWithChildren.value.length > 0 && componentsWithChildren.value[0].children.length > 0) {
-                const firstChild = componentsWithChildren.value[0].children[0];
-                // eslint-disable-next-line no-console
-                console.log('[Materials Component] First child name:', firstChild.name, 'Resolved:', getComponentName(firstChild));
             }
         });
 

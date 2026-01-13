@@ -2,7 +2,8 @@
   "component": {
     "icon": "FullWidthCenter",
     "name": {
-      "zh_CN": "全宽居中布局"
+      "zh_CN": "全宽居中布局",
+      "en_US": "Full Width Centered Container"
     },
     "component": "CanvasSection",
     "schema": {
@@ -58,7 +59,8 @@
   },
   "snippet": {
     "name": {
-      "zh_CN": "全宽居中布局"
+      "zh_CN": "全宽居中布局",
+      "en_US": "Full Width Centered Container"
     },
     "screenshot": "",
     "snippetName": "CanvasSection",

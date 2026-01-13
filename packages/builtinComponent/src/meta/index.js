@@ -16,7 +16,8 @@ export default {
     {
       group: 'layout',
       label: {
-        zh_CN: '布局与容器'
+        zh_CN: '布局与容器',
+        en_US: 'Layout and Containers'
       },
       children: [CanvasRowColContainer.snippet, CanvasFlexBox.snippet, CanvasSection.snippet]
     }

@@ -232,6 +232,109 @@ const generateThirdPartyDeps = (components: Component[]) => {
 };
 
 /**
+ * 为组件名称添加英文翻译（如果不存在）
+ */
+const addEnglishNameToComponent = (component: Component) => {
+    const componentName = component.name as any;
+    if (componentName && typeof componentName === 'object' && componentName.zh_CN && !componentName.en_US) {
+        // 简单的翻译映射
+        const translations: Record<string, string> = {
+            '盒子容器': 'Box Container',
+            '行列容器': 'Row/Column Container',
+            '弹性容器': 'Flex Container',
+            '全宽居中容器': 'Full Width Centered Container',
+            '全宽居中布局': 'Full Width Centered Container',
+            '文本': 'Text',
+            '图标': 'Icon',
+            '图片': 'Image',
+            '段落': 'Paragraph',
+            '链接': 'Link',
+            '分隔线': 'Divider',
+            '标题': 'Title',
+            '视频': 'Video',
+            '按钮': 'Button',
+            '按钮组': 'Button Group',
+            '互斥按钮组': 'Exclusive Button Group',
+            '搜索框': 'Search Box',
+            '插槽': 'Slot',
+            '路由视图': 'Route View',
+            '路由链接': 'Route Link',
+            '导航条': 'Navigation Bar',
+            '纵向导航': 'Vertical Navigation',
+            '数据源容器': 'Data Source Container',
+        };
+        
+        const zhName = componentName.zh_CN;
+        if (translations[zhName]) {
+            componentName.en_US = translations[zhName];
+        } else {
+            // 如果没有映射，使用组件名作为回退
+            componentName.en_US = component.component || zhName;
+        }
+    }
+};
+
+/**
+ * 为 snippet 添加英文翻译（如果不存在）
+ */
+const addEnglishNameToSnippet = (snippet: any) => {
+    if (snippet.name && typeof snippet.name === 'object' && snippet.name.zh_CN) {
+        // 如果已经有 en_US，跳过
+        if ((snippet.name as any).en_US || (snippet.name as any)['en-US'] || (snippet.name as any).en) {
+            return;
+        }
+        
+        const translations: Record<string, string> = {
+            '盒子容器': 'Box Container',
+            '行列容器': 'Row/Column Container',
+            '弹性容器': 'Flex Container',
+            '全宽居中容器': 'Full Width Centered Container',
+            '全宽居中布局': 'Full Width Centered Container',
+            '文本': 'Text',
+            '图标': 'Icon',
+            '图片': 'Image',
+            '段落': 'Paragraph',
+            '链接': 'Link',
+            '分隔线': 'Divider',
+            '标题': 'Title',
+            '视频': 'Video',
+            '按钮': 'Button',
+            '按钮组': 'Button Group',
+            '互斥按钮组': 'Exclusive Button Group',
+            '搜索框': 'Search Box',
+            '插槽': 'Slot',
+            '路由视图': 'Route View',
+            '路由链接': 'Route Link',
+            '导航条': 'Navigation Bar',
+            '纵向导航': 'Vertical Navigation',
+            '数据源容器': 'Data Source Container',
+        };
+        
+        const zhName = snippet.name.zh_CN;
+        if (translations[zhName]) {
+            (snippet.name as any).en_US = translations[zhName];
+        } else {
+            // 如果没有映射，使用 snippetName 或 component 作为回退
+            (snippet.name as any).en_US = snippet.snippetName || snippet.component || zhName;
+        }
+    }
+    
+    // 处理 label
+    if (snippet.label && typeof snippet.label === 'object' && snippet.label.zh_CN && !(snippet.label as any).en_US) {
+        const translations: Record<string, string> = {
+            '布局与容器': 'Layout and Containers',
+            '基础元素': 'Basic Elements',
+            '高级元素': 'Advanced Elements',
+        };
+        
+        const zhLabel = snippet.label.zh_CN;
+        if (translations[zhLabel]) {
+            (snippet.label as any).en_US = translations[zhLabel];
+        }
+    }
+};
+
+/**
  * 添加组件snippets(分组相同则合并)
  * @param componentSnippets 待添加的组件snippets
  * @param snippetsData 当前snippets
@@ -248,6 +351,25 @@ const addComponentSnippets = (
         snippetsMap.set(snippetGroup.group, snippetGroup)
     );
     componentSnippets.forEach(snippetGroup => {
+        // 为分组 label 添加英文翻译
+        const groupLabel = (snippetGroup as any).label;
+        if (groupLabel && typeof groupLabel === 'object' && groupLabel.zh_CN && !groupLabel.en_US) {
+            const translations: Record<string, string> = {
+                '布局与容器': 'Layout and Containers',
+                '基础元素': 'Basic Elements',
+                '高级元素': 'Advanced Elements',
+            };
+            const zhLabel = groupLabel.zh_CN;
+            if (translations[zhLabel]) {
+                groupLabel.en_US = translations[zhLabel];
+            }
+        }
+        
+        // 为每个 snippet 添加英文翻译
+        snippetGroup.children?.forEach(child => {
+            addEnglishNameToSnippet(child);
+        });
+        
         if (snippetsMap.has(snippetGroup.group)) {
             snippetsMap
                 .get(snippetGroup.group)!
@@ -349,6 +471,12 @@ const addComponents = (materialBundle: Material) => {
     const { snippets, components } = materialBundle;
     // 解析物料依赖
     parseMaterialsDependencies(materialBundle);
+    
+    // 为组件添加英文翻译（如果不存在）
+    components.forEach(component => {
+        addEnglishNameToComponent(component);
+    });
+    
     // 注册组件到map中
     components.forEach(registerComponentToResource);
     // 添加组件snippets
