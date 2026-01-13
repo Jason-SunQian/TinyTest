@@ -94,6 +94,7 @@
                 "title": "Properties",
                 "emptyComponent": "You haven't dragged any components to the canvas yet",
                 "emptySelection": "Please select a component on the canvas",
+                "emptyText": "Empty",
                 "inlineBound": "Bound: {value}"
             },
             "styles": {

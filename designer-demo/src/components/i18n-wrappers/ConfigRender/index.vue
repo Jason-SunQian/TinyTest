@@ -106,7 +106,7 @@ export default {
     emits: ['selected', 'select-prop', 'select-group'],
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
-        const { locale } = useDesignerI18n();
+        const { locale, t } = useDesignerI18n();
         const activeNames = ref([]);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -229,10 +229,12 @@ export default {
         };
 
         const getEmptyText = computed(() => {
-            if (props.emptyText) {
+            // 如果明确传入了 emptyText 且不是默认的 "空" 或 "Empty"，则使用传入的值
+            // 否则使用 i18n 翻译
+            if (props.emptyText && props.emptyText !== '空' && props.emptyText !== 'Empty') {
                 return props.emptyText;
             }
-            return locale.value === 'en_US' ? 'Empty' : '空';
+            return t('designer.settings.props.emptyText');
         });
 
         return {

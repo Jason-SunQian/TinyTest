@@ -22,10 +22,11 @@ export default {
         }
     },
     setup(props) {
-        const { locale } = useDesignerI18n();
+        const { locale, t } = useDesignerI18n();
 
         return {
-            locale
+            locale,
+            t
         };
     },
     render() {
@@ -41,14 +42,11 @@ export default {
         const collapseItems = propNodes.slice(number);
 
         // 获取国际化后的 emptyText
-        // 在 render 函数中直接计算，避免 computed 解包问题
-        const emptyTextValue =
-            typeof this.emptyText === 'string'
-                ? this.emptyText
-                : this.emptyText?.value || this.emptyText || '';
+        // Vue 3 会自动解包 computed ref，所以 this.emptyText 应该是字符串值
+        // 但如果传入了空字符串或 undefined，使用 i18n 作为 fallback
+        const emptyTextValue = this.emptyText || '';
         // eslint-disable-next-line camelcase
-        const emptyText =
-            emptyTextValue || (this.locale === 'en_US' ? 'Empty' : '空');
+        const emptyText = emptyTextValue || this.t('designer.settings.props.emptyText');
 
         const expandNode = h(
             'div',

@@ -96,6 +96,7 @@
                 "title": "属性",
                 "emptyComponent": "您还未拖拽组件至画布中",
                 "emptySelection": "请在画布中选择组件",
+                "emptyText": "空",
                 "inlineBound": "已绑定：{value}"
             },
             "styles": {
