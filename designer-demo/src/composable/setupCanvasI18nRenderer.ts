@@ -72,6 +72,7 @@ function setupCanvasTextReplacer() {
             if (!doc || !doc.body) return;
 
             // 需要替换的中文文本映射为英文
+            const dragElementText = i18nInstance?.global?.t('designer.canvas.dragElementHere') || 'Please drag and drop elements here';
             const textMappings = [
                 { chinese: '页面分析加载中', english: analyzingText },
                 {
@@ -81,8 +82,21 @@ function setupCanvasTextReplacer() {
                 {
                     chinese: '从左侧面板拖入组件,以构建页面',
                     english: englishText
+                },
+                {
+                    chinese: '请将元素拖放到这里',
+                    english: dragElementText
                 }
             ];
+
+            // 查找 .container-tip 元素（CanvasPlaceholder 使用的类名）
+            const containerTipElements = doc.querySelectorAll('.container-tip');
+            containerTipElements.forEach((el: Element) => {
+                const textContent = el.textContent?.trim();
+                if (textContent === '请将元素拖放到这里') {
+                    el.textContent = dragElementText;
+                }
+            });
 
             // 查找 .empty-text 元素
             const emptyTextElements = doc.querySelectorAll(

@@ -520,6 +520,7 @@
         "canvas": {
             "emptyCanvas": "Empty Canvas",
             "dragComponentHere": "Drag components here",
+            "dragElementHere": "Please drag and drop elements here",
             "pageAnalyzing": "Page analyzing...",
             "selectComponent": "Select Component",
             "componentSettings": "Component Settings",
