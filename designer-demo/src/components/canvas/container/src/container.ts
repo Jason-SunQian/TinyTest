@@ -386,13 +386,24 @@ const insertInner = (
     { node, data }: Omit<InsertOptions, 'parent'>,
     position: string = ''
 ) => {
+    // 如果 node 为 null，使用 pageSchema 作为 fallback
+    let targetNode = node;
+    if (!targetNode) {
+        targetNode = useCanvas().pageState.pageSchema;
+        if (!targetNode) {
+            // eslint-disable-next-line no-console
+            console.error('[insertInner] node and pageSchema are both null, cannot insert');
+            return;
+        }
+    }
+
     if (!data.id) {
         data.id = utils.guid();
     }
 
     useCanvas().operateNode({
         type: 'insert',
-        parentId: node.id || '',
+        parentId: targetNode.id || '',
         newNodeData: data,
         position: ([POSITION.TOP, POSITION.LEFT] as string[]).includes(position)
             ? 'before'
@@ -977,10 +988,13 @@ export const insertNode = (
     select = true
 ) => {
     if (!node.parent) {
-        insertInner(
-            { node: useCanvas().pageState.pageSchema!, data: node.data },
-            position
-        );
+        const pageSchema = useCanvas().pageState.pageSchema || getSchema();
+        if (!pageSchema) {
+            // eslint-disable-next-line no-console
+            console.error('[insertNode] pageSchema and getSchema() are both null, cannot insert');
+            return;
+        }
+        insertInner({ node: pageSchema, data: node.data }, position);
     } else {
         switch (position) {
             case POSITION.TOP:
@@ -992,7 +1006,17 @@ export const insertNode = (
                 insertAfter(node);
                 break;
             case POSITION.IN:
-                insertInner(node);
+                if (!node.node) {
+                    const pageSchema = useCanvas().pageState.pageSchema || getSchema();
+                    if (!pageSchema) {
+                        // eslint-disable-next-line no-console
+                        console.error('[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert');
+                        return;
+                    }
+                    insertInner({ node: pageSchema, data: node.data }, position);
+                } else {
+                    insertInner(node);
+                }
                 break;
             case POSITION.OUT:
                 insertContainer(node);
@@ -1001,7 +1025,17 @@ export const insertNode = (
                 insertReplace(node);
                 break;
             default:
-                insertInner(node);
+                if (!node.node) {
+                    const pageSchema = useCanvas().pageState.pageSchema || getSchema();
+                    if (!pageSchema) {
+                        // eslint-disable-next-line no-console
+                        console.error('[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert');
+                        return;
+                    }
+                    insertInner({ node: pageSchema, data: node.data }, position);
+                } else {
+                    insertInner(node);
+                }
                 break;
         }
     }
