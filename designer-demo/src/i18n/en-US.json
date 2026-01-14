@@ -1171,6 +1171,13 @@
             "myInputConfigurator": {
                 "title": "I am a custom input configurator"
             },
+            "htmlAttributes": {
+                "headerTitle": "Custom Attributes",
+                "addAttrTooltip": "Add Native Attribute",
+                "noData": "No Data",
+                "cancel": "Cancel",
+                "save": "Save"
+            },
             "variableBinding": {
                 "title": "Variable Binding",
                 "description": "You can bind variables or handler functions by clicking the variable list in the left area, or you can enter complex expressions in the input mode on the right side.",

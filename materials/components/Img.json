@@ -18,10 +18,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -31,7 +33,8 @@
             "bindState": true,
             "label": {
               "text": {
-                "zh_CN": "资源"
+                "zh_CN": "资源",
+                "en_US": "Resource"
               }
             },
             "cols": 12,
@@ -41,14 +44,16 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "src路径"
+              "zh_CN": "src路径",
+              "en_US": "src path"
             }
           },
           {
             "property": "attributes3",
             "label": {
               "text": {
-                "zh_CN": "原生属性"
+                "zh_CN": "原生属性",
+                "en_US": "Native Attributes"
               }
             },
             "required": true,
@@ -60,7 +65,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "原生属性"
+              "zh_CN": "原生属性",
+              "en_US": "Native Attributes"
             },
             "labelPosition": "none"
           }

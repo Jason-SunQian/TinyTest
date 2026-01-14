@@ -22,6 +22,7 @@ export { default as CodeConfigurator } from './CodeConfigurator/index.vue';
 export { default as SlotConfigurator } from './SlotConfigurator/index.vue';
 export { default as ContainerConfigurator } from './ContainerConfigurator/index.vue';
 export { default as VariableConfigurator } from './VariableConfigurator/index.vue';
+export { default as HtmlAttributesConfigurator } from './HtmlAttributesConfigurator/index.vue';
 export { default as BindI18n } from './BindI18n/index.vue';
 export { default as I18nInput } from './I18nInput/index.vue';
 // export { default as PluginSetting } from './PluginSetting/index.vue'

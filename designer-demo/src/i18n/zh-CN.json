@@ -1183,6 +1183,13 @@
             "myInputConfigurator": {
                 "title": "我是自定义的 input configurator"
             },
+            "htmlAttributes": {
+                "headerTitle": "自定义属性",
+                "addAttrTooltip": "新增原生属性",
+                "noData": "无数据",
+                "cancel": "取消",
+                "save": "保存"
+            },
             "variableBinding": {
                 "title": "变量绑定",
                 "description": "你可以通过点击左侧区域变量列表绑定变量或处理函数，也可以在右边输入模式输入复杂的表达式。",

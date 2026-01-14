@@ -5,6 +5,7 @@ import {
     SlotConfigurator,
     ContainerConfigurator,
     VariableConfigurator,
+    HtmlAttributesConfigurator,
     I18nInput
 } from '@/components/i18n-wrappers';
 
@@ -26,6 +27,8 @@ export const configurators = {
     ContainerConfigurator,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     VariableConfigurator,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    HtmlAttributesConfigurator,
     // I18nInput 注册为 I18nConfigurator（属性面板中使用）
     // eslint-disable-next-line @typescript-eslint/naming-convention
     I18nConfigurator: I18nInput
