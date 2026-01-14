@@ -1,3 +1,5 @@
+import { previewState } from './usePreviewData'
+
 interface PreviewCommunicationOptions {
   onSchemaReceived: (data: any) => Promise<void>
   loadInitialData: () => Promise<void>
@@ -34,15 +36,44 @@ const sendReadyMessage = () => {
   // 尝试获取父窗口引用
   const opener = window.opener
 
-  const fallbackHandler = () => {
+  const fallbackHandler = async () => {
     const logger = console
     logger.warn('无法获取主窗口引用，将使用 URL 参数初始化预览')
-    loadInitialData?.()
+    if (loadInitialData) {
+      try {
+        await loadInitialData()
+      } catch (error) {
+        logger.error('预览初始化失败:', error)
+        // 显示错误信息给用户
+        const app = document.getElementById('app')
+        if (app) {
+          app.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; color: #666;">
+              <h2 style="color: #f56c6c; margin-bottom: 16px;">预览加载失败</h2>
+              <p style="margin-bottom: 8px;">${error instanceof Error ? error.message : '未知错误'}</p>
+              <p style="font-size: 12px; color: #999;">请检查：</p>
+              <ul style="text-align: left; font-size: 12px; color: #999;">
+                <li>URL 中是否包含有效的 pageid 或 blockid 参数</li>
+                <li>后端服务是否正常运行</li>
+                <li>网络连接是否正常</li>
+              </ul>
+            </div>
+          `
+        }
+      }
+    }
   }
 
   if (opener) {
     try {
       opener.postMessage({ event: 'onMounted', source: 'preview' }, opener.origin || window.location.origin)
+      // 设置超时，如果主窗口没有响应，则使用 fallback
+      setTimeout(() => {
+        if (loadInitialData && previewState.currentPage === null) {
+          console.warn('主窗口未响应，使用 URL 参数初始化预览')
+          fallbackHandler()
+        }
+      }, 2000)
     } catch (error) {
       fallbackHandler()
     }

@@ -95,10 +95,19 @@ const handlerArrow = keyCode => {
     }
 };
 
-const handleSaveEvent = event => {
-    const { openCommon } = getMetaApi(META_APP.Save);
+const handleSaveEvent = async event => {
     event.preventDefault();
-    openCommon();
+    try {
+        const saveApi = getMetaApi(META_APP.Save);
+        if (!saveApi || !saveApi.openCommon) {
+            console.warn('Save API not available');
+            return;
+        }
+        await saveApi.openCommon();
+    } catch (error) {
+        console.error('Save failed:', error);
+        // 不阻止事件传播，让浏览器处理默认行为
+    }
 };
 
 const handlerCtrl = event => {

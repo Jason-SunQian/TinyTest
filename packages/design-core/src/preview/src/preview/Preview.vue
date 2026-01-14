@@ -85,7 +85,32 @@ export default {
 
     const { initCommunication, cleanupCommunication } = usePreviewCommunication({
       onSchemaReceived: onSchemaReceivedAction,
-      loadInitialData
+      loadInitialData: async () => {
+        try {
+          await loadInitialData()
+        } catch (error) {
+          console.error('预览初始化失败:', error)
+          // 显示错误信息给用户
+          const errorMessage = error instanceof Error ? error.message : '未知错误'
+          store.setFiles({
+            'Main.vue': `<template>
+  <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; color: #666; padding: 20px;">
+    <h2 style="color: #f56c6c; margin-bottom: 16px;">预览加载失败</h2>
+    <p style="margin-bottom: 8px; text-align: center;">${errorMessage}</p>
+    <div style="font-size: 12px; color: #999; text-align: left; margin-top: 16px;">
+      <p style="margin-bottom: 8px;">请检查：</p>
+      <ul style="margin: 0; padding-left: 20px;">
+        <li>URL 中是否包含有效的 pageid 或 blockid 参数</li>
+        <li>后端服务是否正常运行</li>
+        <li>网络连接是否正常</li>
+        <li>页面是否已保存</li>
+      </ul>
+    </div>
+  </div>
+</template>`
+          }, 'Main.vue')
+        }
+      }
     })
 
     cleanupCommunicationAction = cleanupCommunication

@@ -194,13 +194,50 @@ const setEditorSelection = () => {
 }
 
 export const highlightMethod = (name) => {
+  console.log('[highlightMethod] called with name:', name);
+  console.log('[highlightMethod] scriptAst:', scriptAst);
+  
   if (!name) {
+    console.warn('[highlightMethod] name is empty, returning');
     return
   }
 
-  const declarations = scriptAst?.program.body.filter((declaration) => name === declaration?.id?.name)
+  // 如果 scriptAst 不存在，尝试重新生成
+  if (!scriptAst) {
+    console.log('[highlightMethod] scriptAst is null, trying to regenerate');
+    try {
+      getScriptString(); // 这会更新 scriptAst
+      console.log('[highlightMethod] scriptAst regenerated:', scriptAst);
+    } catch (error) {
+      console.error('[highlightMethod] Failed to regenerate scriptAst:', error);
+      return;
+    }
+  }
 
-  if (declarations.length === 0) {
+  // 确保 scriptAst 和 body 存在且是数组
+  console.log('[highlightMethod] checking scriptAst structure:', {
+    hasScriptAst: !!scriptAst,
+    hasProgram: !!scriptAst?.program,
+    hasBody: !!scriptAst?.program?.body,
+    bodyIsArray: Array.isArray(scriptAst?.program?.body)
+  });
+
+  if (!scriptAst || !scriptAst.program || !scriptAst.program.body) {
+    console.warn('[highlightMethod] scriptAst structure invalid, returning');
+    return;
+  }
+
+  if (!Array.isArray(scriptAst.program.body)) {
+    console.warn('[highlightMethod] scriptAst.program.body is not an array, returning');
+    return;
+  }
+
+  console.log('[highlightMethod] filtering declarations, body length:', scriptAst.program.body.length);
+  const declarations = scriptAst.program.body.filter((declaration) => name === declaration?.id?.name)
+  console.log('[highlightMethod] declarations:', declarations, 'length:', declarations?.length);
+
+  if (!declarations || declarations.length === 0) {
+    console.warn('[highlightMethod] No declarations found for name:', name);
     return
   }
 

@@ -78,7 +78,7 @@ const savePage = async (pageSchema: any) => {
     //                     pageId: pageId,
     //                     pageSchema,
     //                     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
-    //                     pageData: { ...currentPage, page_content: pageSchema }
+    //                     pageData: { ...(currentPage || {}), page_content: pageSchema }
     //                 },
     //                 (success, error) => {
     //                     if (success) {
@@ -116,16 +116,31 @@ const savePage = async (pageSchema: any) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     const params = { page_content: pageSchema };
     isLoading.value = true;
+    
+    // 确保 currentPage 不为 null，如果为 null 则使用空对象
+    const safeCurrentPage = currentPage || {};
+    
     const updateParams = {
         id: pageId,
-        params: { ...(currentPage || {}), id: pageId, ...params },
+        params: { ...safeCurrentPage, id: pageId, ...params },
         isCurEditPage: true
     };
-    await handlePageUpdate(updateParams);
-    isLoading.value = false;
+    
+    try {
+        await handlePageUpdate(updateParams);
+        isLoading.value = false;
 
-    // 发布页面保存事件，通知其他组件进行相应处理
-    publish({ topic: 'page-saved' });
+        // 发布页面保存事件，通知其他组件进行相应处理
+        publish({ topic: 'page-saved' });
+    } catch (error) {
+        isLoading.value = false;
+        useNotify()({
+            type: 'error',
+            title: translate('designer.vscode.saveFailed'),
+            message: error instanceof Error ? error.message : '保存失败，请重试'
+        });
+        throw error;
+    }
 };
 
 export const saveCommon = (value?: string) => {
@@ -141,13 +156,20 @@ export const saveCommon = (value?: string) => {
     const { selectNode } = canvasApi.value;
 
     // 保存当前 currentPage，避免在重置时丢失
-    const savedCurrentPage = pageState.currentPage;
+    // 确保 currentPage 不为 null，如果为 null 则保持为 null（不传递 undefined）
+    const savedCurrentPage = pageState.currentPage ?? null;
 
     if (isBlock()) {
         resetBlockCanvasState({ ...pageState, pageSchema, loading: false });
     } else {
         // 确保 currentPage 被保留，并且 loading 被设置为 false
-        resetPageCanvasState({ ...pageState, pageSchema, currentPage: savedCurrentPage, loading: false });
+        // 如果 savedCurrentPage 为 null，传递 null 而不是 undefined
+        resetPageCanvasState({ 
+            ...pageState, 
+            pageSchema, 
+            currentPage: savedCurrentPage, 
+            loading: false 
+        });
     }
 
     if (pageSettingState?.isAIPage) {

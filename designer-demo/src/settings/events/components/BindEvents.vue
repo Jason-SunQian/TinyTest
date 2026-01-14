@@ -114,7 +114,7 @@
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang, @typescript-eslint/naming-convention -->
 <script lang="ts">
 /* metaService: engine.setting.event.BindEvents */
-import { computed, reactive, watchEffect } from 'vue';
+import { computed, reactive, watchEffect, watch, nextTick } from 'vue';
 import { Popover, Button } from '@opentiny/vue';
 import {
     useModal,
@@ -182,7 +182,7 @@ export default {
             ...state.customEvents
         }));
 
-        watchEffect(() => {
+        const updateBindActions = () => {
             const componentName = pageState?.currentSchema?.componentName;
             const componentSchema = getMaterial(componentName);
             state.componentEvent =
@@ -192,6 +192,7 @@ export default {
             const props = pageState?.currentSchema?.props || {};
             const keys = Object.keys(props);
             state.bindActions = {};
+            
             // 遍历组件事件元数据
             Object.entries(renderEventList.value).forEach(
                 ([eventName, componentEvent]) => {
@@ -246,6 +247,32 @@ export default {
                     }
                 }
             );
+        };
+
+        // 使用 watchEffect 监听 currentSchema 和 props 的变化
+        watchEffect(() => {
+            updateBindActions();
+        });
+
+        // 额外使用 watch 深度监听 props 的变化，确保 props 内部属性的变化也能触发更新
+        watch(
+            () => pageState?.currentSchema?.props,
+            () => {
+                updateBindActions();
+            },
+            { deep: true, immediate: false }
+        );
+
+        // 监听 schemaChange 事件，手动触发更新
+        const { subscribe } = useMessage();
+        subscribe({
+            topic: 'schemaChange',
+            subscriber: 'BindEvents',
+            callback: () => {
+                nextTick(() => {
+                    updateBindActions();
+                });
+            }
         });
 
         const openActionDialog = (action, isAdd) => {

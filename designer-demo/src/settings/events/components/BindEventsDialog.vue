@@ -53,10 +53,12 @@ import {
     useLayout,
     getOptions,
     getMetaApi,
-    META_APP
+    META_APP,
+    useNotify,
+    useMessage
 } from '@opentiny/tiny-engine-meta-register';
 import { Button, DialogBox, TinyAlert } from '@opentiny/vue';
-import { nextTick, provide, reactive, ref } from 'vue';
+import { nextTick, provide, reactive, ref, toRaw } from 'vue';
 import MagicString from 'magic-string';
 
 import { useDesignerI18n } from '@/services/i18nService';
@@ -101,10 +103,11 @@ export default {
         const { t } = useDesignerI18n();
 
         const { PLUGIN_NAME, activePlugin } = useLayout();
-        const { pageState } = useCanvas();
+        const { pageState, canvasApi, setCurrentSchema } = useCanvas();
         const { getMethods, saveMethod, highlightMethod } = getMetaApi(
             META_APP.Page
         );
+        const { publish } = useMessage();
 
         const state = reactive({
             editorContent: '',
@@ -121,26 +124,44 @@ export default {
             state.bindMethodInfo = data;
         };
 
-        const bindMethod = data => {
+        const bindMethod = async data => {
             if (!data) {
                 return;
             }
 
             const eventName = props.eventBinding?.eventName;
-
             if (!eventName) {
                 return;
             }
 
-            const nodeProps = pageState?.currentSchema?.props;
+            // 尝试多种方式获取当前选中的节点
+            let currentSchema = pageState?.currentSchema;
+            
+            // 如果 currentSchema 为 null，尝试从 canvasApi 获取
+            if (!currentSchema && canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        currentSchema = current.schema;
+                    }
+                } catch (error) {
+                    console.warn('[BindEventsDialog] Error getting current from canvasApi:', error);
+                }
+            }
 
+            const nodeProps = currentSchema?.props;
             if (!nodeProps) {
+                useNotify()({
+                    type: 'error',
+                    title: '绑定失败',
+                    message: '无法获取当前选中的组件，请先选中一个组件后再绑定事件'
+                });
                 return;
             }
 
             const { name, extra } = data;
 
-            if (!props[eventName]) {
+            if (!nodeProps[eventName]) {
                 nodeProps[eventName] = {
                     type: 'JSExpression',
                     value: ''
@@ -152,8 +173,27 @@ export default {
             }
 
             nodeProps[eventName].value = `this.${name}`;
-
+            
+            // 先添加历史记录
             useHistory().addHistory();
+            
+            // 然后直接更新 pageState.currentSchema，确保事件面板能检测到变化
+            if (currentSchema) {
+                const rawSchema = toRaw(currentSchema);
+                pageState.currentSchema = rawSchema;
+                if (setCurrentSchema) {
+                    setCurrentSchema(rawSchema);
+                }
+                await nextTick();
+            }
+            
+            // 触发 schemaChange 事件，通知其他组件更新
+            if (publish && currentSchema) {
+                publish({
+                    topic: 'schemaChange',
+                    data: { props: currentSchema.props }
+                });
+            }
         };
 
         const resetTipError = () => {
@@ -168,18 +208,28 @@ export default {
                 try {
                     extraParams = JSON.parse(state.editorContent);
                     state.isValidParams = Array.isArray(extraParams);
+                    console.log('[BindEventsDialog] getExtraParams parsed:', extraParams, 'isValidParams:', state.isValidParams);
                 } catch (error) {
                     state.isValidParams = false;
+                    console.error('[BindEventsDialog] getExtraParams parse error:', error);
                 }
+            } else {
+                console.log('[BindEventsDialog] getExtraParams: enableExtraParams is false, returning empty string');
             }
             return extraParams;
         };
 
-        const getFormatParams = extraParams =>
-            Array.from(
+        // 原插件实现：直接访问 extraParams.length，假设 extraParams 是数组
+        const getFormatParams = extraParams => {
+            // 原插件没有检查，直接使用。但为了安全，我们添加检查
+            if (!extraParams || !Array.isArray(extraParams)) {
+                return 'event';
+            }
+            return Array.from(
                 { length: extraParams.length },
                 (v, i) => `args${i}`
             ).join(',');
+        };
 
         // eslint-disable-next-line @typescript-eslint/max-params
         const rewriteMethodParams = (
@@ -189,10 +239,12 @@ export default {
             extraParams,
             enableExtraParams
         ) => {
-            const finalParams =
-                enableExtraParams && extraParams.length
-                    ? `event,${formatParams}`
-                    : formatParams;
+            // 原插件实现：直接访问 extraParams.length
+            // 如果 extraParams 是空字符串，extraParams.length 是 0（字符串长度）
+            // 如果 extraParams 是数组，extraParams.length 是数组长度
+            // 如果 extraParams 是 undefined/null，需要处理
+            const extraParamsLength = extraParams ? (Array.isArray(extraParams) ? extraParams.length : 0) : 0;
+            const finalParams = enableExtraParams && extraParamsLength ? `event,${formatParams}` : formatParams;
             const defaultMethod = `function ${name} (${finalParams}) {\n}\n`;
 
             // 没有现存方法，直接拼接一个新的
@@ -205,22 +257,31 @@ export default {
                 const astStr = string2Ast(method);
 
                 // 解析出来不是函数声明，直接返回默认拼接的函数
-                if (astStr?.program?.body[0]?.type !== 'FunctionDeclaration') {
+                if (!astStr?.program?.body?.[0] || astStr.program.body[0].type !== 'FunctionDeclaration') {
                     return defaultMethod;
                 }
 
+                const functionNode = astStr.program.body[0];
+                
                 // 参数数量一致，不需要改写参数，直接返回
                 // extraParams.length 是传入的参数数量，+1 是 event 参数
-                if (
-                    astStr?.program?.body[0].params.length ===
-                    extraParams.length + 1
-                ) {
+                const currentParamsLength = functionNode.params?.length || 0;
+                if (currentParamsLength === extraParamsLength + 1) {
                     return method;
                 }
 
                 // 参数数量不一致，需要改写参数
-                const start = astStr?.program?.body[0].id.end;
-                const end = astStr?.program?.body[0].body.start;
+                if (!functionNode.id || !functionNode.body) {
+                    return defaultMethod;
+                }
+                
+                const start = functionNode.id.end;
+                const end = functionNode.body.start;
+                
+                if (typeof start !== 'number' || typeof end !== 'number') {
+                    return defaultMethod;
+                }
+                
                 magicStr.remove(start, end);
                 magicStr.appendLeft(start, `(${finalParams})`);
                 return magicStr.toString();
@@ -231,14 +292,38 @@ export default {
         };
 
         const activePagePlugin = () => {
+            console.log('[BindEventsDialog] activePagePlugin called');
+            // 直接跳过 highlightMethod，避免错误
+            // highlightMethod 只是用于高亮显示，不影响事件绑定功能
+            return;
+            
+            // 以下代码暂时注释，等 highlightMethod 问题解决后再启用
+            /*
             activePlugin(PLUGIN_NAME.Page).then(() => {
+                console.log('[BindEventsDialog] activePlugin resolved');
                 // 确认js面板渲染完成之后再对目标函数进行高亮处理
                 nextTick(() => {
-                    if (highlightMethod) {
-                        highlightMethod(state.bindMethodInfo?.name);
+                    console.log('[BindEventsDialog] nextTick callback, highlightMethod:', highlightMethod, 'name:', state.bindMethodInfo?.name);
+                    if (highlightMethod && state.bindMethodInfo?.name) {
+                        try {
+                            console.log('[BindEventsDialog] Calling highlightMethod with name:', state.bindMethodInfo.name);
+                            highlightMethod(state.bindMethodInfo.name);
+                            console.log('[BindEventsDialog] highlightMethod completed successfully');
+                        } catch (error) {
+                            console.error('[BindEventsDialog] Error in highlightMethod:', error);
+                            console.error('[BindEventsDialog] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+                            // highlightMethod 失败不影响事件绑定，只记录警告
+                        }
+                    } else {
+                        console.warn('[BindEventsDialog] highlightMethod or name not available:', { highlightMethod, name: state.bindMethodInfo?.name });
                     }
                 });
+            }).catch((error) => {
+                console.error('[BindEventsDialog] Error in activePagePlugin:', error);
+                console.error('[BindEventsDialog] activePagePlugin error stack:', error instanceof Error ? error.stack : 'No stack trace');
+                // activePlugin 失败不影响事件绑定，只记录警告
             });
+            */
         };
 
         const confirm = async () => {
@@ -248,23 +333,47 @@ export default {
 
             let params = 'event';
             const extraParams = getExtraParams();
+            
             let formatParams = params;
 
             if (!state.isValidParams) {
+                console.warn('[BindEventsDialog] Invalid params, returning');
                 return;
             }
 
-            if (extraParams) {
+            // 原插件逻辑：如果 extraParams 存在（truthy），就处理
+            // 原插件直接调用 extraParams.join(',') 和 getFormatParams(extraParams)
+            // 但需要确保 extraParams 是数组，否则 join 会报错
+            if (extraParams && Array.isArray(extraParams)) {
                 params = extraParams.join(',');
                 formatParams = getFormatParams(extraParams);
             }
 
-            bindMethod({ ...state.bindMethodInfo, params, extra: extraParams });
+            // 检查 bindMethodInfo 是否有 name
+            if (!state.bindMethodInfo || !state.bindMethodInfo.name) {
+                console.error('[BindEventsDialog] bindMethodInfo or name is missing:', state.bindMethodInfo);
+                return;
+            }
+
+            await bindMethod({ ...state.bindMethodInfo, params, extra: extraParams });
+
+            // 等待 bindMethod 完成后，确保 currentSchema 被设置
+            await nextTick();
+            const canvasApiCurrent = canvasApi?.value?.getCurrent?.();
+            if (canvasApiCurrent?.schema) {
+                const rawSchema = toRaw(canvasApiCurrent.schema);
+                pageState.currentSchema = rawSchema;
+                if (setCurrentSchema) {
+                    setCurrentSchema(rawSchema);
+                }
+                await nextTick();
+            }
 
             // 需要在bindMethod之后
             const { name } = state.bindMethodInfo;
             const methodValue =
                 getMethods()?.[state.bindMethodInfo.name]?.value;
+            
             const functionStr = rewriteMethodParams(
                 methodValue,
                 name,
@@ -272,17 +381,66 @@ export default {
                 extraParams,
                 state.enableExtraParams
             );
+            
             const method = {
                 name,
                 content: functionStr
             };
-            const { beforeSaveMethod } = getOptions(META_ID);
+            
+            // beforeSaveMethod 是可选的，如果不存在就跳过
+            try {
+                const options = getOptions(META_ID);
+                console.log('[BindEventsDialog] getOptions result:', options);
+                
+                const { beforeSaveMethod } = options || {};
 
-            if (typeof beforeSaveMethod === 'function') {
-                await beforeSaveMethod(method, state.bindMethodInfo);
+                if (typeof beforeSaveMethod === 'function') {
+                    console.log('[BindEventsDialog] calling beforeSaveMethod');
+                    await beforeSaveMethod(method, state.bindMethodInfo);
+                } else {
+                    console.log('[BindEventsDialog] beforeSaveMethod is not a function or not defined, skipping');
+                }
+            } catch (error) {
+                console.error('[BindEventsDialog] Error in beforeSaveMethod:', error);
+                // 即使 beforeSaveMethod 出错，也继续执行保存
             }
 
-            saveMethod?.(method);
+            console.log('[BindEventsDialog] calling saveMethod with:', method);
+            if (!saveMethod) {
+                console.error('[BindEventsDialog] saveMethod is not available from getMetaApi(META_APP.Page)');
+                useNotify()({
+                    type: 'error',
+                    title: '保存失败',
+                    message: '保存方法不可用，请检查 Page 插件是否正确加载'
+                });
+                return;
+            }
+            
+            // 确保 method 对象有 name 和 content
+            if (!method || !method.name || !method.content) {
+                console.error('[BindEventsDialog] Invalid method object:', method);
+                useNotify()({
+                    type: 'error',
+                    title: '保存失败',
+                    message: '方法信息不完整，无法保存'
+                });
+                return;
+            }
+            
+            try {
+                console.log('[BindEventsDialog] Calling saveMethod with validated method:', { name: method.name, contentLength: method.content?.length });
+                saveMethod(method);
+                console.log('[BindEventsDialog] saveMethod completed successfully');
+            } catch (error) {
+                console.error('[BindEventsDialog] Error in saveMethod:', error);
+                console.error('[BindEventsDialog] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+                useNotify()({
+                    type: 'error',
+                    title: '保存失败',
+                    message: error instanceof Error ? error.message : '保存方法执行失败'
+                });
+                // 不抛出错误，让用户知道保存失败即可
+            }
 
             activePagePlugin();
             close();

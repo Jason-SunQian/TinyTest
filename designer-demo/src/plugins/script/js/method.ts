@@ -223,11 +223,29 @@ const highlightMethodFn = name => {
         return;
     }
 
-    const declarations = scriptAst?.program.body.filter(
+    // 重新生成 scriptAst 以确保它包含最新的方法
+    try {
+        getScriptString(); // 这会更新 scriptAst
+    } catch (error) {
+        console.warn('[highlightMethod] Failed to get script string:', error);
+        return;
+    }
+
+    // 确保 scriptAst 和 body 存在且是数组
+    if (!scriptAst || !scriptAst.program || !scriptAst.program.body) {
+        return;
+    }
+
+    if (!Array.isArray(scriptAst.program.body)) {
+        return;
+    }
+
+    const declarations = scriptAst.program.body.filter(
         declaration => name === declaration?.id?.name
     );
 
-    if (declarations.length === 0) {
+    // filter 总是返回数组，但为了安全还是检查一下
+    if (!Array.isArray(declarations) || declarations.length === 0) {
         return;
     }
 

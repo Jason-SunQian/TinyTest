@@ -63,11 +63,20 @@ const updateUrl = (params: IPage) => {
 const getPageRecursively = async (id: string): Promise<IPage[]> => {
   const page = await getPageById(id)
 
-  if (page.parentId === '0') {
+  // 如果页面不存在，返回空数组
+  if (!page) {
+    console.warn(`页面不存在 (id: ${id})`)
+    return []
+  }
+
+  // 如果 parentId 不存在或为 '0'，返回当前页面
+  if (!page.parentId || page.parentId === '0') {
     return [page]
   }
 
-  return [page, ...(await getPageRecursively(page.parentId))]
+  // 递归获取父页面
+  const parentPages = await getPageRecursively(page.parentId)
+  return [page, ...parentPages]
 }
 
 const getPageOrBlockByApi = async (): Promise<{ currentPage: IPage | null; ancestors: IPage[] }> => {
@@ -76,54 +85,99 @@ const getPageOrBlockByApi = async (): Promise<{ currentPage: IPage | null; ances
   const blockId = searchParams.get('blockid')
   const history = searchParams.get('history')
 
-  if (pageId) {
-    let ancestors = (await getPageRecursively(pageId)).reverse().filter((item) => item.isPage)
-    // 避免祖先页面第一个为文件夹，导致没有 ROOT_ID，导致设置 Main.vue 失败
-    if (ancestors.length && ancestors[0]?.parentId !== ROOT_ID) {
-      ancestors[0].parentId = ROOT_ID
-    }
+  try {
+    if (pageId) {
+      let ancestors: IPage[] = []
+      try {
+        ancestors = (await getPageRecursively(pageId)).reverse().filter((item) => item && item.isPage)
+        // 避免祖先页面第一个为文件夹，导致没有 ROOT_ID，导致设置 Main.vue 失败
+        if (ancestors.length && ancestors[0] && ancestors[0].parentId !== ROOT_ID) {
+          ancestors[0].parentId = ROOT_ID
+        }
+      } catch (error) {
+        console.warn('获取祖先页面失败:', error)
+        ancestors = []
+      }
 
-    let currentPage = await getPageById(pageId)
-    if (history) {
-      const historyList: IPage[] = await fetchPageHistory(pageId)
-      currentPage = historyList.find((item) => item.id === Number(history))
+      let currentPage: IPage | null = null
+      try {
+        currentPage = await getPageById(pageId)
+        if (!currentPage) {
+          throw new Error(`页面不存在 (pageId: ${pageId})`)
+        }
 
-      ancestors = ancestors.map((item) => {
-        if (item.id === Number(pageId)) {
-          return {
-            ...item,
-            page_content: currentPage.page_content
+        if (history && currentPage) {
+          try {
+            const historyList: IPage[] = await fetchPageHistory(pageId)
+            const historyPage = historyList.find((item) => item.id === Number(history))
+            if (historyPage) {
+              currentPage = historyPage
+
+              ancestors = ancestors.map((item) => {
+                if (item && item.id === Number(pageId)) {
+                  return {
+                    ...item,
+                    page_content: currentPage?.page_content || item.page_content
+                  }
+                }
+                return item
+              }).filter((item) => item !== null && item !== undefined)
+            }
+          } catch (error) {
+            console.warn('获取页面历史失败:', error)
           }
         }
-        return item
-      })
+      } catch (error) {
+        console.error('获取页面数据失败:', error)
+        throw new Error(`无法获取页面数据 (pageId: ${pageId}): ${error instanceof Error ? error.message : String(error)}`)
+      }
+
+      return {
+        currentPage,
+        ancestors
+      }
     }
 
+    if (blockId) {
+      let block
+      try {
+        block = await getBlockById(blockId)
+        if (!block) {
+          throw new Error(`区块不存在 (blockId: ${blockId})`)
+        }
+      } catch (error) {
+        console.error('获取区块数据失败:', error)
+        throw new Error(`无法获取区块数据 (blockId: ${blockId}): ${error instanceof Error ? error.message : String(error)}`)
+      }
+
+      let pageContent = block.content
+      let name = block.name || block.name_cn || block.label
+
+      if (history) {
+        const historyContent = (block.histories || []).find((item: { id: number }) => item.id === Number(history))
+        pageContent = historyContent?.content || pageContent
+        name = historyContent?.name || name
+      }
+
+      return {
+        currentPage: {
+          ...block,
+          page_content: pageContent,
+          name
+        },
+        ancestors: []
+      }
+    }
+
+    // 如果没有 pageId 和 blockId，返回 null
+    console.warn('URL 中缺少 pageid 或 blockid 参数')
     return {
-      currentPage,
-      ancestors
-    }
-  }
-
-  if (blockId) {
-    const block = await getBlockById(blockId)
-    let pageContent = block.content
-    let name = block.name || block.name_cn || block.label
-
-    if (history) {
-      const historyContent = (block.histories || []).find((item: { id: number }) => item.id === Number(history))
-      pageContent = historyContent?.content || pageContent
-      name = historyContent?.name || name
-    }
-
-    return {
-      currentPage: {
-        ...block,
-        page_content: pageContent,
-        name
-      },
+      currentPage: null,
       ancestors: []
     }
+  } catch (error) {
+    console.error('getPageOrBlockByApi 错误:', error)
+    throw error
   }
 
   return {
@@ -405,14 +459,24 @@ export const usePreviewData = ({ setFiles, store, setImportMap }: IUsePreviewDat
   }
 
   const loadInitialData = async () => {
-    const { currentPage, ancestors } = await getPageOrBlockByApi()
-    previewState.currentPage = currentPage
-    previewState.ancestors = ancestors
+    try {
+      const { currentPage, ancestors } = await getPageOrBlockByApi()
+      previewState.currentPage = currentPage
+      previewState.ancestors = ancestors
 
-    const { scripts, styles } = await getMaterialDeps()
+      if (!currentPage) {
+        console.error('无法获取页面数据，请检查 pageid 或 blockid 参数')
+        // 如果无法获取页面，显示错误信息而不是一直加载
+        return
+      }
 
-    if (currentPage) {
-      updatePreview({ currentPage, ancestors, scripts, styles })
+      const { scripts, styles } = await getMaterialDeps()
+
+      await updatePreview({ currentPage, ancestors, scripts, styles })
+    } catch (error) {
+      console.error('预览页面加载失败:', error)
+      // 显示错误信息，而不是一直显示加载中
+      throw error
     }
   }
 
