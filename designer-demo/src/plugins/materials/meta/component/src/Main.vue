@@ -198,14 +198,14 @@ export default {
             return component.group;
         };
 
-        // 翻译映射表（作为最后的保障）
+        // 翻译映射表（精简版，适合有限显示空间）
         const TRANSLATION_MAP: Record<string, string> = {
-            '盒子容器': 'Box Container',
-            '行列容器': 'Row/Column Container',
-            '弹性容器': 'Flex Container',
-            '全宽居中容器': 'Full Width Centered Container',
-            '全宽居中布局': 'Full Width Centered Container',
-            '栅格布局': 'Grid Layout',
+            '盒子容器': 'Box',
+            '行列容器': 'Row/Col',
+            '弹性容器': 'Flex',
+            '全宽居中容器': 'Full Width',
+            '全宽居中布局': 'Full Width',
+            '栅格布局': 'Grid',
             '文本': 'Text',
             '图标': 'Icon',
             '图片': 'Image',
@@ -216,16 +216,16 @@ export default {
             '视频': 'Video',
             '按钮': 'Button',
             '按钮组': 'Button Group',
-            '互斥按钮组': 'Mutex Button Group',
-            '搜索框': 'Search Box',
+            '互斥按钮组': 'Mutex Buttons',
+            '搜索框': 'Search',
             '插槽': 'Slot',
-            '路由视图': 'Route View',
-            '路由链接': 'Route Link',
-            '导航条': 'Navigation Bar',
-            '纵向导航': 'Vertical Navigation',
-            '数据源容器': 'Data Source Container',
+            '路由视图': 'Router View',
+            '路由链接': 'Router Link',
+            '导航条': 'Nav Bar',
+            '纵向导航': 'Vertical Nav',
+            '数据源容器': 'Data Source',
             '复选框组': 'Checkbox Group',
-            '复选框拖拽按钮组': 'Checkbox Drag Button Group',
+            '复选框拖拽按钮组': 'Checkbox Buttons',
         };
 
         // 获取组件名称的国际化文本

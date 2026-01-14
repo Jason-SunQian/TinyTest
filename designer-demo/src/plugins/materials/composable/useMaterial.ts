@@ -250,11 +250,11 @@ const addEnglishNameToComponent = (component: Component) => {
         
         // 简单的翻译映射
         const translations: Record<string, string> = {
-            '盒子容器': 'Box Container',
-            '行列容器': 'Row/Column Container',
-            '弹性容器': 'Flex Container',
-            '全宽居中容器': 'Full Width Centered Container',
-            '全宽居中布局': 'Full Width Centered Container',
+            '盒子容器': 'Box',
+            '行列容器': 'Row/Col',
+            '弹性容器': 'Flex',
+            '全宽居中容器': 'Full Width',
+            '全宽居中布局': 'Full Width',
             '文本': 'Text',
             '图标': 'Icon',
             '图片': 'Image',
@@ -265,15 +265,15 @@ const addEnglishNameToComponent = (component: Component) => {
             '视频': 'Video',
             '按钮': 'Button',
             '按钮组': 'Button Group',
-            '互斥按钮组': 'Mutex Button Group',
-            '搜索框': 'Search Box',
+            '互斥按钮组': 'Mutex Buttons',
+            '搜索框': 'Search',
             '插槽': 'Slot',
-            '路由视图': 'Route View',
-            '路由链接': 'Route Link',
-            '导航条': 'Navigation Bar',
-            '纵向导航': 'Vertical Navigation',
-            '数据源容器': 'Data Source Container',
-            '栅格布局': 'Grid Layout',
+            '路由视图': 'Router View',
+            '路由链接': 'Router Link',
+            '导航条': 'Nav Bar',
+            '纵向导航': 'Vertical Nav',
+            '数据源容器': 'Data Source',
+            '栅格布局': 'Grid',
         };
         
         const zhName = componentName.zh_CN;
@@ -308,11 +308,11 @@ const addEnglishNameToSnippet = (snippet: any) => {
         }
         
         const translations: Record<string, string> = {
-            '盒子容器': 'Box Container',
-            '行列容器': 'Row/Column Container',
-            '弹性容器': 'Flex Container',
-            '全宽居中容器': 'Full Width Centered Container',
-            '全宽居中布局': 'Full Width Centered Container',
+            '盒子容器': 'Box',
+            '行列容器': 'Row/Col',
+            '弹性容器': 'Flex',
+            '全宽居中容器': 'Full Width',
+            '全宽居中布局': 'Full Width',
             '文本': 'Text',
             '图标': 'Icon',
             '图片': 'Image',
@@ -323,15 +323,15 @@ const addEnglishNameToSnippet = (snippet: any) => {
             '视频': 'Video',
             '按钮': 'Button',
             '按钮组': 'Button Group',
-            '互斥按钮组': 'Mutex Button Group',
-            '搜索框': 'Search Box',
+            '互斥按钮组': 'Mutex Buttons',
+            '搜索框': 'Search',
             '插槽': 'Slot',
-            '路由视图': 'Route View',
-            '路由链接': 'Route Link',
-            '导航条': 'Navigation Bar',
-            '纵向导航': 'Vertical Navigation',
-            '数据源容器': 'Data Source Container',
-            '栅格布局': 'Grid Layout',
+            '路由视图': 'Router View',
+            '路由链接': 'Router Link',
+            '导航条': 'Nav Bar',
+            '纵向导航': 'Vertical Nav',
+            '数据源容器': 'Data Source',
+            '栅格布局': 'Grid',
         };
         
         const zhName = snippet.name.zh_CN;
