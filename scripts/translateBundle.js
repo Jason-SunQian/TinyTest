@@ -27,6 +27,8 @@ const TRANSLATION_MAP = {
   '面包屑': 'Breadcrumb',
   '时间线': 'Timeline',
   '轮播': 'Carousel',
+  '走马灯': 'Carousel',
+  '互斥按钮组': 'Mutex Button Group',
   '标题': 'Title',
   '段落': 'Paragraph',
   '链接': 'Link',

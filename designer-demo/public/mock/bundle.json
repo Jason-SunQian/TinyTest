@@ -112,7 +112,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -125,7 +125,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -840,7 +840,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -853,7 +853,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -5040,7 +5040,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -5148,7 +5148,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -5161,7 +5161,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -5338,7 +5338,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -5351,7 +5351,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -5609,7 +5609,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -5622,7 +5622,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -5730,7 +5730,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -5743,7 +5743,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -5851,7 +5851,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -5864,7 +5864,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -6707,7 +6707,7 @@
           "version": "3.20.0",
           "name": {
             "zh_CN": "走马灯",
-            "en_US": "走马灯"
+            "en_US": "Carousel"
           },
           "component": "TinyCarousel",
           "icon": "carousel",
@@ -6836,7 +6836,7 @@
                     },
                     "description": {
                       "zh_CN": "走马灯的高度",
-                      "en_US": "走马灯的Height"
+                      "en_US": "Carousel的高度"
                     }
                   },
                   {
@@ -7022,7 +7022,7 @@
                     },
                     "description": {
                       "zh_CN": "走马灯的类型",
-                      "en_US": "走马灯的Type"
+                      "en_US": "Carousel的类型"
                     }
                   }
                 ]
@@ -7069,7 +7069,7 @@
           "version": "3.20.0",
           "name": {
             "zh_CN": "走马灯子项",
-            "en_US": "走马灯子项"
+            "en_US": "Carousel子项"
           },
           "component": "TinyCarouselItem",
           "icon": "carouselitem",
@@ -16500,7 +16500,7 @@
                     "property": "attributes3",
                     "label": {
                       "text": {
-                        "zh_CN": "Native Attributes",
+                        "zh_CN": "原生属性",
                         "en_US": "Native Attributes"
                       }
                     },
@@ -16513,7 +16513,7 @@
                       "props": {}
                     },
                     "description": {
-                      "zh_CN": "Native Attributes",
+                      "zh_CN": "原生属性",
                       "en_US": "Native Attributes"
                     },
                     "labelPosition": "none"
@@ -16995,7 +16995,7 @@
             {
               "name": {
                 "zh_CN": "互斥按钮组",
-                "en_US": "互斥Button组"
+                "en_US": "Mutex Button Group"
               },
               "icon": "MutexButtons",
               "snippetName": "TinyButtonGroup",
@@ -17030,7 +17030,7 @@
             {
               "name": {
                 "zh_CN": "走马灯",
-                "en_US": "走马灯"
+                "en_US": "Carousel"
               },
               "screenshot": "",
               "snippetName": "tiny-carousel",

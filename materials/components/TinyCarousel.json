@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "走马灯"
+    "zh_CN": "走马灯",
+    "en_US": "Carousel"
   },
   "component": "TinyCarousel",
   "icon": "carousel",

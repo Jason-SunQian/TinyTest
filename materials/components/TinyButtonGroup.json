@@ -164,7 +164,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "互斥按钮组"
+        "zh_CN": "互斥按钮组",
+        "en_US": "Mutex Button Group"
       },
       "icon": "MutexButtons",
       "snippetName": "TinyButtonGroup",
