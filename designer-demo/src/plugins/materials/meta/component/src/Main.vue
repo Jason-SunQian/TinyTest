@@ -198,6 +198,36 @@ export default {
             return component.group;
         };
 
+        // 翻译映射表（作为最后的保障）
+        const TRANSLATION_MAP: Record<string, string> = {
+            '盒子容器': 'Box Container',
+            '行列容器': 'Row/Column Container',
+            '弹性容器': 'Flex Container',
+            '全宽居中容器': 'Full Width Centered Container',
+            '全宽居中布局': 'Full Width Centered Container',
+            '栅格布局': 'Grid Layout',
+            '文本': 'Text',
+            '图标': 'Icon',
+            '图片': 'Image',
+            '段落': 'Paragraph',
+            '链接': 'Link',
+            '分隔线': 'Divider',
+            '标题': 'Title',
+            '视频': 'Video',
+            '按钮': 'Button',
+            '按钮组': 'Button Group',
+            '互斥按钮组': 'Mutex Button Group',
+            '搜索框': 'Search Box',
+            '插槽': 'Slot',
+            '路由视图': 'Route View',
+            '路由链接': 'Route Link',
+            '导航条': 'Navigation Bar',
+            '纵向导航': 'Vertical Navigation',
+            '数据源容器': 'Data Source Container',
+            '复选框组': 'Checkbox Group',
+            '复选框拖拽按钮组': 'Checkbox Drag Button Group',
+        };
+
         // 获取组件名称的国际化文本
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getComponentName = (child: any) => {
@@ -213,8 +243,21 @@ export default {
                 
                 if (isEnglish) {
                     // 优先使用 en_US
-                    const enName = child.name.en_US || child.name['en-US'] || child.name.en;
-                    if (enName) {
+                    let enName = child.name.en_US || child.name['en-US'] || child.name.en;
+                    
+                    // 如果 en_US 不存在或者是中文，尝试从翻译映射表获取
+                    if (!enName || /[\u4e00-\u9fa5]/.test(enName)) {
+                        const zhName = child.name.zh_CN;
+                        if (zhName && TRANSLATION_MAP[zhName]) {
+                            enName = TRANSLATION_MAP[zhName];
+                            // 动态更新 child.name.en_US，以便后续使用
+                            if (!child.name.en_US || /[\u4e00-\u9fa5]/.test(child.name.en_US)) {
+                                child.name.en_US = enName;
+                            }
+                        }
+                    }
+                    
+                    if (enName && !/[\u4e00-\u9fa5]/.test(enName)) {
                         return enName;
                     }
                     // 如果没有英文，回退到中文

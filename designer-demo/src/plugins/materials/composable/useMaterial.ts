@@ -232,11 +232,22 @@ const generateThirdPartyDeps = (components: Component[]) => {
 };
 
 /**
- * 为组件名称添加英文翻译（如果不存在）
+ * 为组件名称添加英文翻译（如果不存在或值是中文）
  */
 const addEnglishNameToComponent = (component: Component) => {
     const componentName = component.name as any;
-    if (componentName && typeof componentName === 'object' && componentName.zh_CN && !componentName.en_US) {
+    if (componentName && typeof componentName === 'object' && componentName.zh_CN) {
+        const existingEn = componentName.en_US || componentName['en-US'] || componentName.en;
+        
+        // 检查现有的 en_US 是否是中文（包含中文字符）
+        const isChinese = (str: string) => /[\u4e00-\u9fa5]/.test(str);
+        const needsTranslation = !existingEn || isChinese(existingEn);
+        
+        // 如果已经有有效的英文翻译，跳过
+        if (existingEn && !needsTranslation) {
+            return;
+        }
+        
         // 简单的翻译映射
         const translations: Record<string, string> = {
             '盒子容器': 'Box Container',
@@ -254,7 +265,7 @@ const addEnglishNameToComponent = (component: Component) => {
             '视频': 'Video',
             '按钮': 'Button',
             '按钮组': 'Button Group',
-            '互斥按钮组': 'Exclusive Button Group',
+            '互斥按钮组': 'Mutex Button Group',
             '搜索框': 'Search Box',
             '插槽': 'Slot',
             '路由视图': 'Route View',
@@ -262,6 +273,7 @@ const addEnglishNameToComponent = (component: Component) => {
             '导航条': 'Navigation Bar',
             '纵向导航': 'Vertical Navigation',
             '数据源容器': 'Data Source Container',
+            '栅格布局': 'Grid Layout',
         };
         
         const zhName = componentName.zh_CN;
@@ -275,12 +287,23 @@ const addEnglishNameToComponent = (component: Component) => {
 };
 
 /**
- * 为 snippet 添加英文翻译（如果不存在）
+ * 为 snippet 添加英文翻译（如果不存在或值是中文）
  */
 const addEnglishNameToSnippet = (snippet: any) => {
-    if (snippet.name && typeof snippet.name === 'object' && snippet.name.zh_CN) {
-        // 如果已经有 en_US，跳过
-        if ((snippet.name as any).en_US || (snippet.name as any)['en-US'] || (snippet.name as any).en) {
+    if (!snippet || !snippet.name) return;
+    
+    if (typeof snippet.name === 'object' && snippet.name.zh_CN) {
+        const existingEn = (snippet.name as any).en_US || (snippet.name as any)['en-US'] || (snippet.name as any).en;
+        
+        // 检查现有的 en_US 是否是中文（包含中文字符）
+        const isChinese = (str: string) => {
+            if (!str || typeof str !== 'string') return false;
+            return /[\u4e00-\u9fa5]/.test(str);
+        };
+        const needsTranslation = !existingEn || isChinese(existingEn);
+        
+        // 如果已经有有效的英文翻译，跳过
+        if (existingEn && !needsTranslation) {
             return;
         }
         
@@ -300,7 +323,7 @@ const addEnglishNameToSnippet = (snippet: any) => {
             '视频': 'Video',
             '按钮': 'Button',
             '按钮组': 'Button Group',
-            '互斥按钮组': 'Exclusive Button Group',
+            '互斥按钮组': 'Mutex Button Group',
             '搜索框': 'Search Box',
             '插槽': 'Slot',
             '路由视图': 'Route View',
@@ -308,14 +331,19 @@ const addEnglishNameToSnippet = (snippet: any) => {
             '导航条': 'Navigation Bar',
             '纵向导航': 'Vertical Navigation',
             '数据源容器': 'Data Source Container',
+            '栅格布局': 'Grid Layout',
         };
         
         const zhName = snippet.name.zh_CN;
         if (translations[zhName]) {
             (snippet.name as any).en_US = translations[zhName];
+        } else if (snippet.snippetName) {
+            // 如果没有映射，尝试从 snippetName 生成英文名
+            const componentName = snippet.snippetName.replace('Canvas', '');
+            (snippet.name as any).en_US = componentName || zhName;
         } else {
-            // 如果没有映射，使用 snippetName 或 component 作为回退
-            (snippet.name as any).en_US = snippet.snippetName || snippet.component || zhName;
+            // 最后回退
+            (snippet.name as any).en_US = snippet.component || zhName;
         }
     }
     
@@ -365,16 +393,18 @@ const addComponentSnippets = (
             }
         }
         
-        // 为每个 snippet 添加英文翻译
+        // 为每个 snippet 添加英文翻译（在克隆之前修改，确保修改生效）
         snippetGroup.children?.forEach(child => {
             addEnglishNameToSnippet(child);
         });
         
         if (snippetsMap.has(snippetGroup.group)) {
+            // 确保翻译已应用到 children 后再 push
             snippetsMap
                 .get(snippetGroup.group)!
                 .children.push(...snippetGroup.children);
         } else {
+            // 先应用翻译，再克隆
             const snippetGroupClone = deepClone(snippetGroup);
             snippetsData.push(snippetGroupClone);
             snippetsMap.set(snippetGroup.group, snippetGroupClone);
@@ -617,12 +647,19 @@ const filterBuiltinMaterials = (materials: Material) => {
 
     return {
         ...materials,
+        components: materials.components?.map(component => {
+            // 确保组件的 name 字段被正确保留
+            return component;
+        }),
         snippets: materials.snippets?.map(item => {
             return {
                 ...item,
                 children: item.children?.filter(
                     child => !hiddenBuiltinMaterials.includes(child.snippetName)
-                )
+                ).map(child => {
+                    // 确保 child 的 name 字段被正确保留（包括 en_US）
+                    return child;
+                })
             };
         })
     };
