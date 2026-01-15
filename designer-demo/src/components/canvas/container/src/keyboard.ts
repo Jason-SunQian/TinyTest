@@ -98,7 +98,7 @@ const handlerArrow = keyCode => {
 const handleSaveEvent = async event => {
     event.preventDefault();
     try {
-        const saveApi = getMetaApi(META_APP.Save);
+        const saveApi = getMetaApi("engine.toolbars.customSave");
         if (!saveApi || !saveApi.openCommon) {
             console.warn('Save API not available');
             return;
