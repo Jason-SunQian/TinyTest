@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "按钮"
+    "zh_CN": "按钮",
+    "en_US": "Button"
   },
   "component": "TinyButton",
   "icon": "button",
@@ -22,19 +23,22 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "text",
             "type": "string",
-            "defaultValue": "按钮文案",
+            "defaultValue": "Button Text",
             "label": {
               "text": {
-                "zh_CN": "按钮文字"
+                "zh_CN": "按钮文字",
+                "en_US": "Button Text"
               }
             },
             "cols": 12,
@@ -47,7 +51,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "按钮文字"
+              "zh_CN": "按钮文字",
+              "en_US": "Button Text"
             },
             "labelPosition": "left"
           },
@@ -56,7 +61,8 @@
             "type": "select",
             "label": {
               "text": {
-                "zh_CN": "大小"
+                "zh_CN": "大小",
+                "en_US": "Size"
               }
             },
             "cols": 12,
@@ -97,7 +103,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -109,7 +116,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否被禁用"
+              "zh_CN": "是否被禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -117,7 +125,8 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "required": true,
@@ -165,14 +174,16 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
             "property": "round",
             "label": {
               "text": {
-                "zh_CN": "圆角"
+                "zh_CN": "圆角",
+                "en_US": "Rounded"
               }
             },
             "required": true,
@@ -192,7 +203,8 @@
             "property": "plain",
             "label": {
               "text": {
-                "zh_CN": "朴素按钮"
+                "zh_CN": "朴素按钮",
+                "en_US": "Plain Button"
               }
             },
             "required": true,
@@ -212,7 +224,8 @@
             "property": "reset-time",
             "label": {
               "text": {
-                "zh_CN": "禁用时间"
+                "zh_CN": "禁用时间",
+                "en_US": "Disabled Time"
               }
             },
             "required": true,
@@ -232,7 +245,8 @@
             "property": "circle",
             "label": {
               "text": {
-                "zh_CN": "圆形按钮"
+                "zh_CN": "圆形按钮",
+                "en_US": "Circular Button"
               }
             },
             "required": true,
@@ -252,7 +266,8 @@
             "property": "autofocus",
             "label": {
               "text": {
-                "zh_CN": "自动聚焦"
+                "zh_CN": "自动聚焦",
+                "en_US": "Auto Focus"
               }
             },
             "required": true,
@@ -272,7 +287,8 @@
             "property": "loading",
             "label": {
               "text": {
-                "zh_CN": "加载中样式"
+                "zh_CN": "加载中样式",
+                "en_US": "Loading Style"
               }
             },
             "required": true,
@@ -345,7 +361,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "按钮"
+        "zh_CN": "按钮",
+        "en_US": "Button"
       },
       "icon": "button",
       "screenshot": "",
@@ -353,7 +370,7 @@
       "schema": {
         "componentName": "TinyButton",
         "props": {
-          "text": "按钮文案"
+          "text": "Button Text"
         }
       },
       "category": "basic"

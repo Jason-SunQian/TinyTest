@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "tooltip",
   "name": {
-    "zh_CN": "文字提示框"
+    "zh_CN": "文字提示框",
+    "en_US": "Text Tooltip"
   },
   "component": "TinyTooltip",
   "description": "动态显示提示信息，一般通过鼠标事件进行响应；提供 warning、error、info、success 四种类型显示不同类别的信",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -103,13 +106,14 @@
             "property": "content",
             "label": {
               "text": {
-                "zh_CN": "内容"
+                "zh_CN": "内容",
+                "en_US": "Content"
               }
             },
             "required": true,
             "readOnly": false,
             "disabled": false,
-            "defaultValue": "提示信息",
+            "defaultValue": "Tooltip",
             "cols": 12,
             "widget": {
               "component": "InputConfigurator",
@@ -135,7 +139,7 @@
               "component": "InputConfigurator",
               "props": {
                 "disabled": true,
-                "placeholder": "请使用变量绑定来绑定函数"
+                "placeholder": "Please use variable binding to bind function"
               }
             },
             "description": {
@@ -227,7 +231,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "文字提示框"
+        "zh_CN": "文字提示框",
+        "en_US": "Text Tooltip"
       },
       "icon": "tooltip",
       "screenshot": "",
@@ -235,7 +240,7 @@
       "schema": {
         "componentName": "TinyTooltip",
         "props": {
-          "content": "Top Left 提示文字",
+          "content": "Top Left Tooltip",
           "placement": "top-start",
           "manual": true,
           "modelValue": true
@@ -262,7 +267,7 @@
                   {
                     "componentName": "div",
                     "props": {
-                      "placeholder": "提示内容"
+                      "placeholder": "Tooltip Content"
                     }
                   }
                 ]

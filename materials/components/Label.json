@@ -2,7 +2,8 @@
   "version": "1.0.0",
   "icon": "label",
   "name": {
-    "zh_CN": "表单标签"
+    "zh_CN": "表单标签",
+    "en_US": "Form Label"
   },
   "component": "label",
   "container": false,
@@ -18,10 +19,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {

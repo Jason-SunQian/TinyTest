@@ -63,7 +63,8 @@
       {
         "name": "0",
         "label": {
-          "zh_CN": "基础属性"
+          "zh_CN": "基础属性",
+          "en_US": "Basic Properties"
         },
         "content": [
           {
@@ -239,7 +240,8 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "尺寸"
+                "zh_CN": "尺寸",
+                "en_US": "Size"
               }
             },
             "description": {

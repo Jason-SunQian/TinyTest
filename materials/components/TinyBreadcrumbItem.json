@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "breadcrumb",
   "name": {
-    "zh_CN": "面包屑项"
+    "zh_CN": "面包屑项",
+    "en_US": "Breadcrumb Item"
   },
   "component": "TinyBreadcrumbItem",
   "description": "",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -56,7 +59,8 @@
           "zh_CN": "面包屑项标签"
         },
         "description": {
-          "zh_CN": "面包屑项"
+          "zh_CN": "面包屑项",
+          "en_US": "Breadcrumb Item"
         }
       }
     }

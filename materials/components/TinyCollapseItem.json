@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "collapseitem",
   "name": {
-    "zh_CN": "折叠面板项"
+    "zh_CN": "折叠面板项",
+    "en_US": "Collapse Item"
   },
   "component": "TinyCollapseItem",
   "description": "内容区可指定动态页面或自定义 html 等，支持展开收起操作",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -52,7 +55,8 @@
             "property": "title",
             "label": {
               "text": {
-                "zh_CN": "标题"
+                "zh_CN": "标题",
+                "en_US": "Title"
               }
             },
             "required": true,
@@ -75,7 +79,8 @@
     "slots": {
       "title": {
         "label": {
-          "zh_CN": "标题"
+          "zh_CN": "标题",
+          "en_US": "Title"
         },
         "description": {
           "zh_CN": "自定义标题"

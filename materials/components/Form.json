@@ -2,7 +2,8 @@
   "version": "1.0.0",
   "icon": "form",
   "name": {
-    "zh_CN": "表单"
+    "zh_CN": "表单",
+    "en_US": "Form"
   },
   "component": "form",
   "container": false,
@@ -18,17 +19,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "name",
             "label": {
               "text": {
-                "zh_CN": "名称"
+                "zh_CN": "名称",
+                "en_US": "Name"
               }
             },
             "required": true,
@@ -98,10 +102,12 @@
     "events": {
       "onClick": {
         "label": {
-          "zh_CN": "点击时触发"
+          "zh_CN": "点击时触发",
+          "en_US": "Triggered on Click"
         },
         "description": {
-          "zh_CN": "点击时触发"
+          "zh_CN": "点击时触发",
+          "en_US": "Triggered on Click"
         },
         "type": "event",
         "functionInfo": {

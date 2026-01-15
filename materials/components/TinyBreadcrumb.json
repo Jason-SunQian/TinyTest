@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "breadcrumb",
   "name": {
-    "zh_CN": "面包屑"
+    "zh_CN": "面包屑",
+    "en_US": "Breadcrumb"
   },
   "component": "TinyBreadcrumb",
   "description": "告诉访问者他们目前在网站中的位置以及如何返回",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -146,7 +149,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "面包屑"
+        "zh_CN": "面包屑",
+        "en_US": "Breadcrumb"
       },
       "icon": "breadcrumb",
       "screenshot": "",

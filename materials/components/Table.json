@@ -2,7 +2,8 @@
   "version": "1.0.0",
   "icon": "table",
   "name": {
-    "zh_CN": "表格"
+    "zh_CN": "表格",
+    "en_US": "Table"
   },
   "component": "table",
   "container": false,
@@ -18,17 +19,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "width",
             "label": {
               "text": {
-                "zh_CN": "宽度"
+                "zh_CN": "宽度",
+                "en_US": "Width"
               }
             },
             "required": true,
@@ -66,7 +70,8 @@
             "property": "attributes3",
             "label": {
               "text": {
-                "zh_CN": "原生属性"
+                "zh_CN": "原生属性",
+                "en_US": "Native Attributes"
               }
             },
             "required": true,
@@ -78,7 +83,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "原生属性"
+              "zh_CN": "原生属性",
+              "en_US": "Native Attributes"
             },
             "labelPosition": "none"
           }
@@ -88,10 +94,12 @@
     "events": {
       "onClick": {
         "label": {
-          "zh_CN": "点击时触发"
+          "zh_CN": "点击时触发",
+          "en_US": "Triggered on Click"
         },
         "description": {
-          "zh_CN": "点击时触发"
+          "zh_CN": "点击时触发",
+          "en_US": "Triggered on Click"
         },
         "type": "event",
         "functionInfo": {

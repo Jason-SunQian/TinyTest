@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "弹出编辑"
+    "zh_CN": "弹出编辑",
+    "en_US": "Popeditor"
   },
   "component": "TinyPopeditor",
   "icon": "popEditor",
@@ -22,17 +23,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -44,7 +48,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "双向绑定值"
+              "zh_CN": "双向绑定值",
+              "en_US": "Two-way Bound Value"
             },
             "labelPosition": "left"
           },
@@ -52,7 +57,8 @@
             "property": "placeholder",
             "label": {
               "text": {
-                "zh_CN": "占位文本"
+                "zh_CN": "占位文本",
+                "en_US": "Placeholder"
               }
             },
             "required": true,
@@ -64,7 +70,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "输入框占位文本"
+              "zh_CN": "输入框占位文本",
+              "en_US": "Input Placeholder"
             },
             "labelPosition": "left"
           },
@@ -72,7 +79,8 @@
             "property": "show-clear-btn",
             "label": {
               "text": {
-                "zh_CN": "清除按钮"
+                "zh_CN": "清除按钮",
+                "en_US": "Clear Button"
               }
             },
             "required": true,
@@ -84,7 +92,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否显示清除按钮"
+              "zh_CN": "是否显示清除按钮",
+              "en_US": "Show Clear Button"
             },
             "labelPosition": "left"
           },
@@ -92,7 +101,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -104,7 +114,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -134,14 +145,16 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
             "property": "width",
             "label": {
               "text": {
-                "zh_CN": "宽度"
+                "zh_CN": "宽度",
+                "en_US": "Width"
               }
             },
             "required": true,
@@ -220,7 +233,8 @@
             "property": "multi",
             "label": {
               "text": {
-                "zh_CN": "多选"
+                "zh_CN": "多选",
+                "en_US": "Multiple"
               }
             },
             "required": true,
@@ -296,7 +310,8 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
           "zh_CN": "当前选中的值改变时触发"
@@ -309,7 +324,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的当前选中值"
+                "zh_CN": "双向绑定的当前选中值",
+                "en_US": "Currently Selected Value (Two-way Binding)"
               }
             }
           ],
@@ -390,7 +406,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "弹出编辑"
+        "zh_CN": "弹出编辑",
+        "en_US": "Popeditor"
       },
       "icon": "popeditor",
       "screenshot": "",
@@ -399,7 +416,7 @@
         "componentName": "TinyPopeditor",
         "props": {
           "modelValue": "",
-          "placeholder": "请选择",
+          "placeholder": "Please select",
           "grid-op": {
             "columns": [
               {

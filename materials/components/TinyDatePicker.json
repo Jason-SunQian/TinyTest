@@ -22,17 +22,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -44,7 +47,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "双向绑定值"
+              "zh_CN": "双向绑定值",
+              "en_US": "Two-way Bound Value"
             },
             "labelPosition": "left"
           },
@@ -52,7 +56,8 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "widget": {
@@ -91,7 +96,8 @@
             "property": "placeholder",
             "label": {
               "text": {
-                "zh_CN": "占位文本"
+                "zh_CN": "占位文本",
+                "en_US": "Placeholder"
               }
             },
             "required": true,
@@ -103,7 +109,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "输入框占位文本"
+              "zh_CN": "输入框占位文本",
+              "en_US": "Input Placeholder"
             },
             "labelPosition": "left"
           },
@@ -111,7 +118,8 @@
             "property": "clearable",
             "label": {
               "text": {
-                "zh_CN": "清除按钮"
+                "zh_CN": "清除按钮",
+                "en_US": "Clear Button"
               }
             },
             "required": true,
@@ -123,7 +131,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否显示清除按钮"
+              "zh_CN": "是否显示清除按钮",
+              "en_US": "Show Clear Button"
             },
             "labelPosition": "left"
           },
@@ -131,7 +140,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": false,
@@ -143,7 +153,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -151,7 +162,8 @@
             "property": "readonly",
             "label": {
               "text": {
-                "zh_CN": "只读"
+                "zh_CN": "只读",
+                "en_US": "Readonly"
               }
             },
             "required": true,
@@ -171,7 +183,8 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "尺寸"
+                "zh_CN": "尺寸",
+                "en_US": "Size"
               }
             },
             "required": true,
@@ -207,7 +220,8 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
@@ -258,7 +272,8 @@
     "events": {
       "onChange": {
         "label": {
-          "zh_CN": "值改变时触发"
+          "zh_CN": "值改变时触发",
+          "en_US": "Triggered when Value Changes"
         },
         "description": {
           "zh_CN": "在 Input 值改变时触发"
@@ -284,7 +299,8 @@
           "zh_CN": "输入值改变时触发"
         },
         "description": {
-          "zh_CN": "在 Input 输入值改变时触发"
+          "zh_CN": "在 Input 输入值改变时触发",
+          "en_US": "Triggered when Input Value Changes"
         },
         "type": "event",
         "functionInfo": {
@@ -294,7 +310,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "输入框输入的值"
+                "zh_CN": "输入框输入的值",
+                "en_US": "Input Value"
               }
             }
           ],
@@ -304,10 +321,12 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
-          "zh_CN": "在 Input 输入值改变时触发"
+          "zh_CN": "在 Input 输入值改变时触发",
+          "en_US": "Triggered when Input Value Changes"
         },
         "type": "event",
         "functionInfo": {
@@ -317,7 +336,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的值"
+                "zh_CN": "双向绑定的值",
+                "en_US": "Two-way Bound Value"
               }
             }
           ],
@@ -327,7 +347,8 @@
       },
       "onBlur": {
         "label": {
-          "zh_CN": "失去焦点时触发"
+          "zh_CN": "失去焦点时触发",
+          "en_US": "Triggered on Blur"
         },
         "description": {
           "zh_CN": "在 Input 失去焦点时触发"
@@ -340,7 +361,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -350,7 +372,8 @@
       },
       "onFocus": {
         "label": {
-          "zh_CN": "获取焦点时触发"
+          "zh_CN": "获取焦点时触发",
+          "en_US": "Triggered on Focus"
         },
         "description": {
           "zh_CN": "在 Input 获取焦点时触发"
@@ -363,7 +386,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -373,10 +397,12 @@
       },
       "onClear": {
         "label": {
-          "zh_CN": "点击清空按钮时触发"
+          "zh_CN": "点击清空按钮时触发",
+          "en_US": "Triggered when Clear Button is Clicked"
         },
         "description": {
-          "zh_CN": "点击清空按钮时触发"
+          "zh_CN": "点击清空按钮时触发",
+          "en_US": "Triggered when Clear Button is Clicked"
         },
         "type": "event",
         "functionInfo": {
@@ -429,7 +455,7 @@
       "schema": {
         "componentName": "TinyDatePicker",
         "props": {
-          "placeholder": "请输入",
+          "placeholder": "Please enter",
           "modelValue": ""
         }
       },

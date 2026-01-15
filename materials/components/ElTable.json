@@ -2,7 +2,8 @@
   "id": 1,
   "version": "2.4.2",
   "name": {
-    "zh_CN": "表单"
+    "zh_CN": "表格",
+    "en_US": "Table"
   },
   "component": "ElTable",
   "icon": "table",
@@ -65,14 +66,16 @@
       {
         "name": "0",
         "label": {
-          "zh_CN": "基础属性"
+          "zh_CN": "基础属性",
+          "en_US": "Basic Properties"
         },
         "content": [
           {
             "property": "data",
             "label": {
               "text": {
-                "zh_CN": "数据"
+                "zh_CN": "数据",
+                "en_US": "Data"
               }
             },
             "description": {
@@ -689,8 +692,8 @@
                 "type": "object",
                 "textField": "label",
                 "language": "json",
-                "buttonText": "编辑列配置",
-                "title": "编辑列配置",
+                "buttonText": "Edit Column Config",
+                "title": "Edit Column Config",
                 "expand": true
               }
             },
@@ -1248,7 +1251,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "表格"
+        "zh_CN": "表格",
+        "en_US": "Table"
       },
       "icon": "grid",
       "screenshot": "",

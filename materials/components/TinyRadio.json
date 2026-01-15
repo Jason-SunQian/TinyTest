@@ -22,10 +22,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -69,7 +71,8 @@
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -81,14 +84,16 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "双向绑定的当前选中值"
+              "zh_CN": "双向绑定的当前选中值",
+              "en_US": "Currently Selected Value (Two-way Binding)"
             }
           },
           {
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -100,7 +105,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           }
@@ -108,7 +114,8 @@
       },
       {
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "description": {
           "zh_CN": ""
@@ -138,7 +145,8 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "尺寸"
+                "zh_CN": "尺寸",
+                "en_US": "Size"
               }
             },
             "required": true,
@@ -186,7 +194,8 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
           "zh_CN": "当前选中的值改变时触发"
@@ -199,7 +208,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的当前选中值"
+                "zh_CN": "双向绑定的当前选中值",
+                "en_US": "Currently Selected Value (Two-way Binding)"
               }
             }
           ],
@@ -252,7 +262,7 @@
         "componentName": "TinyRadio",
         "props": {
           "label": "1",
-          "text": "单选文本"
+          "text": "Radio Text"
         }
       },
       "category": "form"

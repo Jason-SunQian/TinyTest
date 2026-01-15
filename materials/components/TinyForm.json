@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "form",
   "name": {
-    "zh_CN": "表单"
+    "zh_CN": "表单",
+    "en_US": "Form"
   },
   "component": "TinyForm",
   "description": "由按钮、输入框、选择器、单选框、多选框等控件组成，用以收集、校验、提交数据",
@@ -22,17 +23,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -44,7 +48,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -168,7 +173,8 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "校验属性"
+          "zh_CN": "校验属性",
+          "en_US": "Validation Properties"
         },
         "content": [
           {
@@ -246,7 +252,8 @@
           "zh_CN": "输入值改变时触发"
         },
         "description": {
-          "zh_CN": "在 Input 输入值改变时触发"
+          "zh_CN": "在 Input 输入值改变时触发",
+          "en_US": "Triggered when Input Value Changes"
         },
         "type": "event",
         "functionInfo": {
@@ -256,7 +263,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "输入框输入的值"
+                "zh_CN": "输入框输入的值",
+                "en_US": "Input Value"
               }
             }
           ],
@@ -266,7 +274,8 @@
       },
       "onBlur": {
         "label": {
-          "zh_CN": "失去焦点时触发"
+          "zh_CN": "失去焦点时触发",
+          "en_US": "Triggered on Blur"
         },
         "description": {
           "zh_CN": "在 Input 失去焦点时触发"
@@ -279,7 +288,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -289,7 +299,8 @@
       },
       "onFocus": {
         "label": {
-          "zh_CN": "获取焦点时触发"
+          "zh_CN": "获取焦点时触发",
+          "en_US": "Triggered on Focus"
         },
         "description": {
           "zh_CN": "在 Input 获取焦点时触发"
@@ -302,7 +313,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -312,10 +324,12 @@
       },
       "onClear": {
         "label": {
-          "zh_CN": "点击清空按钮时触发"
+          "zh_CN": "点击清空按钮时触发",
+          "en_US": "Triggered when Clear Button is Clicked"
         },
         "description": {
-          "zh_CN": "点击清空按钮时触发"
+          "zh_CN": "点击清空按钮时触发",
+          "en_US": "Triggered when Clear Button is Clicked"
         },
         "type": "event",
         "functionInfo": {
@@ -360,7 +374,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "表单"
+        "zh_CN": "表单",
+        "en_US": "Form"
       },
       "screenshot": "",
       "snippetName": "tiny-form",
@@ -375,13 +390,13 @@
           {
             "componentName": "TinyFormItem",
             "props": {
-              "label": "人员"
+              "label": "Person"
             },
             "children": [
               {
                 "componentName": "TinyInput",
                 "props": {
-                  "placeholder": "请输入",
+                  "placeholder": "Please enter",
                   "modelValue": ""
                 }
               }
@@ -390,13 +405,13 @@
           {
             "componentName": "TinyFormItem",
             "props": {
-              "label": "密码"
+              "label": "Password"
             },
             "children": [
               {
                 "componentName": "TinyInput",
                 "props": {
-                  "placeholder": "请输入",
+                  "placeholder": "Please enter",
                   "modelValue": "",
                   "type": "password"
                 }
@@ -412,7 +427,7 @@
               {
                 "componentName": "TinyButton",
                 "props": {
-                  "text": "提交",
+                  "text": "Submit",
                   "type": "primary",
                   "style": "margin-right: 10px"
                 }
@@ -420,7 +435,7 @@
               {
                 "componentName": "TinyButton",
                 "props": {
-                  "text": "重置",
+                  "text": "Reset",
                   "type": "primary"
                 }
               }

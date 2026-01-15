@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "dialogbox",
   "name": {
-    "zh_CN": "对话框"
+    "zh_CN": "对话框",
+    "en_US": "Dialog"
   },
   "component": "TinyDialogBox",
   "description": "模态对话框，在浮层中显示，引导用户进行相关操作。",
@@ -22,17 +23,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "title",
             "label": {
               "text": {
-                "zh_CN": "标题"
+                "zh_CN": "标题",
+                "en_US": "Title"
               }
             },
             "required": true,
@@ -72,7 +76,8 @@
             "property": "width",
             "label": {
               "text": {
-                "zh_CN": "宽度"
+                "zh_CN": "宽度",
+                "en_US": "Width"
               }
             },
             "required": true,
@@ -284,7 +289,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "对话框"
+        "zh_CN": "对话框",
+        "en_US": "Dialog"
       },
       "screenshot": "",
       "snippetName": "TinyDialogBox",

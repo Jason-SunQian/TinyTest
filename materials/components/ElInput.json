@@ -2,7 +2,8 @@
   "id": 1,
   "version": "2.4.2",
   "name": {
-    "zh_CN": "输入框"
+    "zh_CN": "输入框",
+    "en_US": "Input"
   },
   "component": "ElInput",
   "icon": "input",
@@ -63,18 +64,21 @@
       {
         "name": "0",
         "label": {
-          "zh_CN": "基础属性"
+          "zh_CN": "基础属性",
+          "en_US": "Basic Properties"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "description": {
-              "zh_CN": "绑定值"
+              "zh_CN": "绑定值",
+              "en_US": "Binding Value"
             },
             "required": true,
             "readOnly": false,
@@ -91,11 +95,13 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "尺寸"
+                "zh_CN": "尺寸",
+                "en_US": "Size"
               }
             },
             "description": {
-              "zh_CN": "尺寸"
+              "zh_CN": "尺寸",
+              "en_US": "Size"
             },
             "required": true,
             "readOnly": false,
@@ -128,11 +134,13 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "description": {
-              "zh_CN": "类型"
+              "zh_CN": "类型",
+              "en_US": "Type"
             },
             "required": true,
             "readOnly": false,
@@ -149,11 +157,13 @@
             "property": "placeholder",
             "label": {
               "text": {
-                "zh_CN": "占位文本"
+                "zh_CN": "占位文本",
+                "en_US": "Placeholder"
               }
             },
             "description": {
-              "zh_CN": "输入框占位文本"
+              "zh_CN": "输入框占位文本",
+              "en_US": "Input Placeholder"
             },
             "required": true,
             "readOnly": false,
@@ -175,7 +185,8 @@
               }
             },
             "description": {
-              "zh_CN": "最大输入长度"
+              "zh_CN": "最大输入长度",
+              "en_US": "Max Length"
             },
             "required": true,
             "readOnly": false,
@@ -193,11 +204,13 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "是否禁用"
+                "zh_CN": "是否禁用",
+                "en_US": "Disabled"
               }
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "required": true,
             "readOnly": false,
@@ -242,7 +255,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -289,7 +303,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "输入框"
+        "zh_CN": "输入框",
+        "en_US": "Input"
       },
       "icon": "input",
       "screenshot": "",

@@ -22,17 +22,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -44,7 +47,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "双向绑定值"
+              "zh_CN": "双向绑定值",
+              "en_US": "Two-way Bound Value"
             },
             "labelPosition": "left"
           },
@@ -52,7 +56,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -64,7 +69,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -92,7 +98,8 @@
             "property": "text",
             "label": {
               "text": {
-                "zh_CN": "文本"
+                "zh_CN": "文本",
+                "en_US": "Text"
               }
             },
             "required": true,
@@ -113,7 +120,8 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
@@ -208,7 +216,8 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
           "zh_CN": "当前选中的值改变时触发"
@@ -221,7 +230,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的当前选中值"
+                "zh_CN": "双向绑定的当前选中值",
+                "en_US": "Currently Selected Value (Two-way Binding)"
               }
             }
           ],
@@ -273,7 +283,7 @@
       "schema": {
         "componentName": "TinyCheckbox",
         "props": {
-          "text": "复选框文案"
+          "text": "Checkbox Text"
         }
       },
       "category": "form"

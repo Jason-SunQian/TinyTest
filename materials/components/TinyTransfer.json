@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "穿梭框"
+    "zh_CN": "穿梭框",
+    "en_US": "Transfer"
   },
   "component": "TinyTransfer",
   "icon": "transfer",
@@ -22,17 +23,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -43,7 +47,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "双向绑定值"
+              "zh_CN": "双向绑定值",
+              "en_US": "Two-way Bound Value"
             },
             "labelPosition": "left"
           },
@@ -274,7 +279,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "穿梭框"
+        "zh_CN": "穿梭框",
+        "en_US": "Transfer"
       },
       "icon": "transfer",
       "screenshot": "",

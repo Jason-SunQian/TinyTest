@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "输入框"
+    "zh_CN": "输入框",
+    "en_US": "Input"
   },
   "component": "TinyInput",
   "icon": "input",
@@ -22,17 +23,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -44,7 +48,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "双向绑定值"
+              "zh_CN": "双向绑定值",
+              "en_US": "Two-way Bound Value"
             },
             "labelPosition": "left"
           },
@@ -52,7 +57,8 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "widget": {
@@ -83,7 +89,8 @@
             "property": "rows",
             "label": {
               "text": {
-                "zh_CN": "行数"
+                "zh_CN": "行数",
+                "en_US": "Rows"
               }
             },
             "widget": {
@@ -98,7 +105,8 @@
             "property": "placeholder",
             "label": {
               "text": {
-                "zh_CN": "占位文本"
+                "zh_CN": "占位文本",
+                "en_US": "Placeholder"
               }
             },
             "required": true,
@@ -110,7 +118,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "输入框占位文本"
+              "zh_CN": "输入框占位文本",
+              "en_US": "Input Placeholder"
             },
             "labelPosition": "left"
           },
@@ -118,7 +127,8 @@
             "property": "clearable",
             "label": {
               "text": {
-                "zh_CN": "清除按钮"
+                "zh_CN": "清除按钮",
+                "en_US": "Clear Button"
               }
             },
             "required": true,
@@ -130,7 +140,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否显示清除按钮"
+              "zh_CN": "是否显示清除按钮",
+              "en_US": "Show Clear Button"
             },
             "labelPosition": "left"
           },
@@ -138,7 +149,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -150,7 +162,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -158,7 +171,8 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "尺寸"
+                "zh_CN": "尺寸",
+                "en_US": "Size"
               }
             },
             "required": true,
@@ -194,14 +208,16 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
             "property": "maxlength",
             "label": {
               "text": {
-                "zh_CN": "最大输入长度"
+                "zh_CN": "最大输入长度",
+                "en_US": "Max Length"
               }
             },
             "required": true,
@@ -220,7 +236,8 @@
             "property": "autofocus",
             "label": {
               "text": {
-                "zh_CN": "自动聚焦"
+                "zh_CN": "自动聚焦",
+                "en_US": "Auto Focus"
               }
             },
             "required": true,
@@ -245,7 +262,8 @@
     "events": {
       "onChange": {
         "label": {
-          "zh_CN": "值改变时触发"
+          "zh_CN": "值改变时触发",
+          "en_US": "Triggered when Value Changes"
         },
         "description": {
           "zh_CN": "在 Input 值改变时触发"
@@ -271,7 +289,8 @@
           "zh_CN": "输入值改变时触发"
         },
         "description": {
-          "zh_CN": "在 Input 输入值改变时触发"
+          "zh_CN": "在 Input 输入值改变时触发",
+          "en_US": "Triggered when Input Value Changes"
         },
         "type": "event",
         "functionInfo": {
@@ -281,7 +300,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "输入框输入的值"
+                "zh_CN": "输入框输入的值",
+                "en_US": "Input Value"
               }
             }
           ],
@@ -291,10 +311,12 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
-          "zh_CN": "在 Input 输入值改变时触发"
+          "zh_CN": "在 Input 输入值改变时触发",
+          "en_US": "Triggered when Input Value Changes"
         },
         "type": "event",
         "functionInfo": {
@@ -304,7 +326,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的值"
+                "zh_CN": "双向绑定的值",
+                "en_US": "Two-way Bound Value"
               }
             }
           ],
@@ -314,7 +337,8 @@
       },
       "onBlur": {
         "label": {
-          "zh_CN": "失去焦点时触发"
+          "zh_CN": "失去焦点时触发",
+          "en_US": "Triggered on Blur"
         },
         "description": {
           "zh_CN": "在 Input 失去焦点时触发"
@@ -327,7 +351,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -337,7 +362,8 @@
       },
       "onFocus": {
         "label": {
-          "zh_CN": "获取焦点时触发"
+          "zh_CN": "获取焦点时触发",
+          "en_US": "Triggered on Focus"
         },
         "description": {
           "zh_CN": "在 Input 获取焦点时触发"
@@ -350,7 +376,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -360,10 +387,12 @@
       },
       "onClear": {
         "label": {
-          "zh_CN": "点击清空按钮时触发"
+          "zh_CN": "点击清空按钮时触发",
+          "en_US": "Triggered when Clear Button is Clicked"
         },
         "description": {
-          "zh_CN": "点击清空按钮时触发"
+          "zh_CN": "点击清空按钮时触发",
+          "en_US": "Triggered when Clear Button is Clicked"
         },
         "type": "event",
         "functionInfo": {
@@ -420,7 +449,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "输入框"
+        "zh_CN": "输入框",
+        "en_US": "Input"
       },
       "icon": "input",
       "screenshot": "",
@@ -428,7 +458,7 @@
       "schema": {
         "componentName": "TinyInput",
         "props": {
-          "placeholder": "请输入",
+          "placeholder": "Please enter",
           "modelValue": ""
         }
       },

@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "走马灯子项"
+    "zh_CN": "走马灯子项",
+    "en_US": "Carousel Item"
   },
   "component": "TinyCarouselItem",
   "icon": "carouselitem",
@@ -23,17 +24,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "name",
             "label": {
               "text": {
-                "zh_CN": "名称"
+                "zh_CN": "名称",
+                "en_US": "Name"
               }
             },
             "required": true,
@@ -53,7 +57,8 @@
             "property": "title",
             "label": {
               "text": {
-                "zh_CN": "标题"
+                "zh_CN": "标题",
+                "en_US": "Title"
               }
             },
             "required": true,

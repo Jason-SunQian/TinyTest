@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "按钮组"
+    "zh_CN": "按钮组",
+    "en_US": "Button Group"
   },
   "component": "TinyButtonGroup",
   "icon": "buttonGroup",
@@ -23,17 +24,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "data",
             "label": {
               "text": {
-                "zh_CN": "数据"
+                "zh_CN": "数据",
+                "en_US": "Data"
               }
             },
             "required": true,
@@ -54,7 +58,8 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "大小"
+                "zh_CN": "大小",
+                "en_US": "Size"
               }
             },
             "required": true,
@@ -89,7 +94,8 @@
             "property": "plain",
             "label": {
               "text": {
-                "zh_CN": "朴素按钮"
+                "zh_CN": "朴素按钮",
+                "en_US": "Plain Button"
               }
             },
             "required": true,
@@ -109,7 +115,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -121,7 +128,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           }

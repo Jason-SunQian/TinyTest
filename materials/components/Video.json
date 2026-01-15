@@ -1,7 +1,8 @@
 {
   "version": "1.0.0",
   "name": {
-    "zh_CN": "视频"
+    "zh_CN": "视频",
+    "en_US": "Video"
   },
   "component": "video",
   "icon": "video",
@@ -19,17 +20,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "src",
             "label": {
               "text": {
-                "zh_CN": "资源"
+                "zh_CN": "资源",
+                "en_US": "Resource"
               }
             },
             "required": true,
@@ -126,7 +130,8 @@
             "property": "attributes3",
             "label": {
               "text": {
-                "zh_CN": "原生属性"
+                "zh_CN": "原生属性",
+                "en_US": "Native Attributes"
               }
             },
             "required": true,
@@ -138,7 +143,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "原生属性"
+              "zh_CN": "原生属性",
+              "en_US": "Native Attributes"
             },
             "labelPosition": "none"
           }
@@ -173,7 +179,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "视频"
+        "zh_CN": "视频",
+        "en_US": "Video"
       },
       "icon": "video",
       "screenshot": "",

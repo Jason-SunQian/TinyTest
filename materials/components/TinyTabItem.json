@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "tabitem",
   "name": {
-    "zh_CN": "tab页签"
+    "zh_CN": "tab页签",
+    "en_US": "Tab Item"
   },
   "component": "TinyTabItem",
   "description": "tab 标签页",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -51,7 +54,8 @@
             "property": "title",
             "label": {
               "text": {
-                "zh_CN": "标题"
+                "zh_CN": "标题",
+                "en_US": "Title"
               }
             },
             "required": true,
@@ -63,7 +67,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "标题"
+              "zh_CN": "标题",
+              "en_US": "Title"
             }
           }
         ]
@@ -73,7 +78,8 @@
     "slots": {
       "title": {
         "label": {
-          "zh_CN": "标题"
+          "zh_CN": "标题",
+          "en_US": "Title"
         },
         "description": {
           "zh_CN": "自定义标题"

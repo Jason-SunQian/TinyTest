@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "tabs",
   "name": {
-    "zh_CN": "标签页"
+    "zh_CN": "标签页",
+    "en_US": "Tabs"
   },
   "component": "TinyTabs",
   "description": "分隔内容上有关联但属于不同类别的数据集合",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -54,7 +57,8 @@
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -168,7 +172,8 @@
               "type": "Object",
               "defaultValue": "",
               "description": {
-                "zh_CN": "原生 event"
+                "zh_CN": "原生 event",
+                "en_US": "Native Event"
               }
             }
           ],
@@ -269,7 +274,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "标签页"
+        "zh_CN": "标签页",
+        "en_US": "Tabs"
       },
       "icon": "tabs",
       "screenshot": "",
@@ -284,7 +290,7 @@
           {
             "componentName": "TinyTabItem",
             "props": {
-              "title": "标签页1",
+              "title": "Tab 1",
               "name": "first"
             },
             "children": [
@@ -299,7 +305,7 @@
           {
             "componentName": "TinyTabItem",
             "props": {
-              "title": "标签页2",
+              "title": "Tab 2",
               "name": "second"
             },
             "children": [

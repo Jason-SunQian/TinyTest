@@ -1,7 +1,8 @@
 {
   "icon": "grid",
   "name": {
-    "zh_CN": "表格"
+    "zh_CN": "表格",
+    "en_US": "Table"
   },
   "component": "TinyGrid",
   "description": "提供了非常强大数据表格功能，可以展示数据列表，可以对数据列表进行选择、编辑等",
@@ -21,10 +22,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础属性"
+          "zh_CN": "基础属性",
+          "en_US": "Basic Properties"
         },
         "description": {
-          "zh_CN": "基础属性"
+          "zh_CN": "基础属性",
+          "en_US": "Basic Properties"
         },
         "content": [
           {
@@ -340,8 +343,8 @@
                 "type": "object",
                 "textField": "title",
                 "language": "json",
-                "buttonText": "编辑列配置",
-                "title": "编辑列配置",
+                "buttonText": "Edit Column Config",
+                "title": "Edit Column Config",
                 "expand": true
               }
             },
@@ -436,7 +439,7 @@
             "widget": {
               "component": "InputConfigurator",
               "props": {
-                "placeholder": "比如：id"
+                "placeholder": "e.g. id"
               }
             },
             "description": {
@@ -549,7 +552,8 @@
       },
       {
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "description": {
           "zh_CN": "其他属性"
@@ -927,7 +931,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "表格"
+        "zh_CN": "表格",
+        "en_US": "Table"
       },
       "icon": "grid",
       "screenshot": "",

@@ -24,10 +24,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -80,7 +82,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否自动切换"
+              "zh_CN": "是否自动切换",
+              "en_US": "Auto Switch"
             },
             "labelPosition": "left"
           },
@@ -110,7 +113,8 @@
             "property": "height",
             "label": {
               "text": {
-                "zh_CN": "高度"
+                "zh_CN": "高度",
+                "en_US": "Height"
               }
             },
             "required": true,
@@ -129,7 +133,8 @@
             "property": "indicator-position",
             "label": {
               "text": {
-                "zh_CN": "位置"
+                "zh_CN": "位置",
+                "en_US": "Position"
               }
             },
             "required": true,
@@ -209,7 +214,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否循环显示"
+              "zh_CN": "是否循环显示",
+              "en_US": "Loop"
             },
             "labelPosition": "left"
           },
@@ -229,7 +235,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否显示标题"
+              "zh_CN": "是否显示标题",
+              "en_US": "Show Title"
             },
             "labelPosition": "left"
           },
@@ -267,7 +274,8 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "required": true,
@@ -339,7 +347,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "走马灯"
+        "zh_CN": "走马灯",
+        "en_US": "Carousel"
       },
       "screenshot": "",
       "snippetName": "tiny-carousel",

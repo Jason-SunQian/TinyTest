@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "分页"
+    "zh_CN": "分页",
+    "en_US": "Pagination"
   },
   "component": "TinyPager",
   "icon": "pager",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -239,7 +242,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "分页"
+        "zh_CN": "分页",
+        "en_US": "Pagination"
       },
       "icon": "pager",
       "screenshot": "",

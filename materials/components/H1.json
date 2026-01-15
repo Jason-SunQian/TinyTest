@@ -1,7 +1,8 @@
 {
   "version": "1.0.0",
   "name": {
-    "zh_CN": "标题"
+    "zh_CN": "标题",
+    "en_US": "Title"
   },
   "component": [
     "h1",
@@ -26,17 +27,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "children",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "required": true,
@@ -58,7 +62,8 @@
             "property": "attributes3",
             "label": {
               "text": {
-                "zh_CN": "原生属性"
+                "zh_CN": "原生属性",
+                "en_US": "Native Attributes"
               }
             },
             "required": true,
@@ -113,7 +118,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "标题"
+        "zh_CN": "标题",
+        "en_US": "Title"
       },
       "icon": "h16",
       "screenshot": "",

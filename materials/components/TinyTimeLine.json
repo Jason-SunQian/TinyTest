@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "timeline",
   "name": {
-    "zh_CN": "时间线"
+    "zh_CN": "时间线",
+    "en_US": "Timeline"
   },
   "component": "TinyTimeLine",
   "description": "TimeLine 时间线",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -184,7 +187,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "时间线"
+        "zh_CN": "时间线",
+        "en_US": "Timeline"
       },
       "icon": "timeline",
       "screenshot": "",

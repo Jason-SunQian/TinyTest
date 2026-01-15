@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "formitem",
   "name": {
-    "zh_CN": "表单项"
+    "zh_CN": "表单项",
+    "en_US": "Form Item"
   },
   "component": "TinyFormItem",
   "description": "由按钮、输入框、选择器、单选框、多选框等控件组成，用以收集、校验、提交数据",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -38,7 +41,7 @@
             "required": true,
             "readOnly": false,
             "disabled": false,
-            "defaultValue": "标签",
+            "defaultValue": "Label",
             "cols": 12,
             "widget": {
               "component": "InputConfigurator",

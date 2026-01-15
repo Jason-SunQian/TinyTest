@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "collapse",
   "name": {
-    "zh_CN": "折叠面板"
+    "zh_CN": "折叠面板",
+    "en_US": "Collapse"
   },
   "component": "TinyCollapse",
   "description": "内容区可指定动态页面或自定义 html 等，支持展开收起操作",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -76,7 +79,8 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
           "zh_CN": "当前激活面板的值改变时触发"
@@ -89,7 +93,8 @@
               "type": "string",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的值"
+                "zh_CN": "双向绑定的值",
+                "en_US": "Two-way Bound Value"
               }
             }
           ],
@@ -133,7 +138,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "折叠面板"
+        "zh_CN": "折叠面板",
+        "en_US": "Collapse"
       },
       "screenshot": "",
       "snippetName": "TinyCollapse",
@@ -148,7 +154,7 @@
             "componentName": "TinyCollapseItem",
             "props": {
               "name": "collapse1",
-              "title": "折叠项1"
+              "title": "Collapse Item 1"
             },
             "children": [
               {
@@ -160,7 +166,7 @@
             "componentName": "TinyCollapseItem",
             "props": {
               "name": "collapse2",
-              "title": "折叠项2"
+              "title": "Collapse Item 2"
             },
             "children": [
               {
@@ -172,7 +178,7 @@
             "componentName": "TinyCollapseItem",
             "props": {
               "name": "collapse3",
-              "title": "折叠项3"
+              "title": "Collapse Item 3"
             },
             "children": [
               {

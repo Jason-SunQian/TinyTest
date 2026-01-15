@@ -2,7 +2,8 @@
   "id": 1,
   "version": "2.4.2",
   "name": {
-    "zh_CN": "日期选择器"
+    "zh_CN": "日期选择器",
+    "en_US": "Date Picker"
   },
   "component": "ElDatePicker",
   "icon": "datepick",
@@ -63,18 +64,21 @@
       {
         "name": "0",
         "label": {
-          "zh_CN": "基础属性"
+          "zh_CN": "基础属性",
+          "en_US": "Basic Properties"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "description": {
-              "zh_CN": "绑定值"
+              "zh_CN": "绑定值",
+              "en_US": "Binding Value"
             },
             "required": false,
             "readOnly": false,
@@ -91,7 +95,8 @@
             "property": "readonly",
             "label": {
               "text": {
-                "zh_CN": "只读"
+                "zh_CN": "只读",
+                "en_US": "Readonly"
               }
             },
             "description": {
@@ -113,11 +118,13 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "required": true,
             "readOnly": false,
@@ -135,7 +142,8 @@
             "property": "size",
             "label": {
               "text": {
-                "zh_CN": "尺寸"
+                "zh_CN": "尺寸",
+                "en_US": "Size"
               }
             },
             "description": {
@@ -173,7 +181,8 @@
             "property": "editable",
             "label": {
               "text": {
-                "zh_CN": "是否可编辑"
+                "zh_CN": "是否可编辑",
+                "en_US": "Editable"
               }
             },
             "description": {
@@ -196,7 +205,8 @@
             "property": "clearable",
             "label": {
               "text": {
-                "zh_CN": "是否可清除"
+                "zh_CN": "是否可清除",
+                "en_US": "Clearable"
               }
             },
             "description": {
@@ -219,7 +229,8 @@
             "property": "placeholder",
             "label": {
               "text": {
-                "zh_CN": "占位文本"
+                "zh_CN": "占位文本",
+                "en_US": "Placeholder"
               }
             },
             "description": {
@@ -242,7 +253,8 @@
             "property": "start-placeholder",
             "label": {
               "text": {
-                "zh_CN": "起始占位文本"
+                "zh_CN": "起始占位文本",
+                "en_US": "Start Placeholder"
               }
             },
             "description": {
@@ -265,7 +277,8 @@
             "property": "end-placeholder",
             "label": {
               "text": {
-                "zh_CN": "结束占位文本"
+                "zh_CN": "结束占位文本",
+                "en_US": "End Placeholder"
               }
             },
             "description": {
@@ -288,7 +301,8 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "description": {
@@ -362,7 +376,8 @@
             "property": "popper-class",
             "label": {
               "text": {
-                "zh_CN": "下拉框类名"
+                "zh_CN": "下拉框类名",
+                "en_US": "Select Class Name"
               }
             },
             "description": {
@@ -479,7 +494,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "日期选择器"
+        "zh_CN": "日期选择器",
+        "en_US": "Date Picker"
       },
       "icon": "datepick",
       "screenshot": "",

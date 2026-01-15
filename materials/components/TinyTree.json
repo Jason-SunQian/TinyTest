@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "tree",
   "name": {
-    "zh_CN": "树"
+    "zh_CN": "树",
+    "en_US": "Tree"
   },
   "component": "TinyTree",
   "description": "可进行展示有父子层级的数据，支持选择，异步加载等功能。但不推荐用它来展示菜单，展示菜单推荐使用树菜单",
@@ -22,17 +23,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "show-checkbox",
             "label": {
               "text": {
-                "zh_CN": "多选"
+                "zh_CN": "多选",
+                "en_US": "Multiple"
               }
             },
             "required": true,
@@ -113,7 +117,7 @@
               "component": "InputConfigurator",
               "props": {
                 "disabled": true,
-                "placeholder": "请使用变量绑定来绑定函数"
+                "placeholder": "Please use variable binding to bind function"
               }
             },
             "description": {
@@ -185,7 +189,8 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
@@ -341,7 +346,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "树"
+        "zh_CN": "树",
+        "en_US": "Tree"
       },
       "icon": "tree",
       "screenshot": "",

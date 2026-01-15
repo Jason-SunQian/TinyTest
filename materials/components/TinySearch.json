@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "search",
   "name": {
-    "zh_CN": "搜索框"
+    "zh_CN": "搜索框",
+    "en_US": "Search"
   },
   "component": "TinySearch",
   "description": "指定条件对象进行搜索数据",
@@ -22,10 +23,12 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
@@ -52,7 +55,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -64,7 +68,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否被禁用"
+              "zh_CN": "是否被禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -72,7 +77,8 @@
             "property": "placeholder",
             "label": {
               "text": {
-                "zh_CN": "占位文本"
+                "zh_CN": "占位文本",
+                "en_US": "Placeholder"
               }
             },
             "required": true,
@@ -133,7 +139,8 @@
       {
         "name": "1",
         "label": {
-          "zh_CN": "其他"
+          "zh_CN": "其他",
+          "en_US": "Others"
         },
         "content": [
           {
@@ -281,7 +288,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "搜索框"
+        "zh_CN": "搜索框",
+        "en_US": "Search"
       },
       "icon": "search",
       "screenshot": "",
@@ -290,7 +298,7 @@
         "componentName": "TinySearch",
         "props": {
           "modelValue": "",
-          "placeholder": "输入关键词"
+          "placeholder": "Enter keywords"
         }
       },
       "category": "basic"

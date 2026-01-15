@@ -22,17 +22,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "modelValue",
             "label": {
               "text": {
-                "zh_CN": "绑定值"
+                "zh_CN": "绑定值",
+                "en_US": "Binding Value"
               }
             },
             "required": true,
@@ -46,7 +49,8 @@
               }
             },
             "description": {
-              "zh_CN": "双向绑定的当前选中值"
+              "zh_CN": "双向绑定的当前选中值",
+              "en_US": "Currently Selected Value (Two-way Binding)"
             },
             "labelPosition": "left"
           },
@@ -54,7 +58,8 @@
             "property": "disabled",
             "label": {
               "text": {
-                "zh_CN": "禁用"
+                "zh_CN": "禁用",
+                "en_US": "Disabled"
               }
             },
             "required": true,
@@ -66,7 +71,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "是否禁用"
+              "zh_CN": "是否禁用",
+              "en_US": "Disabled"
             },
             "labelPosition": "left"
           },
@@ -104,7 +110,8 @@
             "property": "type",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "required": true,
@@ -160,7 +167,8 @@
       },
       "onUpdate:modelValue": {
         "label": {
-          "zh_CN": "双向绑定的值改变时触发"
+          "zh_CN": "双向绑定的值改变时触发",
+          "en_US": "Triggered when Two-way Bound Value Changes"
         },
         "description": {
           "zh_CN": "当前选中的值改变时触发"
@@ -173,7 +181,8 @@
               "type": "array",
               "defaultValue": "",
               "description": {
-                "zh_CN": "双向绑定的当前选中值"
+                "zh_CN": "双向绑定的当前选中值",
+                "en_US": "Currently Selected Value (Two-way Binding)"
               }
             }
           ],
@@ -217,7 +226,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "复选框组"
+        "zh_CN": "复选框组",
+        "en_US": "Checkbox Group"
       },
       "icon": "checkboxs",
       "screenshot": "",

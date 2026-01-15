@@ -2,7 +2,8 @@
   "id": 3,
   "version": "1.0.0",
   "name": {
-    "zh_CN": "业务卡片"
+    "zh_CN": "业务卡片",
+    "en_US": "Business Card"
   },
   "component": "BusinessCard",
   "icon": "bem",
@@ -35,13 +36,26 @@
     "isLayout": false,
     "rootSelector": "",
     "shortcuts": {
-      "properties": ["title", "price", "buttonText"]
+      "properties": [
+        "title",
+        "price",
+        "buttonText"
+      ]
     },
     "contextMenu": {
-      "actions": ["copy", "remove", "insert", "updateAttr", "bindEvent", "createBlock"],
+      "actions": [
+        "copy",
+        "remove",
+        "insert",
+        "updateAttr",
+        "bindEvent",
+        "createBlock"
+      ],
       "disable": []
     },
-    "invalidity": [""],
+    "invalidity": [
+      ""
+    ],
     "clickCapture": true,
     "framework": "Vue"
   },
@@ -50,13 +64,14 @@
       {
         "name": "0",
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "title",
             "type": "string",
-            "defaultValue": "商品标题",
+            "defaultValue": "Product Title",
             "label": {
               "text": {
                 "zh_CN": "商品标题"
@@ -79,7 +94,7 @@
           {
             "property": "desc",
             "type": "string",
-            "defaultValue": "商品描述",
+            "defaultValue": "Product Description",
             "label": {
               "text": {
                 "zh_CN": "商品描述"
@@ -228,7 +243,7 @@
           {
             "property": "tagText",
             "type": "string",
-            "defaultValue": "热销",
+            "defaultValue": "Hot Sale",
             "label": {
               "text": {
                 "zh_CN": "标签文字"
@@ -331,10 +346,11 @@
           {
             "property": "buttonText",
             "type": "string",
-            "defaultValue": "立即购买",
+            "defaultValue": "Buy Now",
             "label": {
               "text": {
-                "zh_CN": "按钮文字"
+                "zh_CN": "按钮文字",
+                "en_US": "Button Text"
               }
             },
             "cols": 12,
@@ -476,7 +492,7 @@
           {
             "property": "bottomText",
             "type": "string",
-            "defaultValue": "底部信息",
+            "defaultValue": "Footer Info",
             "label": {
               "text": {
                 "zh_CN": "底部文字"
@@ -579,7 +595,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "业务卡片"
+        "zh_CN": "业务卡片",
+        "en_US": "Business Card"
       },
       "icon": "bem",
       "screenshot": "",
@@ -587,13 +604,13 @@
       "schema": {
         "componentName": "BusinessCard",
         "props": {
-          "title": "商品标题",
-          "desc": "商品描述",
+          "title": "Product Title",
+          "desc": "Product Description",
           "price": "99.00",
-          "buttonText": "立即购买"
+          "buttonText": "Buy Now"
         }
       },
       "category": "custom-vant"
     }
   ]
-} 
+}

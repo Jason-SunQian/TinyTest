@@ -2,7 +2,8 @@
   "version": "1.0.0",
   "icon": "link",
   "name": {
-    "zh_CN": "提示框"
+    "zh_CN": "提示框",
+    "en_US": "Tooltip"
   },
   "component": "a",
   "description": "链接",
@@ -18,17 +19,20 @@
     "properties": [
       {
         "label": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "description": {
-          "zh_CN": "基础信息"
+          "zh_CN": "基础信息",
+          "en_US": "Basic Information"
         },
         "content": [
           {
             "property": "children",
             "label": {
               "text": {
-                "zh_CN": "类型"
+                "zh_CN": "类型",
+                "en_US": "Type"
               }
             },
             "required": true,
@@ -40,7 +44,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "类型"
+              "zh_CN": "类型",
+              "en_US": "Type"
             },
             "labelPosition": "none"
           },
@@ -48,7 +53,8 @@
             "property": "href",
             "label": {
               "text": {
-                "zh_CN": "链接"
+                "zh_CN": "链接",
+                "en_US": "Link"
               }
             },
             "required": true,
@@ -98,7 +104,8 @@
             "property": "attributes3",
             "label": {
               "text": {
-                "zh_CN": "原生属性"
+                "zh_CN": "原生属性",
+                "en_US": "Native Attributes"
               }
             },
             "required": true,
@@ -110,7 +117,8 @@
               "props": {}
             },
             "description": {
-              "zh_CN": "原生属性"
+              "zh_CN": "原生属性",
+              "en_US": "Native Attributes"
             },
             "labelPosition": "none"
           }
@@ -145,7 +153,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "链接"
+        "zh_CN": "链接",
+        "en_US": "Link"
       },
       "icon": "link",
       "screenshot": "",
