@@ -65,7 +65,8 @@
     </meta-list-items>
     <tiny-dialog-box
         v-model:visible="state.showLifeCyclesDialog"
-        fullscreen
+        class="bind-dialog-window"
+        width="900px"
         :show-close="false"
         :append-to-body="true"
     >
@@ -422,7 +423,9 @@ export default {
 }
 
 :deep(.tiny-dialog-box__body) {
-    height: calc(100vh - 150px);
+    height: 70vh;
+    min-height: 500px;
+    max-height: 800px;
 }
 
 .dialog-content {
