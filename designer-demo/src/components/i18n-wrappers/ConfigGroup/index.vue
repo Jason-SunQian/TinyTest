@@ -46,7 +46,8 @@ export default {
         // 但如果传入了空字符串或 undefined，使用 i18n 作为 fallback
         const emptyTextValue = this.emptyText || '';
         // eslint-disable-next-line camelcase
-        const emptyText = emptyTextValue || this.t('designer.settings.props.emptyText');
+        const emptyText =
+            emptyTextValue || this.t('designer.settings.props.emptyText');
 
         const expandNode = h(
             'div',

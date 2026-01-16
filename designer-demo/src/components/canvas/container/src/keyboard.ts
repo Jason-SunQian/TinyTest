@@ -14,8 +14,7 @@
 import {
     useHistory,
     useCanvas,
-    getMetaApi,
-    META_APP
+    getMetaApi
 } from '@opentiny/tiny-engine-meta-register';
 
 import { copyObject } from '../../common';
@@ -98,13 +97,15 @@ const handlerArrow = keyCode => {
 const handleSaveEvent = async event => {
     event.preventDefault();
     try {
-        const saveApi = getMetaApi("engine.toolbars.customSave");
-        if (!saveApi || !saveApi.openCommon) {
+        const saveApi = getMetaApi('engine.toolbars.customSave');
+        if (!saveApi?.openCommon) {
+            // eslint-disable-next-line no-console
             console.warn('Save API not available');
             return;
         }
         await saveApi.openCommon();
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Save failed:', error);
         // 不阻止事件传播，让浏览器处理默认行为
     }

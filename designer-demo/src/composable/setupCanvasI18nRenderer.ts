@@ -72,7 +72,9 @@ function setupCanvasTextReplacer() {
             if (!doc || !doc.body) return;
 
             // 需要替换的中文文本映射为英文
-            const dragElementText = i18nInstance?.global?.t('designer.canvas.dragElementHere') || 'Please drag and drop elements here';
+            const dragElementText =
+                i18nInstance?.global?.t('designer.canvas.dragElementHere') ||
+                'Please drag and drop elements here';
             const textMappings = [
                 { chinese: '页面分析加载中', english: analyzingText },
                 {

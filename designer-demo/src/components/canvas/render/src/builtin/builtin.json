@@ -404,9 +404,7 @@
                             }
                         },
                         "shortcuts": {
-                            "properties": [
-                                "text"
-                            ]
+                            "properties": ["text"]
                         },
                         "contentMenu": {
                             "actions": []
@@ -483,9 +481,7 @@
                             }
                         },
                         "shortcuts": {
-                            "properties": [
-                                "name"
-                            ]
+                            "properties": ["name"]
                         },
                         "contentMenu": {
                             "actions": []
@@ -562,9 +558,7 @@
                             }
                         },
                         "shortcuts": {
-                            "properties": [
-                                "src"
-                            ]
+                            "properties": ["src"]
                         },
                         "contentMenu": {
                             "actions": []

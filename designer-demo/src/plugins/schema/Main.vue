@@ -102,7 +102,7 @@ export default {
     },
     emits: ['close'],
     // eslint-disable-next-line vue/component-api-style
-        setup(props, { emit }) {
+    setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const app = getCurrentInstance();
         const { pageState } = useCanvas();
@@ -218,15 +218,26 @@ export default {
         const throttleUpdateData = useThrottleFn(
             () => {
                 // eslint-disable-next-line no-console
-                console.log('[Schema Plugin] throttleUpdateData - pageState.pageSchema:', pageState.pageSchema);
+                console.log(
+                    '[Schema Plugin] throttleUpdateData - pageState.pageSchema:',
+                    pageState.pageSchema
+                );
                 // 尝试从 useCanvas 的 getSchema 获取
                 const { getSchema } = useCanvas();
                 const schemaFromGetSchema = getSchema();
                 // eslint-disable-next-line no-console
-                console.log('[Schema Plugin] throttleUpdateData - getSchema():', schemaFromGetSchema);
-                const newPageData = obj2String(pageState.pageSchema || schemaFromGetSchema);
+                console.log(
+                    '[Schema Plugin] throttleUpdateData - getSchema():',
+                    schemaFromGetSchema
+                );
+                const newPageData = obj2String(
+                    pageState.pageSchema || schemaFromGetSchema
+                );
                 // eslint-disable-next-line no-console
-                console.log('[Schema Plugin] throttleUpdateData - newPageData:', newPageData);
+                console.log(
+                    '[Schema Plugin] throttleUpdateData - newPageData:',
+                    newPageData
+                );
                 state.pageData = newPageData || '{}';
             },
             100,
@@ -237,16 +248,29 @@ export default {
             // eslint-disable-next-line no-console
             console.log('[Schema Plugin] onActivated - pageState:', pageState);
             // eslint-disable-next-line no-console
-            console.log('[Schema Plugin] onActivated - pageState.pageSchema:', pageState.pageSchema);
+            console.log(
+                '[Schema Plugin] onActivated - pageState.pageSchema:',
+                pageState.pageSchema
+            );
             // eslint-disable-next-line no-console
-            console.log('[Schema Plugin] onActivated - pageState.pageSchema type:', typeof pageState.pageSchema);
+            console.log(
+                '[Schema Plugin] onActivated - pageState.pageSchema type:',
+                typeof pageState.pageSchema
+            );
             const initialPageData = obj2String(pageState.pageSchema);
             // eslint-disable-next-line no-console
-            console.log('[Schema Plugin] onActivated - initialPageData:', initialPageData);
+            console.log(
+                '[Schema Plugin] onActivated - initialPageData:',
+                initialPageData
+            );
             // eslint-disable-next-line no-console
-            console.log('[Schema Plugin] onActivated - initialPageData type:', typeof initialPageData);
-            state.pageData = initialPageData || '{}'; // 如果为 null，使用空对象
-            
+            console.log(
+                '[Schema Plugin] onActivated - initialPageData type:',
+                typeof initialPageData
+            );
+            // 如果为 null，使用空对象
+            state.pageData = initialPageData || '{}';
+
             nextTick(() => {
                 window.dispatchEvent(new Event('resize'));
                 if (app.refs.container?.getEditor) {
@@ -260,32 +284,54 @@ export default {
             subscribe({
                 topic: 'pageOrBlockInit',
                 subscriber: 'schema-plugin',
-                callback: (data) => {
+                callback: data => {
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] pageOrBlockInit event received:', data);
+                    console.log(
+                        '[Schema Plugin] pageOrBlockInit event received:',
+                        data
+                    );
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] pageOrBlockInit - event data:', data);
+                    console.log(
+                        '[Schema Plugin] pageOrBlockInit - event data:',
+                        data
+                    );
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] pageOrBlockInit - pageState.pageSchema:', pageState.pageSchema);
+                    console.log(
+                        '[Schema Plugin] pageOrBlockInit - pageState.pageSchema:',
+                        pageState.pageSchema
+                    );
                     // 尝试直接从事件数据中获取 schema
                     // 事件数据的结构是 { data: schema }，其中 data 字段就是 schema
                     const eventSchema = data?.data || data;
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] pageOrBlockInit - eventSchema:', eventSchema);
-                    if (eventSchema && typeof eventSchema === 'object' && !Array.isArray(eventSchema)) {
+                    console.log(
+                        '[Schema Plugin] pageOrBlockInit - eventSchema:',
+                        eventSchema
+                    );
+                    if (
+                        eventSchema &&
+                        typeof eventSchema === 'object' &&
+                        !Array.isArray(eventSchema)
+                    ) {
                         const schemaString = obj2String(eventSchema);
                         // eslint-disable-next-line no-console
-                        console.log('[Schema Plugin] pageOrBlockInit - using event schema, schemaString length:', schemaString?.length);
+                        console.log(
+                            '[Schema Plugin] pageOrBlockInit - using event schema, schemaString length:',
+                            schemaString?.length
+                        );
                         if (schemaString && schemaString !== 'null') {
                             state.pageData = schemaString;
                             if (app.refs.container?.getEditor) {
                                 nextTick(() => {
                                     showRed.value =
                                         state.pageData ===
-                                        app.refs.container.getEditor().getValue();
+                                        app.refs.container
+                                            .getEditor()
+                                            .getValue();
                                 });
                             }
-                            return; // 如果成功从事件数据中获取，就不需要再调用 throttleUpdateData
+                            // 如果成功从事件数据中获取，就不需要再调用 throttleUpdateData
+                            return;
                         }
                     }
                     nextTick(() => {
@@ -298,9 +344,12 @@ export default {
             subscribe({
                 topic: 'schemaChange',
                 subscriber: 'schema-plugin',
-                callback: (data) => {
+                callback: data => {
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] schemaChange event received:', data);
+                    console.log(
+                        '[Schema Plugin] schemaChange event received:',
+                        data
+                    );
                     throttleUpdateData();
                 }
             });
@@ -309,27 +358,42 @@ export default {
             subscribe({
                 topic: 'schemaImport',
                 subscriber: 'schema-plugin',
-                callback: (eventData) => {
+                callback: eventData => {
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] schemaImport event received:', eventData);
+                    console.log(
+                        '[Schema Plugin] schemaImport event received:',
+                        eventData
+                    );
                     // eslint-disable-next-line no-console
-                    console.log('[Schema Plugin] schemaImport - eventData.data:', eventData?.data);
+                    console.log(
+                        '[Schema Plugin] schemaImport - eventData.data:',
+                        eventData?.data
+                    );
                     // 从 schemaImport 事件中获取 current schema
                     const schemaFromEvent = eventData?.data?.current;
-                    if (schemaFromEvent && typeof schemaFromEvent === 'object') {
+                    if (
+                        schemaFromEvent &&
+                        typeof schemaFromEvent === 'object'
+                    ) {
                         const schemaString = obj2String(schemaFromEvent);
                         // eslint-disable-next-line no-console
-                        console.log('[Schema Plugin] schemaImport - using event schema, schemaString:', schemaString?.substring(0, 100));
+                        console.log(
+                            '[Schema Plugin] schemaImport - using event schema, schemaString:',
+                            schemaString?.substring(0, 100)
+                        );
                         if (schemaString) {
                             state.pageData = schemaString;
                             if (app.refs.container?.getEditor) {
                                 nextTick(() => {
                                     showRed.value =
                                         state.pageData ===
-                                        app.refs.container.getEditor().getValue();
+                                        app.refs.container
+                                            .getEditor()
+                                            .getValue();
                                 });
                             }
-                            return; // 如果成功从事件数据中获取，就不需要再调用 throttleUpdateData
+                            // 如果成功从事件数据中获取，就不需要再调用 throttleUpdateData
+                            return;
                         }
                     }
                     nextTick(() => {

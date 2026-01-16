@@ -113,61 +113,88 @@ export default {
             materialState.components.filter(item => item.children.length)
         );
 
-        type Component = (typeof componentsWithChildren.value)[number];
+        type Component = typeof componentsWithChildren.value[number];
 
         // 分组名称翻译映射表（用于没有 label 的分组）
-        const GROUP_NAME_TRANSLATIONS: Record<string, Record<string, string>> = {
-            '容器组件': {
+        const GROUP_NAME_TRANSLATIONS: Record<
+            string,
+            Record<string, string>
+        > = {
+            容器组件: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '容器组件',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Container Components'
             },
-            '布局与容器': {
+            布局与容器: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '布局与容器',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Layout and Containers'
             },
-            '基础元素': {
+            基础元素: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '基础元素',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Basic Elements'
             },
-            '高级元素': {
+            高级元素: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '高级元素',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Advanced Elements'
             },
-            'form': {
+            form: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '表单',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Form'
             },
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             'data-display': {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '数据展示',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Data Display'
             },
-            'table': {
+            table: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '表格',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Table'
             },
-            'layout': {
+            layout: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '布局',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Layout'
             },
-            'basic': {
+            basic: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '基础',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Basic'
             },
-            'advanced': {
+            advanced: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '高级',
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Advanced'
             }
         };
 
         // 获取组件标签的国际化文本
         const getComponentLabel = (component: Component) => {
-            const currentLocale = currentLocaleRef.value || i18n?.global?.locale?.value || 'zh_CN';
-            const isEnglish = 
-                currentLocale === 'en_US' || 
-                currentLocale === 'en-US' || 
+            const currentLocale =
+                currentLocaleRef.value ||
+                i18n?.global?.locale?.value ||
+                'zh_CN';
+            const isEnglish =
+                currentLocale === 'en_US' ||
+                currentLocale === 'en-US' ||
                 currentLocale === 'en' ||
                 String(currentLocale).toLowerCase().startsWith('en');
-            
+
             if (component.label && typeof component.label === 'object') {
                 // 如果是英文环境，优先使用 en_US
                 if (isEnglish) {
@@ -186,77 +213,94 @@ export default {
                     component.group
                 );
             }
-            
+
             // 如果没有 label，使用分组名称翻译映射表
             if (isEnglish && GROUP_NAME_TRANSLATIONS[component.group]) {
-                return GROUP_NAME_TRANSLATIONS[component.group].en_US || component.group;
+                return (
+                    GROUP_NAME_TRANSLATIONS[component.group].en_US ||
+                    component.group
+                );
             }
             if (!isEnglish && GROUP_NAME_TRANSLATIONS[component.group]) {
-                return GROUP_NAME_TRANSLATIONS[component.group].zh_CN || component.group;
+                return (
+                    GROUP_NAME_TRANSLATIONS[component.group].zh_CN ||
+                    component.group
+                );
             }
-            
+
             return component.group;
         };
 
         // 翻译映射表（精简版，适合有限显示空间）
         const TRANSLATION_MAP: Record<string, string> = {
-            '盒子容器': 'Box',
-            '行列容器': 'Row/Col',
-            '弹性容器': 'Flex',
-            '全宽居中容器': 'Full Width',
-            '全宽居中布局': 'Full Width',
-            '栅格布局': 'Grid',
-            '文本': 'Text',
-            '图标': 'Icon',
-            '图片': 'Image',
-            '段落': 'Paragraph',
-            '链接': 'Link',
-            '分隔线': 'Divider',
-            '标题': 'Title',
-            '视频': 'Video',
-            '按钮': 'Button',
-            '按钮组': 'Button Group',
-            '互斥按钮组': 'Mutex Buttons',
-            '搜索框': 'Search',
-            '插槽': 'Slot',
-            '路由视图': 'Router View',
-            '路由链接': 'Router Link',
-            '导航条': 'Nav Bar',
-            '纵向导航': 'Vertical Nav',
-            '数据源容器': 'Data Source',
-            '复选框组': 'Checkbox Group',
-            '复选框拖拽按钮组': 'Checkbox Buttons',
+            盒子容器: 'Box',
+            行列容器: 'Row/Col',
+            弹性容器: 'Flex',
+            全宽居中容器: 'Full Width',
+            全宽居中布局: 'Full Width',
+            栅格布局: 'Grid',
+            文本: 'Text',
+            图标: 'Icon',
+            图片: 'Image',
+            段落: 'Paragraph',
+            链接: 'Link',
+            分隔线: 'Divider',
+            标题: 'Title',
+            视频: 'Video',
+            按钮: 'Button',
+            按钮组: 'Button Group',
+            互斥按钮组: 'Mutex Buttons',
+            搜索框: 'Search',
+            插槽: 'Slot',
+            路由视图: 'Router View',
+            路由链接: 'Router Link',
+            导航条: 'Nav Bar',
+            纵向导航: 'Vertical Nav',
+            数据源容器: 'Data Source',
+            复选框组: 'Checkbox Group',
+            复选框拖拽按钮组: 'Checkbox Buttons'
         };
 
         // 获取组件名称的国际化文本
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getComponentName = (child: any) => {
-            const currentLocale = currentLocaleRef.value || i18n?.global?.locale?.value || 'zh_CN';
-            
+            const currentLocale =
+                currentLocaleRef.value ||
+                i18n?.global?.locale?.value ||
+                'zh_CN';
+
             if (child.name && typeof child.name === 'object') {
                 // 检查是否是英文环境（支持多种格式）
-                const isEnglish = 
-                    currentLocale === 'en_US' || 
-                    currentLocale === 'en-US' || 
+                const isEnglish =
+                    currentLocale === 'en_US' ||
+                    currentLocale === 'en-US' ||
                     currentLocale === 'en' ||
                     String(currentLocale).toLowerCase().startsWith('en');
-                
+
                 if (isEnglish) {
                     // 优先使用 en_US
-                    let enName = child.name.en_US || child.name['en-US'] || child.name.en;
-                    
+                    let enName =
+                        child.name.en_US ||
+                        child.name['en-US'] ||
+                        child.name.en;
+
                     // 如果 en_US 不存在或者是中文，尝试从翻译映射表获取
                     if (!enName || /[\u4e00-\u9fa5]/.test(enName)) {
                         const zhName = child.name.zh_CN;
                         if (zhName && TRANSLATION_MAP[zhName]) {
                             enName = TRANSLATION_MAP[zhName];
                             // 动态更新 child.name.en_US，以便后续使用
-                            if (!child.name.en_US || /[\u4e00-\u9fa5]/.test(child.name.en_US)) {
+                            // eslint-disable-next-line max-depth, camelcase
+                            if (
+                                !child.name.en_US ||
+                                /[\u4e00-\u9fa5]/.test(child.name.en_US)
+                            ) {
+                                // eslint-disable-next-line camelcase
                                 child.name.en_US = enName;
                             }
                         }
                     }
-                    
+
                     if (enName && !/[\u4e00-\u9fa5]/.test(enName)) {
                         return enName;
                     }
@@ -264,7 +308,9 @@ export default {
                     return child.name.zh_CN || child.name;
                 }
                 // 中文环境使用中文
-                return child.name.zh_CN || child.name[currentLocale] || child.name;
+                return (
+                    child.name.zh_CN || child.name[currentLocale] || child.name
+                );
             }
             return child.name;
         };
@@ -360,7 +406,10 @@ export default {
         watch(
             [currentLocaleRef, () => i18n?.global?.locale?.value],
             () => {
-                state.components = fetchComponents(componentsWithChildren.value, state.searchValue);
+                state.components = fetchComponents(
+                    componentsWithChildren.value,
+                    state.searchValue
+                );
             },
             { immediate: false }
         );

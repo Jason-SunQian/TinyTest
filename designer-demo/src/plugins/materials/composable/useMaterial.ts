@@ -235,52 +235,61 @@ const generateThirdPartyDeps = (components: Component[]) => {
  * 为组件名称添加英文翻译（如果不存在或值是中文）
  */
 const addEnglishNameToComponent = (component: Component) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const componentName = component.name as any;
-    if (componentName && typeof componentName === 'object' && componentName.zh_CN) {
-        const existingEn = componentName.en_US || componentName['en-US'] || componentName.en;
-        
+    if (
+        componentName &&
+        typeof componentName === 'object' &&
+        componentName.zh_CN
+    ) {
+        // eslint-disable-next-line camelcase
+        const existingEn =
+            componentName.en_US || componentName['en-US'] || componentName.en;
+
         // 检查现有的 en_US 是否是中文（包含中文字符）
         const isChinese = (str: string) => /[\u4e00-\u9fa5]/.test(str);
         const needsTranslation = !existingEn || isChinese(existingEn);
-        
+
         // 如果已经有有效的英文翻译，跳过
         if (existingEn && !needsTranslation) {
             return;
         }
-        
+
         // 简单的翻译映射
         const translations: Record<string, string> = {
-            '盒子容器': 'Box',
-            '行列容器': 'Row/Col',
-            '弹性容器': 'Flex',
-            '全宽居中容器': 'Full Width',
-            '全宽居中布局': 'Full Width',
-            '文本': 'Text',
-            '图标': 'Icon',
-            '图片': 'Image',
-            '段落': 'Paragraph',
-            '链接': 'Link',
-            '分隔线': 'Divider',
-            '标题': 'Title',
-            '视频': 'Video',
-            '按钮': 'Button',
-            '按钮组': 'Button Group',
-            '互斥按钮组': 'Mutex Buttons',
-            '搜索框': 'Search',
-            '插槽': 'Slot',
-            '路由视图': 'Router View',
-            '路由链接': 'Router Link',
-            '导航条': 'Nav Bar',
-            '纵向导航': 'Vertical Nav',
-            '数据源容器': 'Data Source',
-            '栅格布局': 'Grid',
+            盒子容器: 'Box',
+            行列容器: 'Row/Col',
+            弹性容器: 'Flex',
+            全宽居中容器: 'Full Width',
+            全宽居中布局: 'Full Width',
+            文本: 'Text',
+            图标: 'Icon',
+            图片: 'Image',
+            段落: 'Paragraph',
+            链接: 'Link',
+            分隔线: 'Divider',
+            标题: 'Title',
+            视频: 'Video',
+            按钮: 'Button',
+            按钮组: 'Button Group',
+            互斥按钮组: 'Mutex Buttons',
+            搜索框: 'Search',
+            插槽: 'Slot',
+            路由视图: 'Router View',
+            路由链接: 'Router Link',
+            导航条: 'Nav Bar',
+            纵向导航: 'Vertical Nav',
+            数据源容器: 'Data Source',
+            栅格布局: 'Grid'
         };
-        
+
         const zhName = componentName.zh_CN;
         if (translations[zhName]) {
+            // eslint-disable-next-line camelcase
             componentName.en_US = translations[zhName];
         } else {
             // 如果没有映射，使用组件名作为回退
+            // eslint-disable-next-line camelcase
             componentName.en_US = component.component || zhName;
         }
     }
@@ -289,74 +298,89 @@ const addEnglishNameToComponent = (component: Component) => {
 /**
  * 为 snippet 添加英文翻译（如果不存在或值是中文）
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const addEnglishNameToSnippet = (snippet: any) => {
-    if (!snippet || !snippet.name) return;
-    
+    if (!snippet?.name) return;
+
     if (typeof snippet.name === 'object' && snippet.name.zh_CN) {
-        const existingEn = (snippet.name as any).en_US || (snippet.name as any)['en-US'] || (snippet.name as any).en;
-        
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+        const nameAny = snippet.name as any;
+        // eslint-disable-next-line camelcase, @typescript-eslint/prefer-destructuring
+        const { en_US: enUs, 'en-US': enUsHyphen, en } = nameAny;
+        const existingEn = enUs || enUsHyphen || en;
+
         // 检查现有的 en_US 是否是中文（包含中文字符）
         const isChinese = (str: string) => {
             if (!str || typeof str !== 'string') return false;
             return /[\u4e00-\u9fa5]/.test(str);
         };
         const needsTranslation = !existingEn || isChinese(existingEn);
-        
+
         // 如果已经有有效的英文翻译，跳过
         if (existingEn && !needsTranslation) {
             return;
         }
-        
+
         const translations: Record<string, string> = {
-            '盒子容器': 'Box',
-            '行列容器': 'Row/Col',
-            '弹性容器': 'Flex',
-            '全宽居中容器': 'Full Width',
-            '全宽居中布局': 'Full Width',
-            '文本': 'Text',
-            '图标': 'Icon',
-            '图片': 'Image',
-            '段落': 'Paragraph',
-            '链接': 'Link',
-            '分隔线': 'Divider',
-            '标题': 'Title',
-            '视频': 'Video',
-            '按钮': 'Button',
-            '按钮组': 'Button Group',
-            '互斥按钮组': 'Mutex Buttons',
-            '搜索框': 'Search',
-            '插槽': 'Slot',
-            '路由视图': 'Router View',
-            '路由链接': 'Router Link',
-            '导航条': 'Nav Bar',
-            '纵向导航': 'Vertical Nav',
-            '数据源容器': 'Data Source',
-            '栅格布局': 'Grid',
+            盒子容器: 'Box',
+            行列容器: 'Row/Col',
+            弹性容器: 'Flex',
+            全宽居中容器: 'Full Width',
+            全宽居中布局: 'Full Width',
+            文本: 'Text',
+            图标: 'Icon',
+            图片: 'Image',
+            段落: 'Paragraph',
+            链接: 'Link',
+            分隔线: 'Divider',
+            标题: 'Title',
+            视频: 'Video',
+            按钮: 'Button',
+            按钮组: 'Button Group',
+            互斥按钮组: 'Mutex Buttons',
+            搜索框: 'Search',
+            插槽: 'Slot',
+            路由视图: 'Router View',
+            路由链接: 'Router Link',
+            导航条: 'Nav Bar',
+            纵向导航: 'Vertical Nav',
+            数据源容器: 'Data Source',
+            栅格布局: 'Grid'
         };
-        
+
         const zhName = snippet.name.zh_CN;
         if (translations[zhName]) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
             (snippet.name as any).en_US = translations[zhName];
         } else if (snippet.snippetName) {
             // 如果没有映射，尝试从 snippetName 生成英文名
             const componentName = snippet.snippetName.replace('Canvas', '');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
             (snippet.name as any).en_US = componentName || zhName;
         } else {
             // 最后回退
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
             (snippet.name as any).en_US = snippet.component || zhName;
         }
     }
-    
+
     // 处理 label
-    if (snippet.label && typeof snippet.label === 'object' && snippet.label.zh_CN && !(snippet.label as any).en_US) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+    if (
+        snippet.label &&
+        typeof snippet.label === 'object' &&
+        snippet.label.zh_CN &&
+        !(snippet.label as any).en_US
+    ) {
         const translations: Record<string, string> = {
-            '布局与容器': 'Layout and Containers',
-            '基础元素': 'Basic Elements',
-            '高级元素': 'Advanced Elements',
+            布局与容器: 'Layout and Containers',
+            基础元素: 'Basic Elements',
+            高级元素: 'Advanced Elements'
         };
-        
+
         const zhLabel = snippet.label.zh_CN;
         if (translations[zhLabel]) {
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase */
             (snippet.label as any).en_US = translations[zhLabel];
         }
     }
@@ -380,24 +404,31 @@ const addComponentSnippets = (
     );
     componentSnippets.forEach(snippetGroup => {
         // 为分组 label 添加英文翻译
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const groupLabel = (snippetGroup as any).label;
-        if (groupLabel && typeof groupLabel === 'object' && groupLabel.zh_CN && !groupLabel.en_US) {
+        if (
+            groupLabel &&
+            typeof groupLabel === 'object' &&
+            groupLabel.zh_CN &&
+            !groupLabel.en_US
+        ) {
             const translations: Record<string, string> = {
-                '布局与容器': 'Layout and Containers',
-                '基础元素': 'Basic Elements',
-                '高级元素': 'Advanced Elements',
+                布局与容器: 'Layout and Containers',
+                基础元素: 'Basic Elements',
+                高级元素: 'Advanced Elements'
             };
             const zhLabel = groupLabel.zh_CN;
             if (translations[zhLabel]) {
+                // eslint-disable-next-line camelcase
                 groupLabel.en_US = translations[zhLabel];
             }
         }
-        
+
         // 为每个 snippet 添加英文翻译（在克隆之前修改，确保修改生效）
         snippetGroup.children?.forEach(child => {
             addEnglishNameToSnippet(child);
         });
-        
+
         if (snippetsMap.has(snippetGroup.group)) {
             // 确保翻译已应用到 children 后再 push
             snippetsMap
@@ -501,12 +532,12 @@ const addComponents = (materialBundle: Material) => {
     const { snippets, components } = materialBundle;
     // 解析物料依赖
     parseMaterialsDependencies(materialBundle);
-    
+
     // 为组件添加英文翻译（如果不存在）
     components.forEach(component => {
         addEnglishNameToComponent(component);
     });
-    
+
     // 注册组件到map中
     components.forEach(registerComponentToResource);
     // 添加组件snippets
@@ -654,12 +685,15 @@ const filterBuiltinMaterials = (materials: Material) => {
         snippets: materials.snippets?.map(item => {
             return {
                 ...item,
-                children: item.children?.filter(
-                    child => !hiddenBuiltinMaterials.includes(child.snippetName)
-                ).map(child => {
-                    // 确保 child 的 name 字段被正确保留（包括 en_US）
-                    return child;
-                })
+                children: item.children
+                    ?.filter(
+                        child =>
+                            !hiddenBuiltinMaterials.includes(child.snippetName)
+                    )
+                    .map(child => {
+                        // 确保 child 的 name 字段被正确保留（包括 en_US）
+                        return child;
+                    })
             };
         })
     };

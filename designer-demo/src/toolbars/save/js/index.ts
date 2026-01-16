@@ -48,7 +48,7 @@ const saveBlock = async (pageSchema: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
-    
+
     let pageId: string | null = currentPage?.id || null;
     if (!pageId) {
         const paramsMap = new URLSearchParams(window.location.search);
@@ -56,7 +56,9 @@ const savePage = async (pageSchema: any) => {
     }
 
     if (!pageId) {
-        const errorMessage = translate('designer.vscode.saveFailed') || '无法获取页面 ID，保存失败';
+        const errorMessage =
+            translate('designer.vscode.saveFailed') ||
+            '无法获取页面 ID，保存失败';
         useNotify()({
             type: 'error',
             title: translate('designer.vscode.saveFailed'),
@@ -116,16 +118,16 @@ const savePage = async (pageSchema: any) => {
     // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     const params = { page_content: pageSchema };
     isLoading.value = true;
-    
+
     // 确保 currentPage 不为 null，如果为 null 则使用空对象
     const safeCurrentPage = currentPage || {};
-    
+
     const updateParams = {
         id: pageId,
         params: { ...safeCurrentPage, id: pageId, ...params },
         isCurEditPage: true
     };
-    
+
     try {
         await handlePageUpdate(updateParams);
         isLoading.value = false;
@@ -151,36 +153,32 @@ export const saveCommon = (value?: string) => {
         resetPageCanvasState,
         getSchema
     } = useCanvas();
-    
+
     // 获取最新的 schema（包含刚更新的 state）
-    let pageSchema;
+    let pageSchema = getSchema();
     if (value && value !== 'undefined' && value.trim() !== '') {
         try {
             pageSchema = JSON.parse(value);
         } catch (error) {
             pageSchema = getSchema();
         }
-    } else {
-        pageSchema = getSchema();
     }
-    
+
     // 防御性检查：确保 pageSchema 存在且有效
     if (!pageSchema || typeof pageSchema !== 'object') {
         throw new Error('Schema is invalid, cannot save');
     }
-    
+
     const { clearSelect } = canvasApi.value;
     const savedCurrentPage = pageState.currentPage ?? null;
 
     // 深拷贝 pageSchema，确保不会丢失 state 等数据
-    let schemaToSave;
+    let schemaToSave = pageSchema;
     try {
         if (pageSchema && typeof pageSchema === 'object') {
             const stringified = JSON.stringify(pageSchema);
             if (stringified && stringified !== 'undefined') {
                 schemaToSave = JSON.parse(stringified);
-            } else {
-                schemaToSave = pageSchema;
             }
         } else {
             schemaToSave = pageSchema;
@@ -196,34 +194,42 @@ export const saveCommon = (value?: string) => {
         pageSettingState.currentPageData.page_content = schemaToSave;
         return Promise.resolve();
     }
-    
-    // 先保存数据，保存成功后再重置画布状态
-    const savePromise = isBlock() ? saveBlock(schemaToSave) : savePage(schemaToSave);
-    
-    return savePromise.then(() => {
-        try {
-            clearSelect?.();
-        } catch (error) {
-            // 忽略清除选择状态的错误
-        }
 
-        if (isBlock()) {
-            resetBlockCanvasState({ ...pageState, pageSchema: schemaToSave, loading: false });
-        } else {
+    // 先保存数据，保存成功后再重置画布状态
+    const savePromise = isBlock()
+        ? saveBlock(schemaToSave)
+        : savePage(schemaToSave);
+
+    return savePromise
+        .then(() => {
             try {
-                resetPageCanvasState({ 
-                    ...pageState, 
-                    pageSchema: schemaToSave, 
-                    currentPage: savedCurrentPage, 
-                    loading: false 
-                });
+                clearSelect?.();
             } catch (error) {
-                // 重置失败不应该影响保存成功的结果
+                // 忽略清除选择状态的错误
             }
-        }
-    }).catch((error) => {
-        throw error;
-    });
+
+            if (isBlock()) {
+                resetBlockCanvasState({
+                    ...pageState,
+                    pageSchema: schemaToSave,
+                    loading: false
+                });
+            } else {
+                try {
+                    resetPageCanvasState({
+                        ...pageState,
+                        pageSchema: schemaToSave,
+                        currentPage: savedCurrentPage,
+                        loading: false
+                    });
+                } catch (error) {
+                    // 重置失败不应该影响保存成功的结果
+                }
+            }
+        })
+        .catch(error => {
+            throw error;
+        });
 };
 
 export const openCommon = async () => {
@@ -280,11 +286,12 @@ export const openCommon = async () => {
     }
 
     state.disabled = true;
-    
+
     try {
         const pageSchema = getSchema();
         state.code = JSON.stringify(pageSchema || {}, null, 2);
-        return await saveCommon(state.code);
+        await saveCommon(state.code);
+        return;
     } catch (error) {
         useNotify()({
             type: 'error',

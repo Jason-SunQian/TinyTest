@@ -1,4 +1,5 @@
 <!-- eslint-disable vue/max-lines-per-block -->
+<!-- eslint-disable max-lines -->
 <template>
     <tiny-dialog-box
         :visible="dialogVisible"
@@ -102,11 +103,12 @@ export default {
         } = getMergeMeta(META_ID).components;
         const { t } = useDesignerI18n();
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { PLUGIN_NAME, activePlugin } = useLayout();
         const { pageState, canvasApi, setCurrentSchema } = useCanvas();
-        const { getMethods, saveMethod, highlightMethod } = getMetaApi(
-            META_APP.Page
-        );
+        const { getMethods, saveMethod } = getMetaApi(META_APP.Page);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { highlightMethod } = getMetaApi(META_APP.Page);
         const { publish } = useMessage();
 
         const state = reactive({
@@ -136,7 +138,7 @@ export default {
 
             // 尝试多种方式获取当前选中的节点
             let currentSchema = pageState?.currentSchema;
-            
+
             // 如果 currentSchema 为 null，尝试从 canvasApi 获取
             if (!currentSchema && canvasApi?.value) {
                 try {
@@ -145,7 +147,11 @@ export default {
                         currentSchema = current.schema;
                     }
                 } catch (error) {
-                    console.warn('[BindEventsDialog] Error getting current from canvasApi:', error);
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        '[BindEventsDialog] Error getting current from canvasApi:',
+                        error
+                    );
                 }
             }
 
@@ -154,7 +160,8 @@ export default {
                 useNotify()({
                     type: 'error',
                     title: '绑定失败',
-                    message: '无法获取当前选中的组件，请先选中一个组件后再绑定事件'
+                    message:
+                        '无法获取当前选中的组件，请先选中一个组件后再绑定事件'
                 });
                 return;
             }
@@ -173,10 +180,10 @@ export default {
             }
 
             nodeProps[eventName].value = `this.${name}`;
-            
+
             // 先添加历史记录
             useHistory().addHistory();
-            
+
             // 然后直接更新 pageState.currentSchema，确保事件面板能检测到变化
             if (currentSchema) {
                 const rawSchema = toRaw(currentSchema);
@@ -186,7 +193,7 @@ export default {
                 }
                 await nextTick();
             }
-            
+
             // 触发 schemaChange 事件，通知其他组件更新
             if (publish && currentSchema) {
                 publish({
@@ -208,13 +215,26 @@ export default {
                 try {
                     extraParams = JSON.parse(state.editorContent);
                     state.isValidParams = Array.isArray(extraParams);
-                    console.log('[BindEventsDialog] getExtraParams parsed:', extraParams, 'isValidParams:', state.isValidParams);
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        '[BindEventsDialog] getExtraParams parsed:',
+                        extraParams,
+                        'isValidParams:',
+                        state.isValidParams
+                    );
                 } catch (error) {
                     state.isValidParams = false;
-                    console.error('[BindEventsDialog] getExtraParams parse error:', error);
+                    // eslint-disable-next-line no-console
+                    console.error(
+                        '[BindEventsDialog] getExtraParams parse error:',
+                        error
+                    );
                 }
             } else {
-                console.log('[BindEventsDialog] getExtraParams: enableExtraParams is false, returning empty string');
+                // eslint-disable-next-line no-console
+                console.log(
+                    '[BindEventsDialog] getExtraParams: enableExtraParams is false, returning empty string'
+                );
             }
             return extraParams;
         };
@@ -243,8 +263,15 @@ export default {
             // 如果 extraParams 是空字符串，extraParams.length 是 0（字符串长度）
             // 如果 extraParams 是数组，extraParams.length 是数组长度
             // 如果 extraParams 是 undefined/null，需要处理
-            const extraParamsLength = extraParams ? (Array.isArray(extraParams) ? extraParams.length : 0) : 0;
-            const finalParams = enableExtraParams && extraParamsLength ? `event,${formatParams}` : formatParams;
+            const extraParamsLength = extraParams
+                ? Array.isArray(extraParams)
+                    ? extraParams.length
+                    : 0
+                : 0;
+            const finalParams =
+                enableExtraParams && extraParamsLength
+                    ? `event,${formatParams}`
+                    : formatParams;
             const defaultMethod = `function ${name} (${finalParams}) {\n}\n`;
 
             // 没有现存方法，直接拼接一个新的
@@ -257,12 +284,13 @@ export default {
                 const astStr = string2Ast(method);
 
                 // 解析出来不是函数声明，直接返回默认拼接的函数
-                if (!astStr?.program?.body?.[0] || astStr.program.body[0].type !== 'FunctionDeclaration') {
+                const [firstNode] = astStr?.program?.body || [];
+                if (!firstNode || firstNode.type !== 'FunctionDeclaration') {
                     return defaultMethod;
                 }
 
-                const functionNode = astStr.program.body[0];
-                
+                const functionNode = firstNode;
+
                 // 参数数量一致，不需要改写参数，直接返回
                 // extraParams.length 是传入的参数数量，+1 是 event 参数
                 const currentParamsLength = functionNode.params?.length || 0;
@@ -274,14 +302,14 @@ export default {
                 if (!functionNode.id || !functionNode.body) {
                     return defaultMethod;
                 }
-                
+
                 const start = functionNode.id.end;
                 const end = functionNode.body.start;
-                
+
                 if (typeof start !== 'number' || typeof end !== 'number') {
                     return defaultMethod;
                 }
-                
+
                 magicStr.remove(start, end);
                 magicStr.appendLeft(start, `(${finalParams})`);
                 return magicStr.toString();
@@ -292,11 +320,12 @@ export default {
         };
 
         const activePagePlugin = () => {
+            // eslint-disable-next-line no-console
             console.log('[BindEventsDialog] activePagePlugin called');
             // 直接跳过 highlightMethod，避免错误
             // highlightMethod 只是用于高亮显示，不影响事件绑定功能
             return;
-            
+
             // 以下代码暂时注释，等 highlightMethod 问题解决后再启用
             /*
             activePlugin(PLUGIN_NAME.Page).then(() => {
@@ -333,10 +362,11 @@ export default {
 
             let params = 'event';
             const extraParams = getExtraParams();
-            
+
             let formatParams = params;
 
             if (!state.isValidParams) {
+                // eslint-disable-next-line no-console
                 console.warn('[BindEventsDialog] Invalid params, returning');
                 return;
             }
@@ -350,12 +380,20 @@ export default {
             }
 
             // 检查 bindMethodInfo 是否有 name
-            if (!state.bindMethodInfo || !state.bindMethodInfo.name) {
-                console.error('[BindEventsDialog] bindMethodInfo or name is missing:', state.bindMethodInfo);
+            if (!state.bindMethodInfo?.name) {
+                // eslint-disable-next-line no-console
+                console.error(
+                    '[BindEventsDialog] bindMethodInfo or name is missing:',
+                    state.bindMethodInfo
+                );
                 return;
             }
 
-            await bindMethod({ ...state.bindMethodInfo, params, extra: extraParams });
+            await bindMethod({
+                ...state.bindMethodInfo,
+                params,
+                extra: extraParams
+            });
 
             // 等待 bindMethod 完成后，确保 currentSchema 被设置
             await nextTick();
@@ -373,7 +411,7 @@ export default {
             const { name } = state.bindMethodInfo;
             const methodValue =
                 getMethods()?.[state.bindMethodInfo.name]?.value;
-            
+
             const functionStr = rewriteMethodParams(
                 methodValue,
                 name,
@@ -381,33 +419,46 @@ export default {
                 extraParams,
                 state.enableExtraParams
             );
-            
+
             const method = {
                 name,
                 content: functionStr
             };
-            
+
             // beforeSaveMethod 是可选的，如果不存在就跳过
             try {
                 const options = getOptions(META_ID);
+                // eslint-disable-next-line no-console
                 console.log('[BindEventsDialog] getOptions result:', options);
-                
+
                 const { beforeSaveMethod } = options || {};
 
                 if (typeof beforeSaveMethod === 'function') {
+                    // eslint-disable-next-line no-console
                     console.log('[BindEventsDialog] calling beforeSaveMethod');
                     await beforeSaveMethod(method, state.bindMethodInfo);
                 } else {
-                    console.log('[BindEventsDialog] beforeSaveMethod is not a function or not defined, skipping');
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        '[BindEventsDialog] beforeSaveMethod is not a function or not defined, skipping'
+                    );
                 }
             } catch (error) {
-                console.error('[BindEventsDialog] Error in beforeSaveMethod:', error);
+                // eslint-disable-next-line no-console
+                console.error(
+                    '[BindEventsDialog] Error in beforeSaveMethod:',
+                    error
+                );
                 // 即使 beforeSaveMethod 出错，也继续执行保存
             }
 
+            // eslint-disable-next-line no-console
             console.log('[BindEventsDialog] calling saveMethod with:', method);
             if (!saveMethod) {
-                console.error('[BindEventsDialog] saveMethod is not available from getMetaApi(META_APP.Page)');
+                // eslint-disable-next-line no-console
+                console.error(
+                    '[BindEventsDialog] saveMethod is not available from getMetaApi(META_APP.Page)'
+                );
                 useNotify()({
                     type: 'error',
                     title: '保存失败',
@@ -415,10 +466,14 @@ export default {
                 });
                 return;
             }
-            
+
             // 确保 method 对象有 name 和 content
-            if (!method || !method.name || !method.content) {
-                console.error('[BindEventsDialog] Invalid method object:', method);
+            if (!method?.name || !method?.content) {
+                // eslint-disable-next-line no-console
+                console.error(
+                    '[BindEventsDialog] Invalid method object:',
+                    method
+                );
                 useNotify()({
                     type: 'error',
                     title: '保存失败',
@@ -426,18 +481,33 @@ export default {
                 });
                 return;
             }
-            
+
             try {
-                console.log('[BindEventsDialog] Calling saveMethod with validated method:', { name: method.name, contentLength: method.content?.length });
+                // eslint-disable-next-line no-console
+                console.log(
+                    '[BindEventsDialog] Calling saveMethod with validated method:',
+                    { name: method.name, contentLength: method.content?.length }
+                );
                 saveMethod(method);
-                console.log('[BindEventsDialog] saveMethod completed successfully');
+                // eslint-disable-next-line no-console
+                console.log(
+                    '[BindEventsDialog] saveMethod completed successfully'
+                );
             } catch (error) {
+                // eslint-disable-next-line no-console
                 console.error('[BindEventsDialog] Error in saveMethod:', error);
-                console.error('[BindEventsDialog] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+                // eslint-disable-next-line no-console
+                console.error(
+                    '[BindEventsDialog] Error stack:',
+                    error instanceof Error ? error.stack : 'No stack trace'
+                );
                 useNotify()({
                     type: 'error',
                     title: '保存失败',
-                    message: error instanceof Error ? error.message : '保存方法执行失败'
+                    message:
+                        error instanceof Error
+                            ? error.message
+                            : '保存方法执行失败'
                 });
                 // 不抛出错误，让用户知道保存失败即可
             }

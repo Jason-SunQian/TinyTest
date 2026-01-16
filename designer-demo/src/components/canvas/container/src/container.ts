@@ -392,7 +392,9 @@ const insertInner = (
         targetNode = useCanvas().pageState.pageSchema;
         if (!targetNode) {
             // eslint-disable-next-line no-console
-            console.error('[insertInner] node and pageSchema are both null, cannot insert');
+            console.error(
+                '[insertInner] node and pageSchema are both null, cannot insert'
+            );
             return;
         }
     }
@@ -452,18 +454,20 @@ export const querySelectById = (id: string) => {
         }
         return null;
     }
-    
+
     let selector = `[${NODE_UID}="${id}"]`;
     const doc = getDocument();
-    
+
     // 防御性检查：如果 doc 为 null，返回 null
     if (!doc) {
         if (import.meta.env.DEV) {
-            console.warn('[querySelectById] document is null, iframe may not be loaded yet');
+            console.warn(
+                '[querySelectById] document is null, iframe may not be loaded yet'
+            );
         }
         return null;
     }
-    
+
     let element = doc.querySelector(selector);
     const loopId = element?.getAttribute('loop-id');
     if (element && loopId) {
@@ -562,7 +566,7 @@ const setSelectRect = (
 export const updateRect = (id?: string) => {
     const currentId = getCurrent().schema?.id;
     id = (typeof id === 'string' && id) || currentId;
-    
+
     // 防御性检查：如果 id 为空，直接返回
     if (!id) {
         if (import.meta.env.DEV) {
@@ -570,7 +574,7 @@ export const updateRect = (id?: string) => {
         }
         return;
     }
-    
+
     clearHover();
 
     // 多选场景直接调用 refreshSelectionState
@@ -972,7 +976,7 @@ export const selectNode = async (
         }
         return null;
     }
-    
+
     const { node } = useCanvas().getNodeWithParentById(id) || {};
 
     let element = querySelectById(id);
@@ -1036,7 +1040,9 @@ export const insertNode = (
         const pageSchema = useCanvas().pageState.pageSchema || getSchema();
         if (!pageSchema) {
             // eslint-disable-next-line no-console
-            console.error('[insertNode] pageSchema and getSchema() are both null, cannot insert');
+            console.error(
+                '[insertNode] pageSchema and getSchema() are both null, cannot insert'
+            );
             return;
         }
         insertInner({ node: pageSchema, data: node.data }, position);
@@ -1052,13 +1058,19 @@ export const insertNode = (
                 break;
             case POSITION.IN:
                 if (!node.node) {
-                    const pageSchema = useCanvas().pageState.pageSchema || getSchema();
+                    const pageSchema =
+                        useCanvas().pageState.pageSchema || getSchema();
                     if (!pageSchema) {
                         // eslint-disable-next-line no-console
-                        console.error('[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert');
+                        console.error(
+                            '[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert'
+                        );
                         return;
                     }
-                    insertInner({ node: pageSchema, data: node.data }, position);
+                    insertInner(
+                        { node: pageSchema, data: node.data },
+                        position
+                    );
                 } else {
                     insertInner(node);
                 }
@@ -1071,13 +1083,19 @@ export const insertNode = (
                 break;
             default:
                 if (!node.node) {
-                    const pageSchema = useCanvas().pageState.pageSchema || getSchema();
+                    const pageSchema =
+                        useCanvas().pageState.pageSchema || getSchema();
                     if (!pageSchema) {
                         // eslint-disable-next-line no-console
-                        console.error('[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert');
+                        console.error(
+                            '[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert'
+                        );
                         return;
                     }
-                    insertInner({ node: pageSchema, data: node.data }, position);
+                    insertInner(
+                        { node: pageSchema, data: node.data },
+                        position
+                    );
                 } else {
                     insertInner(node);
                 }

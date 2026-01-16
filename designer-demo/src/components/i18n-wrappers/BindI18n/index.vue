@@ -1,4 +1,4 @@
-<!-- eslint-disable vue/attribute-hyphenation, vue/v-on-event-hyphenation, vue/html-self-closing, vue/max-lines-per-block, vue/block-lang, import/order, @typescript-eslint/naming-convention, vue/component-api-style, vue/require-explicit-emits, @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable vue/attribute-hyphenation, vue/v-on-event-hyphenation, vue/html-self-closing, vue/max-lines-per-block, vue/block-lang, import/order, @typescript-eslint/naming-convention, vue/component-api-style, vue/require-explicit-emits, @typescript-eslint/no-explicit-any, vue/multi-word-component-names, @typescript-eslint/array-type -->
 <template>
     <div ref="languageContent" class="languageContent">
         <div v-show="!showEditItem">
@@ -20,8 +20,14 @@
                 </tiny-option>
             </tiny-select>
             <div v-if="paramsForm.length" class="params-form">
-                <div class="label">{{ t('designer.i18n.bindI18n.paramsLabel') }}</div>
-                <div v-for="param in paramsForm" :key="param.name" class="params-item">
+                <div class="label">
+                    {{ t('designer.i18n.bindI18n.paramsLabel') }}
+                </div>
+                <div
+                    v-for="param in paramsForm"
+                    :key="param.name"
+                    class="params-item"
+                >
                     <label>{{ param.name }}</label>
                     <tiny-input
                         v-model="param.value"
@@ -30,11 +36,13 @@
                 </div>
             </div>
             <slot name="suffix">
-                <div class="bottom-buttons" :class="{ 'buttons-centered': isBind }">
-                    <tiny-button
-                        v-if="isBind"
-                        @click="unbindI18n"
-                    >{{ t('designer.i18n.bindI18n.unbind') }}</tiny-button>
+                <div
+                    class="bottom-buttons"
+                    :class="{ 'buttons-centered': isBind }"
+                >
+                    <tiny-button v-if="isBind" @click="unbindI18n">{{
+                        t('designer.i18n.bindI18n.unbind')
+                    }}</tiny-button>
                     <tiny-button type="primary" @click="openCreateForm">
                         {{ t('designer.i18n.bindI18n.createNew') }}
                     </tiny-button>
@@ -73,6 +81,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable vue/max-lines-per-block */
 import { reactive, ref, watchEffect, computed } from 'vue';
 import { useLayout, useTranslate } from '@opentiny/tiny-engine-meta-register';
 import { PROP_DATA_TYPE } from '@opentiny/tiny-engine-common/js/constants';
@@ -94,19 +103,27 @@ export default {
     },
     inheritAttrs: false,
     props: {
-        currentLang: String,
+        currentLang: {
+            type: String,
+            default: ''
+        },
         isBind: Boolean,
         langData: {
-            type: [Array, Object],
+            type: [Array, Object] as () => unknown[] | Record<string, unknown>,
             default: () => []
         },
         modelValue: {
             type: String,
             default: ''
         },
-        data: [Object, String],
-        // eslint-disable-next-line vue/require-typed-object-prop
-        locales: Array
+        data: {
+            type: [Object, String] as () => Record<string, unknown> | string,
+            default: () => ({})
+        },
+        locales: {
+            type: Array as () => unknown[],
+            default: () => []
+        }
     },
     emits: ['bind'],
     // eslint-disable-next-line vue/component-api-style
@@ -120,12 +137,14 @@ export default {
         const editForm = reactive<any>({});
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const paramsForm = ref<any[]>([]);
-        
+
         // 过滤掉中文（zh_CN），只保留英文（en_US）和其他语言
         const filteredLocales = computed(() => {
             if (!props.locales) return [];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return props.locales.filter((locale: any) => locale.lang !== 'zh_CN');
+            return props.locales.filter(
+                (locale: any) => locale.lang !== 'zh_CN'
+            );
         });
 
         watchEffect(() => {
@@ -194,7 +213,7 @@ export default {
 
         const openCreateForm = () => {
             Object.keys(editForm).forEach(key => delete editForm[key]);
-            editForm.key = 'lowcode.' + utils.guid();
+            editForm.key = `lowcode.${utils.guid()}`;
             editForm.type = PROP_DATA_TYPE.I18N;
             showEditItem.value = true;
         };
@@ -283,5 +302,3 @@ export default {
     }
 }
 </style>
-
-

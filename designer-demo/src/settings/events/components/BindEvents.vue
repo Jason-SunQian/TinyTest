@@ -192,7 +192,7 @@ export default {
             const props = pageState?.currentSchema?.props || {};
             const keys = Object.keys(props);
             state.bindActions = {};
-            
+
             // 遍历组件事件元数据
             Object.entries(renderEventList.value).forEach(
                 ([eventName, componentEvent]) => {

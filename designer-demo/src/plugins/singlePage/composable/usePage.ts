@@ -627,13 +627,16 @@ const updatePageContent = (
     currentPage: { id: string; page_content?: any } | null
 ) => {
     // 防御性检查：如果 currentPage 为 null，直接返回
-    if (!currentPage || !currentPage.id) {
+    if (!currentPage?.id) {
         if (import.meta.env.DEV) {
-            console.warn('[updatePageContent] currentPage is null or has no id, skipping update');
+            // eslint-disable-next-line no-console
+            console.warn(
+                '[updatePageContent] currentPage is null or has no id, skipping update'
+            );
         }
         return;
     }
-    
+
     const currentPageSchema = familyPages.find(
         item => item.id === currentPage.id
     );
@@ -687,13 +690,16 @@ const handlePageDetail = async (pages: any[]) => {
 
 const getFamily = async (currentPage: { id: string } | null) => {
     // 防御性检查：如果 currentPage 为 null，直接返回
-    if (!currentPage || !currentPage.id) {
+    if (!currentPage?.id) {
         if (import.meta.env.DEV) {
-            console.warn('[getFamily] currentPage is null or has no id, returning empty array');
+            // eslint-disable-next-line no-console
+            console.warn(
+                '[getFamily] currentPage is null or has no id, returning empty array'
+            );
         }
         return [];
     }
-    
+
     if (pageSettingState.pages.length === 0) {
         await getPageList();
     }

@@ -32,7 +32,9 @@ async function startApp() {
                 // 确保国际化在应用创建前加载
                 loadDesignerI18n();
                 // 覆盖 useNotify hook，使用国际化版本
-                initHook(HOOK_NAME.useNotify, useNotifyI18n, { useDefaultExport: true });
+                initHook(HOOK_NAME.useNotify, useNotifyI18n, {
+                    useDefaultExport: true
+                });
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）
                 initVSCodeBridge();
             },

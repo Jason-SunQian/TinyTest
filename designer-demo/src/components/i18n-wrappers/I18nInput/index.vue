@@ -17,7 +17,9 @@
                     @hide="onHide"
                 >
                     <div class="popover-content">
-                        <h3 class="title">{{ t('designer.i18n.bindI18n.title') }}</h3>
+                        <h3 class="title">
+                            {{ t('designer.i18n.bindI18n.title') }}
+                        </h3>
                         <icon-close
                             class="icon-close"
                             @click="closePopover"
@@ -52,24 +54,27 @@ import { useTranslate } from '@opentiny/tiny-engine-meta-register';
 import { Input, Popover } from '@opentiny/vue';
 import { IconClose } from '@opentiny/vue-icon';
 
-import BindI18n from '../BindI18n/index.vue';
 import { useDesignerI18n } from '@/services/i18nService';
 
+import BindI18n from '../BindI18n/index.vue';
+
 export default {
+    // eslint-disable-next-line vue/component-definition-name-casing
     name: 'I18nInput',
     components: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BindI18n,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconClose: IconClose()
     },
     inheritAttrs: false,
     props: {
         modelValue: {
-            type: [String, Object],
+            type: [String, Object] as () => string | Record<string, unknown>,
             default: ''
         }
     },
@@ -94,7 +99,8 @@ export default {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const inputChange = (event: { target: { value: any } }) => {
-            emit('update:modelValue', event.target.value); // 直接修改时去掉绑定
+            // 直接修改时去掉绑定
+            emit('update:modelValue', event.target.value);
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -167,10 +173,8 @@ export default {
 }
 </style>
 
-<style>
+<style lang="scss">
 .tiny-popover.tiny-popover.tiny-popper[x-placement].i18n-input-popover {
     padding: 20px;
 }
 </style>
-
-

@@ -128,12 +128,16 @@ import {
     InputConfigurator,
     SwitchConfigurator
 } from '@opentiny/tiny-engine-configurator';
-import { useProperties, useCanvas, getConfigurator } from '@opentiny/tiny-engine-meta-register';
-import { VariableConfigurator } from '@/components/i18n-wrappers';
+import {
+    useProperties,
+    useCanvas,
+    getConfigurator
+} from '@opentiny/tiny-engine-meta-register';
 import { PROP_DATA_TYPE } from '@opentiny/tiny-engine-common/js/constants';
 import { constants, utils } from '@opentiny/tiny-engine-utils';
 import { Tooltip } from '@opentiny/vue';
 
+import { VariableConfigurator } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
 
 const { DEFAULT_LOOP_NAME } = constants;

@@ -225,14 +225,16 @@ const highlightMethodFn = name => {
 
     // 重新生成 scriptAst 以确保它包含最新的方法
     try {
-        getScriptString(); // 这会更新 scriptAst
+        // 这会更新 scriptAst
+        getScriptString();
     } catch (error) {
+        // eslint-disable-next-line no-console
         console.warn('[highlightMethod] Failed to get script string:', error);
         return;
     }
 
     // 确保 scriptAst 和 body 存在且是数组
-    if (!scriptAst || !scriptAst.program || !scriptAst.program.body) {
+    if (!scriptAst?.program?.body) {
         return;
     }
 

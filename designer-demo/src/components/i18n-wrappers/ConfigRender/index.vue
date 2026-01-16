@@ -231,7 +231,11 @@ export default {
         const getEmptyText = computed(() => {
             // 如果明确传入了 emptyText 且不是默认的 "空" 或 "Empty"，则使用传入的值
             // 否则使用 i18n 翻译
-            if (props.emptyText && props.emptyText !== '空' && props.emptyText !== 'Empty') {
+            if (
+                props.emptyText &&
+                props.emptyText !== '空' &&
+                props.emptyText !== 'Empty'
+            ) {
                 return props.emptyText;
             }
             return t('designer.settings.props.emptyText');
