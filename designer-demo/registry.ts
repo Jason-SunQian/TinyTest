@@ -275,7 +275,8 @@ export default {
         id: 'engine.toolbars.customSave',
         title: 'Save',
         icon: 'save',
-        entry: CustomSave
+        entry: CustomSave,
+        apis: CustomSave.api
     },
     [META_APP.Breadcrumb]: {
         id: 'engine.toolbars.breadcrumb.custom',

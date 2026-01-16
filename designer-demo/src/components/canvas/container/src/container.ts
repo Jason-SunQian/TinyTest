@@ -445,8 +445,25 @@ export const removeNodeById = (id: string) => {
 };
 
 export const querySelectById = (id: string) => {
+    // 防御性检查：如果 id 为空，直接返回 null
+    if (!id) {
+        if (import.meta.env.DEV) {
+            console.warn('[querySelectById] id is empty:', id);
+        }
+        return null;
+    }
+    
     let selector = `[${NODE_UID}="${id}"]`;
     const doc = getDocument();
+    
+    // 防御性检查：如果 doc 为 null，返回 null
+    if (!doc) {
+        if (import.meta.env.DEV) {
+            console.warn('[querySelectById] document is null, iframe may not be loaded yet');
+        }
+        return null;
+    }
+    
     let element = doc.querySelector(selector);
     const loopId = element?.getAttribute('loop-id');
     if (element && loopId) {
@@ -456,7 +473,17 @@ export const querySelectById = (id: string) => {
     return element;
 };
 
-export const getCurrentElement = () => querySelectById(getCurrent().schema?.id);
+export const getCurrentElement = () => {
+    const current = getCurrent();
+    const id = current?.schema?.id;
+    if (!id) {
+        if (import.meta.env.DEV) {
+            console.warn('[getCurrentElement] schema id is empty:', current);
+        }
+        return null;
+    }
+    return querySelectById(id);
+};
 
 // 滚动页面后，目标元素与页面边界至少保留的边距
 const SCROLL_MARGIN = 15;
@@ -533,7 +560,17 @@ const setSelectRect = (
 };
 
 export const updateRect = (id?: string) => {
-    id = (typeof id === 'string' && id) || getCurrent().schema?.id;
+    const currentId = getCurrent().schema?.id;
+    id = (typeof id === 'string' && id) || currentId;
+    
+    // 防御性检查：如果 id 为空，直接返回
+    if (!id) {
+        if (import.meta.env.DEV) {
+            console.warn('[updateRect] id is empty, skipping update');
+        }
+        return;
+    }
+    
     clearHover();
 
     // 多选场景直接调用 refreshSelectionState
@@ -928,6 +965,14 @@ export const selectNode = async (
     type?: string,
     isMultiple = false
 ) => {
+    // 防御性检查：如果 id 为空，直接返回
+    if (!id) {
+        if (import.meta.env.DEV) {
+            console.warn('[selectNode] id is empty, skipping selection');
+        }
+        return null;
+    }
+    
     const { node } = useCanvas().getNodeWithParentById(id) || {};
 
     let element = querySelectById(id);

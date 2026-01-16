@@ -108,7 +108,7 @@
 <!-- eslint-disable vue/require-typed-object-prop -->
 <script lang="ts">
 /* metaService: engine.plugins.state.Main */
-import { reactive, ref, computed, onActivated, watch, provide } from 'vue';
+import { reactive, ref, computed, onActivated, watch, provide, nextTick } from 'vue';
 import { Button, Search, Tabs, TabItem } from '@opentiny/vue';
 import {
     useCanvas,
@@ -183,7 +183,20 @@ export default {
         const activeName = ref(STATE.CURRENT_STATE);
         const isBlock = computed(() => useCanvas().isBlock());
         const { setSaved } = useCanvas();
-        const { openCommon } = getMetaApi(META_APP.Save);
+        // 使用自定义 ID 获取 API
+        const customSaveId = 'engine.toolbars.customSave';
+        let saveApi = getMetaApi(customSaveId);
+        
+        // 如果找不到自定义的，尝试使用原插件的 ID（向后兼容）
+        if (!saveApi) {
+            saveApi = getMetaApi(META_APP.Save);
+        }
+        
+        if (!saveApi) {
+            throw new Error(`无法找到 Save API，请检查 registry.ts 中的配置`);
+        }
+        
+        const { openCommon, saveCommon: saveCommonFn } = saveApi;
         const docsUrl = useHelp().getDocsUrl('data');
         const docsContent = computed(() => t('designer.state.docs'));
         const state = reactive({
@@ -204,7 +217,7 @@ export default {
             changeLeftFixedPanels
         } = useLayout();
 
-        // 使用实际注册的插件 ID
+        // 使用实际注册的插件 ID（迁移后的自定义 ID）
         const pluginId = 'engine.plugins.customState';
 
         // 直接实现固定面板功能
@@ -213,13 +226,65 @@ export default {
         };
 
         const firstPanelOffset = computed(() => {
-            return getPluginWidth(PLUGIN_NAME.State) + 1;
+            try {
+                let width: number;
+                try {
+                    width = getPluginWidth(pluginId);
+                    if (width === 280) {
+                        width = getPluginWidth(PLUGIN_NAME.State);
+                    }
+                } catch (e) {
+                    try {
+                        width = getPluginWidth(PLUGIN_NAME.State);
+                    } catch (e2) {
+                        width = 280;
+                    }
+                }
+                return width + 1;
+            } catch (error) {
+                return 281;
+            }
         });
 
         const alignStyle = computed(() => {
-            const panelAlign = getPluginByLayout(PLUGIN_NAME.State);
-            const align = panelAlign.includes('left') ? 'left' : 'right';
-            return `${align}: ${firstPanelOffset.value}px`;
+            try {
+                let panelAlign: string = 'leftTop';
+                try {
+                    const align1 = getPluginByLayout(pluginId);
+                    if (align1 && align1 !== 'leftTop') {
+                        panelAlign = align1;
+                    } else {
+                        try {
+                            const align2 = getPluginByLayout(PLUGIN_NAME.State);
+                            if (align2 && align2 !== 'leftTop') {
+                                panelAlign = align2;
+                            }
+                        } catch (e2) {
+                            // 忽略错误，使用默认值
+                        }
+                    }
+                } catch (e) {
+                    try {
+                        const align2 = getPluginByLayout(PLUGIN_NAME.State);
+                        if (align2) {
+                            panelAlign = align2;
+                        }
+                    } catch (e2) {
+                        // 忽略错误，使用默认值
+                    }
+                }
+                
+                const align = panelAlign?.includes('left') ? 'left' : 'right';
+                let offset: number = 281;
+                try {
+                    offset = firstPanelOffset.value;
+                } catch (e) {
+                    // 忽略错误，使用默认值
+                }
+                return `${align}: ${offset}px`;
+            } catch (error) {
+                return 'left: 281px';
+            }
         });
 
         const panelState = reactive({
@@ -325,23 +390,43 @@ export default {
                     setSaved(false);
 
                     const schema = getSchema();
+                    const updatedState = { ...(schema.state || {}), [name]: variable };
+                    
+                    // 更新 schema 的 state，确保包含新添加的变量
                     updateSchema({
-                        state: { ...(schema.state || {}), [name]: variable }
+                        state: updatedState
                     });
 
                     useHistory().addHistory();
 
-                    const isFixed = props.fixedPanels.includes(
-                        PLUGIN_NAME.State
-                    );
+                    // 兼容处理：如果 fixedPanels 中包含旧的 ID，也认为已固定
+                    const isFixed = props.fixedPanels?.includes(pluginId) || 
+                                   props.fixedPanels?.includes(PLUGIN_NAME.State) || 
+                                   false;
+                    
                     // 如果面板没有固定，临时固定，避免因保存时清空选中状态导致的面板关闭
                     if (!isFixed) {
-                        useLayout().changeLeftFixedPanels(PLUGIN_NAME.State);
+                        changeLeftFixedPanels(pluginId);
                     }
-                    await openCommon();
-                    // 恢复原来固定的状态
-                    if (!isFixed) {
-                        useLayout().changeLeftFixedPanels(PLUGIN_NAME.State);
+                    
+                    // 尝试自动保存，如果失败则保持红点，让用户手动保存
+                    try {
+                        await nextTick();
+                        
+                        if (saveCommonFn && typeof saveCommonFn === 'function') {
+                            await saveCommonFn();
+                            setSaved(true);
+                            useNotify({
+                                type: 'success',
+                                message: 'Save successful!'
+                            });
+                        }
+                    } catch (error) {
+                        // 保存失败时，保持 setSaved(false)，红点会显示，用户可以手动保存
+                    } finally {
+                        if (!isFixed) {
+                            changeLeftFixedPanels(pluginId);
+                        }
                     }
                 });
             } else {

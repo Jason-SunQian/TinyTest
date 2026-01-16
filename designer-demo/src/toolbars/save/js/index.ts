@@ -48,8 +48,7 @@ const saveBlock = async (pageSchema: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
-
-    // 如果 currentPage 为 null，尝试从 URL 获取 pageId
+    
     let pageId: string | null = currentPage?.id || null;
     if (!pageId) {
         const paramsMap = new URLSearchParams(window.location.search);
@@ -57,12 +56,13 @@ const savePage = async (pageSchema: any) => {
     }
 
     if (!pageId) {
+        const errorMessage = translate('designer.vscode.saveFailed') || '无法获取页面 ID，保存失败';
         useNotify()({
             type: 'error',
             title: translate('designer.vscode.saveFailed'),
-            message: '无法获取页面 ID，保存失败'
+            message: errorMessage
         });
-        return;
+        throw new Error(errorMessage);
     }
 
     // // 检测是否在 VSCode 环境中
@@ -129,8 +129,6 @@ const savePage = async (pageSchema: any) => {
     try {
         await handlePageUpdate(updateParams);
         isLoading.value = false;
-
-        // 发布页面保存事件，通知其他组件进行相应处理
         publish({ topic: 'page-saved' });
     } catch (error) {
         isLoading.value = false;
@@ -150,53 +148,103 @@ export const saveCommon = (value?: string) => {
         canvasApi,
         pageState,
         resetBlockCanvasState,
-        resetPageCanvasState
+        resetPageCanvasState,
+        getSchema
     } = useCanvas();
-    const pageSchema = value ? JSON.parse(value) : useCanvas().getSchema();
-    const { selectNode } = canvasApi.value;
-
-    // 保存当前 currentPage，避免在重置时丢失
-    // 确保 currentPage 不为 null，如果为 null 则保持为 null（不传递 undefined）
+    
+    // 获取最新的 schema（包含刚更新的 state）
+    let pageSchema;
+    if (value && value !== 'undefined' && value.trim() !== '') {
+        try {
+            pageSchema = JSON.parse(value);
+        } catch (error) {
+            pageSchema = getSchema();
+        }
+    } else {
+        pageSchema = getSchema();
+    }
+    
+    // 防御性检查：确保 pageSchema 存在且有效
+    if (!pageSchema || typeof pageSchema !== 'object') {
+        throw new Error('Schema is invalid, cannot save');
+    }
+    
+    const { clearSelect } = canvasApi.value;
     const savedCurrentPage = pageState.currentPage ?? null;
 
-    if (isBlock()) {
-        resetBlockCanvasState({ ...pageState, pageSchema, loading: false });
-    } else {
-        // 确保 currentPage 被保留，并且 loading 被设置为 false
-        // 如果 savedCurrentPage 为 null，传递 null 而不是 undefined
-        resetPageCanvasState({ 
-            ...pageState, 
-            pageSchema, 
-            currentPage: savedCurrentPage, 
-            loading: false 
-        });
+    // 深拷贝 pageSchema，确保不会丢失 state 等数据
+    let schemaToSave;
+    try {
+        if (pageSchema && typeof pageSchema === 'object') {
+            const stringified = JSON.stringify(pageSchema);
+            if (stringified && stringified !== 'undefined') {
+                schemaToSave = JSON.parse(stringified);
+            } else {
+                schemaToSave = pageSchema;
+            }
+        } else {
+            schemaToSave = pageSchema;
+        }
+    } catch (error) {
+        schemaToSave = pageSchema;
     }
 
     if (pageSettingState?.isAIPage) {
         if (isTemporaryPage.saved) isTemporaryPage.saved = false;
         isTemporaryPage.saved = true;
         // eslint-disable-next-line camelcase
-        pageSettingState.currentPageData.page_content = pageSchema;
+        pageSettingState.currentPageData.page_content = schemaToSave;
         return Promise.resolve();
     }
+    
+    // 先保存数据，保存成功后再重置画布状态
+    const savePromise = isBlock() ? saveBlock(schemaToSave) : savePage(schemaToSave);
+    
+    return savePromise.then(() => {
+        try {
+            clearSelect?.();
+        } catch (error) {
+            // 忽略清除选择状态的错误
+        }
 
-    selectNode(null);
-    return isBlock() ? saveBlock(pageSchema) : savePage(pageSchema);
+        if (isBlock()) {
+            resetBlockCanvasState({ ...pageState, pageSchema: schemaToSave, loading: false });
+        } else {
+            try {
+                resetPageCanvasState({ 
+                    ...pageState, 
+                    pageSchema: schemaToSave, 
+                    currentPage: savedCurrentPage, 
+                    loading: false 
+                });
+            } catch (error) {
+                // 重置失败不应该影响保存成功的结果
+            }
+        }
+    }).catch((error) => {
+        throw error;
+    });
 };
 
 export const openCommon = async () => {
     const { isSaved, getSchema } = useCanvas();
-    if (isSaved() || state.disabled) return;
+    if (isSaved() || state.disabled) {
+        return;
+    }
 
     const { beforeSave, saveMethod, saved } = getOptions(
         'engine.toolbars.save'
     );
 
     try {
-        if (typeof beforeSave === 'function') await beforeSave();
+        if (typeof beforeSave === 'function') {
+            await beforeSave();
+        }
         if (typeof saveMethod === 'function') {
             const stop = await saveMethod();
-            if (stop) return;
+            if (stop) {
+                return;
+            }
         }
     } catch (error) {
         useNotify()({ type: 'error', message: `Error in saving: ${error}` });
@@ -232,10 +280,18 @@ export const openCommon = async () => {
     }
 
     state.disabled = true;
-    const pageSchema = getSchema();
-    state.code = JSON.stringify(pageSchema || {}, null, 2);
-
-    return saveCommon(state.code).finally(() => {
+    
+    try {
+        const pageSchema = getSchema();
+        state.code = JSON.stringify(pageSchema || {}, null, 2);
+        return await saveCommon(state.code);
+    } catch (error) {
+        useNotify()({
+            type: 'error',
+            message: error instanceof Error ? error.message : String(error)
+        });
+        throw error;
+    } finally {
         state.disabled = false;
         if (typeof saved === 'function') {
             try {
@@ -247,7 +303,7 @@ export const openCommon = async () => {
                 });
             }
         }
-    });
+    }
 };
 
 export const getAutoSaveStatus = () => {

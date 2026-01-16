@@ -13,10 +13,11 @@ import {
     initVSCodeBridge,
     checkIsVSCodeEnvironment
 } from './composable/useVSCodeBridge';
+import useNotifyI18n from './utils/useNotifyI18n';
 
 async function startApp() {
     const registry = await import('../registry');
-    const { init } = await import('@opentiny/tiny-engine');
+    const { init, initHook, HOOK_NAME } = await import('@opentiny/tiny-engine');
 
     init({
         // 合并多个注册表
@@ -30,6 +31,8 @@ async function startApp() {
                 console.log('🚀 designer-demo 开始初始化...');
                 // 确保国际化在应用创建前加载
                 loadDesignerI18n();
+                // 覆盖 useNotify hook，使用国际化版本
+                initHook(HOOK_NAME.useNotify, useNotifyI18n, { useDefaultExport: true });
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）
                 initVSCodeBridge();
             },
