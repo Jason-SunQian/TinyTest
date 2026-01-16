@@ -2,7 +2,8 @@
   "version": "3.20.0",
   "icon": "radio",
   "name": {
-    "zh_CN": "单选"
+    "zh_CN": "单选",
+    "en_US": "Radio"
   },
   "component": "TinyRadio",
   "description": "用于配置不同场景的选项，在一组备选项中进行单选",
@@ -253,7 +254,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "单选"
+        "zh_CN": "单选",
+        "en_US": "Radio"
       },
       "icon": "radio",
       "screenshot": "",

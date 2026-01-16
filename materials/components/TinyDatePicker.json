@@ -1,7 +1,8 @@
 {
   "version": "3.20.0",
   "name": {
-    "zh_CN": "日期选择"
+    "zh_CN": "日期选择",
+    "en_US": "Date Picker"
   },
   "component": "TinyDatePicker",
   "icon": "datepick",
@@ -447,7 +448,8 @@
   "snippets": [
     {
       "name": {
-        "zh_CN": "日期选择"
+        "zh_CN": "日期选择",
+        "en_US": "Date Picker"
       },
       "icon": "datepick",
       "screenshot": "",

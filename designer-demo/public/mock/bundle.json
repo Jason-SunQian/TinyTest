@@ -6867,7 +6867,8 @@
           "version": "3.20.0",
           "icon": "checkbox",
           "name": {
-            "zh_CN": "复选框"
+            "zh_CN": "复选框",
+            "en_US": "Checkbox"
           },
           "component": "TinyCheckbox",
           "description": "用于配置不同场景的选项，提供用户可在一组选项中进行多选",
@@ -8117,7 +8118,8 @@
         {
           "version": "3.20.0",
           "name": {
-            "zh_CN": "日期选择"
+            "zh_CN": "日期选择",
+            "en_US": "Date Picker"
           },
           "component": "TinyDatePicker",
           "icon": "datepick",
@@ -12557,7 +12559,8 @@
           "version": "3.20.0",
           "icon": "radio",
           "name": {
-            "zh_CN": "单选"
+            "zh_CN": "单选",
+            "en_US": "Radio"
           },
           "component": "TinyRadio",
           "description": "用于配置不同场景的选项，在一组备选项中进行单选",
@@ -16249,7 +16252,8 @@
           "children": [
             {
               "name": {
-                "zh_CN": "复选框"
+                "zh_CN": "复选框",
+                "en_US": "Checkbox"
               },
               "icon": "checkbox",
               "screenshot": "",
@@ -16323,7 +16327,8 @@
             },
             {
               "name": {
-                "zh_CN": "日期选择"
+                "zh_CN": "日期选择",
+                "en_US": "Date Picker"
               },
               "icon": "datepick",
               "screenshot": "",
@@ -16448,7 +16453,8 @@
             },
             {
               "name": {
-                "zh_CN": "单选"
+                "zh_CN": "单选",
+                "en_US": "Radio"
               },
               "icon": "radio",
               "screenshot": "",
