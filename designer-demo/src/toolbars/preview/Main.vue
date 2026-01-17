@@ -80,7 +80,7 @@ export default {
                 // 获取当前页面数据和 schema（与保存时相同）
                 const { currentPage } = useCanvas().pageState;
                 const rawPageSchema = useCanvas().getSchema();
-                
+
                 // 检查是否有可预览的内容：currentPage 或 pageSchema
                 // 在 VSCode 环境中，即使 isEmptyPage() 返回 true，
                 // 只要 currentPage 或 pageSchema 存在，就可以预览
@@ -91,15 +91,17 @@ export default {
                     });
                     return;
                 }
-                
+
                 // 如果有 pageSchema 但没有 currentPage.id，使用文件名或时间戳作为临时 ID
                 const pageId = currentPage?.id || `temp_${Date.now()}`;
 
                 // 序列化数据：去除 Vue 响应式包装和不可序列化的属性（函数、循环引用等）
                 // 使用 JSON.parse(JSON.stringify()) 确保数据可以安全地通过 postMessage 传递
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let pageSchema: any = null;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let pageData: any = null;
-                
+
                 try {
                     if (rawPageSchema) {
                         // 先使用 toRaw 去除响应式包装，再序列化
@@ -109,26 +111,37 @@ export default {
                             pageSchema = JSON.parse(stringified);
                         }
                     }
-                    
+
                     if (currentPage) {
                         // 同样处理 currentPage
                         const rawPage = toRaw(currentPage);
                         pageData = JSON.parse(JSON.stringify(rawPage));
                         if (pageSchema) {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                            /* eslint-disable-next-line @typescript-eslint/naming-convention, camelcase */
                             pageData.page_content = pageSchema;
                         }
                     } else if (pageSchema) {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        /* eslint-disable-next-line @typescript-eslint/naming-convention, camelcase */
                         pageData = { page_content: pageSchema };
                     }
                 } catch (error) {
                     // 如果序列化失败，使用原始数据（可能导致 postMessage 失败，但至少不会报错）
-                    console.warn('[Preview] Failed to serialize data, using raw data:', error);
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        '[Preview] Failed to serialize data, using raw data:',
+                        error
+                    );
                     pageSchema = rawPageSchema;
-                    pageData = currentPage 
-                        ? { ...toRaw(currentPage), page_content: rawPageSchema }
-                        : { page_content: rawPageSchema };
+                    /* eslint-disable @typescript-eslint/naming-convention, camelcase */
+                    if (currentPage) {
+                        pageData = {
+                            ...toRaw(currentPage),
+                            page_content: rawPageSchema
+                        };
+                    } else {
+                        pageData = { page_content: rawPageSchema };
+                    }
+                    /* eslint-enable @typescript-eslint/naming-convention, camelcase */
                 }
 
                 goPreview(
