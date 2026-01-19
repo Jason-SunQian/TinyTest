@@ -151,7 +151,7 @@ export default {
     // eslint-disable-next-line vue/component-api-style
     setup() {
         const { PLUGIN_NAME, activePlugin } = useLayout();
-        const { pageState } = useCanvas();
+        const { pageState, getCurrentSchema, canvasApi } = useCanvas();
         const { getBlockEvents, getCurrentBlock, removeEventLink } = useBlock();
         const { getMaterial } = useMaterial();
         const { confirm } = useModal();
@@ -183,71 +183,157 @@ export default {
         }));
 
         const updateBindActions = () => {
-            const componentName = pageState?.currentSchema?.componentName;
+            // 尝试多种方式获取当前选中的组件
+            let currentSchema = getCurrentSchema();
+            
+            // 如果 getCurrentSchema 返回空，尝试从 pageState 获取
+            if (!currentSchema || (Array.isArray(currentSchema) && currentSchema.length === 0)) {
+                currentSchema = pageState?.currentSchema;
+            }
+            
+            // 如果还是为空，尝试从 canvasApi 获取
+            if (!currentSchema && canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        currentSchema = current.schema;
+                    }
+                } catch (error) {
+                    // 静默处理错误
+                }
+            }
+            
+            // 处理数组情况（多选）
+            if (Array.isArray(currentSchema) && currentSchema.length > 0) {
+                currentSchema = currentSchema[0];
+            }
+            
+            if (!currentSchema) {
+                state.bindActions = {};
+                return;
+            }
+            
+            const componentName = currentSchema?.componentName;
             const componentSchema = getMaterial(componentName);
+            
             state.componentEvent =
                 componentSchema?.content?.schema?.events ||
                 componentSchema?.schema?.events ||
                 {};
-            const props = pageState?.currentSchema?.props || {};
+            
+            const props = currentSchema?.props || {};
             const keys = Object.keys(props);
             state.bindActions = {};
 
-            // 遍历组件事件元数据
-            Object.entries(renderEventList.value).forEach(
-                ([eventName, componentEvent]) => {
-                    // 查找组件已添加的事件
-                    if (keys.includes(eventName)) {
-                        const event = props[eventName];
-                        const { value, params } = event;
-                        const eventArgs =
-                            (!params &&
-                                value.match(/\((.+)\)$/)?.[1]?.split(',')) ||
-                            params;
-                        const action = {
-                            eventName,
-                            ref: '',
-                            event: props[eventName],
-                            params: eventArgs
-                        };
+            // 先遍历 props 中所有已绑定的事件，确保即使 renderEventList 中没有定义也能显示
+            keys.forEach(eventName => {
+                const event = props[eventName];
+                
+                // 只处理类型为 JSExpression 的事件（已绑定的事件）
+                if (event && event.type === 'JSExpression') {
+                    // 从 renderEventList 中获取事件元数据，如果没有则使用默认值
+                    const componentEvent = renderEventList.value[eventName] || {
+                        label: {
+                            zh_CN: eventName,
+                            en_US: eventName
+                        },
+                        description: {
+                            zh_CN: `${eventName} 事件`,
+                            en_US: `${eventName} event`
+                        },
+                        type: 'event',
+                        functionInfo: {
+                            params: [],
+                            returns: {}
+                        },
+                        defaultValue: ''
+                    };
 
-                        if (action.event.type === 'JSExpression') {
-                            action.ref = action.event.value
-                                .replace('this.', '')
-                                .replace(/\(.*\)$/, '');
-                        }
+                    const { value, params } = event;
+                    const eventArgs =
+                        (!params &&
+                            value.match(/\((.+)\)$/)?.[1]?.split(',')) ||
+                        params;
+                    const action = {
+                        eventName,
+                        ref: '',
+                        event: props[eventName],
+                        params: eventArgs
+                    };
 
-                        if (pageState.isBlock) {
-                            // 区块编辑态时设置选中组件的事件元数据
-                            action.metaEvent = componentEvent;
-
-                            const blockEvents = getBlockEvents(
-                                getCurrentBlock()
-                            );
-                            const componentId = pageState?.currentSchema?.id;
-
-                            if (componentId && blockEvents) {
-                                Object.entries(blockEvents).forEach(
-                                    ([name, blockEvent]) => {
-                                        if (
-                                            componentId ===
-                                                blockEvent?.linked?.id &&
-                                            eventName ===
-                                                blockEvent?.linked?.event
-                                        ) {
-                                            action.linked = blockEvent.linked;
-                                            action.linkedEventName = name;
-                                        }
-                                    }
-                                );
-                            }
-                        }
-
-                        state.bindActions[eventName] = action;
+                    if (action.event.type === 'JSExpression') {
+                        action.ref = action.event.value
+                            .replace('this.', '')
+                            .replace(/\(.*\)$/, '');
                     }
+
+                    if (pageState.isBlock) {
+                        // 区块编辑态时设置选中组件的事件元数据
+                        action.metaEvent = componentEvent;
+
+                        const blockEvents = getBlockEvents(
+                            getCurrentBlock()
+                        );
+                        const componentId = currentSchema?.id;
+
+                        if (componentId && blockEvents) {
+                            Object.entries(blockEvents).forEach(
+                                ([name, blockEvent]) => {
+                                    if (
+                                        componentId ===
+                                            blockEvent?.linked?.id &&
+                                        eventName ===
+                                            blockEvent?.linked?.event
+                                    ) {
+                                        action.linked = blockEvent.linked;
+                                        action.linkedEventName = name;
+                                    }
+                                }
+                            );
+                        }
+                    }
+
+                    state.bindActions[eventName] = action;
                 }
-            );
+            });
         };
+
+        // 使用 computed 监听 getCurrentSchema 的变化，类似 Props 面板的做法
+        const currentSchemaId = computed(() => {
+            const schema = getCurrentSchema();
+            if (schema) {
+                return Array.isArray(schema) ? schema[0]?.id : schema.id;
+            }
+            // 如果 getCurrentSchema 返回空，尝试从 pageState 获取
+            const pageStateSchema = pageState?.currentSchema;
+            if (pageStateSchema) {
+                return Array.isArray(pageStateSchema) ? pageStateSchema[0]?.id : pageStateSchema.id;
+            }
+            // 如果还是为空，尝试从 canvasApi 获取
+            if (canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        return current.schema.id;
+                    }
+                } catch (error) {
+                    // 静默处理错误
+                }
+            }
+            return null;
+        });
+
+        // 监听 currentSchemaId 的变化，确保组件选择时能正确更新
+        watch(
+            () => currentSchemaId.value,
+            async (newId, oldId) => {
+                if (newId !== oldId) {
+                    await nextTick();
+                    updateBindActions();
+                }
+            },
+            { immediate: true }
+        );
 
         // 使用 watchEffect 监听 currentSchema 和 props 的变化
         watchEffect(() => {
@@ -256,7 +342,10 @@ export default {
 
         // 额外使用 watch 深度监听 props 的变化，确保 props 内部属性的变化也能触发更新
         watch(
-            () => pageState?.currentSchema?.props,
+            () => {
+                const schema = getCurrentSchema();
+                return Array.isArray(schema) ? schema[0]?.props : schema?.props;
+            },
             () => {
                 updateBindActions();
             },
@@ -286,14 +375,40 @@ export default {
         };
 
         const deleteAction = action => {
-            const keys = Object.keys(pageState?.currentSchema?.props || {});
+            // 获取当前选中的组件
+            let currentSchema = getCurrentSchema();
+            if (Array.isArray(currentSchema) && currentSchema.length > 0) {
+                currentSchema = currentSchema[0];
+            }
+            if (!currentSchema) {
+                currentSchema = pageState?.currentSchema;
+            }
+            if (!currentSchema && canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        currentSchema = current.schema;
+                    }
+                } catch (error) {
+                    // 静默处理错误
+                }
+            }
+
+            if (!currentSchema) {
+                return;
+            }
+
+            const keys = Object.keys(currentSchema?.props || {});
 
             if (keys.includes(action.eventName)) {
-                delete pageState.currentSchema.props[action.eventName];
+                if (!currentSchema.props) {
+                    currentSchema.props = {};
+                }
+                delete currentSchema.props[action.eventName];
 
                 useMessage().publish({
                     topic: 'schemaChange',
-                    data: { props: pageState.currentSchema.props }
+                    data: { props: currentSchema.props }
                 });
             }
         };
