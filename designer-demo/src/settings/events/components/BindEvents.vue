@@ -1,4 +1,4 @@
-<!-- eslint-disable vue/max-lines-per-block -->
+<!-- eslint-disable vue/max-lines-per-block, max-lines -->
 <template>
     <div class="bind-action-list">
         <div class="popover-head">
@@ -113,6 +113,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang, @typescript-eslint/naming-convention -->
 <script lang="ts">
+/* eslint-disable max-lines */
 /* metaService: engine.setting.event.BindEvents */
 import { computed, reactive, watchEffect, watch, nextTick } from 'vue';
 import { Popover, Button } from '@opentiny/vue';
@@ -185,12 +186,15 @@ export default {
         const updateBindActions = () => {
             // 尝试多种方式获取当前选中的组件
             let currentSchema = getCurrentSchema();
-            
+
             // 如果 getCurrentSchema 返回空，尝试从 pageState 获取
-            if (!currentSchema || (Array.isArray(currentSchema) && currentSchema.length === 0)) {
+            if (
+                !currentSchema ||
+                (Array.isArray(currentSchema) && currentSchema.length === 0)
+            ) {
                 currentSchema = pageState?.currentSchema;
             }
-            
+
             // 如果还是为空，尝试从 canvasApi 获取
             if (!currentSchema && canvasApi?.value) {
                 try {
@@ -202,25 +206,26 @@ export default {
                     // 静默处理错误
                 }
             }
-            
+
             // 处理数组情况（多选）
             if (Array.isArray(currentSchema) && currentSchema.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                 currentSchema = currentSchema[0];
             }
-            
+
             if (!currentSchema) {
                 state.bindActions = {};
                 return;
             }
-            
+
             const componentName = currentSchema?.componentName;
             const componentSchema = getMaterial(componentName);
-            
+
             state.componentEvent =
                 componentSchema?.content?.schema?.events ||
                 componentSchema?.schema?.events ||
                 {};
-            
+
             const props = currentSchema?.props || {};
             const keys = Object.keys(props);
             state.bindActions = {};
@@ -228,17 +233,21 @@ export default {
             // 先遍历 props 中所有已绑定的事件，确保即使 renderEventList 中没有定义也能显示
             keys.forEach(eventName => {
                 const event = props[eventName];
-                
+
                 // 只处理类型为 JSExpression 的事件（已绑定的事件）
                 if (event && event.type === 'JSExpression') {
                     // 从 renderEventList 中获取事件元数据，如果没有则使用默认值
                     const componentEvent = renderEventList.value[eventName] || {
                         label: {
+                            // eslint-disable-next-line camelcase
                             zh_CN: eventName,
+                            // eslint-disable-next-line camelcase
                             en_US: eventName
                         },
                         description: {
+                            // eslint-disable-next-line camelcase
                             zh_CN: `${eventName} 事件`,
+                            // eslint-disable-next-line camelcase
                             en_US: `${eventName} event`
                         },
                         type: 'event',
@@ -271,9 +280,7 @@ export default {
                         // 区块编辑态时设置选中组件的事件元数据
                         action.metaEvent = componentEvent;
 
-                        const blockEvents = getBlockEvents(
-                            getCurrentBlock()
-                        );
+                        const blockEvents = getBlockEvents(getCurrentBlock());
                         const componentId = currentSchema?.id;
 
                         if (componentId && blockEvents) {
@@ -282,8 +289,7 @@ export default {
                                     if (
                                         componentId ===
                                             blockEvent?.linked?.id &&
-                                        eventName ===
-                                            blockEvent?.linked?.event
+                                        eventName === blockEvent?.linked?.event
                                     ) {
                                         action.linked = blockEvent.linked;
                                         action.linkedEventName = name;
@@ -307,7 +313,9 @@ export default {
             // 如果 getCurrentSchema 返回空，尝试从 pageState 获取
             const pageStateSchema = pageState?.currentSchema;
             if (pageStateSchema) {
-                return Array.isArray(pageStateSchema) ? pageStateSchema[0]?.id : pageStateSchema.id;
+                return Array.isArray(pageStateSchema)
+                    ? pageStateSchema[0]?.id
+                    : pageStateSchema.id;
             }
             // 如果还是为空，尝试从 canvasApi 获取
             if (canvasApi?.value) {
@@ -378,6 +386,7 @@ export default {
             // 获取当前选中的组件
             let currentSchema = getCurrentSchema();
             if (Array.isArray(currentSchema) && currentSchema.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                 currentSchema = currentSchema[0];
             }
             if (!currentSchema) {

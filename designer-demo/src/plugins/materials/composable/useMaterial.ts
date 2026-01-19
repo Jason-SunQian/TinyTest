@@ -26,8 +26,6 @@ import {
     META_SERVICE
 } from '@opentiny/tiny-engine-meta-register';
 
-import { getCurrentLanguage } from '@/services/i18nService';
-
 import meta from '../meta';
 
 import {
@@ -728,74 +726,6 @@ const initMaterial = ({
         });
     }
 };
-/**
- * 转换树形数据中的中文标签为英文
- * @param data 树形数据数组
- * @returns 转换后的数据
- */
-const translateTreeData = (data: any[]): any[] => {
-    if (!Array.isArray(data)) {
-        return data;
-    }
-
-    const labelMap: Record<string, string> = {
-        '一级 1': 'Level 1-1',
-        '一级 2': 'Level 1-2',
-        '一级 3': 'Level 1-3',
-        '二级 1-1': 'Level 2-1-1',
-        '二级 1-2': 'Level 2-1-2',
-        '二级 2-1': 'Level 2-2-1',
-        '二级 2-2': 'Level 2-2-2',
-        '三级 1-1-1': 'Level 3-1-1-1',
-        '三级 1-1-2': 'Level 3-1-1-2',
-        '三级 2-1-1': 'Level 3-2-1-1',
-        '三级 2-2-1': 'Level 3-2-2-1'
-    };
-
-    return data.map(item => {
-        const translatedItem = { ...item };
-        if (item.label && typeof item.label === 'string') {
-            // 如果标签是中文，且存在映射，则转换为英文
-            if (labelMap[item.label]) {
-                translatedItem.label = labelMap[item.label];
-            }
-        }
-        // 递归处理子节点
-        if (Array.isArray(item.children) && item.children.length > 0) {
-            translatedItem.children = translateTreeData(item.children);
-        }
-        return translatedItem;
-    });
-};
-
-/**
- * 根据当前语言转换组件 props 中的默认数据
- * @param props 组件 props
- * @param componentName 组件名称
- * @returns 转换后的 props
- */
-const translateComponentProps = (props: any, componentName: string): any => {
-    if (!props || typeof props !== 'object') {
-        return props;
-    }
-
-    const currentLanguage = getCurrentLanguage();
-    // 如果是中文环境，直接返回
-    if (currentLanguage === 'zh_CN') {
-        return props;
-    }
-
-    // 如果是英文环境，转换特定组件的默认数据
-    const translatedProps = { ...props };
-
-    // TinyTree 组件的 data 属性需要转换
-    if (componentName === 'TinyTree' && Array.isArray(translatedProps.data)) {
-        translatedProps.data = translateTreeData(translatedProps.data);
-    }
-
-    return translatedProps;
-};
-
 const generateNode = ({ type, component }) => {
     const snippet = getSnippet(component) || {};
     const material = getMaterial(component);
@@ -803,15 +733,11 @@ const generateNode = ({ type, component }) => {
     const materialUseBaseStyle = material.configure?.useBaseStyle;
     const globalUseBaseStyle = getOptions(meta.id).useBaseStyle;
     const useBaseStyle = globalUseBaseStyle && materialUseBaseStyle !== false;
-    
-    // 根据当前语言转换 snippet 中的 props
-    const translatedProps = translateComponentProps(snippet.props, component);
-    
     const schema = {
         componentName: component,
         ...snippet,
         props: {
-            ...translatedProps,
+            ...snippet.props,
             className: useBaseStyle
                 ? getOptions(meta.id).componentBaseStyle.className
                 : ''
