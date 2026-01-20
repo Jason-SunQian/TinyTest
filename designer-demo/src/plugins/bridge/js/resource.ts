@@ -333,7 +333,19 @@ const deleteData = (name, callback, emit) => {
     const params = `app=${getAppId()}&id=${state.resource?.id}`;
     requestDeleteReSource(params).then(data => {
         if (data) {
-            const index = useResource().appSchemaState[state.type].findIndex(
+            // 使用 data.category 或 state.category 来确定要删除的数组
+            const category = data.category || state.category || state.type;
+            const targetArray = useResource().appSchemaState[category];
+            
+            if (!Array.isArray(targetArray)) {
+                useNotify({
+                    type: 'error',
+                    message: t('designer.bridge.deleteFailed')
+                });
+                return;
+            }
+            
+            const index = targetArray.findIndex(
                 item => item.name === data.name
             );
             if (index === -1) {
@@ -343,13 +355,13 @@ const deleteData = (name, callback, emit) => {
                 });
                 return;
             }
-            useResource().appSchemaState[state.type].splice(index, 1);
+            targetArray.splice(index, 1);
             generateBridgeUtil(getAppId());
             useNotify({
                 type: 'success',
                 message: t('designer.bridge.deleteSuccess')
             });
-            emit('refresh', state.type);
+            emit('refresh', category);
             state.refresh = true;
             callback();
         }

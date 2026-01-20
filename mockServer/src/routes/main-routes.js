@@ -85,7 +85,9 @@ router.get('/app-center/v1/api/apps/schema/:id', async (ctx) => {
 glob.globSync(`${mockPath}/get/**/*.json`).forEach((jpath) => {
   const { api, data } = getJsonPathData(jpath)
   // 跳过已经被动态路由处理的接口
-  if (api.startsWith('/app-center/v1/api/apps/schema/') || api === '/app-center/api/apps/extension/list') {
+  if (api.startsWith('/app-center/v1/api/apps/schema/') ||
+      api === '/app-center/api/apps/extension/list' ||
+      api === '/app-center/api/apps/extension/delete') {
     return
   }
   router.get(api, (ctx, next) => {
