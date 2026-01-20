@@ -11,6 +11,10 @@ const logRequest = (url: string, method: string, query?: any, body?: any) => {
     });
 };
 
+// Extension (Bridge/Utils) 内存存储
+// key 格式: `${appId}_${category}`, value: extension 数组
+const extensionStore: Record<string, any[]> = {};
+
 export default [
     // 应用详情接口
     {

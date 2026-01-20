@@ -1,4 +1,4 @@
-/* metaService: engine.plugins.bridge.js-resource */
+/* metaService: engine.plugins.customBridge.js-resource */
 import { reactive } from 'vue';
 import {
     useResource,
@@ -8,6 +8,8 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 
+import { useDesignerI18n } from '../../../services/i18nService';
+
 import {
     fetchResourceList,
     requestDeleteReSource,
@@ -15,6 +17,44 @@ import {
     requestUpdateReSource,
     requestGenerateBridgeUtil
 } from '../http';
+
+/**
+ * 规范化单个 utils item，确保所有数据都有正确的结构（避免 setUtils 报错）
+ */
+const normalizeUtilsItem = (item: any) => {
+    // 过滤掉非对象类型的 item（如数组、null、undefined 等）
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        // eslint-disable-next-line no-console
+        console.warn('[Bridge] normalizeUtilsItem - Invalid item type, skipping:', item, 'type:', typeof item, 'isArray:', Array.isArray(item));
+        return null; // 返回 null，后续会被过滤掉
+    }
+    
+    // 确保 content 对象存在
+    if (!item.content) {
+        item.content = {};
+    }
+    
+    // function 类型不需要 exportName，但为了兼容 setUtils 函数，确保 content 对象完整
+    if (item.type === 'function') {
+        return {
+            ...item,
+            content: {
+                ...item.content,
+                type: item.content.type || 'JSFunction',
+                value: item.content.value || '',
+                // 添加 exportName 字段（即使为 undefined），避免 setUtils 访问时报错
+                exportName: item.content.exportName || undefined
+            }
+        };
+    }
+    
+    // npm 类型需要 exportName
+    if (item.type === 'npm' && !item.content.exportName) {
+        item.content.exportName = '';
+    }
+    
+    return item;
+};
 
 const state = reactive({
     actionType: '',
@@ -184,6 +224,7 @@ const generateBridgeUtil = (...args) => {
 
 const saveResource = async (data, callback, emit) => {
     const isEdit = getActionType() === ACTION_TYPE.Edit;
+    const { t } = useDesignerI18n();
 
     try {
         if (isEdit) {
@@ -196,7 +237,10 @@ const saveResource = async (data, callback, emit) => {
                 ].findIndex(item => item.name === result.name);
 
                 if (index === -1) {
-                    useNotify({ type: 'error', message: '修改失败' });
+                    useNotify({
+                        type: 'error',
+                        message: t('designer.bridge.modifyFailed')
+                    });
                     return;
                 }
 
@@ -205,28 +249,87 @@ const saveResource = async (data, callback, emit) => {
         } else {
             const result = await requestAddReSource(data);
             if (result) {
-                useResource().appSchemaState[data.category].push(result);
+                // 规范化返回的数据
+                const normalizedResult = normalizeUtilsItem(result);
+                if (normalizedResult) {
+                    // 先添加到 appSchemaState，确保立即显示
+                    const resourceApi = useResource();
+                    const targetArray = data.category === 'utils' 
+                        ? resourceApi.appSchemaState.utils 
+                        : resourceApi.appSchemaState[data.category];
+                    
+                    if (Array.isArray(targetArray)) {
+                        // 检查是否已存在同名项
+                        const existingIndex = targetArray.findIndex(
+                            (item: any) => item && item.name === normalizedResult.name
+                        );
+                        if (existingIndex === -1) {
+                            targetArray.push(normalizedResult);
+                        } else {
+                            // 如果已存在，更新它
+                            targetArray[existingIndex] = normalizedResult;
+                        }
+                    }
+                }
             }
         }
 
         // 更新画布工具函数环境，保证渲染最新工具类返回值, 并触发画布的强制刷新
         generateBridgeUtil(getAppId());
+        
+        // 重新获取最新的 schema 数据，确保 appSchemaState.utils 被更新
+        const resourceApi = useResource();
+        if (resourceApi && typeof resourceApi.fetchAppState === 'function') {
+            resourceApi.fetchAppState().then(() => {
+                // 检查新添加的项是否在返回的数据中
+                if (!isEdit && data.name) {
+                    const foundInNewData = resourceApi.appSchemaState.utils.some(
+                        (item: any) => item.name === data.name
+                    );
+                    
+                    // 如果新添加的项不在返回的数据中，手动添加它
+                    if (!foundInNewData) {
+                        const normalizedItem = normalizeUtilsItem({
+                            name: data.name,
+                            type: data.type,
+                            category: data.category,
+                            content: data.content
+                        });
+                        if (normalizedItem) {
+                            resourceApi.appSchemaState.utils.push(normalizedItem);
+                        }
+                    }
+                }
+            }).catch((error: any) => {
+                console.error('[Bridge] saveResource - failed to refresh appSchemaState:', error);
+            });
+        }
         useNotify({
             type: 'success',
-            message: `${isEdit ? '修改' : '创建'}成功`
+            message: isEdit
+                ? t('designer.bridge.modifySuccess')
+                : t('designer.bridge.createSuccess')
         });
-        emit('refresh', state.type);
+        // 刷新列表：传递 data.category（'utils' 或 'bridge'），而不是 state.type
+        emit('refresh', data.category);
         state.refresh = true;
         callback();
     } catch (error) {
         useNotify({
             type: 'error',
-            message: `工具类${isEdit ? '修改' : '创建'}失败：${error.message}`
+            message: isEdit
+                ? t('designer.bridge.modifyFailedWithError', {
+                      error: error.message
+                  })
+                : t('designer.bridge.createFailedWithError', {
+                      error: error.message
+                  })
         });
     }
 };
 
 const deleteData = (name, callback, emit) => {
+    const { t } = useDesignerI18n();
     const params = `app=${getAppId()}&id=${state.resource?.id}`;
     requestDeleteReSource(params).then(data => {
         if (data) {
@@ -234,12 +337,18 @@ const deleteData = (name, callback, emit) => {
                 item => item.name === data.name
             );
             if (index === -1) {
-                useNotify({ type: 'error', message: '删除失败' });
+                useNotify({
+                    type: 'error',
+                    message: t('designer.bridge.deleteFailed')
+                });
                 return;
             }
             useResource().appSchemaState[state.type].splice(index, 1);
             generateBridgeUtil(getAppId());
-            useNotify({ type: 'success', message: '删除成功' });
+            useNotify({
+                type: 'success',
+                message: t('designer.bridge.deleteSuccess')
+            });
             emit('refresh', state.type);
             state.refresh = true;
             callback();

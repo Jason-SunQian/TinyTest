@@ -920,7 +920,15 @@
             "deleteConfirm": "如果删除正在使用的资源，将无法正常预览页面，确认要删除吗？",
             "nameExists": "资源名称已存在",
             "bridge": "桥接源",
-            "util": "工具类"
+            "util": "工具类",
+            "createSuccess": "创建成功",
+            "modifySuccess": "修改成功",
+            "deleteSuccess": "删除成功",
+            "modifyFailed": "修改失败",
+            "deleteFailed": "删除失败",
+            "createFailed": "创建失败",
+            "modifyFailedWithError": "工具类修改失败：{error}",
+            "createFailedWithError": "工具类创建失败：{error}"
         },
         "i18n": {
             "title": "国际化资源",

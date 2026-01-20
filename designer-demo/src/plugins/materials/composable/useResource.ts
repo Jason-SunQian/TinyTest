@@ -28,6 +28,8 @@ import {
 
 import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus';
 
+import { watch } from 'vue';
+
 const { COMPONENT_NAME, DEFAULT_INTERCEPTOR } = constants;
 
 interface AppSchemaState {
@@ -64,6 +66,49 @@ interface AppSchemaState {
     isDemo?: boolean;
 }
 
+/**
+ * 规范化单个 utils item，确保所有数据都有正确的结构（避免 setUtils 报错）
+ */
+const normalizeUtilsItem = (item: any) => {
+    // 过滤掉非对象类型的 item（如数组、null、undefined 等）
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+        // eslint-disable-next-line no-console
+        console.warn('[useResource] normalizeUtilsItem - Invalid item type, skipping:', item, 'type:', typeof item, 'isArray:', Array.isArray(item));
+        return null; // 返回 null，后续会被过滤掉
+    }
+    
+    // 确保 content 对象存在
+    if (!item.content) {
+        // eslint-disable-next-line no-console
+        console.log('[useResource] normalizeUtilsItem - Item has no content, creating empty content:', item);
+        item.content = {};
+    }
+    
+    // function 类型不需要 exportName，但为了兼容 setUtils 函数，确保 content 对象完整
+    if (item.type === 'function') {
+        const normalizedItem = {
+            ...item,
+            content: {
+                ...item.content,
+                type: item.content.type || 'JSFunction',
+                value: item.content.value || '',
+                // 添加 exportName 字段（即使为 undefined），避免 setUtils 访问时报错
+                exportName: item.content.exportName || undefined
+            }
+        };
+        // eslint-disable-next-line no-console
+        console.log('[useResource] normalizeUtilsItem - Normalized function item:', normalizedItem);
+        return normalizedItem;
+    }
+    
+    // npm 类型需要 exportName
+    if (item.type === 'npm' && !item.content.exportName) {
+        item.content.exportName = '';
+    }
+    
+    return item;
+};
+
 const appSchemaState = reactive<AppSchemaState>({
     dataSource: [],
     pageTree: [],
@@ -72,6 +117,42 @@ const appSchemaState = reactive<AppSchemaState>({
     globalState: [],
     materialsDeps: { scripts: [], styles: new Set() }
 });
+
+// 监听 utils 数组的变化，确保每次变化时都规范化数据
+// 注意：使用 watch 可能会在数据更新时触发，但画布可能已经读取了旧数据
+// 所以我们还需要在数据被访问时进行规范化
+let isNormalizing = false;
+watch(
+    () => appSchemaState.utils,
+    (newUtils) => {
+        if (!Array.isArray(newUtils) || isNormalizing) {
+            return;
+        }
+        isNormalizing = true;
+        // eslint-disable-next-line no-console
+        console.log('[useResource] watch utils - utils changed, normalizing:', newUtils);
+        // 规范化每个 item
+        const normalizedUtils = newUtils.map((item, index) => {
+            const normalized = normalizeUtilsItem(item);
+            // 如果数据有变化，更新原数组中的该项
+            if (JSON.stringify(normalized) !== JSON.stringify(item)) {
+                // eslint-disable-next-line no-console
+                console.log('[useResource] watch utils - Item at index', index, 'needs normalization');
+                // 直接修改原数组项，避免触发新的 watch
+                Object.assign(newUtils[index], normalized);
+                // 确保 content 对象被正确设置
+                if (normalized.content) {
+                    newUtils[index].content = normalized.content;
+                }
+            }
+            return normalized;
+        });
+        isNormalizing = false;
+        // eslint-disable-next-line no-console
+        console.log('[useResource] watch utils - normalization complete:', normalizedUtils);
+    },
+    { deep: true, immediate: true }
+);
 
 function goPage(pageId: string) {
     if (!pageId) {
@@ -204,7 +285,16 @@ const fetchAppState = async () => {
         appData.dataSource?.errorHandler || DEFAULT_INTERCEPTOR.errorHandler;
 
     appSchemaState.bridge = appData.bridge;
-    appSchemaState.utils = appData.utils;
+    // 规范化 utils 数据，确保所有数据都有正确的结构（避免 setUtils 报错）
+    // eslint-disable-next-line no-console
+    console.log('[useResource] fetchAppState - raw utils data:', appData.utils);
+    // 规范化并过滤掉无效的 item（如数组、null 等）
+    const normalizedUtils = (appData.utils || [])
+        .map(normalizeUtilsItem)
+        .filter((item: any) => item !== null && item !== undefined);
+    appSchemaState.utils = normalizedUtils;
+    // eslint-disable-next-line no-console
+    console.log('[useResource] fetchAppState - normalized utils (after filtering):', appSchemaState.utils);
     appSchemaState.isDemo = appData?.meta?.isDemo || appData?.meta?.is_demo;
     appSchemaState.globalState =
         appData?.meta?.globalState || appData?.meta?.global_state;

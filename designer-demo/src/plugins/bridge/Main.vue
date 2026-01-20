@@ -97,7 +97,15 @@ export default {
         provide('panelState', panelState);
 
         const openBridgePanel = () => openPanel();
-        const refreshList = type => utilsRef.value.refresh(type);
+        // refreshList 接收的 type 应该是 category ('utils' 或 'bridge')
+        // BridgeManage 的 refresh 方法期望接收 name prop，即 RESOURCE_TYPE.Util ('utils') 或 RESOURCE_TYPE.Bridge ('bridge')
+        const refreshList = (category) => {
+            // category 已经是 'utils' 或 'bridge'，直接传递给 refresh
+            // 因为 BridgeManage 的 name prop 就是 RESOURCE_TYPE.Util ('utils')
+            if (utilsRef.value) {
+                utilsRef.value.refresh(RESOURCE_TYPE.Util);
+            }
+        };
         const addResource = type => utilsRef.value.add(type);
 
         return {

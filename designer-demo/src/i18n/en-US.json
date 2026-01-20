@@ -917,7 +917,15 @@
             "deleteConfirm": "Deleting a resource in use may break preview. Continue?",
             "nameExists": "Resource name already exists",
             "bridge": "Bridge",
-            "util": "Utility"
+            "util": "Utility",
+            "createSuccess": "Created successfully",
+            "modifySuccess": "Modified successfully",
+            "deleteSuccess": "Deleted successfully",
+            "modifyFailed": "Modify failed",
+            "deleteFailed": "Delete failed",
+            "createFailed": "Create failed",
+            "modifyFailedWithError": "Utility modify failed: {error}",
+            "createFailedWithError": "Utility create failed: {error}"
         },
         "i18n": {
             "title": "Internationalization Resources",

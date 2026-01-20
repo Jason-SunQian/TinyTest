@@ -40,9 +40,54 @@ const getJsonPathData = (jpath, method = 'get') => {
 }
 
 const mockPath = path.resolve(__dirname, '../mock')
-// 注册路由
+
+// 先注册动态路由，确保它们优先匹配
+// 应用 Schema 接口 - 动态返回 extension 数据
+router.get('/app-center/v1/api/apps/schema/:id', async (ctx) => {
+  const { id } = ctx.params
+  // 读取静态 JSON 文件作为基础数据
+  const staticSchema = fs.readJSONSync(
+    path.resolve(__dirname, '../mock/get/app-center/v1/apps/schema/1.json')
+  )
+
+  // 先加载静态 JSON 中的原始 utils
+  const utilsMap = new Map()
+  if (staticSchema.data && staticSchema.data.utils) {
+    staticSchema.data.utils.forEach((item) => {
+      utilsMap.set(item.name, { name: item.name, type: item.type, content: item.content })
+    })
+  }
+
+  // 从数据库读取最新的 extension 数据，合并到 utils（同名则覆盖）
+  const extensions = await mockService.extensionService.getExtensionsByApp(id)
+  extensions.forEach((item) => {
+    const { name, type, content, category, created_at } = item
+    if (category === 'utils') {
+      // 如果已存在同名项，比较创建时间，保留最新的
+      const existing = utilsMap.get(name)
+      if (!existing || new Date(created_at) > new Date(existing.created_at || 0)) {
+        utilsMap.set(name, { name, type, content })
+      }
+    }
+  })
+
+  const utils = Array.from(utilsMap.values())
+
+  // 更新 schema 中的 utils 数组
+  if (staticSchema.data) {
+    staticSchema.data.utils = utils
+  }
+
+  ctx.body = staticSchema
+})
+
+// 注册路由（glob 自动注册）- 在动态路由之后注册，避免覆盖动态路由
 glob.globSync(`${mockPath}/get/**/*.json`).forEach((jpath) => {
   const { api, data } = getJsonPathData(jpath)
+  // 跳过已经被动态路由处理的接口
+  if (api.startsWith('/app-center/v1/api/apps/schema/') || api === '/app-center/api/apps/extension/list') {
+    return
+  }
   router.get(api, (ctx, next) => {
     ctx.body = data
   })
@@ -51,6 +96,10 @@ glob.globSync(`${mockPath}/get/**/*.json`).forEach((jpath) => {
 glob.globSync(`${mockPath}/post/**/*.json`).forEach((jpath) => {
   const { api, data } = getJsonPathData(jpath, 'post')
   router.post(api, (ctx, next) => {
+    // 如果是 extension/create，跳过静态 JSON，让后面的动态路由处理
+    if (api === '/app-center/api/apps/extension/create') {
+      return next()
+    }
     ctx.body = data
   })
 })
@@ -105,7 +154,7 @@ router.get('/material-center/api/blocks', async (ctx) => {
 
 router.post('/material-center/api/block/create', async (ctx) => {
   const result = await mockService.blockService.create(ctx.request.body)
-  const categoriesId = ctx.request.body.categories?.[0] || ctx.request.body.groups?.[0]
+  const categoriesId = (ctx.request.body.categories && ctx.request.body.categories[0]) || (ctx.request.body.groups && ctx.request.body.groups[0])
   const _id = result.id
   await mockService.blockCategoryService.update(categoriesId, { _id })
   ctx.body = getResponseData(result)
@@ -222,6 +271,53 @@ router.get('/block-history', async (ctx) => {
 
 router.post('block-history/create', async (ctx) => {
   ctx.body = await mockService.blockHistoryService.create(ctx.request.body)
+})
+
+// ========== Extension (Bridge/Utils) 相关接口 ==========
+// eslint-disable-next-line no-console
+console.log('[MockServer] 注册 Extension 路由...')
+
+// Extension 列表接口 - 覆盖 glob 自动注册的路由
+router.get('/app-center/api/apps/extension/list', async (ctx) => {
+  const { app, category } = ctx.request.query
+
+  // 先加载静态 JSON 中的原始数据（如果存在）
+  const staticListPath = path.resolve(__dirname, '../mock/get/app-center/apps/extension/list.json')
+  let staticData = []
+  if (fs.existsSync(staticListPath)) {
+    const staticList = fs.readJSONSync(staticListPath)
+    staticData = staticList.data || []
+  }
+
+  // 从数据库读取数据，并合并静态数据
+  const result = await mockService.extensionService.list(app, category, staticData)
+  ctx.body = result
+})
+
+// Extension 创建接口 - 覆盖 glob 自动注册的路由
+router.post('/app-center/api/apps/extension/create', async (ctx) => {
+  const result = await mockService.extensionService.create(ctx.request.body)
+  ctx.body = result
+})
+
+// Extension 更新接口 - 覆盖 glob 自动注册的路由
+router.post('/app-center/api/apps/extension/update', async (ctx) => {
+  const { id } = ctx.request.body
+  if (!id) {
+    ctx.body = getResponseData(null, 'id is required')
+    return
+  }
+  ctx.body = await mockService.extensionService.update(id, ctx.request.body)
+})
+
+// Extension 删除接口 - 覆盖 glob 自动注册的路由
+router.get('/app-center/api/apps/extension/delete', async (ctx) => {
+  const { id } = ctx.request.query
+  if (!id) {
+    ctx.body = getResponseData(null, 'id is required')
+    return
+  }
+  ctx.body = await mockService.extensionService.delete(id)
 })
 
 export default router
