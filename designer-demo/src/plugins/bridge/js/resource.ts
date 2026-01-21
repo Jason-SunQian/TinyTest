@@ -9,7 +9,6 @@ import {
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 
 import { useDesignerI18n } from '../../../services/i18nService';
-
 import {
     fetchResourceList,
     requestDeleteReSource,
@@ -21,19 +20,28 @@ import {
 /**
  * 规范化单个 utils item，确保所有数据都有正确的结构（避免 setUtils 报错）
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const normalizeUtilsItem = (item: any) => {
     // 过滤掉非对象类型的 item（如数组、null、undefined 等）
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
         // eslint-disable-next-line no-console
-        console.warn('[Bridge] normalizeUtilsItem - Invalid item type, skipping:', item, 'type:', typeof item, 'isArray:', Array.isArray(item));
-        return null; // 返回 null，后续会被过滤掉
+        console.warn(
+            '[Bridge] normalizeUtilsItem - Invalid item type, skipping:',
+            item,
+            'type:',
+            typeof item,
+            'isArray:',
+            Array.isArray(item)
+        );
+        // 返回 null，后续会被过滤掉
+        return null;
     }
-    
+
     // 确保 content 对象存在
     if (!item.content) {
         item.content = {};
     }
-    
+
     // function 类型不需要 exportName，但为了兼容 setUtils 函数，确保 content 对象完整
     if (item.type === 'function') {
         return {
@@ -47,12 +55,12 @@ const normalizeUtilsItem = (item: any) => {
             }
         };
     }
-    
+
     // npm 类型需要 exportName
     if (item.type === 'npm' && !item.content.exportName) {
         item.content.exportName = '';
     }
-    
+
     return item;
 };
 
@@ -254,55 +262,74 @@ const saveResource = async (data, callback, emit) => {
                 if (normalizedResult) {
                     // 先添加到 appSchemaState，确保立即显示
                     const resourceApi = useResource();
-                    const targetArray = data.category === 'utils' 
-                        ? resourceApi.appSchemaState.utils 
-                        : resourceApi.appSchemaState[data.category];
-                    
+                    const targetArray =
+                        data.category === 'utils'
+                            ? resourceApi.appSchemaState.utils
+                            : resourceApi.appSchemaState[data.category];
+
+                    // eslint-disable-next-line max-depth
                     if (Array.isArray(targetArray)) {
                         // 检查是否已存在同名项
                         const existingIndex = targetArray.findIndex(
-                            (item: any) => item && item.name === normalizedResult.name
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (item: any) =>
+                                item && item.name === normalizedResult.name
                         );
+                        // eslint-disable-next-line max-depth
                         if (existingIndex === -1) {
                             targetArray.push(normalizedResult);
                         } else {
                             // 如果已存在，更新它
+                            // eslint-disable-next-line max-depth
                             targetArray[existingIndex] = normalizedResult;
                         }
                     }
                 }
+                // eslint-disable-next-line max-depth
             }
         }
 
         // 更新画布工具函数环境，保证渲染最新工具类返回值, 并触发画布的强制刷新
         generateBridgeUtil(getAppId());
-        
+
         // 重新获取最新的 schema 数据，确保 appSchemaState.utils 被更新
         const resourceApi = useResource();
         if (resourceApi && typeof resourceApi.fetchAppState === 'function') {
-            resourceApi.fetchAppState().then(() => {
-                // 检查新添加的项是否在返回的数据中
-                if (!isEdit && data.name) {
-                    const foundInNewData = resourceApi.appSchemaState.utils.some(
-                        (item: any) => item.name === data.name
-                    );
-                    
-                    // 如果新添加的项不在返回的数据中，手动添加它
-                    if (!foundInNewData) {
-                        const normalizedItem = normalizeUtilsItem({
-                            name: data.name,
-                            type: data.type,
-                            category: data.category,
-                            content: data.content
-                        });
-                        if (normalizedItem) {
-                            resourceApi.appSchemaState.utils.push(normalizedItem);
+            resourceApi
+                .fetchAppState()
+                .then(() => {
+                    // 检查新添加的项是否在返回的数据中
+                    if (!isEdit && data.name) {
+                        const foundInNewData =
+                            resourceApi.appSchemaState.utils.some(
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                (item: any) => item.name === data.name
+                            );
+
+                        // 如果新添加的项不在返回的数据中，手动添加它
+                        if (!foundInNewData) {
+                            const normalizedItem = normalizeUtilsItem({
+                                name: data.name,
+                                type: data.type,
+                                category: data.category,
+                                content: data.content
+                            });
+                            if (normalizedItem) {
+                                resourceApi.appSchemaState.utils.push(
+                                    normalizedItem
+                                );
+                            }
                         }
                     }
-                }
-            }).catch((error: any) => {
-                console.error('[Bridge] saveResource - failed to refresh appSchemaState:', error);
-            });
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                })
+                .catch((error: any) => {
+                    // eslint-disable-next-line no-console
+                    console.error(
+                        '[Bridge] saveResource - failed to refresh appSchemaState:',
+                        error
+                    );
+                });
         }
         useNotify({
             type: 'success',
@@ -314,7 +341,8 @@ const saveResource = async (data, callback, emit) => {
         emit('refresh', data.category);
         state.refresh = true;
         callback();
-    } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
         useNotify({
             type: 'error',
             message: isEdit
@@ -331,12 +359,13 @@ const saveResource = async (data, callback, emit) => {
 const deleteData = (name, callback, emit) => {
     const { t } = useDesignerI18n();
     const params = `app=${getAppId()}&id=${state.resource?.id}`;
-    requestDeleteReSource(params).then(data => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requestDeleteReSource(params).then((data: any) => {
         if (data) {
             // 使用 data.category 或 state.category 来确定要删除的数组
             const category = data.category || state.category || state.type;
             const targetArray = useResource().appSchemaState[category];
-            
+
             if (!Array.isArray(targetArray)) {
                 useNotify({
                     type: 'error',
@@ -344,7 +373,7 @@ const deleteData = (name, callback, emit) => {
                 });
                 return;
             }
-            
+
             const index = targetArray.findIndex(
                 item => item.name === data.name
             );

@@ -99,7 +99,8 @@ export default {
         const openBridgePanel = () => openPanel();
         // refreshList 接收的 type 应该是 category ('utils' 或 'bridge')
         // BridgeManage 的 refresh 方法期望接收 name prop，即 RESOURCE_TYPE.Util ('utils') 或 RESOURCE_TYPE.Bridge ('bridge')
-        const refreshList = (category) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const refreshList = category => {
             // category 已经是 'utils' 或 'bridge'，直接传递给 refresh
             // 因为 BridgeManage 的 name prop 就是 RESOURCE_TYPE.Util ('utils')
             if (utilsRef.value) {

@@ -11,7 +11,7 @@
  */
 
 /* metaService: engine.service.resource.useResource */
-import { reactive, toRaw } from 'vue';
+import { reactive, toRaw, watch } from 'vue';
 import { constants } from '@opentiny/tiny-engine-utils';
 import {
     useCanvas,
@@ -27,8 +27,6 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 
 import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus';
-
-import { watch } from 'vue';
 
 const { COMPONENT_NAME, DEFAULT_INTERCEPTOR } = constants;
 
@@ -69,21 +67,33 @@ interface AppSchemaState {
 /**
  * 规范化单个 utils item，确保所有数据都有正确的结构（避免 setUtils 报错）
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const normalizeUtilsItem = (item: any) => {
     // 过滤掉非对象类型的 item（如数组、null、undefined 等）
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
         // eslint-disable-next-line no-console
-        console.warn('[useResource] normalizeUtilsItem - Invalid item type, skipping:', item, 'type:', typeof item, 'isArray:', Array.isArray(item));
-        return null; // 返回 null，后续会被过滤掉
+        console.warn(
+            '[useResource] normalizeUtilsItem - Invalid item type, skipping:',
+            item,
+            'type:',
+            typeof item,
+            'isArray:',
+            Array.isArray(item)
+        );
+        // 返回 null，后续会被过滤掉
+        return null;
     }
-    
+
     // 确保 content 对象存在
     if (!item.content) {
         // eslint-disable-next-line no-console
-        console.log('[useResource] normalizeUtilsItem - Item has no content, creating empty content:', item);
+        console.log(
+            '[useResource] normalizeUtilsItem - Item has no content, creating empty content:',
+            item
+        );
         item.content = {};
     }
-    
+
     // function 类型不需要 exportName，但为了兼容 setUtils 函数，确保 content 对象完整
     if (item.type === 'function') {
         const normalizedItem = {
@@ -97,15 +107,18 @@ const normalizeUtilsItem = (item: any) => {
             }
         };
         // eslint-disable-next-line no-console
-        console.log('[useResource] normalizeUtilsItem - Normalized function item:', normalizedItem);
+        console.log(
+            '[useResource] normalizeUtilsItem - Normalized function item:',
+            normalizedItem
+        );
         return normalizedItem;
     }
-    
+
     // npm 类型需要 exportName
     if (item.type === 'npm' && !item.content.exportName) {
         item.content.exportName = '';
     }
-    
+
     return item;
 };
 
@@ -124,20 +137,27 @@ const appSchemaState = reactive<AppSchemaState>({
 let isNormalizing = false;
 watch(
     () => appSchemaState.utils,
-    (newUtils) => {
+    newUtils => {
         if (!Array.isArray(newUtils) || isNormalizing) {
             return;
         }
         isNormalizing = true;
         // eslint-disable-next-line no-console
-        console.log('[useResource] watch utils - utils changed, normalizing:', newUtils);
+        console.log(
+            '[useResource] watch utils - utils changed, normalizing:',
+            newUtils
+        );
         // 规范化每个 item
         const normalizedUtils = newUtils.map((item, index) => {
             const normalized = normalizeUtilsItem(item);
             // 如果数据有变化，更新原数组中的该项
             if (JSON.stringify(normalized) !== JSON.stringify(item)) {
                 // eslint-disable-next-line no-console
-                console.log('[useResource] watch utils - Item at index', index, 'needs normalization');
+                console.log(
+                    '[useResource] watch utils - Item at index',
+                    index,
+                    'needs normalization'
+                );
                 // 直接修改原数组项，避免触发新的 watch
                 Object.assign(newUtils[index], normalized);
                 // 确保 content 对象被正确设置
@@ -149,7 +169,10 @@ watch(
         });
         isNormalizing = false;
         // eslint-disable-next-line no-console
-        console.log('[useResource] watch utils - normalization complete:', normalizedUtils);
+        console.log(
+            '[useResource] watch utils - normalization complete:',
+            normalizedUtils
+        );
     },
     { deep: true, immediate: true }
 );
@@ -291,10 +314,14 @@ const fetchAppState = async () => {
     // 规范化并过滤掉无效的 item（如数组、null 等）
     const normalizedUtils = (appData.utils || [])
         .map(normalizeUtilsItem)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((item: any) => item !== null && item !== undefined);
     appSchemaState.utils = normalizedUtils;
     // eslint-disable-next-line no-console
-    console.log('[useResource] fetchAppState - normalized utils (after filtering):', appSchemaState.utils);
+    console.log(
+        '[useResource] fetchAppState - normalized utils (after filtering):',
+        appSchemaState.utils
+    );
     appSchemaState.isDemo = appData?.meta?.isDemo || appData?.meta?.is_demo;
     appSchemaState.globalState =
         appData?.meta?.globalState || appData?.meta?.global_state;

@@ -287,26 +287,40 @@ export default {
                         }
                         // 规范化每个 item，确保 content 对象存在
                         // 过滤掉非对象类型的 item（如数组、null、undefined 等）
-                        return utils
-                            .filter((item: any) => {
-                                // 过滤掉数组、null、undefined 等无效项
-                                return item && typeof item === 'object' && !Array.isArray(item);
-                            })
-                            .map((item: any) => {
-                                // 确保 content 对象存在
-                                if (!item.content) {
-                                    item.content = {};
-                                }
-                                // function 类型确保有 exportName 字段（即使为 undefined）
-                                if (item.type === 'function' && item.content.exportName === undefined) {
-                                    item.content.exportName = undefined;
-                                }
-                                // npm 类型确保有 exportName
-                                if (item.type === 'npm' && !item.content.exportName) {
-                                    item.content.exportName = '';
-                                }
-                                return item;
-                            });
+                        return (
+                            utils
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                .filter((item: any) => {
+                                    // 过滤掉数组、null、undefined 等无效项
+                                    return (
+                                        item &&
+                                        typeof item === 'object' &&
+                                        !Array.isArray(item)
+                                    );
+                                })
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                .map((item: any) => {
+                                    // 确保 content 对象存在
+                                    if (!item.content) {
+                                        item.content = {};
+                                    }
+                                    // function 类型确保有 exportName 字段（即使为 undefined）
+                                    if (
+                                        item.type === 'function' &&
+                                        item.content.exportName === undefined
+                                    ) {
+                                        item.content.exportName = undefined;
+                                    }
+                                    // npm 类型确保有 exportName
+                                    if (
+                                        item.type === 'npm' &&
+                                        !item.content.exportName
+                                    ) {
+                                        item.content.exportName = '';
+                                    }
+                                    return item;
+                                })
+                        );
                     }
                 };
 
