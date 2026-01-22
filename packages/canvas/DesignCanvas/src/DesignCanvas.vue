@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, watch, onUnmounted, onMounted, computed } from 'vue'
+import { ref, watch, onUnmounted, onMounted, computed, provide } from 'vue'
 import {
   useProperties,
   useCanvas,
@@ -41,6 +41,7 @@ import {
 } from '@opentiny/tiny-engine-meta-register'
 import { constants } from '@opentiny/tiny-engine-utils'
 import * as ast from '@opentiny/tiny-engine-common/js/ast'
+import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { initCanvas } from '../../init-canvas/init-canvas'
 import { useMultiSelect } from '../../container/src/composables/useMultiSelect'
 import { getImportMapData } from './importMap'
@@ -55,6 +56,13 @@ const componentType = {
 
 export default {
   setup() {
+    // 提供国际化注入，确保 CanvasBreadcrumb 等子组件能正确获取 i18n
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const i18nInstance = (window as any).lowcodeI18n
+    if (i18nInstance) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      provide(I18nInjectionKey as any, i18nInstance)
+    }
     const registry = getMergeMeta('engine.canvas')
     const materialsPanel = getMergeMeta('engine.plugins.materials')?.entry
     const { CanvasRouteBar, CanvasBreadcrumb } = registry.components

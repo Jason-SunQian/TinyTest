@@ -52,6 +52,8 @@ import {
     registerHotkeyEvent as customRegisterHotkeyEvent,
     removeHotkeyEvent as customRemoveHotkeyEvent
 } from './src/components/canvas/container/src/keyboard';
+// 自定义 Canvas Breadcrumb（国际化）
+import CustomCanvasBreadcrumb from './src/components/canvas/breadcrumb/CanvasBreadcrumb.vue';
 
 export default {
     [META_SERVICE.Http]: HttpService,
@@ -378,7 +380,7 @@ export default {
             }
         }
     },
-    // 覆盖官方 Canvas，使用国际化版本的 CanvasContainer
+    // 覆盖官方 Canvas，使用国际化版本的 CanvasContainer 和 CanvasBreadcrumb
     'engine.canvas': {
         metas: [
             {
@@ -390,6 +392,9 @@ export default {
                     removeHotkeyEvent: customRemoveHotkeyEvent
                 }
             }
-        ]
+        ],
+        components: {
+            CanvasBreadcrumb: CustomCanvasBreadcrumb
+        }
     }
 };
