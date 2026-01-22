@@ -272,6 +272,19 @@ export default {
                         item => item.components
                     );
 
+                // 在 VSCode 环境中注入图片代理处理脚本
+                if (win && win.document) {
+                    // 延迟注入，确保 iframe 完全加载
+                    setTimeout(() => {
+                        import('../../utils/imageProxy').then(({ injectImageProxyScript }) => {
+                            injectImageProxyScript(win);
+                        }).catch(error => {
+                            // eslint-disable-next-line no-console
+                            console.error('[CanvasContainer] Failed to inject image proxy script:', error);
+                        });
+                    }, 100);
+                }
+
                 const { subscribe, unsubscribe } = useMessage();
                 const { getSchemaDiff, patchLatestSchema, getSchema, getNode } =
                     useCanvas();
@@ -556,8 +569,21 @@ export default {
             hoverState.slot = slotName;
         };
 
-        onMounted(() => run(iframe));
+        // 监听来自 canvas iframe 的图片代理请求
+        const handleImageProxyMessage = (event: MessageEvent) => {
+            import('../../utils/imageProxy').then(({ handleImageProxyRequest }) => {
+                handleImageProxyRequest(event);
+            });
+        };
+
+        onMounted(() => {
+            run(iframe);
+            // 添加消息监听器
+            window.addEventListener('message', handleImageProxyMessage);
+        });
         onUnmounted(() => {
+            // 移除消息监听器
+            window.removeEventListener('message', handleImageProxyMessage);
             if (iframe.value?.contentDocument) {
                 removeHotkeyEvent(iframe.value.contentDocument);
             }

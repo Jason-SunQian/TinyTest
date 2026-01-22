@@ -513,6 +513,8 @@ export const proxyHttpRequest = (config: {
     params?: any;
     data?: any;
     headers?: any;
+    responseType?: string; // 支持指定响应类型，如 'base64', 'arraybuffer' 等
+    isImage?: boolean; // 标识是否为图片请求
 }): Promise<any> => {
     // 使用新的通用函数，保持向后兼容
     return callVSCodeCommand('proxyHttpRequest', config);

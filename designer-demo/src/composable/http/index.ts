@@ -384,7 +384,9 @@ const createVSCodeHttpAdapter = () => {
                     method,
                     params: config.params,
                     data: config.data,
-                    headers: config.headers
+                    headers: config.headers,
+                    // 如果是图片请求，指定 responseType
+                    responseType: config.responseType || (requestUrl.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)/i) ? 'arraybuffer' : undefined)
                 };
 
                 // 使用通用的 proxyHttpRequest command
