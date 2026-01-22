@@ -40,10 +40,10 @@ import { onBeforeUnmount, reactive, provide, computed } from 'vue';
 import { Button } from '@opentiny/vue';
 import { VueMonaco } from '@opentiny/tiny-engine-common';
 import { useHelp, useLayout } from '@opentiny/tiny-engine-meta-register';
-import { initCompletion } from '@/composable/completion';
 import { initLinter } from '@opentiny/tiny-engine-common/js/linter';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 
+import { initCompletion } from '@/composable/completion';
 import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
 
 import { useDesignerI18n, t as designerT } from '../../services/i18nService';

@@ -6,42 +6,46 @@
 
 ### 核心功能文档
 
-- **[代码提示功能扩展指南](./CODE_COMPLETION_GUIDE.md)** ⭐ 新增
-  - 如何添加和修改代码提示关键字
-  - 代码提示功能的架构设计
-  - 常见问题和维护建议
+-   **[代码提示功能扩展指南](./CODE_COMPLETION_GUIDE.md)** ⭐ 新增
+    -   如何添加和修改代码提示关键字
+    -   代码提示功能的架构设计
+    -   常见问题和维护建议
 
 ### 国际化相关
 
-- **[国际化体验总结](./I18N_EXPERIENCE_SUMMARY.md)**
-  - 国际化功能的整体体验和总结
+-   **[国际化体验总结](./I18N_EXPERIENCE_SUMMARY.md)**
 
-- **[国际化包装器指南](./I18N_WRAPPER_GUIDE.md)**
-  - 如何使用国际化包装器组件
+    -   国际化功能的整体体验和总结
+
+-   **[国际化包装器指南](./I18N_WRAPPER_GUIDE.md)**
+    -   如何使用国际化包装器组件
 
 ### 插件相关
 
-- **[插件迁移指南](./PLUGIN_MIGRATION.md)**
-  - 插件迁移的步骤和注意事项
+-   **[插件迁移指南](./PLUGIN_MIGRATION.md)**
 
-- **[单页面插件文档](./SINGLE_PAGE_PLUGIN.md)**
-  - 单页面插件的使用说明
+    -   插件迁移的步骤和注意事项
 
-- **[样式插件迁移](./styles-plugin-migration.md)**
-  - 样式插件迁移指南
+-   **[单页面插件文档](./SINGLE_PAGE_PLUGIN.md)**
+
+    -   单页面插件的使用说明
+
+-   **[样式插件迁移](./styles-plugin-migration.md)**
+    -   样式插件迁移指南
 
 ### 集成相关
 
-- **[VSCode 集成文档](./VSCode-Integration.md)**
-  - VSCode 插件集成说明
+-   **[VSCode 集成文档](./VSCode-Integration.md)**
 
-- **[Mock 接口迁移](./MOCK_MIGRATION.md)**
-  - Mock 接口本地化实现方案
+    -   VSCode 插件集成说明
+
+-   **[Mock 接口迁移](./MOCK_MIGRATION.md)**
+    -   Mock 接口本地化实现方案
 
 ### 架构设计
 
-- **[设计器去依赖改造方案](./设计器去依赖改造方案.md)**
-  - 设计器架构改造方案
+-   **[设计器去依赖改造方案](./设计器去依赖改造方案.md)**
+    -   设计器架构改造方案
 
 ## 🚀 快速开始
 
@@ -63,24 +67,24 @@
 
 ## 📝 文档维护
 
-- 所有文档都在 `designer-demo/docs/` 目录下
-- 文档使用 Markdown 格式编写
-- 新增文档时请更新本索引文件
+-   所有文档都在 `designer-demo/docs/` 目录下
+-   文档使用 Markdown 格式编写
+-   新增文档时请更新本索引文件
 
 ## 🔍 文档查找
 
 ### 按功能查找
 
-- **代码提示** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md)
-- **国际化** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
-- **插件开发** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
-- **VSCode 集成** → [VSCode-Integration.md](./VSCode-Integration.md)
+-   **代码提示** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md)
+-   **国际化** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
+-   **插件开发** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
+-   **VSCode 集成** → [VSCode-Integration.md](./VSCode-Integration.md)
 
 ### 按问题查找
 
-- **如何添加代码提示关键字？** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md#三如何添加新关键字)
-- **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
-- **如何迁移插件？** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
+-   **如何添加代码提示关键字？** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md#三如何添加新关键字)
+-   **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
+-   **如何迁移插件？** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
 
 ---
 

@@ -64,10 +64,12 @@ export default {
 
         const refreshBlock = async () => {
             const block = getCurrentBlock();
-            if (!block || !block.id) {
+            if (!block?.id) {
                 useNotify({
                     type: 'warning',
-                    message: t('designer.toolbar.refreshBlockError', { defaultValue: '当前没有选中的区块，无法刷新' })
+                    message: t('designer.toolbar.refreshBlockError', {
+                        defaultValue: '当前没有选中的区块，无法刷新'
+                    })
                 });
                 return;
             }
@@ -80,9 +82,12 @@ export default {
             } catch (error) {
                 useNotify({
                     type: 'error',
-                    message: t('designer.toolbar.refreshBlockFailed', { 
+                    message: t('designer.toolbar.refreshBlockFailed', {
                         defaultValue: '刷新区块失败',
-                        error: error instanceof Error ? error.message : String(error)
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : String(error)
                     })
                 });
             }
@@ -99,7 +104,9 @@ export default {
 
             // 如果 currentPage 不存在，尝试从 URL 参数获取 pageId
             if (!pageId) {
-                const baseInfo = getMetaApi(META_SERVICE.GlobalService).getBaseInfo();
+                const baseInfo = getMetaApi(
+                    META_SERVICE.GlobalService
+                ).getBaseInfo();
                 pageId = baseInfo?.pageId;
             }
 
@@ -107,7 +114,9 @@ export default {
             if (!pageId) {
                 useNotify({
                     type: 'warning',
-                    message: t('designer.toolbar.refreshPageError', { defaultValue: '当前没有选中的页面，无法刷新' })
+                    message: t('designer.toolbar.refreshPageError', {
+                        defaultValue: '当前没有选中的页面，无法刷新'
+                    })
                 });
                 return;
             }
@@ -115,10 +124,12 @@ export default {
             try {
                 const api = await activePlugin(PLUGIN_NAME.AppManage, true);
                 const page = await api.getPageById(pageId);
-                if (!page || !page.page_content) {
+                if (!page?.page_content) {
                     useNotify({
                         type: 'error',
-                        message: t('designer.toolbar.refreshPageNotFound', { defaultValue: '页面不存在或数据异常' })
+                        message: t('designer.toolbar.refreshPageNotFound', {
+                            defaultValue: '页面不存在或数据异常'
+                        })
                     });
                     return;
                 }
@@ -127,9 +138,12 @@ export default {
             } catch (error) {
                 useNotify({
                     type: 'error',
-                    message: t('designer.toolbar.refreshPageFailed', { 
+                    message: t('designer.toolbar.refreshPageFailed', {
                         defaultValue: '刷新页面失败',
-                        error: error instanceof Error ? error.message : String(error)
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : String(error)
                     })
                 });
             }

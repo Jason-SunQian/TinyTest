@@ -156,10 +156,10 @@ import {
     SvgButton
 } from '@opentiny/tiny-engine-common';
 import { iconYes } from '@opentiny/vue-icon';
-import { initCompletion } from '@/composable/completion';
 import { initLinter, lint } from '@opentiny/tiny-engine-common/js/linter';
 import { constants } from '@opentiny/tiny-engine-utils';
 
+import { initCompletion } from '@/composable/completion';
 import { useDesignerI18n } from '@/services/i18nService';
 
 const { OPEN_DELAY } = constants;
