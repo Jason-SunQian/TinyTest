@@ -156,7 +156,7 @@ import {
     SvgButton
 } from '@opentiny/tiny-engine-common';
 import { iconYes } from '@opentiny/vue-icon';
-import { initCompletion } from '@opentiny/tiny-engine-common/js/completion';
+import { initCompletion } from '@/composable/completion';
 import { initLinter, lint } from '@opentiny/tiny-engine-common/js/linter';
 import { constants } from '@opentiny/tiny-engine-utils';
 

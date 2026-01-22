@@ -40,7 +40,7 @@ import { onBeforeUnmount, reactive, provide, computed } from 'vue';
 import { Button } from '@opentiny/vue';
 import { VueMonaco } from '@opentiny/tiny-engine-common';
 import { useHelp, useLayout } from '@opentiny/tiny-engine-meta-register';
-import { initCompletion } from '@opentiny/tiny-engine-common/js/completion';
+import { initCompletion } from '@/composable/completion';
 import { initLinter } from '@opentiny/tiny-engine-common/js/linter';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 

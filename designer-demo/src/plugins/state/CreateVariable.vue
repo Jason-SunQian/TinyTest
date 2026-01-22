@@ -134,7 +134,7 @@ import {
 } from '@opentiny/vue';
 import { MonacoEditor } from '@opentiny/tiny-engine-common';
 import { verifyJsVarName } from '@opentiny/tiny-engine-common/js/verification';
-import { initCompletion } from '@opentiny/tiny-engine-common/js/completion';
+import { initCompletion } from '@/composable/completion';
 import * as Monaco from 'monaco-editor';
 
 import { useDesignerI18n } from '@/services/i18nService';
