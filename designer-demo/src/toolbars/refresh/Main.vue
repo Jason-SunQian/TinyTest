@@ -22,7 +22,9 @@ import {
     useBlock,
     useNotify,
     useMessage,
-    getOptions
+    getOptions,
+    getMetaApi,
+    META_SERVICE
 } from '@opentiny/tiny-engine-meta-register';
 import { ToolbarBase } from '@opentiny/tiny-engine-common';
 
@@ -62,11 +64,28 @@ export default {
 
         const refreshBlock = async () => {
             const block = getCurrentBlock();
-            // 第二个参数true表示不激活区块管理面板
-            const api = await activePlugin(PLUGIN_NAME.BlockManage, true);
-            await api.refreshBlockData(block);
-            await initBlock(block, {}, true);
-            refreshResource();
+            if (!block || !block.id) {
+                useNotify({
+                    type: 'warning',
+                    message: t('designer.toolbar.refreshBlockError', { defaultValue: '当前没有选中的区块，无法刷新' })
+                });
+                return;
+            }
+            try {
+                // 第二个参数true表示不激活区块管理面板
+                const api = await activePlugin(PLUGIN_NAME.BlockManage, true);
+                await api.refreshBlockData(block);
+                await initBlock(block, {}, true);
+                refreshResource();
+            } catch (error) {
+                useNotify({
+                    type: 'error',
+                    message: t('designer.toolbar.refreshBlockFailed', { 
+                        defaultValue: '刷新区块失败',
+                        error: error instanceof Error ? error.message : String(error)
+                    })
+                });
+            }
         };
 
         const refreshPage = async () => {
@@ -74,11 +93,46 @@ export default {
                 return;
             }
 
+            // 优先使用 pageState.currentPage，如果没有则从 URL 参数获取 pageId
             const { currentPage } = pageState;
-            const api = await activePlugin(PLUGIN_NAME.AppManage, true);
-            const page = await api.getPageById(currentPage.id);
-            await initData(page.page_content, page);
-            refreshResource();
+            let pageId: string | number | null | undefined = currentPage?.id;
+
+            // 如果 currentPage 不存在，尝试从 URL 参数获取 pageId
+            if (!pageId) {
+                const baseInfo = getMetaApi(META_SERVICE.GlobalService).getBaseInfo();
+                pageId = baseInfo?.pageId;
+            }
+
+            // 如果仍然没有 pageId，无法刷新
+            if (!pageId) {
+                useNotify({
+                    type: 'warning',
+                    message: t('designer.toolbar.refreshPageError', { defaultValue: '当前没有选中的页面，无法刷新' })
+                });
+                return;
+            }
+
+            try {
+                const api = await activePlugin(PLUGIN_NAME.AppManage, true);
+                const page = await api.getPageById(pageId);
+                if (!page || !page.page_content) {
+                    useNotify({
+                        type: 'error',
+                        message: t('designer.toolbar.refreshPageNotFound', { defaultValue: '页面不存在或数据异常' })
+                    });
+                    return;
+                }
+                await initData(page.page_content, page);
+                refreshResource();
+            } catch (error) {
+                useNotify({
+                    type: 'error',
+                    message: t('designer.toolbar.refreshPageFailed', { 
+                        defaultValue: '刷新页面失败',
+                        error: error instanceof Error ? error.message : String(error)
+                    })
+                });
+            }
         };
 
         const refresh = async () => {
