@@ -18,6 +18,7 @@ import { handlePageUpdate } from '@opentiny/tiny-engine-common/js/http';
 //     goSave,
 //     checkIsVSCodeEnvironment
 // } from '../../../composable/useVSCodeBridge';
+import { checkIsVSCodeEnvironment } from '../../../composable/useVSCodeBridge';
 import { t as translate } from '../../../services/i18nService';
 
 const { publish } = useMessage();
@@ -234,7 +235,9 @@ export const saveCommon = (value?: string) => {
 
 export const openCommon = async () => {
     const { isSaved, getSchema } = useCanvas();
-    if (isSaved() || state.disabled) {
+    // 在 VSCode 环境中，允许随时保存，不检查是否有改动
+    const isVSCode = checkIsVSCodeEnvironment();
+    if ((!isVSCode && isSaved()) || state.disabled) {
         return;
     }
 
