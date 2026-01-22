@@ -115,7 +115,7 @@
 <script lang="ts">
 /* eslint-disable max-lines */
 /* metaService: engine.setting.event.BindEvents */
-import { computed, reactive, watchEffect, watch, nextTick } from 'vue';
+import { computed, reactive, watchEffect, watch, nextTick, toRaw } from 'vue';
 import { Popover, Button } from '@opentiny/vue';
 import {
     useModal,
@@ -372,9 +372,27 @@ export default {
             }
         });
 
-        const openActionDialog = (action, isAdd) => {
+        const openActionDialog = async (action, isAdd) => {
             if (isAdd && state.bindActions[action.eventName]) {
                 return;
+            }
+
+            // 打开对话框前，强制刷新当前选中的组件状态，确保获取到最新的选中状态
+            if (canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        const { setCurrentSchema } = useCanvas();
+                        const rawSchema = toRaw(current.schema);
+                        pageState.currentSchema = rawSchema;
+                        if (setCurrentSchema) {
+                            setCurrentSchema(rawSchema);
+                        }
+                        await nextTick();
+                    }
+                } catch (error) {
+                    // 静默处理错误，不影响对话框打开
+                }
             }
 
             state.eventBinding = action;

@@ -105,7 +105,7 @@ export default {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { PLUGIN_NAME, activePlugin } = useLayout();
-        const { pageState, canvasApi, setCurrentSchema } = useCanvas();
+        const { pageState, canvasApi, setCurrentSchema, getCurrentSchema } = useCanvas();
         const { getMethods, saveMethod } = getMetaApi(META_APP.Page);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { highlightMethod } = getMetaApi(META_APP.Page);
@@ -136,11 +136,11 @@ export default {
                 return;
             }
 
-            // 尝试多种方式获取当前选中的节点
-            let currentSchema = pageState?.currentSchema;
+            // 优先从 canvasApi 获取最新的选中状态，确保获取到的是当前实际选中的组件
+            let currentSchema = null;
 
-            // 如果 currentSchema 为 null，尝试从 canvasApi 获取
-            if (!currentSchema && canvasApi?.value) {
+            // 首先尝试从 canvasApi 获取最新的选中状态
+            if (canvasApi?.value) {
                 try {
                     const current = canvasApi.value.getCurrent?.();
                     if (current?.schema) {
@@ -153,6 +153,16 @@ export default {
                         error
                     );
                 }
+            }
+
+            // 如果 canvasApi 获取失败，再尝试从 pageState 获取（作为后备）
+            if (!currentSchema) {
+                currentSchema = pageState?.currentSchema;
+            }
+
+            // 如果仍然没有，尝试使用 getCurrentSchema 方法
+            if (!currentSchema && getCurrentSchema) {
+                currentSchema = getCurrentSchema();
             }
 
             const nodeProps = currentSchema?.props;
@@ -516,7 +526,28 @@ export default {
             close();
         };
 
-        const openedDialog = () => {
+        const openedDialog = async () => {
+            // 对话框打开时，强制刷新当前选中的组件状态，确保获取到最新的选中状态
+            if (canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        const rawSchema = toRaw(current.schema);
+                        pageState.currentSchema = rawSchema;
+                        if (setCurrentSchema) {
+                            setCurrentSchema(rawSchema);
+                        }
+                        await nextTick();
+                    }
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        '[BindEventsDialog] Error refreshing current schema on dialog open:',
+                        error
+                    );
+                }
+            }
+
             state.enableExtraParams = Boolean(
                 props.eventBinding?.params?.length
             );
