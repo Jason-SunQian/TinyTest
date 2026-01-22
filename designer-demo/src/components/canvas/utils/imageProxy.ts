@@ -14,7 +14,11 @@ const isExternalUrl = (url: string): boolean => {
  * 判断是否是 VSCode 环境
  */
 const isVSCodeEnv = (): boolean => {
-    return typeof window !== 'undefined' && ((window as any).vscode || (window as any).vscodeBridge);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (
+        typeof window !== 'undefined' &&
+        ((window as any).vscode || (window as any).vscodeBridge)
+    );
 };
 
 /**
@@ -23,19 +27,22 @@ const isVSCodeEnv = (): boolean => {
 const loadImageViaProxy = async (url: string): Promise<string> => {
     try {
         // 动态导入 useVSCodeBridge
-        const { proxyHttpRequest } = await import('../../../composable/useVSCodeBridge');
+        const { proxyHttpRequest } = await import(
+            '../../../composable/useVSCodeBridge'
+        );
 
         // 通过代理获取图片，要求 VSCode 插件返回 base64 格式
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention */
         const response = await proxyHttpRequest({
             url,
             method: 'get',
             headers: {
-                'Accept': 'image/*'
+                Accept: 'image/*'
             },
             responseType: 'base64',
             isImage: true
         } as any);
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention */
 
         // 插件返回 base64 字符串，添加 data: 前缀
         if (typeof response === 'string') {
@@ -44,8 +51,15 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
                 return response;
             }
             // 如果返回的是纯 base64 字符串，添加前缀
-            if (response && !response.includes('://') && response.length > 100) {
-                const imageType = url.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)/i)?.[1]?.toLowerCase() || 'png';
+            if (
+                response &&
+                !response.includes('://') &&
+                response.length > 100
+            ) {
+                // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+                const imageType =
+                    (/\.(jpg|jpeg|png|gif|webp|svg|ico)/i.exec(url))?.[1]
+                        ?.toLowerCase() || 'png';
                 return `data:image/${imageType};base64,${response}`;
             }
         }
@@ -57,7 +71,10 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
                 return data;
             }
             if (typeof data === 'string' && data.length > 100) {
-                const imageType = url.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)/i)?.[1]?.toLowerCase() || 'png';
+                // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+                const imageType =
+                    (/\.(jpg|jpeg|png|gif|webp|svg|ico)/i.exec(url))?.[1]
+                        ?.toLowerCase() || 'png';
                 return `data:image/${imageType};base64,${data}`;
             }
         }
@@ -73,7 +90,9 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
 
 /**
  * 处理单个图片元素的 src
+ * 注意：此函数当前未使用，但保留以备将来需要
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const processImageElement = async (img: HTMLImageElement): Promise<void> => {
     const src = img.getAttribute('src');
     if (!src || !isExternalUrl(src)) {
@@ -331,7 +350,9 @@ export const injectImageProxyScript = (iframeWindow: Window): void => {
 /**
  * 处理来自 canvas iframe 的图片代理请求
  */
-export const handleImageProxyRequest = async (event: MessageEvent): Promise<void> => {
+export const handleImageProxyRequest = async (
+    event: MessageEvent
+): Promise<void> => {
     if (!isVSCodeEnv()) {
         return;
     }
@@ -340,24 +361,33 @@ export const handleImageProxyRequest = async (event: MessageEvent): Promise<void
         try {
             const base64Url = await loadImageViaProxy(event.data.url);
             // 发送响应回 canvas iframe
-            if (event.source && typeof (event.source as Window).postMessage === 'function') {
+            if (
+                event.source &&
+                typeof (event.source as Window).postMessage === 'function'
+            ) {
                 (event.source as Window).postMessage(
                     {
                         type: 'proxyImageResponse',
                         requestId: event.data.requestId,
-                        base64Url: base64Url
+                        base64Url
                     },
                     '*'
                 );
             }
         } catch (error) {
             // 发送错误响应
-            if (event.source && typeof (event.source as Window).postMessage === 'function') {
+            if (
+                event.source &&
+                typeof (event.source as Window).postMessage === 'function'
+            ) {
                 (event.source as Window).postMessage(
                     {
                         type: 'proxyImageResponse',
                         requestId: event.data.requestId,
-                        error: error instanceof Error ? error.message : String(error)
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : String(error)
                     },
                     '*'
                 );
