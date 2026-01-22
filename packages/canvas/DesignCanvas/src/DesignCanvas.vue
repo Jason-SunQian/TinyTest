@@ -5,13 +5,13 @@
     </template>
     <template #container>
       <component
-        :is="CanvasContainer.entry"
-        :controller="controller"
-        :materials-panel="materialsPanel"
-        :canvas-src="canvasSrc"
-        :canvas-src-doc="canvasSrcDoc"
-        @remove="removeNode"
-        @selected="nodeSelected"
+          :is="CanvasContainer.entry"
+          :controller="controller"
+          :materials-panel="materialsPanel"
+          :canvas-src="canvasSrc"
+          :canvas-src-doc="canvasSrcDoc"
+          @remove="removeNode"
+          @selected="nodeSelected"
       >
       </component>
     </template>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { ref, watch, onUnmounted, onMounted, computed, provide } from 'vue'
+import { ref, watch, onUnmounted, onMounted, computed } from 'vue'
 import {
   useProperties,
   useCanvas,
@@ -41,7 +41,6 @@ import {
 } from '@opentiny/tiny-engine-meta-register'
 import { constants } from '@opentiny/tiny-engine-utils'
 import * as ast from '@opentiny/tiny-engine-common/js/ast'
-import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n'
 import { initCanvas } from '../../init-canvas/init-canvas'
 import { useMultiSelect } from '../../container/src/composables/useMultiSelect'
 import { getImportMapData } from './importMap'
@@ -56,25 +55,18 @@ const componentType = {
 
 export default {
   setup() {
-    // 提供国际化注入，确保 CanvasBreadcrumb 等子组件能正确获取 i18n
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const i18nInstance = (window as any).lowcodeI18n
-    if (i18nInstance) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      provide(I18nInjectionKey as any, i18nInstance)
-    }
     const registry = getMergeMeta('engine.canvas')
     const materialsPanel = getMergeMeta('engine.plugins.materials')?.entry
-    const { CanvasRouteBar, CanvasBreadcrumb } = registry.components
+    const {CanvasRouteBar, CanvasBreadcrumb} = registry.components
     const CanvasLayout = registry.layout.entry
     const [CanvasContainer] = registry.metas
     const footData = ref([])
     const canvasRef = ref(null)
     let showModal = false // 弹窗标识
-    const { canvasSrc = '' } = getOptions(meta.id) || {}
+    const {canvasSrc = ''} = getOptions(meta.id) || {}
     const canvasSrcDoc = ref('')
 
-    const { getMoveDragBarState, getFixedPanelsStatus, closePlugin, closeSetting } = useLayout()
+    const {getMoveDragBarState, getFixedPanelsStatus, closePlugin, closeSetting} = useLayout()
 
     useMessage().subscribe({
       topic: 'init_canvas_deps',
@@ -84,14 +76,14 @@ export default {
           return
         }
 
-        const { importMap, importStyles } = getImportMapData(deps)
+        const {importMap, importStyles} = getImportMapData(deps)
 
         canvasSrcDoc.value = initCanvas(importMap, importStyles).html
       }
     })
 
     const removeNode = (node) => {
-      const { pageState } = useCanvas()
+      const {pageState} = useCanvas()
       footData.value = useCanvas().getNodePath(node?.id)
       pageState.currentSchema = {}
       pageState.properties = null
@@ -100,74 +92,74 @@ export default {
     const isBlock = useCanvas().isBlock
 
     watch(
-      [() => useCanvas().isSaved(), () => useLayout().layoutState.pageStatus, () => useCanvas().getPageSchema()],
-      ([isSaved, pageStatus, pageSchema], [oldIsSaved, _oldPageStatus, oldPageSchema]) => {
-        if (
-          [PAGE_STATUS.Guest, PAGE_STATUS.Occupy].includes(useLayout().layoutState.pageStatus.state) ||
-          !pageSchema?.componentName
-        ) {
-          return
-        }
-
-        const pageInfo = pageStatus?.data
-        const message = {
-          empty: () => '应用下暂无页面，需新建页面后体验画布功能',
-          release: (type) => `当前${componentType[type]}未锁定，点击右上角 “锁定” 图标后编辑${componentType[type]}`,
-          lock: (type) =>
-            `当前${componentType[type]}被 ${pageInfo?.username || ''} 锁定，如需编辑请先联系他解锁文件，然后再锁定该${
-              componentType[type]
-            }后编辑！`
-        }
-
-        const renderMsg = message[pageStatus.state](pageSchema.componentName)
-        // 两种情况进行提示，
-        // 1. 页面或区块状态是未保存状态（尝试编辑）
-        // 2. 页面刷新或第一次进入页面(含从别的页面或区块切换到别的页面或区块)
-        // 3. 页面上已经有弹窗，不允许重复弹窗
-        // 4. 当前历史堆栈为0，且当前未保存状态和上一次未保存状态不一致，不重复弹窗
-
-        const showConfirm = !isSaved || pageSchema !== oldPageSchema
-
-        if (!showConfirm || showModal || (useHistory().historyState?.index === 0 && isSaved !== oldIsSaved)) {
-          return
-        }
-
-        // 状态重置
-        const resetState = () => {
-          useHistory().go(-1, false)
-          useCanvas().setSaved(true)
-          removeNode()
-        }
-
-        // callback 是撤销上一步的操作
-        // 只有当从已保存状态变成未保存状态的时候，即尝试编辑的时候，才撤销上一步的操作
-        const callback = () => {
-          showModal = false
-          if (!isSaved && oldIsSaved) {
-            resetState()
+        [() => useCanvas().isSaved(), () => useLayout().layoutState.pageStatus, () => useCanvas().getPageSchema()],
+        ([isSaved, pageStatus, pageSchema], [oldIsSaved, _oldPageStatus, oldPageSchema]) => {
+          if (
+              [PAGE_STATUS.Guest, PAGE_STATUS.Occupy].includes(useLayout().layoutState.pageStatus.state) ||
+              !pageSchema?.componentName
+          ) {
+            return
           }
-        }
 
-        showModal = true
-        useModal().confirm({
-          title: '提示',
-          message: renderMsg,
-          exec: callback,
-          cancel: callback,
-          hide: () => {
+          const pageInfo = pageStatus?.data
+          const message = {
+            empty: () => '应用下暂无页面，需新建页面后体验画布功能',
+            release: (type) => `当前${componentType[type]}未锁定，点击右上角 “锁定” 图标后编辑${componentType[type]}`,
+            lock: (type) =>
+                `当前${componentType[type]}被 ${pageInfo?.username || ''} 锁定，如需编辑请先联系他解锁文件，然后再锁定该${
+                    componentType[type]
+                }后编辑！`
+          }
+
+          const renderMsg = message[pageStatus.state](pageSchema.componentName)
+          // 两种情况进行提示，
+          // 1. 页面或区块状态是未保存状态（尝试编辑）
+          // 2. 页面刷新或第一次进入页面(含从别的页面或区块切换到别的页面或区块)
+          // 3. 页面上已经有弹窗，不允许重复弹窗
+          // 4. 当前历史堆栈为0，且当前未保存状态和上一次未保存状态不一致，不重复弹窗
+
+          const showConfirm = !isSaved || pageSchema !== oldPageSchema
+
+          if (!showConfirm || showModal || (useHistory().historyState?.index === 0 && isSaved !== oldIsSaved)) {
+            return
+          }
+
+          // 状态重置
+          const resetState = () => {
+            useHistory().go(-1, false)
+            useCanvas().setSaved(true)
+            removeNode()
+          }
+
+          // callback 是撤销上一步的操作
+          // 只有当从已保存状态变成未保存状态的时候，即尝试编辑的时候，才撤销上一步的操作
+          const callback = () => {
             showModal = false
+            if (!isSaved && oldIsSaved) {
+              resetState()
+            }
           }
-        })
-      }
+
+          showModal = true
+          useModal().confirm({
+            title: '提示',
+            message: renderMsg,
+            exec: callback,
+            cancel: callback,
+            hide: () => {
+              showModal = false
+            }
+          })
+        }
     )
 
-    const { multiSelectedStates } = useMultiSelect()
+    const {multiSelectedStates} = useMultiSelect()
     const multiStateLength = computed(() => multiSelectedStates.value.length)
 
     const nodeSelected = (node, parent, type, id) => {
-      const { leftPanelFixed, rightPanelFixed } = getFixedPanelsStatus()
+      const {leftPanelFixed, rightPanelFixed} = getFixedPanelsStatus()
 
-      const { toolbars } = useLayout().layoutState
+      const {toolbars} = useLayout().layoutState
       if (type !== 'clickTree') {
         if (!leftPanelFixed) {
           closePlugin()
@@ -178,7 +170,7 @@ export default {
         }
       }
 
-      const { getSchema, getNodePath } = useCanvas()
+      const {getSchema, getNodePath} = useCanvas()
       const schemaItem = useCanvas().getNodeById(id)
 
       const pageSchema = getSchema()
@@ -188,7 +180,7 @@ export default {
 
       // 如果选中的节点是画布，就设置成默认选中最外层schema
       useProperties().getProps(schemaItem || pageSchema, parent)
-      const multiSchemas = multiSelectedStates.value.map(({ schema }) => schema)
+      const multiSchemas = multiSelectedStates.value.map(({schema}) => schema)
       const currentSchema = multiStateLength.value > 1 ? multiSchemas : schemaItem || pageSchema
       useCanvas().setCurrentSchema(currentSchema)
       footData.value = getNodePath(schemaItem?.id)
@@ -197,19 +189,19 @@ export default {
 
     let canvasResizeObserver = null
     watch(
-      () => [useCanvas().isCanvasApiReady.value, canvasRef.value],
-      ([ready]) => {
-        if (!ready || !canvasRef.value) {
-          return
+        () => [useCanvas().isCanvasApiReady.value, canvasRef.value],
+        ([ready]) => {
+          if (!ready || !canvasRef.value) {
+            return
+          }
+
+          // 先取消监听，再增加监听事件，避免重复监听
+          document.removeEventListener('canvasResize', useCanvas().canvasApi.value.updateRect)
+          canvasResizeObserver?.disconnect?.()
+
+          document.addEventListener('canvasResize', useCanvas().canvasApi.value.updateRect)
+          canvasResizeObserver = new ResizeObserver(useCanvas().canvasApi.value.updateRect).observe(canvasRef.value)
         }
-
-        // 先取消监听，再增加监听事件，避免重复监听
-        document.removeEventListener('canvasResize', useCanvas().canvasApi.value.updateRect)
-        canvasResizeObserver?.disconnect?.()
-
-        document.addEventListener('canvasResize', useCanvas().canvasApi.value.updateRect)
-        canvasResizeObserver = new ResizeObserver(useCanvas().canvasApi.value.updateRect).observe(canvasRef.value)
-      }
     )
 
     onUnmounted(() => {
@@ -217,10 +209,10 @@ export default {
       canvasResizeObserver?.disconnect?.()
     })
 
-    const { addToCallbackFns: addHistoryDataChangedCallback } = (function () {
+    const {addToCallbackFns: addHistoryDataChangedCallback} = (function () {
       const callbackFns = new Set()
 
-      const { subscribe, unsubscribe } = useMessage()
+      const {subscribe, unsubscribe} = useMessage()
       let sub
 
       onMounted(() => {
@@ -241,6 +233,7 @@ export default {
         callbackFns.add(cb)
         return () => callbackFns.delete(cb)
       }
+
       return {
         addToCallbackFns
       }
@@ -248,6 +241,7 @@ export default {
 
     // TODO: 待挪到 getBaseInfo
     const baseInfoKeys = Object.keys(getMetaApi(META_SERVICE.GlobalService).getBaseInfo())
+
     function replaceKey(key) {
       const existingKey = baseInfoKeys.find((eKey) => eKey.toLowerCase() === key.toLowerCase())
       if (existingKey) {
@@ -255,11 +249,12 @@ export default {
       }
       return key
     }
+
     const postUrlChanged = () => {
       getMetaApi(META_SERVICE.GlobalService).postLocationHistoryChanged(
-        Object.fromEntries(
-          Array.from(new URLSearchParams(window.location.search)).map(([key, value]) => [replaceKey(key), value])
-        )
+          Object.fromEntries(
+              Array.from(new URLSearchParams(window.location.search)).map(([key, value]) => [replaceKey(key), value])
+          )
       )
     }
     onMounted(() => {
