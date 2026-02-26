@@ -444,6 +444,8 @@ const handlePreview = () => {
 | `GET /mock/bundle.json` | `mock/app-center.ts` 中对应路由，动态导入 `mock/bundle.json` | 基础物料包 |
 | `GET /mock/business-materials.json` | `mock/app-center.ts` 中对应路由，动态导入 `mock/business-materials.json` | 业务/原子组件物料包 |
 
+业务/原子组件物料包的 **图标** 与 **国际化** 约定（面板分类 MR Components / MP Components、组件名中英文）：见 `docs/业务与原子组件导入方案.md` 第 **4.7** 节。
+
 若在插件环境中出现「固定 Mock 接口未找到数据」或物料面板加载不全，请确认：
 
 1. **`mock/business-materials.json` 存在**且内容为 `{ "data": { "materials": { "components": [...], "snippets": [...] } } }`（该文件为唯一数据来源，mock 路由通过 `import('./business-materials.json')` 读取）。

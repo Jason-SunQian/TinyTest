@@ -16,7 +16,7 @@
           "tags": "",
           "keywords": "",
           "devMode": "proCode",
-          "group": "业务原子",
+          "group": "原子组件",
           "npm": {
             "package": "@local/mr-components",
             "script": "/mock/materials/mr-components.js",
@@ -180,12 +180,13 @@
       ],
       "snippets": [
         {
-          "group": "业务原子",
+          "group": "原子组件",
           "children": [
             {
               "snippetName": "MrDivider",
               "name": {
-                "zh_CN": "分隔线"
+                "zh_CN": "分隔线",
+                "en_US": "Divider"
               },
               "icon": "split",
               "schema": {}
@@ -198,7 +199,8 @@
             {
               "snippetName": "MpCard",
               "name": {
-                "zh_CN": "卡片"
+                "zh_CN": "卡片",
+                "en_US": "Card"
               },
               "icon": "card",
               "schema": {}

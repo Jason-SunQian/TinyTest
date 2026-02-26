@@ -180,6 +180,15 @@ export default {
                 zh_CN: '高级',
                 // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Advanced'
+            },
+            // 业务物料分类：mr 原子组件 / mp 业务组件，与 locale 一致时显示英文
+            原子组件: {
+                zh_CN: '原子组件',
+                en_US: 'MR Components'
+            },
+            业务组件: {
+                zh_CN: '业务组件',
+                en_US: 'MP Components'
             }
         };
 
