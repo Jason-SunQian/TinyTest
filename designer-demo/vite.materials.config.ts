@@ -1,7 +1,7 @@
 /**
  * 物料构建配置：原子组件入口（mr-components）、业务组件（mp-card 等）
- * 构建产物输出到 dist-materials/，由 build:materials 脚本整体复制到 public/mock/materials/
- * 新增组件时：在此文件的 build.lib.entry 中增加一条入口即可，无需改 package.json
+ * 直接输出到 public/mock/materials/，供设计器 dev 时通过 /mock/materials/xxx.js 访问，无需再复制
+ * 新增组件时：在此文件的 build.lib.entry 中增加一条入口即可
  */
 import path from 'node:path';
 import { defineConfig } from 'vite';
@@ -17,7 +17,7 @@ export default defineConfig({
   },
   publicDir: false,
   build: {
-    outDir: 'dist-materials',
+    outDir: 'public/mock/materials',
     emptyOutDir: true,
     lib: {
       entry: {

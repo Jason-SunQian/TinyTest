@@ -9,7 +9,7 @@
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=10240 vite build",
         "serve:frontend": "cross-env vite",
         "typecheck": "vue-tsc --noEmit",
-        "build:materials": "vite build --config vite.materials.config.ts && mkdir -p public/mock/materials && cp -r dist-materials/. public/mock/materials/"
+        "build:materials": "vite build --config vite.materials.config.ts"
     },
     "dependencies": {
         "@opentiny/tiny-engine": "^2.8.2",
