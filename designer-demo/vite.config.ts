@@ -82,7 +82,9 @@ export default defineConfig(configEnv => {
             path.resolve(
                 __dirname,
                 './node_modules/@opentiny/tiny-engine/assets/'
-            )
+            ),
+            // 业务/自定义物料图标（card、split、component-default 等），新增组件图标放此目录即可
+            path.resolve(__dirname, './src/assets/icons')
         ],
         useSourceAlias: false,
         envDir: './env',

@@ -36,7 +36,7 @@
                                 <div class="component-item-component">
                                     <svg-icon
                                         :name="
-                                            child?.icon?.toLowerCase() || 'row'
+                                            getMaterialIconName(child)
                                         "
                                     />
                                 </div>
@@ -315,6 +315,10 @@ export default {
             return child.name;
         };
 
+        /** 物料面板图标：有 icon 用 schema 的 icon（小写），否则用默认图标，新增业务组件可在 schema 中配 icon 或依赖默认 */
+        const getMaterialIconName = (child: { icon?: string }) =>
+            child?.icon?.trim()?.toLowerCase() || 'component-default';
+
         const fetchComponents = (components: Component[], name: string) => {
             if (!name) {
                 return components;
@@ -444,8 +448,9 @@ export default {
             t,
             // 暴露 getComponentLabel 函数给模板使用
             getComponentLabel,
-            // 暴露 getComponentName 函数给模板使用
-            getComponentName
+            // 暴露 getComponentName、getMaterialIconName 给模板使用
+            getComponentName,
+            getMaterialIconName
         };
     }
 };
