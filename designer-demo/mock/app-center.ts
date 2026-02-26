@@ -1,7 +1,6 @@
 /* eslint-disable */
 import type { MockMethod } from 'vite-plugin-mock';
 
-// 通用请求日志记录
 const logRequest = (url: string, method: string, query?: any, body?: any) => {
     // eslint-disable-next-line no-console
     console.log(`[MOCK] ${method.toUpperCase()} ${url}`, {
@@ -822,13 +821,15 @@ export default [
         response: async () => {
             logRequest('/mock/bundle.json', 'get');
             try {
-                // 动态导入 bundle.json 文件
-                // bundle.json 已通过符号链接或复制到 mock 目录下
-                // 可以直接导入
-                const bundleModule = await import('./bundle.json');
-
-                // bundle.json 的格式是 { data: {...} }，直接返回
-                const bundleData = bundleModule.default || bundleModule;
+                // 插件 webview 内相对 URL 会按 vscode-webview 解析被 CSP 拦截；服务端 mock 无 window，用 localhost 自请求
+                const base =
+                    typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN
+                        ? String((window as any).TINY_DESIGNER_ORIGIN).replace(/\/$/, '')
+                        : 'http://localhost:8090';
+                const url = `${base}/mock/bundle.json`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const bundleData = await res.json();
                 return bundleData;
             } catch (error) {
                 // eslint-disable-next-line no-console
@@ -841,6 +842,31 @@ export default [
                             components: [],
                             blocks: [],
                             packages: [],
+                            snippets: []
+                        }
+                    }
+                };
+            }
+        }
+    },
+
+    // business-materials.json 业务物料包接口（VSCode 插件环境固定 Mock 需与此一致）
+    {
+        url: '/mock/business-materials.json',
+        method: 'get',
+        response: async () => {
+            logRequest('/mock/business-materials.json', 'get');
+            try {
+                const module = await import('./business-materials.json');
+                const data = module.default || module;
+                return data;
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error('[Mock] Failed to load business-materials.json:', error);
+                return {
+                    data: {
+                        materials: {
+                            components: [],
                             snippets: []
                         }
                     }
