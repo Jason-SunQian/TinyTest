@@ -637,14 +637,22 @@ export default {
                 // 处理数据数据回显
                 state.dataSouce = item;
                 state.variable = `${CONSTANTS.STATE}${stateName}`;
-                editor.value.getEditor().setValue(state.variable);
+                // 安全检查：确保编辑器已初始化
+                const editorInstance = editor.value?.getEditor();
+                if (editorInstance) {
+                    editorInstance.setValue(state.variable);
+                }
                 state.variableName = key;
                 state.variableContent = staticData;
             } else {
                 state.variable = !state.bindPrefix
                     ? `${state.loopArgs}${key}`
                     : `${state.bindPrefix}${key}`;
-                editor.value.getEditor().setValue(state.variable);
+                // 安全检查：确保编辑器已初始化
+                const editorInstance = editor.value?.getEditor();
+                if (editorInstance) {
+                    editorInstance.setValue(state.variable);
+                }
                 state.variableName = key;
                 state.variableContent = state.variables[key];
             }
@@ -662,11 +670,23 @@ export default {
 
         const confirm = async () => {
             const editorInstance = editor.value?.getEditor();
-            await editorInstance
-                .getAction('editor.action.formatDocument')
-                .run();
+            
+            // 安全检查：确保编辑器已初始化（VSCode 环境中可能需要更多时间）
+            if (editorInstance) {
+                try {
+                    // 尝试格式化文档（如果编辑器已准备好）
+                    const formatAction = editorInstance.getAction('editor.action.formatDocument');
+                    if (formatAction) {
+                        await formatAction.run();
+                    }
+                } catch (error) {
+                    // 如果格式化失败，继续使用当前值（不影响绑定功能）
+                    // eslint-disable-next-line no-console
+                    console.warn('[VariableConfigurator] Format document failed:', error);
+                }
+            }
 
-            const variableContent = state.isEditorEditMode
+            const variableContent = state.isEditorEditMode && editorInstance
                 ? editorInstance.getValue()
                 : state.variable;
 
@@ -735,7 +755,19 @@ export default {
             state.variables = useCanvas().getSchema()?.state || {};
             state.bindPrefix = CONSTANTS.STATE;
             state.variableContent = state.variables[bindKey.value];
-            nextTick(() => window.dispatchEvent(new Event('resize')));
+            // 等待编辑器初始化完成后再触发 resize 事件
+            nextTick(() => {
+                // 确保编辑器已初始化（VSCode 环境中可能需要更多时间）
+                const checkEditor = () => {
+                    if (editor.value?.getEditor()) {
+                        window.dispatchEvent(new Event('resize'));
+                    } else {
+                        // 如果编辑器还未初始化，等待一段时间后重试
+                        setTimeout(checkEditor, 100);
+                    }
+                };
+                checkEditor();
+            });
         };
 
         const selectItem = item => {

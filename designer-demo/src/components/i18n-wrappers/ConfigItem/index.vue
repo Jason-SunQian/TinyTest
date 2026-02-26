@@ -517,18 +517,25 @@ export default {
 
             // 是否双向绑定
             if (value?.type === SCHEMA_DATA_TYPE.JSExpression) {
-                const currentComponent = getSchema().componentName;
-                const {
-                    schema: { events = {} }
-                } = useMaterial().getMaterial(currentComponent);
+                const schema = getSchema();
+                // 安全检查：确保 schema 存在（VSCode 环境中可能为 null）
+                if (schema && schema.componentName) {
+                    const currentComponent = schema.componentName;
+                    const material = useMaterial().getMaterial(currentComponent);
+                    
+                    // 安全检查：确保 material 存在
+                    if (material?.schema?.events) {
+                        const { events = {} } = material.schema;
 
-                if (Object.keys(events).includes(`onUpdate:${property}`)) {
-                    // 默认情况下，v-model 在组件上都是使用 modelValue 作为 prop，并以 update:modelValue 作为对应的事件。
-                    // 支持指定参数的 v-model，如：`v-model:visible`，如果组件使用的是除 modelValue 之外的其它参数，则将该参数显式声明为 prop
-                    const model =
-                        property === 'modelValue' ? true : { prop: property };
-                    // eslint-disable-next-line no-param-reassign
-                    value = { ...value, model };
+                        if (Object.keys(events).includes(`onUpdate:${property}`)) {
+                            // 默认情况下，v-model 在组件上都是使用 modelValue 作为 prop，并以 update:modelValue 作为对应的事件。
+                            // 支持指定参数的 v-model，如：`v-model:visible`，如果组件使用的是除 modelValue 之外的其它参数，则将该参数显式声明为 prop
+                            const model =
+                                property === 'modelValue' ? true : { prop: property };
+                            // eslint-disable-next-line no-param-reassign
+                            value = { ...value, model };
+                        }
+                    }
                 }
             }
 
@@ -536,11 +543,17 @@ export default {
 
             if (property === 'children') {
                 const schema = getSchema();
-                operateNode({
-                    type: 'updateAttributes',
-                    id: schema.id,
-                    value: { children: value }
-                });
+                // 安全检查：确保 schema 存在
+                if (schema && schema.id) {
+                    operateNode({
+                        type: 'updateAttributes',
+                        id: schema.id,
+                        value: { children: value }
+                    });
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.warn('[ConfigItem] Cannot update children: schema is null or missing id');
+                }
             } else {
                 if (
                     !isSaved() &&

@@ -84,24 +84,15 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
     try {
         const vscode = getVSCodeApi();
         if (vscode) {
-            // 对于 HTTP 请求相关的 command，打印更详细的信息
             if (data?.url) {
                 const { url } = data;
                 const method = data.method || 'unknown';
                 // eslint-disable-next-line no-console
                 console.log(
                     `[VSCode Bridge] → ${command} ${method.toUpperCase()} ${url}`,
-                    {
-                        command,
-                        callback,
-                        url,
-                        method,
-                        params: data.params,
-                        requestData: data.data
-                    }
+                    { command, callback, url, method, params: data.params, requestData: data.data }
                 );
             } else {
-                // 其他 command（如 getInitData、goSave 等），使用简单格式
                 // eslint-disable-next-line no-console
                 console.log(
                     `[VSCode Bridge] → ${command}`,
@@ -287,7 +278,6 @@ export const getInitData = (callback: (data: InitData) => void) => {
 
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
-            // eslint-disable-next-line no-console
             const errorMessage =
                 error instanceof Error ? error.message : String(error);
             console.error(`[VSCode Bridge] getInitData ← error:`, errorMessage);
@@ -321,7 +311,6 @@ export const goSave = (
 
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
-            // eslint-disable-next-line no-console
             const errorMessage =
                 error instanceof Error ? error.message : String(error);
             console.error(`[VSCode Bridge] goSave ← error:`, errorMessage);
@@ -358,7 +347,6 @@ export const goPreview = (
 
     callbackMap.set(callbackId, (result, error) => {
         if (error) {
-            // eslint-disable-next-line no-console
             const errorMessage =
                 error instanceof Error ? error.message : String(error);
             console.error(`[VSCode Bridge] goPreview ← error:`, errorMessage);
@@ -373,8 +361,40 @@ export const goPreview = (
     sendMessageToVSCode('goPreview', callbackId, data);
 };
 
+/** 插件返回的物料文件内容，key 为文件名如 mr-components.js */
+const MATERIAL_FILES = ['mr-components.js', 'mp-card.js', 'style.css'] as const;
+
 /**
- * 检测是否在 VSCode 环境中
+ * 向插件请求物料文件内容，由插件从 resource/mock/materials 读取后通过 postMessage 返回。
+ * 用于画布用 data URL 注入，避免 iframe 内 vscode-webview / localhost 请求 403。
+ * @returns 文件名 -> 文件内容；无插件或超时返回 null
+ */
+export const getMaterialContentsFromExtension = (): Promise<Record<string, string> | null> => {
+    if (!checkIsVSCodeEnvironment()) {
+        return Promise.resolve(null);
+    }
+    return new Promise(resolve => {
+        const callbackId = generateRequestId();
+        const timeout = setTimeout(() => {
+            if (callbackMap.has(callbackId)) {
+                callbackMap.delete(callbackId);
+                resolve(null);
+            }
+        }, 5000);
+        callbackMap.set(callbackId, (result: { contents?: Record<string, string> }, error?: unknown) => {
+            clearTimeout(timeout);
+            if (error || !result?.contents) {
+                resolve(null);
+                return;
+            }
+            const ok = MATERIAL_FILES.every(f => typeof result.contents![f] === 'string');
+            resolve(ok ? result.contents! : null);
+        });
+        sendMessageToVSCode('getMaterialFileContents', callbackId, { files: [...MATERIAL_FILES] });
+    });
+};
+
+/**
  * 根据插件代码分析：
  * 1. 插件将设计器 HTML 直接设置为 webview 内容（不是 iframe）
  * 2. 插件在 HTML 中注入了脚本，调用 acquireVsCodeApi() 并保存到 window.vscode
@@ -400,7 +420,6 @@ export const initVSCodeBridge = () => {
     const isVSCode = checkIsVSCodeEnvironment();
 
     if (!isVSCode) {
-        // 只在开发环境输出 debug 信息，避免生产环境警告
         if (import.meta.env.DEV) {
             // eslint-disable-next-line no-console
             console.debug(
@@ -469,29 +488,18 @@ export const callVSCodeCommand = (
             const method = data?.method || 'unknown';
 
             if (error) {
-                // eslint-disable-next-line no-console
                 const errorMessage =
                     error instanceof Error ? error.message : String(error);
                 console.error(
                     `[VSCode Bridge] ${command} ← error: ${method.toUpperCase()} ${url}`,
-                    {
-                        command,
-                        url,
-                        method,
-                        error: errorMessage
-                    }
+                    { command, url, method, error: errorMessage }
                 );
                 reject(error);
             } else {
                 // eslint-disable-next-line no-console
                 console.log(
                     `[VSCode Bridge] ${command} ← success: ${method.toUpperCase()} ${url}`,
-                    {
-                        command,
-                        url,
-                        method,
-                        result
-                    }
+                    { command, url, method, result }
                 );
                 resolve(result);
             }

@@ -40,7 +40,7 @@
             <iframe
                 id="canvas"
                 ref="iframe"
-                :[srcAttrName]="canvasSrc || canvasSrcDoc"
+                :[srcAttrName]="canvasSrc || iframeSrcdoc"
                 style="border: none; width: 100%; height: 100%"
             ></iframe>
         </template>
@@ -76,7 +76,8 @@ import {
     useTranslate,
     useCanvas,
     useMessage,
-    useResource
+    useResource,
+    useMaterial
 } from '@opentiny/tiny-engine-meta-register';
 import { NODE_UID, NODE_LOOP, DESIGN_MODE } from '@/components/canvas/common';
 import { registerHotkeyEvent, removeHotkeyEvent } from './keyboard';
@@ -90,6 +91,10 @@ import CanvasResizeBorder from './components/CanvasResizeBorder.vue';
 import CanvasMultiDragIndicator from './components/CanvasMultiDragIndicator.vue';
 import { useMultiSelect } from './composables/useMultiSelect';
 import { useMultiDrag } from './composables/useMultiDrag';
+import {
+    getDesignerMaterialBaseUrl,
+    toAbsoluteMaterialUrl
+} from '@/utils/designerOrigin';
 import {
     canvasState,
     onMouseUp,
@@ -147,6 +152,35 @@ export default {
         const srcAttrName = computed(() =>
             props.canvasSrc ? 'src' : 'srcdoc'
         );
+        // 插件环境下画布 iframe (srcdoc) 需注入 CSP。只放行合法 origin（不能把带路径的完整 URL 放进 CSP，否则会报 invalid source）
+        const iframeSrcdoc = computed(() => {
+            const base = getDesignerMaterialBaseUrl();
+            const doc = props.canvasSrcDoc;
+            if (!doc || !base) return doc;
+            const cdn = 'https://registry.npmmirror.com https://esm.sh https://cdn.jsdelivr.net https://unpkg.com https://at.alicdn.com';
+            let origins = '';
+            if (base.includes('vscode-webview')) {
+                origins = 'vscode-webview://*';
+            } else if (base.includes('vscode-resource') || base.includes('vscode-cdn.net')) {
+                // file+.vscode-resource.vscode-cdn.net 无法作为合法 host 写入 CSP（含 + 或 %2B 均报 invalid），改用 scheme 放行所有 https
+                origins = 'https:';
+            } else {
+                const origin = base.replace(/\/$/, '');
+                const origin127 = origin.replace(/localhost/, '127.0.0.1');
+                origins = `${origin} ${origin127}`;
+            }
+            const win = typeof window !== 'undefined' ? (window as any) : null;
+            const designerOrigin = win?.TINY_DESIGNER_ORIGIN ? `${win.TINY_DESIGNER_ORIGIN.replace(/\/$/, '')} ${win.TINY_DESIGNER_ORIGIN.replace(/\/$/, '').replace(/localhost/, '127.0.0.1')}` : '';
+            const allOrigins = designerOrigin ? `${origins} ${designerOrigin}` : origins;
+            const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' ${allOrigins} ${cdn}`;
+            const styleSrc = `'self' 'unsafe-inline' ${allOrigins} ${cdn}`;
+            const csp = `script-src ${scriptSrc}; script-src-elem ${scriptSrc}; style-src ${styleSrc}; style-src-elem ${styleSrc}; connect-src 'self' ${allOrigins} ${cdn};`;
+            const meta = `<meta http-equiv="Content-Security-Policy" content="${csp}">`;
+            if (/<head[^>]*>/i.test(doc)) {
+                return doc.replace(/(<head[^>]*>)/i, `$1\n    ${meta}`);
+            }
+            return doc;
+        });
 
         const containerPanel = ref(null);
         const insertContainer = ref(false);
@@ -263,14 +297,35 @@ export default {
 
         useCanvas().initCanvasApi(canvasApi);
 
+        // 把物料脚本转为绝对 URL 并写入画布，供画布加载 mp-card.js 等；插件里相对路径会变成 vscode-webview 导致 403
+        const syncComponentsDepsToIframe = () => {
+            if (!iframe.value?.contentWindow) return;
+            const win = iframe.value.contentWindow;
+            const materialScripts = useResource().appSchemaState.materialsDeps.scripts.filter(
+                item => item.components
+            );
+            const materialBase = getDesignerMaterialBaseUrl();
+            const componentsDeps = materialBase
+                ? materialScripts.map(s => ({
+                      ...s,
+                      script: toAbsoluteMaterialUrl(s.script, materialBase) ?? s.script,
+                      ...(s.css && {
+                          css: toAbsoluteMaterialUrl(s.css, materialBase) ?? s.css
+                      })
+                  }))
+                : materialScripts;
+            win.componentsDeps = componentsDeps;
+        };
+
         const beforeCanvasReady = () => {
             if (iframe.value) {
                 const win = iframe.value.contentWindow;
-                // 用于画布初始化组件依赖
-                win.componentsDeps =
-                    useResource().appSchemaState.materialsDeps.scripts.filter(
-                        item => item.components
-                    );
+                // 画布就绪时主动推送一次依赖（含扩展 data URL），避免仅靠 fetchMaterial 时未调用导致 403
+                const { scripts } = useResource().appSchemaState.materialsDeps;
+                if (scripts?.length) {
+                    useMaterial().updateCanvasDeps();
+                }
+                syncComponentsDepsToIframe();
 
                 // 在 VSCode 环境中注入图片代理处理脚本
                 if (win?.document) {
@@ -600,6 +655,13 @@ export default {
         document.addEventListener('beforeCanvasReady', beforeCanvasReady);
         document.addEventListener('canvasReady', canvasReady);
 
+        // 物料列表变化时（如打开页面含 MpCard）同步到画布，避免画布仍用旧列表导致相对路径 403
+        watch(
+            () => useResource().appSchemaState.materialsDeps.scripts,
+            () => syncComponentsDepsToIframe(),
+            { deep: true }
+        );
+
         return {
             isMouseDown,
             iframe,
@@ -623,6 +685,7 @@ export default {
             insertContainer,
             loading,
             srcAttrName,
+            iframeSrcdoc,
             isMultiDragging,
             multiDragState,
             getMultiDragPositionText

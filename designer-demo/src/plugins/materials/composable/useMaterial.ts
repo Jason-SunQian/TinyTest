@@ -27,6 +27,11 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 
 import meta from '../meta';
+import { getMaterialContentsFromExtension } from '@/composable/useVSCodeBridge';
+import {
+    getDesignerMaterialBaseUrl,
+    toAbsoluteMaterialUrl
+} from '@/utils/designerOrigin';
 
 import {
     getBlockCompileRes,
@@ -445,22 +450,93 @@ const addComponentSnippets = (
     return snippetsData;
 };
 
-const getCanvasDeps = () => {
-    const { scripts, styles } = useResource().appSchemaState.materialsDeps;
+// 业务物料依赖顺序：被依赖的包（如 mr-components）需先于依赖方（如 mp-card）加载，避免在 webview 中嵌套 import 失败
+const MATERIAL_LOAD_ORDER = ['@local/mr-components', '@local/mp-card'];
 
+const MATERIAL_FILENAMES = ['mr-components.js', 'mp-card.js', 'style.css'];
+
+const getFilenameFromPath = (pathOrUrl: string) => pathOrUrl.replace(/^.*\//, '');
+
+const toDataUrl = (content: string, mime: string) =>
+    `data:${mime};base64,${typeof btoa !== 'undefined' ? btoa(unescape(encodeURIComponent(content))) : ''}`;
+
+const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
+    const { scripts, styles } = useResource().appSchemaState.materialsDeps;
+    // 避免 base 为空时发布相对路径，iframe 会按 vscode-webview 解析导致 403；有物料脚本时强制用 origin 回退
+    let base = getDesignerMaterialBaseUrl();
+    if (!base && scripts?.length && typeof window !== 'undefined') {
+        const win = window as any;
+        base = (win.TINY_DESIGNER_ORIGIN || (import.meta.env as any).VITE_ORIGIN || 'http://localhost:8090').replace(/\/$/, '');
+    }
+    const scriptsList = [...scripts].filter(item => item.script);
+
+    scriptsList.sort((a, b) => {
+        const i = MATERIAL_LOAD_ORDER.indexOf(a.package);
+        const j = MATERIAL_LOAD_ORDER.indexOf(b.package);
+        if (i !== -1 && j !== -1) return i - j;
+        if (i !== -1) return -1;
+        if (j !== -1) return 1;
+        return 0;
+    });
+
+    // 只要有 base、materialContents，或任一脚本/样式是相对路径，都做绝对化，避免 iframe 按 vscode-webview 解析相对路径导致 403
+    const hasRelative =
+        !base &&
+        !materialContents &&
+        [...scriptsList.map(s => s.script), ...styles].some(
+            (u): u is string => typeof u === 'string' && u.startsWith('/')
+        );
+    const effectiveBase =
+        (base || (typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN) || 'http://localhost:8090')?.toString().replace(/\/$/, '') || '';
+
+    const scriptUrl = (item: { script?: string; css?: string }, url: string, isCss: boolean) => {
+        const filename = getFilenameFromPath(url);
+        if (materialContents && MATERIAL_FILENAMES.includes(filename) && materialContents[filename]) {
+            return toDataUrl(materialContents[filename], isCss ? 'text/css' : 'application/javascript');
+        }
+        return effectiveBase ? (toAbsoluteMaterialUrl(url, effectiveBase) ?? url) : url;
+    };
+
+    if (base || materialContents || hasRelative) {
+        return {
+            scripts: scriptsList.map(item => ({
+                ...item,
+                script: scriptUrl(item, item.script!, false),
+                ...(item.css && { css: scriptUrl(item, item.css, true) })
+            })),
+            styles: [...styles].map(s =>
+                typeof s === 'string'
+                    ? (materialContents && MATERIAL_FILENAMES.includes(getFilenameFromPath(s)) && materialContents[getFilenameFromPath(s)]
+                        ? toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css')
+                        : (effectiveBase ? toAbsoluteMaterialUrl(s, effectiveBase) ?? s : s))
+                    : s
+            )
+        };
+    }
     return {
-        scripts: [...scripts].filter(item => item.script),
+        scripts: scriptsList,
         styles: [...styles]
     };
 };
 
 /**
- * 组装画布的依赖，通知画布更新docsrc
+ * 组装画布的依赖，通知画布更新。在插件环境下优先向扩展请求物料文件内容，用 data URL 注入以避免 403。
  */
-const updateCanvasDeps = () => {
+const updateCanvasDeps = async () => {
+    let deps: ReturnType<typeof getCanvasDeps>;
+    try {
+        const contents = await getMaterialContentsFromExtension();
+        if (contents && Object.keys(contents).length > 0) {
+            deps = getCanvasDeps(contents);
+        } else {
+            deps = getCanvasDeps();
+        }
+    } catch {
+        deps = getCanvasDeps();
+    }
     useMessage().publish({
         topic: 'init_canvas_deps',
-        data: getCanvasDeps()
+        data: deps
     });
 };
 
@@ -615,13 +691,11 @@ const getMaterialsRes = async () => {
 
 const fetchMaterial = async () => {
     const materials = await getMaterialsRes();
-
     materials.forEach(response => {
         if (response.status === 'fulfilled' && response.value.materials) {
             addMaterials(response.value.materials);
         }
     });
-
     updateCanvasDeps();
 };
 

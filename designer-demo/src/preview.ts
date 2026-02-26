@@ -22,7 +22,7 @@ async function startApp() {
         'engine.config': {
             id: 'engine.config',
             theme: 'light',
-            material: ['/mock/bundle.json']
+            material: ['/mock/bundle.json', '/mock/business-materials.json']
         }
     };
 

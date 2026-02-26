@@ -38,7 +38,7 @@ async function startApp() {
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）
                 initVSCodeBridge();
             },
-            appCreated: () => {
+            appCreated: async () => {
                 // 在 VSCode 环境中，先设置为英文（避免显示中文），然后等待 VSCode 插件配置
                 // 如果不在 VSCode 环境中，则使用默认语言
                 if (checkIsVSCodeEnvironment()) {
@@ -53,6 +53,14 @@ async function startApp() {
                 startPageStatusGuard();
                 // 设置国际化的 Canvas Renderer（用于空画布提示）
                 setupCanvasI18nRenderer();
+                // 订阅 init_canvas_deps，将相对路径转为绝对 URL 后重发，避免 npm 包 materials 发布的相对路径在 iframe 内被解析为 vscode-webview 导致 403
+                const { useMessage } = await import('@opentiny/tiny-engine-meta-register');
+                const { setupCanvasDepsNormalizer } = await import('@/composable/canvasDepsNormalizer');
+                const msg = useMessage();
+                setupCanvasDepsNormalizer(
+                    (opts) => msg.subscribe(opts),
+                    (opts) => msg.publish(opts)
+                );
             }
         }
     });

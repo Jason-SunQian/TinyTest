@@ -433,6 +433,67 @@ const handlePreview = () => {
 </script>
 ```
 
+## 固定 Mock 与物料包（插件环境）
+
+在 VSCode 插件环境中，设计器通过「固定 Mock」从本地 mock 文件读取数据，不经过插件转发。凡以 `/mock/` 开头的请求都会走固定 Mock（见 `src/composable/http/index.ts` 中 `isFixedMockRoute`）。
+
+与物料相关的固定 Mock 包括：
+
+| 请求 URL | Mock 数据来源 | 说明 |
+| -------- | -------------- | ---- |
+| `GET /mock/bundle.json` | `mock/app-center.ts` 中对应路由，动态导入 `mock/bundle.json` | 基础物料包 |
+| `GET /mock/business-materials.json` | `mock/app-center.ts` 中对应路由，动态导入 `mock/business-materials.json` | 业务/原子组件物料包 |
+
+若在插件环境中出现「固定 Mock 接口未找到数据」或物料面板加载不全，请确认：
+
+1. **`mock/business-materials.json` 存在**且内容为 `{ "data": { "materials": { "components": [...], "snippets": [...] } } }`（该文件为唯一数据来源，mock 路由通过 `import('./business-materials.json')` 读取）。
+2. **`mock/app-center.ts`** 中已注册 `/mock/business-materials.json` 的 GET 路由，并在 `getMockData` 合并的 mock 列表内（通过 `appCenterMock` 引入）。
+
+新增其他物料包时，同样需要在 `mock/` 下放置对应 JSON，并在 `mock/app-center.ts` 中增加一条 GET 路由，返回格式需包含顶层 `data`，以便 HTTP 拦截器正确解析。
+
+### 为什么导入的物料在插件中需要「绝对 URL」？（与内置组件的差异）
+
+**现象**：内置组件（如容器、按钮、TinyVue 等）在浏览器和插件里都能正常拖拽和渲染；通过物料包导入的组件（如 MpCard）在浏览器里正常，在插件里画布会报「区块 xxx 加载错误」。
+
+**根本原因**：两类组件的 **script 来源不同**，最终进画布 iframe 的 URL 形式不同：
+
+| 来源 | script URL 从哪来 | 在画布 iframe 中的形式 | 插件环境下 |
+|------|-------------------|-------------------------|------------|
+| **内置组件** | 设计器内部 `getImportUrl(pkg)`，用环境变量（CDN / BASE_URL）拼出地址 | **始终是绝对 URL**（如 `https://cdn.../index.mjs` 或 `http://localhost:8090/...`） | ✅ 能加载 |
+| **导入的物料** | 物料包 JSON 里配置的 `script` 字段（如 `/mock/materials/mp-card.js`） | **原样写入 importMap / componentsDeps**，是相对路径 | ❌ 解析错误 |
+
+画布运行在 **iframe（srcdoc）** 里。在插件环境中，该 iframe 的 document 的 base URL 是 **`vscode-webview://...`**，而不是设计器前端的 `http://localhost:8090`。因此：
+
+- 相对路径 `/mock/materials/mp-card.js` 在 iframe 里会被解析成 `vscode-webview://.../mock/materials/mp-card.js`，请求失败；
+- 脚本加载失败 → 组件未注册到 `window.TinyLowcodeComponent` → 画布回退到请求 `GET /material-center/api/block?label=MpCard` → 该接口返回 404，出现「区块 MpCard 加载错误」。
+
+**结论**：不是给「导入的组件」做特殊逻辑，而是让**所有进画布的物料 script/样式 URL 在需要时都变成可解析的地址**。内置组件已经通过 `getImportUrl` 得到绝对 URL；导入的物料在插件环境下需要把相对路径转成「设计器前端绝对 URL」（如 `http://localhost:8090`），这样 iframe 内请求会发到正确域名。
+
+**当前实现**：设计器在 VSCode 环境下通过两处保证「最终进画布的均为绝对 URL」：（1）**`src/composable/canvasDepsNormalizer.ts`** 订阅 `init_canvas_deps`，将 payload 中的相对路径（如 `/mock/materials/mp-card.js`）转为绝对 URL 后重新发布，这样由 npm 包 materials 发布的相对路径也会被归一化；（2）**`src/utils/designerOrigin.ts`**、**`useMaterial.getCanvasDeps`**、**`CanvasContainer` 的 `beforeCanvasReady`** 等确保设计器侧自己发布 `init_canvas_deps` 时也带上绝对 URL（或 data URL）。与内置组件「最终都用绝对 URL」的行为一致。
+
+若端口不是 8090，可设置环境变量 `VITE_ORIGIN=http://localhost:你的端口`，设计器会以此作为物料 base。
+
+**若插件里仍报「区块 MpCard 加载错误」或 `Failed to fetch dynamically imported module`**，可按下面排查清单逐项检查：
+
+1. **物料文件**：在 designer-demo 下执行 `pnpm run build:materials`，确认 `public/mock/materials/` 下有 `mp-card.js`、`mr-components.js`、`style.css`。
+2. **扩展侧（若使用 data URL 方案）**：在 lowcode-kit 的 packages/vscode 下执行 `pnpm run copy-materials`，或手动将上述 3 个文件拷到 `resource/mock/materials/`。
+3. **设计器与端口**：designer-demo 运行 `pnpm run dev`，浏览器直连 `http://localhost:8090` 能正常打开设计器。
+4. **扩展重载**：F5 启动 Extension Development Host 后，在新窗口执行「Developer: Reload Window」或关掉窗口再 F5。
+5. **仍失败时**：在 webview 开发者工具 → Network 筛 `mock` 或 `mp-card`：若请求是 `http://localhost:8090/...` 且 403，检查 vite 的 mock-materials-cors 与 CORS 配置；若请求仍是 vscode-webview，说明 normalizer 未生效，检查 designer-demo 的 `canvasDepsNormalizer` 是否在 `main.ts` 的 appCreated 中注册。
+
+### 插件环境下如何看到设计器日志
+
+设计器运行在 **VSCode 的 webview** 里，`console.log` 只会出现在 **该 webview 的开发者工具** 中，不会出现在 VS Code 的「调试控制台」或「Extension Host」输出里。
+
+**正确步骤：**
+
+1. 在 Extension Development Host 窗口中，**把焦点放在设计器页面**（左侧或中间显示画布、物料面板的那块区域）。
+2. **右键点击设计器内容区域**（画布或物料面板均可），在菜单里选择 **「审查」或「Inspect」**（或「打开 Webview 开发者工具」等类似项）。
+3. 会弹出一个**独立的 Chrome DevTools 窗口**，其中的 **Console** 即为设计器所在 webview 的控制台。
+4. 设计器相关日志（如 HTTP Service、VSCode Bridge 等）会出现在该 Console 中。
+
+若打开的窗口没有设计器相关输出，说明当前不是 webview 的控制台，请确认是「右键设计器区域 → 审查」弹出的窗口。
+
 ## 注意事项
 
 1. **环境检测**：只有在 VSCode 环境中才会初始化通信，非 VSCode 环境返回空实现或使用原有方式

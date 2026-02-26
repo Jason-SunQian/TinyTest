@@ -8,7 +8,8 @@
         "build:alpha": "cross-env NODE_OPTIONS=--max-old-space-size=10240 vite build --mode alpha",
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=10240 vite build",
         "serve:frontend": "cross-env vite",
-        "typecheck": "vue-tsc --noEmit"
+        "typecheck": "vue-tsc --noEmit",
+        "build:materials": "vite build --config vite.materials.config.ts && mkdir -p public/mock/materials && cp -r dist-materials/. public/mock/materials/"
     },
     "dependencies": {
         "@opentiny/tiny-engine": "^2.8.2",
@@ -49,6 +50,7 @@
         "typescript": "^5.9.2",
         "vite": "^5.4.2",
         "vite-plugin-mock": "^3.0.2",
+        "vant": "^4.8.5",
         "vue-tsc": "^3.0.6"
     }
 }
