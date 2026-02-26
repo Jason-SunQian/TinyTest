@@ -361,16 +361,16 @@ export const goPreview = (
     sendMessageToVSCode('goPreview', callbackId, data);
 };
 
-/** 插件返回的物料文件内容，key 为文件名如 mr-components.js */
-const MATERIAL_FILES = ['mr-components.js', 'mp-card.js', 'style.css'] as const;
-
 /**
  * 向插件请求物料文件内容，由插件从 resource/mock/materials 读取后通过 postMessage 返回。
- * 用于画布用 data URL 注入，避免 iframe 内 vscode-webview / localhost 请求 403。
- * @returns 文件名 -> 文件内容；无插件或超时返回 null
+ * 文件列表由调用方根据当前 materialsDeps 动态传入，新增业务组件无需改此处。
+ * @param files 需要请求的文件名列表（如从 materialsDeps 的 script/css 路径提取）
+ * @returns 文件名 -> 文件内容（可为部分）；无插件、空列表或超时返回 null
  */
-export const getMaterialContentsFromExtension = (): Promise<Record<string, string> | null> => {
-    if (!checkIsVSCodeEnvironment()) {
+export const getMaterialContentsFromExtension = (
+    files: string[]
+): Promise<Record<string, string> | null> => {
+    if (!checkIsVSCodeEnvironment() || files.length === 0) {
         return Promise.resolve(null);
     }
     return new Promise(resolve => {
@@ -383,14 +383,13 @@ export const getMaterialContentsFromExtension = (): Promise<Record<string, strin
         }, 5000);
         callbackMap.set(callbackId, (result: { contents?: Record<string, string> }, error?: unknown) => {
             clearTimeout(timeout);
-            if (error || !result?.contents) {
+            if (error || !result?.contents || typeof result.contents !== 'object') {
                 resolve(null);
                 return;
             }
-            const ok = MATERIAL_FILES.every(f => typeof result.contents![f] === 'string');
-            resolve(ok ? result.contents! : null);
+            resolve(result.contents as Record<string, string>);
         });
-        sendMessageToVSCode('getMaterialFileContents', callbackId, { files: [...MATERIAL_FILES] });
+        sendMessageToVSCode('getMaterialFileContents', callbackId, { files: [...files] });
     });
 };
 

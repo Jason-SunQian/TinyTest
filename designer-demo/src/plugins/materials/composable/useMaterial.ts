@@ -453,9 +453,26 @@ const addComponentSnippets = (
 // 业务物料依赖顺序：被依赖的包（如 mr-components）需先于依赖方（如 mp-card）加载，避免在 webview 中嵌套 import 失败
 const MATERIAL_LOAD_ORDER = ['@local/mr-components', '@local/mp-card'];
 
-const MATERIAL_FILENAMES = ['mr-components.js', 'mp-card.js', 'style.css'];
-
 const getFilenameFromPath = (pathOrUrl: string) => pathOrUrl.replace(/^.*\//, '');
+
+/** 从当前物料依赖中收集需要请求的脚本/样式文件名（用于插件 data URL 或 URL 加载），新增业务组件无需改此处 */
+const getMaterialFilenamesFromDeps = (): string[] => {
+    const { scripts, styles } = useResource().appSchemaState.materialsDeps;
+    const set = new Set<string>();
+    const scriptsList = Array.isArray(scripts) ? scripts : [];
+    for (const item of scriptsList) {
+        if (item?.script) set.add(getFilenameFromPath(item.script));
+        if (item?.css) {
+            const cssList = Array.isArray(item.css) ? item.css : [item.css];
+            for (const u of cssList) set.add(getFilenameFromPath(String(u)));
+        }
+    }
+    const stylesList = Array.isArray(styles) ? styles : Array.from(styles || []);
+    for (const s of stylesList) {
+        if (typeof s === 'string') set.add(getFilenameFromPath(s));
+    }
+    return Array.from(set);
+};
 
 const toDataUrl = (content: string, mime: string) =>
     `data:${mime};base64,${typeof btoa !== 'undefined' ? btoa(unescape(encodeURIComponent(content))) : ''}`;
@@ -491,7 +508,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
 
     const scriptUrl = (item: { script?: string; css?: string }, url: string, isCss: boolean) => {
         const filename = getFilenameFromPath(url);
-        if (materialContents && MATERIAL_FILENAMES.includes(filename) && materialContents[filename]) {
+        if (materialContents && materialContents[filename]) {
             return toDataUrl(materialContents[filename], isCss ? 'text/css' : 'application/javascript');
         }
         return effectiveBase ? (toAbsoluteMaterialUrl(url, effectiveBase) ?? url) : url;
@@ -506,7 +523,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
             })),
             styles: [...styles].map(s =>
                 typeof s === 'string'
-                    ? (materialContents && MATERIAL_FILENAMES.includes(getFilenameFromPath(s)) && materialContents[getFilenameFromPath(s)]
+                    ? (materialContents && materialContents[getFilenameFromPath(s)]
                         ? toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css')
                         : (effectiveBase ? toAbsoluteMaterialUrl(s, effectiveBase) ?? s : s))
                     : s
@@ -525,7 +542,8 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
 const updateCanvasDeps = async () => {
     let deps: ReturnType<typeof getCanvasDeps>;
     try {
-        const contents = await getMaterialContentsFromExtension();
+        const files = getMaterialFilenamesFromDeps();
+        const contents = await getMaterialContentsFromExtension(files);
         if (contents && Object.keys(contents).length > 0) {
             deps = getCanvasDeps(contents);
         } else {
