@@ -1,0 +1,21 @@
+
+._mp-card_r07xm_2 {
+  padding: 12px;
+  background: var(--mp-card-bg, #fff);
+  border-radius: 8px;
+}
+
+.mp-card-wrap[data-v-de2f6141] {
+  box-sizing: border-box;
+}
+.mp-card-header[data-v-de2f6141] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mp-card-title[data-v-de2f6141] {
+  font-weight: 500;
+}
+.mp-card-body[data-v-de2f6141] {
+  margin-top: 8px;
+}

@@ -1,0 +1,211 @@
+{
+  "data": {
+    "materials": {
+      "components": [
+        {
+          "version": "1.0.0",
+          "icon": "split",
+          "name": {
+            "zh_CN": "分隔线",
+            "en_US": "Divider"
+          },
+          "component": "MrDivider",
+          "description": "原子组件 mr-divider（来自 Vant）",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务原子",
+          "npm": {
+            "package": "@local/mr-components",
+            "script": "/mock/materials/mr-components.js",
+            "exportName": "MrDivider",
+            "destructuring": true
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础"
+                },
+                "content": []
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "card",
+          "name": {
+            "zh_CN": "卡片",
+            "en_US": "Card"
+          },
+          "component": "MpCard",
+          "description": "业务组件 mp-card，支持标题与插槽",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-card",
+            "script": "/mock/materials/mp-card.js",
+            "exportName": "MpCard",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础信息"
+                },
+                "content": [
+                  {
+                    "property": "title",
+                    "label": {
+                      "text": {
+                        "zh_CN": "标题"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {
+              "header": {
+                "label": {
+                  "zh_CN": "头部"
+                }
+              },
+              "headerEnd": {
+                "label": {
+                  "zh_CN": "头部右侧"
+                }
+              },
+              "default": {
+                "label": {
+                  "zh_CN": "内容"
+                }
+              },
+              "footer": {
+                "label": {
+                  "zh_CN": "底部"
+                }
+              }
+            }
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": true,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "shortcuts": {
+              "properties": [
+                "title"
+              ]
+            },
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        }
+      ],
+      "snippets": [
+        {
+          "group": "业务原子",
+          "children": [
+            {
+              "snippetName": "MrDivider",
+              "name": {
+                "zh_CN": "分隔线"
+              },
+              "icon": "split",
+              "schema": {}
+            }
+          ]
+        },
+        {
+          "group": "业务组件",
+          "children": [
+            {
+              "snippetName": "MpCard",
+              "name": {
+                "zh_CN": "卡片"
+              },
+              "icon": "card",
+              "schema": {}
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
