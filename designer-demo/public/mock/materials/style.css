@@ -19,3 +19,27 @@
 .mp-card-body[data-v-de2f6141] {
   margin-top: 8px;
 }
+._title-view_1yhxv_1 {
+  display: flex;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+._content-view_1yhxv_7 {
+  display: flex;
+  font-size: 14px;
+  margin-top: 12px;
+}
+._right_1yhxv_13 {
+  margin-left: auto;
+  color: var(--mr-color-neutral-600);
+}
+._progress-text_1yhxv_18 {
+  color: var(--mr-color-neutral-950);
+  font-size: 12px;
+  position: relative;
+  width: 100%;
+  text-align: right;
+  top: 20px;
+  z-index: 1;
+  right: 8px;
+}

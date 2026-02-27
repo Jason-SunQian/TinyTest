@@ -1,14 +1,8 @@
 import { createElementBlock, openBlock, normalizeClass, createCommentVNode, createElementVNode, renderSlot, Fragment, createVNode, toDisplayString, unref } from "vue";
 import { MrDivider } from "@local/mr-components";
+import { _ as _export_sfc } from "./_plugin-vue_export-helper-1tPrXgE0.js";
 const style0 = {
   "mp-card": "_mp-card_r07xm_2"
-};
-const _export_sfc = (sfc, props) => {
-  const target = sfc.__vccOpts || sfc;
-  for (const [key, val] of props) {
-    target[key] = val;
-  }
-  return target;
 };
 const _hoisted_1 = { class: "mp-card-header" };
 const _hoisted_2 = {

@@ -22,7 +22,8 @@ export default defineConfig({
     lib: {
       entry: {
         'mr-components': path.resolve(__dirname, 'materials-src/mr-components.js'),
-        'mp-card': path.resolve(__dirname, 'materials-src/mp-card/index.js')
+        'mp-card': path.resolve(__dirname, 'materials-src/mp-card/index.js'),
+        'mp-progress': path.resolve(__dirname, 'materials-src/mp-progress/index.js')
       },
       formats: ['es']
     },

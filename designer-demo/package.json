@@ -9,7 +9,9 @@
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=10240 vite build",
         "serve:frontend": "cross-env vite",
         "typecheck": "vue-tsc --noEmit",
-        "build:materials": "vite build --config vite.materials.config.ts"
+        "build:materials": "vite build --config vite.materials.config.ts",
+        "generate:materials-json": "node scripts/generate-business-materials.cjs",
+        "validate:materials-json": "node scripts/validate-business-materials.cjs"
     },
     "dependencies": {
         "@opentiny/tiny-engine": "^2.8.2",

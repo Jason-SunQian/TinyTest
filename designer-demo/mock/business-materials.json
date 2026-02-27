@@ -102,7 +102,8 @@
                     "property": "title",
                     "label": {
                       "text": {
-                        "zh_CN": "标题"
+                        "zh_CN": "标题",
+                        "en_US": "Title"
                       }
                     },
                     "required": false,
@@ -178,6 +179,93 @@
             "clickCapture": true,
             "framework": "Vue"
           }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "progress",
+          "name": {
+            "zh_CN": "进度条",
+            "en_US": "Progress"
+          },
+          "component": "MpProgress",
+          "description": "业务组件 mp-progress，进度条",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-progress",
+            "script": "/mock/materials/mp-progress.js",
+            "exportName": "MpProgress",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "property": "percentage",
+                    "label": {
+                      "text": {
+                        "zh_CN": "进度",
+                        "en_US": "Percentage"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "0",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
         }
       ],
       "snippets": [
@@ -205,6 +293,15 @@
                 "en_US": "Card"
               },
               "icon": "card",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpProgress",
+              "name": {
+                "zh_CN": "进度条",
+                "en_US": "Progress"
+              },
+              "icon": "progress",
               "schema": {}
             }
           ]

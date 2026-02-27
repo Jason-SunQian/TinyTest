@@ -1,7 +1,8 @@
-import { ref, reactive, defineComponent, createVNode } from "vue";
+import { ref, reactive, defineComponent, createVNode, computed } from "vue";
 const isObject = (val) => val !== null && typeof val === "object";
 const isDef = (val) => val !== void 0 && val !== null;
 const isFunction = (val) => typeof val === "function";
+const isNumeric = (val) => typeof val === "number" || /^\d+(\.\d+)?$/.test(val);
 function get(object, path) {
   const keys = path.split(".");
   let result = object;
@@ -11,6 +12,7 @@ function get(object, path) {
   });
   return result;
 }
+const numericProp = [Number, String];
 const truthProp = {
   type: Boolean,
   default: true
@@ -19,6 +21,12 @@ const makeStringProp = (defaultVal) => ({
   type: String,
   default: defaultVal
 });
+function addUnit(value) {
+  if (isDef(value)) {
+    return isNumeric(value) ? `${value}px` : String(value);
+  }
+  return void 0;
+}
 const camelizeRE = /-(\w)/g;
 const camelize = (str) => str.replace(camelizeRE, (_, c) => c.toUpperCase());
 const { hasOwnProperty } = Object.prototype;
@@ -39,7 +47,7 @@ function deepAssign(to, from) {
   });
   return to;
 }
-var stdin_default$2 = {
+var stdin_default$3 = {
   name: "姓名",
   tel: "电话",
   save: "保存",
@@ -103,7 +111,7 @@ var stdin_default$2 = {
 };
 const lang = ref("zh-CN");
 const messages = reactive({
-  "zh-CN": stdin_default$2
+  "zh-CN": stdin_default$3
 });
 const Locale = {
   messages() {
@@ -117,11 +125,11 @@ const Locale = {
     deepAssign(messages, newMessages);
   }
 };
-var stdin_default$1 = Locale;
+var stdin_default$2 = Locale;
 function createTranslate(name2) {
   const prefix = camelize(name2) + ".";
   return (path, ...args) => {
-    const messages2 = stdin_default$1.messages();
+    const messages2 = stdin_default$2.messages();
     const message = get(messages2, prefix + path) || get(messages2, path);
     return isFunction(message) ? message(...args) : message;
   };
@@ -172,15 +180,15 @@ function withInstall(options) {
   };
   return options;
 }
-const [name, bem] = createNamespace("divider");
+const [name$1, bem$1] = createNamespace("divider");
 const dividerProps = {
   dashed: Boolean,
   hairline: truthProp,
   vertical: Boolean,
   contentPosition: makeStringProp("center")
 };
-var stdin_default = defineComponent({
-  name,
+var stdin_default$1 = defineComponent({
+  name: name$1,
   props: dividerProps,
   setup(props, {
     slots
@@ -189,7 +197,7 @@ var stdin_default = defineComponent({
       var _a;
       return createVNode("div", {
         "role": "separator",
-        "class": bem({
+        "class": bem$1({
           dashed: props.dashed,
           hairline: props.hairline,
           vertical: props.vertical,
@@ -199,7 +207,79 @@ var stdin_default = defineComponent({
     };
   }
 });
-const Divider = withInstall(stdin_default);
+const Divider = withInstall(stdin_default$1);
+const [name, bem] = createNamespace("progress");
+const progressProps = {
+  color: String,
+  inactive: Boolean,
+  pivotText: String,
+  textColor: String,
+  showPivot: truthProp,
+  pivotColor: String,
+  trackColor: String,
+  strokeWidth: numericProp,
+  percentage: {
+    type: numericProp,
+    default: 0,
+    validator: (value) => +value >= 0 && +value <= 100
+  }
+};
+var stdin_default = defineComponent({
+  name,
+  props: progressProps,
+  setup(props) {
+    const background = computed(() => props.inactive ? void 0 : props.color);
+    const renderPivot = () => {
+      const {
+        textColor,
+        pivotText,
+        pivotColor,
+        percentage
+      } = props;
+      const text = pivotText != null ? pivotText : `${percentage}%`;
+      if (props.showPivot && text) {
+        const style = {
+          color: textColor,
+          left: `${+percentage}%`,
+          transform: `translate(-${+percentage}%,-50%)`,
+          background: pivotColor || background.value
+        };
+        return createVNode("span", {
+          "style": style,
+          "class": bem("pivot", {
+            inactive: props.inactive
+          })
+        }, [text]);
+      }
+    };
+    return () => {
+      const {
+        trackColor,
+        percentage,
+        strokeWidth
+      } = props;
+      const rootStyle = {
+        background: trackColor,
+        height: addUnit(strokeWidth)
+      };
+      const portionStyle = {
+        width: `${percentage}%`,
+        background: background.value
+      };
+      return createVNode("div", {
+        "class": bem(),
+        "style": rootStyle
+      }, [createVNode("span", {
+        "class": bem("portion", {
+          inactive: props.inactive
+        }),
+        "style": portionStyle
+      }, null), renderPivot()]);
+    };
+  }
+});
+const Progress = withInstall(stdin_default);
 export {
-  Divider as MrDivider
+  Divider as MrDivider,
+  Progress as MrProgress
 };
