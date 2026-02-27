@@ -11,6 +11,12 @@ import { getMaterialEntries } from './scripts/get-material-entries.js';
 export default defineConfig({
   plugins: [vue()],
   root: __dirname,
+  define: {
+    // echarts 等库在浏览器中会访问 process.env，需注入避免 "process is not defined"
+    'process.env.NODE_ENV': JSON.stringify('production'),
+    'process.env': '{"NODE_ENV":"production"}',
+    'process': '{"env":{"NODE_ENV":"production"}}'
+  },
   resolve: {
     alias: {
       '@local/mr-components': path.resolve(__dirname, 'materials-src/mr-components.js')

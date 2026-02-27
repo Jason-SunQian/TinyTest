@@ -266,6 +266,112 @@
             "clickCapture": true,
             "framework": "Vue"
           }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "水球图",
+            "en_US": "Liquid Fill"
+          },
+          "component": "MpLiquidfill",
+          "description": "业务组件 mp-liquidfill，水球图",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-liquidfill",
+            "script": "/mock/materials/mp-liquidfill.js",
+            "exportName": "MpLiquidfill",
+            "destructuring": true
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "property": "rate",
+                    "label": {
+                      "text": {
+                        "zh_CN": "填充比例",
+                        "en_US": "Rate"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "number",
+                    "defaultValue": 0.5,
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "title",
+                    "label": {
+                      "text": {
+                        "zh_CN": "标题",
+                        "en_US": "Title"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "Save",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
         }
       ],
       "snippets": [
@@ -302,6 +408,15 @@
                 "en_US": "Progress"
               },
               "icon": "progress",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpLiquidfill",
+              "name": {
+                "zh_CN": "水球图",
+                "en_US": "Liquid Fill"
+              },
+              "icon": "component-default",
               "schema": {}
             }
           ]

@@ -29,11 +29,19 @@
         "properties": [
           {
             "name": "0",
-            "label": { "zh_CN": "基础信息", "en_US": "Basic Information" },
+            "label": {
+              "zh_CN": "基础信息",
+              "en_US": "Basic Information"
+            },
             "content": [
               {
                 "property": "title",
-                "label": { "text": { "zh_CN": "标题", "en_US": "Title" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "标题",
+                    "en_US": "Title"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -41,19 +49,42 @@
                 "labelPosition": "top",
                 "type": "string",
                 "defaultValue": "",
-                "widget": { "component": "InputConfigurator", "props": {} }
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
               }
             ]
           }
         ],
         "slots": {
-          "header": { "label": { "zh_CN": "头部" } },
-          "headerEnd": { "label": { "zh_CN": "头部右侧" } },
-          "default": { "label": { "zh_CN": "内容" } },
-          "footer": { "label": { "zh_CN": "底部" } }
+          "header": {
+            "label": {
+              "zh_CN": "头部"
+            }
+          },
+          "headerEnd": {
+            "label": {
+              "zh_CN": "头部右侧"
+            }
+          },
+          "default": {
+            "label": {
+              "zh_CN": "内容"
+            }
+          },
+          "footer": {
+            "label": {
+              "zh_CN": "底部"
+            }
+          }
         }
       },
-      "shortcuts": { "properties": ["title"] }
+      "shortcuts": {
+        "properties": [
+          "title"
+        ]
+      }
     },
     {
       "component": "MpProgress",
@@ -70,11 +101,19 @@
         "properties": [
           {
             "name": "0",
-            "label": { "zh_CN": "基础", "en_US": "Basic" },
+            "label": {
+              "zh_CN": "基础",
+              "en_US": "Basic"
+            },
             "content": [
               {
                 "property": "percentage",
-                "label": { "text": { "zh_CN": "进度", "en_US": "Percentage" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "进度",
+                    "en_US": "Percentage"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -82,7 +121,75 @@
                 "labelPosition": "top",
                 "type": "string",
                 "defaultValue": "0",
-                "widget": { "component": "InputConfigurator", "props": {} }
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "MpLiquidfill",
+      "group": "业务组件",
+      "nameZh": "水球图",
+      "nameEn": "Liquid Fill",
+      "icon": "component-default",
+      "script": "mp-liquidfill.js",
+      "exportName": "MpLiquidfill",
+      "package": "@local/mp-liquidfill",
+      "hasCss": false,
+      "description": "业务组件 mp-liquidfill，水球图",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": {
+              "zh_CN": "基础",
+              "en_US": "Basic"
+            },
+            "content": [
+              {
+                "property": "rate",
+                "label": {
+                  "text": {
+                    "zh_CN": "填充比例",
+                    "en_US": "Rate"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "number",
+                "defaultValue": 0.5,
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "title",
+                "label": {
+                  "text": {
+                    "zh_CN": "标题",
+                    "en_US": "Title"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "Save",
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
               }
             ]
           }
