@@ -1,11 +1,12 @@
 /**
  * 物料构建配置：原子组件入口（mr-components）、业务组件（mp-card 等）
  * 直接输出到 public/mock/materials/，供设计器 dev 时通过 /mock/materials/xxx.js 访问，无需再复制
- * 新增组件时：在此文件的 build.lib.entry 中增加一条入口即可
+ * entry 由 scripts/get-material-entries.js 扫描 materials-src 自动生成，新增组件只需在 materials-src 下加目录（含 index.js）或顶层 .js 文件即可
  */
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { getMaterialEntries } from './scripts/get-material-entries.js';
 
 export default defineConfig({
   plugins: [vue()],
@@ -20,11 +21,7 @@ export default defineConfig({
     outDir: 'public/mock/materials',
     emptyOutDir: true,
     lib: {
-      entry: {
-        'mr-components': path.resolve(__dirname, 'materials-src/mr-components.js'),
-        'mp-card': path.resolve(__dirname, 'materials-src/mp-card/index.js'),
-        'mp-progress': path.resolve(__dirname, 'materials-src/mp-progress/index.js')
-      },
+      entry: getMaterialEntries(),
       formats: ['es']
     },
     rollupOptions: {
