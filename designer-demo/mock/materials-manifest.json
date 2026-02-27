@@ -146,11 +146,19 @@
         "properties": [
           {
             "name": "0",
-            "label": { "zh_CN": "基础", "en_US": "Basic" },
+            "label": {
+              "zh_CN": "基础",
+              "en_US": "Basic"
+            },
             "content": [
               {
                 "property": "label",
-                "label": { "text": { "zh_CN": "标签", "en_US": "Label" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "标签",
+                    "en_US": "Label"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -158,11 +166,19 @@
                 "labelPosition": "top",
                 "type": "string",
                 "defaultValue": "",
-                "widget": { "component": "InputConfigurator", "props": {} }
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
               },
               {
                 "property": "placeholder",
-                "label": { "text": { "zh_CN": "占位符", "en_US": "Placeholder" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "占位符",
+                    "en_US": "Placeholder"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -170,11 +186,19 @@
                 "labelPosition": "top",
                 "type": "string",
                 "defaultValue": "",
-                "widget": { "component": "InputConfigurator", "props": {} }
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
               },
               {
                 "property": "type",
-                "label": { "text": { "zh_CN": "类型", "en_US": "Type" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "类型",
+                    "en_US": "Type"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -186,19 +210,42 @@
                   "component": "SelectConfigurator",
                   "props": {
                     "options": [
-                      { "label": "text", "value": "text" },
-                      { "label": "number", "value": "number" },
-                      { "label": "email", "value": "email" },
-                      { "label": "tel", "value": "tel" },
-                      { "label": "url", "value": "url" },
-                      { "label": "password", "value": "password" }
+                      {
+                        "label": "text",
+                        "value": "text"
+                      },
+                      {
+                        "label": "number",
+                        "value": "number"
+                      },
+                      {
+                        "label": "email",
+                        "value": "email"
+                      },
+                      {
+                        "label": "tel",
+                        "value": "tel"
+                      },
+                      {
+                        "label": "url",
+                        "value": "url"
+                      },
+                      {
+                        "label": "password",
+                        "value": "password"
+                      }
                     ]
                   }
                 }
               },
               {
                 "property": "labelAlign",
-                "label": { "text": { "zh_CN": "标签对齐", "en_US": "Label Align" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "标签对齐",
+                    "en_US": "Label Align"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -210,15 +257,26 @@
                   "component": "SelectConfigurator",
                   "props": {
                     "options": [
-                      { "label": "Top", "value": "top" },
-                      { "label": "Left", "value": "left" }
+                      {
+                        "label": "Top",
+                        "value": "top"
+                      },
+                      {
+                        "label": "Left",
+                        "value": "left"
+                      }
                     ]
                   }
                 }
               },
               {
                 "property": "inputAlign",
-                "label": { "text": { "zh_CN": "输入对齐", "en_US": "Input Align" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "输入对齐",
+                    "en_US": "Input Align"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -230,15 +288,26 @@
                   "component": "SelectConfigurator",
                   "props": {
                     "options": [
-                      { "label": "Left", "value": "left" },
-                      { "label": "Right", "value": "right" }
+                      {
+                        "label": "Left",
+                        "value": "left"
+                      },
+                      {
+                        "label": "Right",
+                        "value": "right"
+                      }
                     ]
                   }
                 }
               },
               {
                 "property": "readonly",
-                "label": { "text": { "zh_CN": "只读", "en_US": "Readonly" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "只读",
+                    "en_US": "Readonly"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -246,11 +315,19 @@
                 "labelPosition": "top",
                 "type": "boolean",
                 "defaultValue": false,
-                "widget": { "component": "SwitchConfigurator", "props": {} }
+                "widget": {
+                  "component": "SwitchConfigurator",
+                  "props": {}
+                }
               },
               {
                 "property": "disabled",
-                "label": { "text": { "zh_CN": "禁用", "en_US": "Disabled" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "禁用",
+                    "en_US": "Disabled"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -258,11 +335,19 @@
                 "labelPosition": "top",
                 "type": "boolean",
                 "defaultValue": false,
-                "widget": { "component": "SwitchConfigurator", "props": {} }
+                "widget": {
+                  "component": "SwitchConfigurator",
+                  "props": {}
+                }
               },
               {
                 "property": "errorMessage",
-                "label": { "text": { "zh_CN": "错误提示", "en_US": "Error Message" } },
+                "label": {
+                  "text": {
+                    "zh_CN": "错误提示",
+                    "en_US": "Error Message"
+                  }
+                },
                 "required": false,
                 "readOnly": false,
                 "disabled": false,
@@ -270,7 +355,75 @@
                 "labelPosition": "top",
                 "type": "string",
                 "defaultValue": "",
-                "widget": { "component": "InputConfigurator", "props": {} }
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "MpEmpty",
+      "group": "业务组件",
+      "nameZh": "空状态",
+      "nameEn": "Empty",
+      "icon": "component-default",
+      "script": "mp-empty.js",
+      "exportName": "MpEmpty",
+      "package": "@local/mp-empty",
+      "hasCss": false,
+      "description": "业务组件 mp-empty，空状态提示",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": {
+              "zh_CN": "基础",
+              "en_US": "Basic"
+            },
+            "content": [
+              {
+                "property": "title",
+                "label": {
+                  "text": {
+                    "zh_CN": "标题",
+                    "en_US": "Title"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "desc",
+                "label": {
+                  "text": {
+                    "zh_CN": "描述",
+                    "en_US": "Description"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
               }
             ]
           }

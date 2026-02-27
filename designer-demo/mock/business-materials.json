@@ -541,6 +541,112 @@
             "clickCapture": true,
             "framework": "Vue"
           }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "空状态",
+            "en_US": "Empty"
+          },
+          "component": "MpEmpty",
+          "description": "业务组件 mp-empty，空状态提示",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-empty",
+            "script": "/mock/materials/mp-empty.js",
+            "exportName": "MpEmpty",
+            "destructuring": true
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "property": "title",
+                    "label": {
+                      "text": {
+                        "zh_CN": "标题",
+                        "en_US": "Title"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "desc",
+                    "label": {
+                      "text": {
+                        "zh_CN": "描述",
+                        "en_US": "Description"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
         }
       ],
       "snippets": [
@@ -584,6 +690,15 @@
               "name": {
                 "zh_CN": "输入框",
                 "en_US": "Input"
+              },
+              "icon": "component-default",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpEmpty",
+              "name": {
+                "zh_CN": "空状态",
+                "en_US": "Empty"
               },
               "icon": "component-default",
               "schema": {}

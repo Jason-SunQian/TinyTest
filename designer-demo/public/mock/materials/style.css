@@ -20,6 +20,31 @@
   margin-top: 8px;
 }
 
+.mp-empty[data-v-a6eefd71] {
+    width: 100%;
+    padding: 22px 0 26px;
+    text-align: center;
+}
+.mp-empty-icon[data-v-a6eefd71] {
+    margin-bottom: 24px;
+}
+.mp-empty-icon-img[data-v-a6eefd71] {
+    max-width: 206px;
+    width: 100%;
+    display: inline-block;
+}
+.mp-empty-title[data-v-a6eefd71] {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mr-color-text-primary, #111827);
+}
+.mp-empty-desc[data-v-a6eefd71] {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--mr-color-text-secondary, #6b7280);
+}
+
 .mp-input[data-v-8108a595] .van-field__body input {
     color: var(--mr-color-text-primary, #323233);
 }
