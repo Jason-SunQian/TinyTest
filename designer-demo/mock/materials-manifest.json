@@ -130,5 +130,152 @@
           }
         ]
       }
+    },
+    {
+      "component": "MpInput",
+      "group": "业务组件",
+      "nameZh": "输入框",
+      "nameEn": "Input",
+      "icon": "component-default",
+      "script": "mp-input.js",
+      "exportName": "MpInput",
+      "package": "@local/mp-input",
+      "hasCss": false,
+      "description": "业务组件 mp-input，单行输入",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": { "zh_CN": "基础", "en_US": "Basic" },
+            "content": [
+              {
+                "property": "label",
+                "label": { "text": { "zh_CN": "标签", "en_US": "Label" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": { "component": "InputConfigurator", "props": {} }
+              },
+              {
+                "property": "placeholder",
+                "label": { "text": { "zh_CN": "占位符", "en_US": "Placeholder" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": { "component": "InputConfigurator", "props": {} }
+              },
+              {
+                "property": "type",
+                "label": { "text": { "zh_CN": "类型", "en_US": "Type" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "text",
+                "widget": {
+                  "component": "SelectConfigurator",
+                  "props": {
+                    "options": [
+                      { "label": "text", "value": "text" },
+                      { "label": "number", "value": "number" },
+                      { "label": "email", "value": "email" },
+                      { "label": "tel", "value": "tel" },
+                      { "label": "url", "value": "url" },
+                      { "label": "password", "value": "password" }
+                    ]
+                  }
+                }
+              },
+              {
+                "property": "labelAlign",
+                "label": { "text": { "zh_CN": "标签对齐", "en_US": "Label Align" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "top",
+                "widget": {
+                  "component": "SelectConfigurator",
+                  "props": {
+                    "options": [
+                      { "label": "Top", "value": "top" },
+                      { "label": "Left", "value": "left" }
+                    ]
+                  }
+                }
+              },
+              {
+                "property": "inputAlign",
+                "label": { "text": { "zh_CN": "输入对齐", "en_US": "Input Align" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "left",
+                "widget": {
+                  "component": "SelectConfigurator",
+                  "props": {
+                    "options": [
+                      { "label": "Left", "value": "left" },
+                      { "label": "Right", "value": "right" }
+                    ]
+                  }
+                }
+              },
+              {
+                "property": "readonly",
+                "label": { "text": { "zh_CN": "只读", "en_US": "Readonly" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "boolean",
+                "defaultValue": false,
+                "widget": { "component": "SwitchConfigurator", "props": {} }
+              },
+              {
+                "property": "disabled",
+                "label": { "text": { "zh_CN": "禁用", "en_US": "Disabled" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "boolean",
+                "defaultValue": false,
+                "widget": { "component": "SwitchConfigurator", "props": {} }
+              },
+              {
+                "property": "errorMessage",
+                "label": { "text": { "zh_CN": "错误提示", "en_US": "Error Message" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": { "component": "InputConfigurator", "props": {} }
+              }
+            ]
+          }
+        ]
+      }
+    }
   ]
 }

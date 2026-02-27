@@ -271,11 +271,11 @@
           "version": "1.0.0",
           "icon": "component-default",
           "name": {
-            "zh_CN": "水球图",
-            "en_US": "Liquid Fill"
+            "zh_CN": "输入框",
+            "en_US": "Input"
           },
-          "component": "MpLiquidfill",
-          "description": "业务组件 mp-liquidfill，水球图",
+          "component": "MpInput",
+          "description": "业务组件 mp-input，单行输入",
           "docUrl": "",
           "screenshot": "",
           "tags": "",
@@ -283,115 +283,9 @@
           "devMode": "proCode",
           "group": "业务组件",
           "npm": {
-            "package": "@local/mp-liquidfill",
-            "script": "/mock/materials/mp-liquidfill.js",
-            "exportName": "MpLiquidfill",
-            "destructuring": true
-          },
-          "schema": {
-            "properties": [
-              {
-                "name": "0",
-                "label": {
-                  "zh_CN": "基础",
-                  "en_US": "Basic"
-                },
-                "content": [
-                  {
-                    "property": "rate",
-                    "label": {
-                      "text": {
-                        "zh_CN": "填充比例",
-                        "en_US": "Rate"
-                      }
-                    },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
-                    "type": "number",
-                    "defaultValue": 0.5,
-                    "widget": {
-                      "component": "InputConfigurator",
-                      "props": {}
-                    }
-                  },
-                  {
-                    "property": "title",
-                    "label": {
-                      "text": {
-                        "zh_CN": "标题",
-                        "en_US": "Title"
-                      }
-                    },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
-                    "type": "string",
-                    "defaultValue": "Save",
-                    "widget": {
-                      "component": "InputConfigurator",
-                      "props": {}
-                    }
-                  }
-                ]
-              }
-            ],
-            "events": {},
-            "slots": {}
-          },
-          "configure": {
-            "loop": true,
-            "condition": true,
-            "styles": true,
-            "isContainer": false,
-            "isModal": false,
-            "nestingRule": {
-              "childWhitelist": "",
-              "parentWhitelist": "",
-              "descendantBlacklist": "",
-              "ancestorWhitelist": ""
-            },
-            "isNullNode": false,
-            "isLayout": false,
-            "rootSelector": "",
-            "contextMenu": {
-              "actions": [
-                "copy",
-                "remove",
-                "insert",
-                "updateAttr",
-                "bindEvent",
-                "createBlock"
-              ],
-              "disable": []
-            },
-            "clickCapture": true,
-            "framework": "Vue"
-          }
-        },
-        {
-          "version": "1.0.0",
-          "icon": "component-default",
-          "name": {
-            "zh_CN": "币种选择",
-            "en_US": "Currency Field"
-          },
-          "component": "MpCcyField",
-          "description": "业务组件 mp-ccy-field，币种选择器",
-          "docUrl": "",
-          "screenshot": "",
-          "tags": "",
-          "keywords": "",
-          "devMode": "proCode",
-          "group": "业务组件",
-          "npm": {
-            "package": "@local/mp-ccy-field",
-            "script": "/mock/materials/mp-ccy-field.js",
-            "exportName": "MpCcyField",
+            "package": "@local/mp-input",
+            "script": "/mock/materials/mp-input.js",
+            "exportName": "MpInput",
             "destructuring": true
           },
           "schema": {
@@ -417,7 +311,7 @@
                     "cols": 12,
                     "labelPosition": "top",
                     "type": "string",
-                    "defaultValue": "Currency",
+                    "defaultValue": "",
                     "widget": {
                       "component": "InputConfigurator",
                       "props": {}
@@ -437,18 +331,18 @@
                     "cols": 12,
                     "labelPosition": "top",
                     "type": "string",
-                    "defaultValue": "Choose currency",
+                    "defaultValue": "",
                     "widget": {
                       "component": "InputConfigurator",
                       "props": {}
                     }
                   },
                   {
-                    "property": "disabled",
+                    "property": "type",
                     "label": {
                       "text": {
-                        "zh_CN": "禁用",
-                        "en_US": "Disabled"
+                        "zh_CN": "类型",
+                        "en_US": "Type"
                       }
                     },
                     "required": false,
@@ -456,11 +350,38 @@
                     "disabled": false,
                     "cols": 12,
                     "labelPosition": "top",
-                    "type": "boolean",
-                    "defaultValue": false,
+                    "type": "string",
+                    "defaultValue": "text",
                     "widget": {
-                      "component": "SwitchConfigurator",
-                      "props": {}
+                      "component": "SelectConfigurator",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "text",
+                            "value": "text"
+                          },
+                          {
+                            "label": "number",
+                            "value": "number"
+                          },
+                          {
+                            "label": "email",
+                            "value": "email"
+                          },
+                          {
+                            "label": "tel",
+                            "value": "tel"
+                          },
+                          {
+                            "label": "url",
+                            "value": "url"
+                          },
+                          {
+                            "label": "password",
+                            "value": "password"
+                          }
+                        ]
+                      }
                     }
                   },
                   {
@@ -526,11 +447,51 @@
                     }
                   },
                   {
-                    "property": "ccyList",
+                    "property": "readonly",
                     "label": {
                       "text": {
-                        "zh_CN": "币种列表",
-                        "en_US": "Currency List"
+                        "zh_CN": "只读",
+                        "en_US": "Readonly"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "disabled",
+                    "label": {
+                      "text": {
+                        "zh_CN": "禁用",
+                        "en_US": "Disabled"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "errorMessage",
+                    "label": {
+                      "text": {
+                        "zh_CN": "错误提示",
+                        "en_US": "Error Message"
                       }
                     },
                     "required": false,
@@ -539,9 +500,9 @@
                     "cols": 12,
                     "labelPosition": "top",
                     "type": "string",
-                    "defaultValue": "[{\"currency\":\"OMR\",\"currencyIcon\":\"\",\"currencySymbol\":\"OMR\"},{\"currency\":\"USD\",\"currencyIcon\":\"\",\"currencySymbol\":\"USD\"},{\"currency\":\"EUR\",\"currencyIcon\":\"\",\"currencySymbol\":\"EUR\"}]",
+                    "defaultValue": "",
                     "widget": {
-                      "component": "CodeConfigurator",
+                      "component": "InputConfigurator",
                       "props": {}
                     }
                   }
@@ -619,19 +580,10 @@
               "schema": {}
             },
             {
-              "snippetName": "MpLiquidfill",
+              "snippetName": "MpInput",
               "name": {
-                "zh_CN": "水球图",
-                "en_US": "Liquid Fill"
-              },
-              "icon": "component-default",
-              "schema": {}
-            },
-            {
-              "snippetName": "MpCcyField",
-              "name": {
-                "zh_CN": "币种选择",
-                "en_US": "Currency Field"
+                "zh_CN": "输入框",
+                "en_US": "Input"
               },
               "icon": "component-default",
               "schema": {}

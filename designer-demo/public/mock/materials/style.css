@@ -19,6 +19,13 @@
 .mp-card-body[data-v-de2f6141] {
   margin-top: 8px;
 }
+
+.mp-input[data-v-8108a595] .van-field__body input {
+    color: var(--mr-color-text-primary, #323233);
+}
+.mp-input[data-v-8108a595] .van-field__body input::placeholder {
+    color: var(--mr-color-text-placeholder, #c8c9cc);
+}
 ._title-view_1yhxv_1 {
   display: flex;
   font-size: 14px;
