@@ -1,0 +1,196 @@
+{
+  "id": 1001,
+  "version": "4.8.0",
+  "name": {
+    "zh_CN": "VantButton"
+  },
+  "component": "van-button",
+  "icon": "button",
+  "description": "VantMobileButton组件",
+  "doc_url": "",
+  "screenshot": "",
+  "tags": "",
+  "keywords": "",
+  "dev_mode": "proCode",
+  "npm": {
+    "package": "vant",
+    "exportName": "Button",
+    "version": "4.8.0",
+    "destructuring": true,
+    "script": "https://esm.sh/vant@4.9.21/es2022/vant.mjs",
+    "css": "https://esm.sh/vant@4/lib/index.css"
+  },
+  "group": "Basic Component",
+  "configure": {
+    "loop": true,
+    "condition": true,
+    "styles": true,
+    "isContainer": false,
+    "isModal": false,
+    "isPopper": false,
+    "nestingRule": {
+      "childWhitelist": "",
+      "parentWhitelist": "",
+      "descendantBlacklist": "",
+      "ancestorWhitelist": ""
+    },
+    "isNullNode": false,
+    "isLayout": false,
+    "rootSelector": "",
+    "shortcuts": {
+      "properties": [
+        "type",
+        "size"
+      ]
+    },
+    "contextMenu": {
+      "actions": [
+        "copy",
+        "remove",
+        "insert",
+        "updateAttr",
+        "bindEvent",
+        "createBlock"
+      ],
+      "disable": []
+    },
+    "invalidity": [
+      ""
+    ],
+    "clickCapture": true,
+    "framework": "Vue"
+  },
+  "schema": {
+    "properties": [
+      {
+        "name": "0",
+        "label": {
+          "zh_CN": "Basic Properties"
+        },
+        "content": [
+          {
+            "property": "type",
+            "label": {
+              "text": {
+                "zh_CN": "Button Type"
+              }
+            },
+            "description": {
+              "zh_CN": "Button Type"
+            },
+            "required": true,
+            "readOnly": false,
+            "disabled": false,
+            "cols": 12,
+            "labelPosition": "left",
+            "type": "string",
+            "defaultValue": "default",
+            "widget": {
+              "component": "SelectConfigurator",
+              "props": {
+                "options": [
+                  {
+                    "label": "DefaultButton",
+                    "value": "default"
+                  },
+                  {
+                    "label": "PrimaryButton",
+                    "value": "primary"
+                  },
+                  {
+                    "label": "SuccessButton",
+                    "value": "success"
+                  },
+                  {
+                    "label": "WarningButton",
+                    "value": "warning"
+                  },
+                  {
+                    "label": "DangerButton",
+                    "value": "danger"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "property": "size",
+            "label": {
+              "text": {
+                "zh_CN": "Button Size"
+              }
+            },
+            "description": {
+              "zh_CN": "Button Size"
+            },
+            "required": true,
+            "readOnly": false,
+            "disabled": false,
+            "cols": 12,
+            "labelPosition": "left",
+            "type": "string",
+            "defaultValue": "normal",
+            "widget": {
+              "component": "SelectConfigurator",
+              "props": {
+                "options": [
+                  {
+                    "label": "Large号",
+                    "value": "large"
+                  },
+                  {
+                    "label": "普通",
+                    "value": "normal"
+                  },
+                  {
+                    "label": "Small号",
+                    "value": "small"
+                  },
+                  {
+                    "label": "Mini",
+                    "value": "mini"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "events": {
+      "onClick": {
+        "label": {
+          "zh_CN": "Trigger on Click"
+        },
+        "description": {
+          "zh_CN": "Trigger when button is clicked"
+        },
+        "type": "event",
+        "functionInfo": {
+          "params": [
+            {
+              "name": "event",
+              "type": "Object",
+              "defaultValue": "",
+              "description": {
+                "zh_CN": "Click event object"
+              }
+            }
+          ],
+          "returns": {}
+        },
+        "defaultValue": ""
+      }
+    },
+    "slots": {
+      "default": {
+        "label": {
+          "zh_CN": "DefaultSlots"
+        },
+        "description": {
+          "zh_CN": "ButtonText Content"
+        }
+      }
+    }
+  }
+}

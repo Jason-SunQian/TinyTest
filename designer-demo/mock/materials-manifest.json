@@ -1,0 +1,93 @@
+{
+  "description": "物料清单：仅填写组件名、分组、中英文名、图标、脚本等少量字段，运行 pnpm run generate:materials-json 生成符合 TinyEngine 协议的 business-materials.json",
+  "components": [
+    {
+      "component": "MrDivider",
+      "group": "原子组件",
+      "nameZh": "分隔线",
+      "nameEn": "Divider",
+      "icon": "split",
+      "script": "mr-components.js",
+      "exportName": "MrDivider",
+      "package": "@local/mr-components",
+      "hasCss": false,
+      "description": "原子组件 mr-divider（来自 Vant）"
+    },
+    {
+      "component": "MpCard",
+      "group": "业务组件",
+      "nameZh": "卡片",
+      "nameEn": "Card",
+      "icon": "card",
+      "script": "mp-card.js",
+      "exportName": "MpCard",
+      "package": "@local/mp-card",
+      "hasCss": true,
+      "description": "业务组件 mp-card，支持标题与插槽",
+      "isContainer": true,
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": { "zh_CN": "基础信息", "en_US": "Basic Information" },
+            "content": [
+              {
+                "property": "title",
+                "label": { "text": { "zh_CN": "标题", "en_US": "Title" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": { "component": "InputConfigurator", "props": {} }
+              }
+            ]
+          }
+        ],
+        "slots": {
+          "header": { "label": { "zh_CN": "头部" } },
+          "headerEnd": { "label": { "zh_CN": "头部右侧" } },
+          "default": { "label": { "zh_CN": "内容" } },
+          "footer": { "label": { "zh_CN": "底部" } }
+        }
+      },
+      "shortcuts": { "properties": ["title"] }
+    },
+    {
+      "component": "MpProgress",
+      "group": "业务组件",
+      "nameZh": "进度条",
+      "nameEn": "Progress",
+      "icon": "progress",
+      "script": "mp-progress.js",
+      "exportName": "MpProgress",
+      "package": "@local/mp-progress",
+      "hasCss": true,
+      "description": "业务组件 mp-progress，进度条",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": { "zh_CN": "基础", "en_US": "Basic" },
+            "content": [
+              {
+                "property": "percentage",
+                "label": { "text": { "zh_CN": "进度", "en_US": "Percentage" } },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "0",
+                "widget": { "component": "InputConfigurator", "props": {} }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
