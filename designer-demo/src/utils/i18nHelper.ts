@@ -131,6 +131,7 @@ function containsChinese(str: string): boolean {
  * 常见中文分组名到英文的映射表
  */
 const CHINESE_GROUP_NAME_MAP: Record<string, string> = {
+    基础: 'Basic',
     基础信息: 'Basic Information',
     基本信息: 'Basic Information',
     基础配置: 'Basic Configuration',

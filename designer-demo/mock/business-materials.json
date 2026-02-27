@@ -28,7 +28,8 @@
               {
                 "name": "0",
                 "label": {
-                  "zh_CN": "基础"
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
                 },
                 "content": []
               }
@@ -93,7 +94,8 @@
               {
                 "name": "0",
                 "label": {
-                  "zh_CN": "基础信息"
+                  "zh_CN": "基础信息",
+                  "en_US": "Basic Information"
                 },
                 "content": [
                   {
