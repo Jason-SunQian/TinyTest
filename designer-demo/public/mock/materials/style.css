@@ -101,6 +101,12 @@
 }
 
 
+.mp-date-picker[data-v-db2dcead] {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
 .mp-empty[data-v-a6eefd71] {
     width: 100%;
     padding: 22px 0 26px;
