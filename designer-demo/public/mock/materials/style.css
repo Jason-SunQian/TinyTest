@@ -44,6 +44,39 @@
     font-size: 14px;
     color: var(--mr-color-text-secondary, #6b7280);
 }
+._mp-image_1gg7k_1 img {
+  opacity: 0;
+  transition: opacity linear 260ms;
+}
+._mp-image_1gg7k_1._loaded_1gg7k_5 img {
+  opacity: 1;
+}
+._mp-image_1gg7k_1._cover_1gg7k_8 img {
+  object-fit: cover;
+}
+._mp-image_1gg7k_1._contain_1gg7k_11 img {
+  object-fit: contain;
+}
+._bg-color_1gg7k_15 {
+  background-color: var(--mp-image-bg-color, var(--mr-color-neutral-100, #f3f4f6));
+}
+.mp-image-img[data-v-d1733c26],
+.mp-image-placeholder[data-v-d1733c26] {
+    width: 100%;
+    height: 100%;
+}
+.mp-image-fill[data-v-d1733c26] {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.mp-image-placeholder[data-v-d1733c26] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 14px;
+}
 
 .mp-input[data-v-8108a595] .van-field__body input {
     color: var(--mr-color-text-primary, #323233);
