@@ -20,6 +20,87 @@
   margin-top: 8px;
 }
 
+.mp-date-input[data-v-94545e6f] {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0 16px;
+    font-size: 14px;
+    color: var(--mr-color-text-primary, #323233);
+    background: var(--van-field-input-background, #fff);
+    border: 1px solid var(--van-cell-border-color, #ebedf0);
+    border-radius: 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.mp-date-input[data-v-94545e6f]:hover:not(.mp-date-input_disabled):not(.mp-date-input_readonly) {
+    border-color: var(--van-field-hover-border-color, #c8c9cc);
+}
+.mp-date-input_disabled[data-v-94545e6f],
+.mp-date-input_readonly[data-v-94545e6f] {
+    cursor: default;
+    opacity: 0.7;
+}
+.mp-date-input__inner[data-v-94545e6f] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+}
+.mp-date-input__cell[data-v-94545e6f] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    gap: 8px;
+}
+.mp-date-input__text[data-v-94545e6f] {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mp-date-input__text[data-v-94545e6f]:empty::before,
+.mp-date-input .mp-date-input__text[data-v-94545e6f]:not(:empty) {
+    color: inherit;
+}
+.mp-date-input__icon[data-v-94545e6f] {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    color: var(--mr-color-icon-thirdly, #969799);
+}
+.mp-date-input__icon[data-v-94545e6f] svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.mp-date-input__sep[data-v-94545e6f] {
+    flex-shrink: 0;
+    margin: 0 8px;
+    color: #969799;
+}
+.mp-date-input__native[data-v-94545e6f] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+
 .mp-empty[data-v-a6eefd71] {
     width: 100%;
     padding: 22px 0 26px;

@@ -1032,6 +1032,248 @@
             "clickCapture": true,
             "framework": "Vue"
           }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "日期输入",
+            "en_US": "Date Input"
+          },
+          "component": "MpDateInput",
+          "description": "业务组件 mp-date-input，日期/月份/日期范围选择",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-date-input",
+            "script": "/mock/materials/mp-date-input.js",
+            "exportName": "MpDateInput",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "property": "placeholder",
+                    "label": {
+                      "text": {
+                        "zh_CN": "占位符",
+                        "en_US": "Placeholder"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "Select date",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "type",
+                    "label": {
+                      "text": {
+                        "zh_CN": "类型",
+                        "en_US": "Type"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "date",
+                    "widget": {
+                      "component": "SelectConfigurator",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "Date",
+                            "value": "date"
+                          },
+                          {
+                            "label": "Month",
+                            "value": "month"
+                          },
+                          {
+                            "label": "Date Range",
+                            "value": "daterange"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "property": "modelValue",
+                    "label": {
+                      "text": {
+                        "zh_CN": "选中日期",
+                        "en_US": "Selected Date"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "endDate",
+                    "label": {
+                      "text": {
+                        "zh_CN": "结束日期（范围时）",
+                        "en_US": "End Date (range)"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "minDate",
+                    "label": {
+                      "text": {
+                        "zh_CN": "最小日期",
+                        "en_US": "Min Date"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "maxDate",
+                    "label": {
+                      "text": {
+                        "zh_CN": "最大日期",
+                        "en_US": "Max Date"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "readonly",
+                    "label": {
+                      "text": {
+                        "zh_CN": "只读",
+                        "en_US": "Readonly"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "disabled",
+                    "label": {
+                      "text": {
+                        "zh_CN": "禁用",
+                        "en_US": "Disabled"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
         }
       ],
       "snippets": [
@@ -1102,6 +1344,15 @@
               "name": {
                 "zh_CN": "标签组",
                 "en_US": "Tags"
+              },
+              "icon": "component-default",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpDateInput",
+              "name": {
+                "zh_CN": "日期输入",
+                "en_US": "Date Input"
               },
               "icon": "component-default",
               "schema": {}
