@@ -1,4 +1,4 @@
-
+@charset "UTF-8";
 ._mp-card_r07xm_2 {
   padding: 12px;
   background: var(--mp-card-bg, #fff);
@@ -107,4 +107,45 @@
   top: 20px;
   z-index: 1;
   right: 8px;
+}
+._mp-tags_62lre_2 {
+  /* 不再使用负 margin，避免在插件画布中宽度超出屏幕；主工程若需贴边效果可由页面容器控制 */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.mp-tags-inner[data-v-5a5e1c53] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-left: var(--mp-horizontal-padding, 16px);
+    padding-right: var(--mp-horizontal-padding, 16px);
+    box-sizing: border-box;
+}
+.mp-tags-scrollable[data-v-5a5e1c53] {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.mp-tags-scrollable[data-v-5a5e1c53]::-webkit-scrollbar {
+    display: none;
+}
+.mp-tag-btn[data-v-5a5e1c53] {
+    flex-shrink: 0;
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: var(--mr-color-text-primary, #111827);
+    background: transparent;
+    border: 1px solid var(--mr-color-button-border-tertiary, #e5e7eb);
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.mp-tag-btn[data-v-5a5e1c53]:hover {
+    opacity: 0.9;
+}
+.mp-tag-btn-active[data-v-5a5e1c53] {
+    background-color: var(--mr-color-button-bg-primary, #2563eb);
+    border-color: transparent;
+    color: #fff;
 }

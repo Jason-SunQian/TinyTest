@@ -865,6 +865,173 @@
             "clickCapture": true,
             "framework": "Vue"
           }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "标签组",
+            "en_US": "Tags"
+          },
+          "component": "MpTags",
+          "description": "业务组件 mp-tags，横向标签/分段选择",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-tags",
+            "script": "/mock/materials/mp-tags.js",
+            "exportName": "MpTags",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "property": "list",
+                    "label": {
+                      "text": {
+                        "zh_CN": "选项列表",
+                        "en_US": "Options (JSON)"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "[{\"name\":\"Tag 1\",\"value\":\"1\"},{\"name\":\"Tag 2\",\"value\":\"2\"},{\"name\":\"Tag 3\",\"value\":\"3\"}]",
+                    "widget": {
+                      "component": "CodeConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "displayField",
+                    "label": {
+                      "text": {
+                        "zh_CN": "显示字段",
+                        "en_US": "Display Field"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "name",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "valueField",
+                    "label": {
+                      "text": {
+                        "zh_CN": "值字段",
+                        "en_US": "Value Field"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "value",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "scrollable",
+                    "label": {
+                      "text": {
+                        "zh_CN": "可横向滚动",
+                        "en_US": "Scrollable"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "boolean",
+                    "defaultValue": true,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "property": "modelValue",
+                    "label": {
+                      "text": {
+                        "zh_CN": "当前选中值",
+                        "en_US": "Selected Value"
+                      }
+                    },
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
         }
       ],
       "snippets": [
@@ -926,6 +1093,15 @@
               "name": {
                 "zh_CN": "图片",
                 "en_US": "Image"
+              },
+              "icon": "component-default",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpTags",
+              "name": {
+                "zh_CN": "标签组",
+                "en_US": "Tags"
               },
               "icon": "component-default",
               "schema": {}
