@@ -710,8 +710,13 @@ const getMaterialsRes = async () => {
 const fetchMaterial = async () => {
     const materials = await getMaterialsRes();
     materials.forEach(response => {
-        if (response.status === 'fulfilled' && response.value.materials) {
-            addMaterials(response.value.materials);
+        if (response.status !== 'fulfilled' || !response.value) return;
+        // 兼容两种返回格式：拦截器返回 res.data.data 时为 { materials }，未解包时为 { data: { materials } }
+        const materialsPayload =
+            response.value.materials ||
+            (response.value as { data?: { materials?: Material } })?.data?.materials;
+        if (materialsPayload) {
+            addMaterials(materialsPayload);
         }
     });
     updateCanvasDeps();
@@ -818,6 +823,70 @@ const initMaterial = ({
         });
     }
 };
+/**
+ * 从物料 schema 中提取默认 props（property + defaultValue），用于拖入画布时节点带默认值
+ * 这样面板里配置的默认值（如 sceneType: 'D10100'）会在新节点上生效，且出码/预览能拿到该 prop
+ */
+const getDefaultPropsFromMaterialSchema = (material: Partial<Resource>) => {
+    const schema = material.schema || (material as { content?: { schema?: { properties?: unknown[] } } }).content?.schema;
+    const properties = schema?.properties;
+    if (!Array.isArray(properties)) return {};
+    const defaults: Record<string, unknown> = {};
+    properties.forEach((group: { content?: Array<{ property?: string; defaultValue?: unknown }> }) => {
+        (group.content || []).forEach((item: { property?: string; defaultValue?: unknown }) => {
+            if (item.property !== undefined && item.property !== null && item.defaultValue !== undefined) {
+                defaults[item.property] = item.defaultValue;
+            }
+        });
+    });
+    return defaults;
+};
+
+/**
+ * 将节点上缺失的 props 用物料默认值写入（会调用 setProp，仅填缺失或空字符串）
+ * 用于属性面板打开时，保证节点 schema 与面板展示一致，画布/预览渲染能拿到 sceneType 等
+ */
+const fillNodePropsWithMaterialDefaults = (
+    nodeSchema: { componentName?: string; props?: Record<string, unknown> } | null | undefined,
+    setProp: (name: string, value: unknown) => void
+): void => {
+    if (!nodeSchema?.componentName || typeof setProp !== 'function') return;
+    const material = getMaterial(nodeSchema.componentName);
+    const defaultProps = getDefaultPropsFromMaterialSchema(material);
+    const props = nodeSchema.props || {};
+    Object.entries(defaultProps).forEach(([key, defaultValue]) => {
+        const current = props[key];
+        if (current === undefined || current === '') {
+            setProp(key, defaultValue);
+        }
+    });
+};
+
+/**
+ * 用物料 schema 的默认 props 补全节点树上缺失的字段（不覆盖已有值）
+ * 用于预览/出码前保证所有节点都有完整 props，避免「面板显示默认值但节点未写入」导致运行时拿不到
+ */
+const patchSchemaWithMaterialDefaults = (schema: Record<string, unknown> | null | undefined): void => {
+    if (!schema || typeof schema !== 'object') return;
+    const componentName = schema.componentName as string | undefined;
+    if (componentName) {
+        const material = getMaterial(componentName);
+        const defaultProps = getDefaultPropsFromMaterialSchema(material);
+        if (Object.keys(defaultProps).length > 0) {
+            const props = (schema.props as Record<string, unknown>) || {};
+            const merged: Record<string, unknown> = { ...defaultProps };
+            Object.keys(props).forEach(k => {
+                if (props[k] !== undefined && props[k] !== '') merged[k] = props[k];
+            });
+            schema.props = merged;
+        }
+    }
+    const children = schema.children as Array<Record<string, unknown>> | undefined;
+    if (Array.isArray(children)) {
+        children.forEach(child => patchSchemaWithMaterialDefaults(child));
+    }
+};
+
 const generateNode = ({ type, component }) => {
     const snippet = getSnippet(component) || {};
     const material = getMaterial(component);
@@ -825,10 +894,12 @@ const generateNode = ({ type, component }) => {
     const materialUseBaseStyle = material.configure?.useBaseStyle;
     const globalUseBaseStyle = getOptions(meta.id).useBaseStyle;
     const useBaseStyle = globalUseBaseStyle && materialUseBaseStyle !== false;
+    const defaultPropsFromSchema = getDefaultPropsFromMaterialSchema(material);
     const schema = {
         componentName: component,
         ...snippet,
         props: {
+            ...defaultPropsFromSchema,
             ...snippet.props,
             className: useBaseStyle
                 ? getOptions(meta.id).componentBaseStyle.className
@@ -962,7 +1033,9 @@ export default function useMaterialExport() {
         getComponentsByGroup,
         refreshMaterial,
         getComponentList,
-        getComponentDetail
+        getComponentDetail,
+        patchSchemaWithMaterialDefaults,
+        fillNodePropsWithMaterialDefaults
     };
 }
 

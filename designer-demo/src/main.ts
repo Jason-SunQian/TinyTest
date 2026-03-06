@@ -2,6 +2,7 @@
  * 迁移自 src/main.js，无类型改动，保持行为一致
  */
 /* eslint-disable import/order */
+import type { App } from 'vue';
 import { DEFAULT_LANGUAGE } from '@/config/languages';
 
 import { configurators } from './configurators';
@@ -38,7 +39,11 @@ async function startApp() {
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）
                 initVSCodeBridge();
             },
-            appCreated: async () => {
+            appCreated: async ({ app }: { app: App }) => {
+                // 画布/预览用运行时兼容层（$t、$currency、Pinia 桩等）
+                const { installRuntimeCompat } = await import('@/runtime');
+                installRuntimeCompat(app);
+
                 // 在 VSCode 环境中，先设置为英文（避免显示中文），然后等待 VSCode 插件配置
                 // 如果不在 VSCode 环境中，则使用默认语言
                 if (checkIsVSCodeEnvironment()) {

@@ -1020,6 +1020,315 @@
           }
         ]
       }
+    },
+    {
+      "component": "MpIcon",
+      "group": "业务组件",
+      "nameZh": "图标",
+      "nameEn": "Icon",
+      "icon": "component-default",
+      "script": "mp-icon.js",
+      "exportName": "MpIcon",
+      "package": "@local/mp-icon",
+      "hasCss": true,
+      "description": "业务组件 mp-icon，图标容器，支持 color/size 与内置图标或插槽",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": {
+              "zh_CN": "基础",
+              "en_US": "Basic"
+            },
+            "content": [
+              {
+                "property": "icon",
+                "label": {
+                  "text": {
+                    "zh_CN": "图标",
+                    "en_US": "Icon"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "calendar",
+                "widget": {
+                  "component": "SelectConfigurator",
+                  "props": {
+                    "options": [
+                      { "label": "Calendar", "value": "calendar" },
+                      { "label": "Check", "value": "check" },
+                      { "label": "None (use slot)", "value": "" }
+                    ]
+                  }
+                }
+              },
+              {
+                "property": "size",
+                "label": {
+                  "text": {
+                    "zh_CN": "尺寸(px)",
+                    "en_US": "Size (px)"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "24",
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "color",
+                "label": {
+                  "text": {
+                    "zh_CN": "颜色",
+                    "en_US": "Color"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "",
+                "widget": {
+                  "component": "InputConfigurator",
+                  "props": {}
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "MpCell",
+      "group": "业务组件",
+      "nameZh": "单元格",
+      "nameEn": "Cell",
+      "icon": "component-default",
+      "script": "mp-cell.js",
+      "exportName": "MpCell",
+      "package": "@local/mp-cell",
+      "hasCss": true,
+      "description": "业务组件 mp-cell，通用列表单元格布局，支持 title/desc/end 插槽"
+    },
+    {
+      "component": "MpAccountItem",
+      "group": "业务组件",
+      "nameZh": "账户项",
+      "nameEn": "Account Item",
+      "icon": "component-default",
+      "script": "mp-account-item.js",
+      "exportName": "MpAccountItem",
+      "package": "@local/mp-account-item",
+      "hasCss": true,
+      "hiddenInPanel": true,
+      "description": "业务组件 mp-account-item，为 mp-account-input/mp-account-picker 内部使用，不在面板展示",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": {
+              "zh_CN": "基础",
+              "en_US": "Basic"
+            },
+            "content": [
+              {
+                "property": "account",
+                "label": {
+                  "text": {
+                    "zh_CN": "账户数据(JSON)",
+                    "en_US": "Account (JSON)"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "string",
+                "defaultValue": "{\"paymentTool\":\"0003\",\"nickName\":\"My Savings\",\"payerAccountNumber\":\"****1234\",\"availableBalance\":\"1000\",\"payerCurrency\":\"USD\"}",
+                "widget": {
+                  "component": "CodeConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "selected",
+                "label": {
+                  "text": {
+                    "zh_CN": "选中",
+                    "en_US": "Selected"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "boolean",
+                "defaultValue": false,
+                "widget": {
+                  "component": "SwitchConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "ignoreCheck",
+                "label": {
+                  "text": {
+                    "zh_CN": "隐藏勾选图标",
+                    "en_US": "Hide Check Icon"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "boolean",
+                "defaultValue": false,
+                "widget": {
+                  "component": "SwitchConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "maskBalance",
+                "label": {
+                  "text": {
+                    "zh_CN": "遮盖余额",
+                    "en_US": "Mask Balance"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "boolean",
+                "defaultValue": false,
+                "widget": {
+                  "component": "SwitchConfigurator",
+                  "props": {}
+                }
+              },
+              {
+                "property": "disabled",
+                "label": {
+                  "text": {
+                    "zh_CN": "禁用",
+                    "en_US": "Disabled"
+                  }
+                },
+                "required": false,
+                "readOnly": false,
+                "disabled": false,
+                "cols": 12,
+                "labelPosition": "top",
+                "type": "boolean",
+                "defaultValue": false,
+                "widget": {
+                  "component": "SwitchConfigurator",
+                  "props": {}
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "MpAccountPicker",
+      "group": "业务组件",
+      "nameZh": "账户选择器",
+      "nameEn": "Account Picker",
+      "icon": "component-default",
+      "script": "mp-account-picker.js",
+      "exportName": "MpAccountPicker",
+      "package": "@local/mp-account-picker",
+      "hasCss": true,
+      "hiddenInPanel": true,
+      "description": "业务组件 mp-account-picker，为 mp-account-input 内部使用，不在面板展示",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": { "zh_CN": "基础", "en_US": "Basic" },
+            "content": [
+              {
+                "property": "sceneType",
+                "label": { "text": { "zh_CN": "场景", "en_US": "Scene" } },
+                "type": "string",
+                "defaultValue": "transfer"
+              },
+              {
+                "property": "title",
+                "label": { "text": { "zh_CN": "标题", "en_US": "Title" } },
+                "type": "string",
+                "defaultValue": ""
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "MpAccountInput",
+      "group": "业务组件",
+      "nameZh": "账户输入",
+      "nameEn": "Account Input",
+      "icon": "component-default",
+      "script": "mp-account-input.js",
+      "exportName": "MpAccountInput",
+      "package": "@local/mp-account-input",
+      "hasCss": true,
+      "description": "业务组件 mp-account-input，点击弹出账户选择器，内部使用 mp-account-picker",
+      "schemaExtra": {
+        "properties": [
+          {
+            "name": "0",
+            "label": { "zh_CN": "基础", "en_US": "Basic" },
+            "content": [
+              {
+                "property": "label",
+                "label": { "text": { "zh_CN": "标签", "en_US": "Label" } },
+                "type": "string",
+                "defaultValue": ""
+              },
+              {
+                "property": "placeholder",
+                "label": { "text": { "zh_CN": "占位", "en_US": "Placeholder" } },
+                "type": "string",
+                "defaultValue": "Select account"
+              },
+              {
+                "property": "sceneType",
+                "label": { "text": { "zh_CN": "场景", "en_US": "Scene" } },
+                "type": "string"
+              },
+              {
+                "property": "pickerTitle",
+                "label": { "text": { "zh_CN": "选择器标题", "en_US": "Picker Title" } },
+                "type": "string",
+                "defaultValue": ""
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

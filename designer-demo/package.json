@@ -14,6 +14,7 @@
         "validate:materials-json": "node scripts/validate-business-materials.cjs"
     },
     "dependencies": {
+        "@ionic/vue": "^8.7.0",
         "@opentiny/tiny-engine": "^2.8.2",
         "@opentiny/tiny-engine-block-compiler": "^2.8.2",
         "@opentiny/tiny-engine-builtin-component": "^2.8.2",
@@ -32,6 +33,7 @@
         "axios": "~0.28.0",
         "html2canvas": "^1.4.1",
         "magic-string": "^0.30.17",
+        "pinia": "^2.3.0",
         "pinyin-pro": "^3.13.0",
         "postcss": "^8.4.31",
         "vue": "^3.5.0",

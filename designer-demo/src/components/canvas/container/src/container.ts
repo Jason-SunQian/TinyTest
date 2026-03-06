@@ -1140,6 +1140,18 @@ export const onMouseUp = () => {
         const sourceId = data.id;
 
         const insertData = toRaw(data);
+        // 从外部拖入时先合并物料默认 props，再参与下面的 targetNode，否则 targetNode.data 会缺少默认值导致出码不输出参数
+        if (!sourceId && insertData.componentName) {
+            const withDefaults = useMaterial().generateNode({
+                component: insertData.componentName
+            });
+            insertData.props = { ...withDefaults.props, ...insertData.props };
+        }
+        if (!sourceId && absolute) {
+            insertData.props = insertData.props || {};
+            insertData.props.style = `position: absolute; top: ${dragState.mouse.y}px; left: ${dragState.mouse.x}px`;
+        }
+
         const targetNode = {
             parent,
             node,
@@ -1153,13 +1165,10 @@ export const onMouseUp = () => {
                 insertNode(targetNode, position);
             }
         } else {
-            // 从外部拖拽进来的无ID，insert
+            // 从外部拖拽进来的无ID，insert（insertData 已在上方合并过默认 props）
             if (absolute) {
                 targetNode.node = getSchema();
-                data.props = data.props || {};
-                data.props.style = `position: absolute; top: ${dragState.mouse.y}px; left: ${dragState.mouse.x}px`;
             }
-
             insertNode(targetNode, position);
         }
     }

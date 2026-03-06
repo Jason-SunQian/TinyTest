@@ -99,6 +99,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "title",
                     "label": {
                       "text": {
@@ -106,11 +111,6 @@
                         "en_US": "Title"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -212,6 +212,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "percentage",
                     "label": {
                       "text": {
@@ -219,11 +224,6 @@
                         "en_US": "Percentage"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "0",
                     "widget": {
@@ -298,6 +298,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "label",
                     "label": {
                       "text": {
@@ -305,11 +310,6 @@
                         "en_US": "Label"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -318,6 +318,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "placeholder",
                     "label": {
                       "text": {
@@ -325,11 +330,6 @@
                         "en_US": "Placeholder"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -338,6 +338,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "type",
                     "label": {
                       "text": {
@@ -345,11 +350,6 @@
                         "en_US": "Type"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "text",
                     "widget": {
@@ -385,6 +385,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "labelAlign",
                     "label": {
                       "text": {
@@ -392,11 +397,6 @@
                         "en_US": "Label Align"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "top",
                     "widget": {
@@ -416,6 +416,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "inputAlign",
                     "label": {
                       "text": {
@@ -423,11 +428,6 @@
                         "en_US": "Input Align"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "left",
                     "widget": {
@@ -447,6 +447,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "readonly",
                     "label": {
                       "text": {
@@ -454,11 +459,6 @@
                         "en_US": "Readonly"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -467,6 +467,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "disabled",
                     "label": {
                       "text": {
@@ -474,11 +479,6 @@
                         "en_US": "Disabled"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -487,6 +487,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "errorMessage",
                     "label": {
                       "text": {
@@ -494,11 +499,6 @@
                         "en_US": "Error Message"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -573,6 +573,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "title",
                     "label": {
                       "text": {
@@ -580,11 +585,6 @@
                         "en_US": "Title"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -593,6 +593,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "desc",
                     "label": {
                       "text": {
@@ -600,11 +605,6 @@
                         "en_US": "Description"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -680,6 +680,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "src",
                     "label": {
                       "text": {
@@ -687,11 +692,6 @@
                         "en_US": "Image URL"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -700,6 +700,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "ratio",
                     "label": {
                       "text": {
@@ -707,11 +712,6 @@
                         "en_US": "Aspect Ratio"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -720,6 +720,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "width",
                     "label": {
                       "text": {
@@ -727,11 +732,6 @@
                         "en_US": "Width"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -740,6 +740,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "fit",
                     "label": {
                       "text": {
@@ -747,11 +752,6 @@
                         "en_US": "Fit"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "cover",
                     "widget": {
@@ -771,6 +771,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "round",
                     "label": {
                       "text": {
@@ -778,11 +783,6 @@
                         "en_US": "Round"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -791,6 +791,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "block",
                     "label": {
                       "text": {
@@ -798,11 +803,6 @@
                         "en_US": "Block"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -811,6 +811,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "hideBgColor",
                     "label": {
                       "text": {
@@ -818,11 +823,6 @@
                         "en_US": "Hide Background"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -898,6 +898,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "list",
                     "label": {
                       "text": {
@@ -905,11 +910,6 @@
                         "en_US": "Options (JSON)"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "[{\"name\":\"Tag 1\",\"value\":\"1\"},{\"name\":\"Tag 2\",\"value\":\"2\"},{\"name\":\"Tag 3\",\"value\":\"3\"}]",
                     "widget": {
@@ -918,6 +918,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "displayField",
                     "label": {
                       "text": {
@@ -925,11 +930,6 @@
                         "en_US": "Display Field"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "name",
                     "widget": {
@@ -938,6 +938,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "valueField",
                     "label": {
                       "text": {
@@ -945,11 +950,6 @@
                         "en_US": "Value Field"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "value",
                     "widget": {
@@ -958,6 +958,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "scrollable",
                     "label": {
                       "text": {
@@ -965,11 +970,6 @@
                         "en_US": "Scrollable"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": true,
                     "widget": {
@@ -978,6 +978,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "modelValue",
                     "label": {
                       "text": {
@@ -985,11 +990,6 @@
                         "en_US": "Selected Value"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1065,6 +1065,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "placeholder",
                     "label": {
                       "text": {
@@ -1072,11 +1077,6 @@
                         "en_US": "Placeholder"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "Select date",
                     "widget": {
@@ -1085,6 +1085,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "type",
                     "label": {
                       "text": {
@@ -1092,11 +1097,6 @@
                         "en_US": "Type"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "date",
                     "widget": {
@@ -1120,6 +1120,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "modelValue",
                     "label": {
                       "text": {
@@ -1127,11 +1132,6 @@
                         "en_US": "Selected Date"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1140,6 +1140,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "endDate",
                     "label": {
                       "text": {
@@ -1147,11 +1152,6 @@
                         "en_US": "End Date (range)"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1160,6 +1160,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "minDate",
                     "label": {
                       "text": {
@@ -1167,11 +1172,6 @@
                         "en_US": "Min Date"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1180,6 +1180,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "maxDate",
                     "label": {
                       "text": {
@@ -1187,11 +1192,6 @@
                         "en_US": "Max Date"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1200,6 +1200,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "readonly",
                     "label": {
                       "text": {
@@ -1207,11 +1212,6 @@
                         "en_US": "Readonly"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -1220,6 +1220,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "disabled",
                     "label": {
                       "text": {
@@ -1227,11 +1232,6 @@
                         "en_US": "Disabled"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
@@ -1307,6 +1307,11 @@
                 },
                 "content": [
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "columnsType",
                     "label": {
                       "text": {
@@ -1314,11 +1319,6 @@
                         "en_US": "Columns Type (JSON)"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "[\"month\",\"day\",\"year\"]",
                     "widget": {
@@ -1327,6 +1327,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "minDate",
                     "label": {
                       "text": {
@@ -1334,11 +1339,6 @@
                         "en_US": "Min Date"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1347,6 +1347,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "maxDate",
                     "label": {
                       "text": {
@@ -1354,11 +1359,6 @@
                         "en_US": "Max Date"
                       }
                     },
-                    "required": false,
-                    "readOnly": false,
-                    "disabled": false,
-                    "cols": 12,
-                    "labelPosition": "top",
                     "type": "string",
                     "defaultValue": "",
                     "widget": {
@@ -1367,6 +1367,11 @@
                     }
                   },
                   {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
                     "property": "readonly",
                     "label": {
                       "text": {
@@ -1374,15 +1379,638 @@
                         "en_US": "Readonly"
                       }
                     },
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "图标",
+            "en_US": "Icon"
+          },
+          "component": "MpIcon",
+          "description": "业务组件 mp-icon，图标容器，支持 color/size 与内置图标或插槽",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-icon",
+            "script": "/mock/materials/mp-icon.js",
+            "exportName": "MpIcon",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
                     "required": false,
                     "readOnly": false,
                     "disabled": false,
                     "cols": 12,
                     "labelPosition": "top",
+                    "property": "icon",
+                    "label": {
+                      "text": {
+                        "zh_CN": "图标",
+                        "en_US": "Icon"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "calendar",
+                    "widget": {
+                      "component": "SelectConfigurator",
+                      "props": {
+                        "options": [
+                          {
+                            "label": "Calendar",
+                            "value": "calendar"
+                          },
+                          {
+                            "label": "Check",
+                            "value": "check"
+                          },
+                          {
+                            "label": "None (use slot)",
+                            "value": ""
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "size",
+                    "label": {
+                      "text": {
+                        "zh_CN": "尺寸(px)",
+                        "en_US": "Size (px)"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "24",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "color",
+                    "label": {
+                      "text": {
+                        "zh_CN": "颜色",
+                        "en_US": "Color"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "单元格",
+            "en_US": "Cell"
+          },
+          "component": "MpCell",
+          "description": "业务组件 mp-cell，通用列表单元格布局，支持 title/desc/end 插槽",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-cell",
+            "script": "/mock/materials/mp-cell.js",
+            "exportName": "MpCell",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": []
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "账户项",
+            "en_US": "Account Item"
+          },
+          "component": "MpAccountItem",
+          "description": "业务组件 mp-account-item，为 mp-account-input/mp-account-picker 内部使用，不在面板展示",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-account-item",
+            "script": "/mock/materials/mp-account-item.js",
+            "exportName": "MpAccountItem",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "account",
+                    "label": {
+                      "text": {
+                        "zh_CN": "账户数据(JSON)",
+                        "en_US": "Account (JSON)"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "{\"paymentTool\":\"0003\",\"nickName\":\"My Savings\",\"payerAccountNumber\":\"****1234\",\"availableBalance\":\"1000\",\"payerCurrency\":\"USD\"}",
+                    "widget": {
+                      "component": "CodeConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "selected",
+                    "label": {
+                      "text": {
+                        "zh_CN": "选中",
+                        "en_US": "Selected"
+                      }
+                    },
                     "type": "boolean",
                     "defaultValue": false,
                     "widget": {
                       "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "ignoreCheck",
+                    "label": {
+                      "text": {
+                        "zh_CN": "隐藏勾选图标",
+                        "en_US": "Hide Check Icon"
+                      }
+                    },
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "maskBalance",
+                    "label": {
+                      "text": {
+                        "zh_CN": "遮盖余额",
+                        "en_US": "Mask Balance"
+                      }
+                    },
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "disabled",
+                    "label": {
+                      "text": {
+                        "zh_CN": "禁用",
+                        "en_US": "Disabled"
+                      }
+                    },
+                    "type": "boolean",
+                    "defaultValue": false,
+                    "widget": {
+                      "component": "SwitchConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "账户选择器",
+            "en_US": "Account Picker"
+          },
+          "component": "MpAccountPicker",
+          "description": "业务组件 mp-account-picker，为 mp-account-input 内部使用，不在面板展示",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-account-picker",
+            "script": "/mock/materials/mp-account-picker.js",
+            "exportName": "MpAccountPicker",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "sceneType",
+                    "label": {
+                      "text": {
+                        "zh_CN": "场景",
+                        "en_US": "Scene"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "transfer",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "title",
+                    "label": {
+                      "text": {
+                        "zh_CN": "标题",
+                        "en_US": "Title"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  }
+                ]
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        },
+        {
+          "version": "1.0.0",
+          "icon": "component-default",
+          "name": {
+            "zh_CN": "账户输入",
+            "en_US": "Account Input"
+          },
+          "component": "MpAccountInput",
+          "description": "业务组件 mp-account-input，点击弹出账户选择器，内部使用 mp-account-picker",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "业务组件",
+          "npm": {
+            "package": "@local/mp-account-input",
+            "script": "/mock/materials/mp-account-input.js",
+            "exportName": "MpAccountInput",
+            "destructuring": true,
+            "css": "/mock/materials/style.css"
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": [
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "label",
+                    "label": {
+                      "text": {
+                        "zh_CN": "标签",
+                        "en_US": "Label"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "placeholder",
+                    "label": {
+                      "text": {
+                        "zh_CN": "占位",
+                        "en_US": "Placeholder"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "Select account",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "sceneType",
+                    "label": {
+                      "text": {
+                        "zh_CN": "场景",
+                        "en_US": "Scene"
+                      }
+                    },
+                    "type": "string",
+                    "widget": {
+                      "component": "InputConfigurator",
+                      "props": {}
+                    }
+                  },
+                  {
+                    "required": false,
+                    "readOnly": false,
+                    "disabled": false,
+                    "cols": 12,
+                    "labelPosition": "top",
+                    "property": "pickerTitle",
+                    "label": {
+                      "text": {
+                        "zh_CN": "选择器标题",
+                        "en_US": "Picker Title"
+                      }
+                    },
+                    "type": "string",
+                    "defaultValue": "",
+                    "widget": {
+                      "component": "InputConfigurator",
                       "props": {}
                     }
                   }
@@ -1509,6 +2137,53 @@
               "name": {
                 "zh_CN": "日期选择器",
                 "en_US": "Date Picker"
+              },
+              "icon": "component-default",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpIcon",
+              "name": {
+                "zh_CN": "图标",
+                "en_US": "Icon"
+              },
+              "icon": "component-default",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpCell",
+              "name": {
+                "zh_CN": "单元格",
+                "en_US": "Cell"
+              },
+              "icon": "component-default",
+              "schema": {}
+            },
+            {
+              "snippetName": "MpAccountItem",
+              "name": {
+                "zh_CN": "账户项",
+                "en_US": "Account Item"
+              },
+              "icon": "component-default",
+              "schema": {},
+              "hidden": true
+            },
+            {
+              "snippetName": "MpAccountPicker",
+              "name": {
+                "zh_CN": "账户选择器",
+                "en_US": "Account Picker"
+              },
+              "icon": "component-default",
+              "schema": {},
+              "hidden": true
+            },
+            {
+              "snippetName": "MpAccountInput",
+              "name": {
+                "zh_CN": "账户输入",
+                "en_US": "Account Input"
               },
               "icon": "component-default",
               "schema": {}

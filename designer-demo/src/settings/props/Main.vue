@@ -44,7 +44,8 @@ import {
     useCanvas,
     useProperty,
     useLayout,
-    useProperties
+    useProperties,
+    useMaterial
 } from '@opentiny/tiny-engine-meta-register';
 
 import { ConfigRender } from '@/components/i18n-wrappers';
@@ -80,7 +81,8 @@ export default {
             useCanvas();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         useProperty().getProperty({ pageState });
-        const { getProps } = useProperties();
+        const { getProps, setProp } = useProperties();
+        const { fillNodePropsWithMaterialDefaults } = useMaterial();
         const showEmptyTips = ref(false);
         const renderKey = ref(0);
         const shouldShow = ref(true);
@@ -138,6 +140,21 @@ export default {
 
             // 重新显示组件
             shouldShow.value = true;
+
+            // 用物料默认值补全当前节点缺失的 props（延后执行，避免 setProp 干扰本次 sync 导致面板空白）
+            nextTick(() => {
+                try {
+                    const schema = getCurrentSchema();
+                    if (schema && typeof fillNodePropsWithMaterialDefaults === 'function') {
+                        const schemaNode = Array.isArray(schema) ? schema[0] : schema;
+                        if (schemaNode?.componentName) {
+                            fillNodePropsWithMaterialDefaults(schemaNode, setProp);
+                        }
+                    }
+                } catch (e) {
+                    // 忽略补全失败，不影响属性面板展示
+                }
+            });
         };
 
         // 使用 computed 监听 getCurrentSchema 的变化

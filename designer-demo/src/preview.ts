@@ -15,6 +15,11 @@ async function startApp() {
         initHook(HOOK_NAME.useEnv, import.meta.env);
     };
 
+    const appCreated = async ({ app }: { app: import('vue').App }) => {
+        const { installRuntimeCompat } = await import('./runtime');
+        installRuntimeCompat(app);
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const registry: any = {
         [META_SERVICE.Http]: HttpService,
@@ -31,7 +36,8 @@ async function startApp() {
     initPreview({
         registry,
         lifeCycles: {
-            beforeAppCreate
+            beforeAppCreate,
+            appCreated
         }
     });
 }

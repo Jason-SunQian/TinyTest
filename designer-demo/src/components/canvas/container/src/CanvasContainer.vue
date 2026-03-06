@@ -35,17 +35,22 @@
         :selectState="computedSelectState"
         :iframe="iframe"
     ></canvas-resize-border>
-    <canvas-resize>
-        <template v-if="!loading">
-            <iframe
-                id="canvas"
-                ref="iframe"
-                :[srcAttrName]="canvasSrc || iframeSrcdoc"
-                style="border: none; width: 100%; height: 100%"
-            ></iframe>
-        </template>
-        <div v-else class="datainit-tip">应用数据初始化中...</div>
-    </canvas-resize>
+    <div
+        class="canvas-wheel-forward"
+        @wheel.capture.prevent="onCanvasWheel"
+    >
+        <canvas-resize>
+            <template v-if="!loading">
+                <iframe
+                    id="canvas"
+                    ref="iframe"
+                    :[srcAttrName]="canvasSrc || iframeSrcdoc"
+                    style="border: none; width: 100%; height: 100%"
+                ></iframe>
+            </template>
+            <div v-else class="datainit-tip">应用数据初始化中...</div>
+        </canvas-resize>
+    </div>
     <canvas-menu @insert="insertComponent"></canvas-menu>
     <!-- 快捷选择物料面板 -->
     <div v-if="insertPosition" ref="insertPanel" class="insert-panel">
@@ -297,23 +302,23 @@ export default {
 
         useCanvas().initCanvasApi(canvasApi);
 
-        // 把物料脚本转为绝对 URL 并写入画布，供画布加载 mp-card.js 等；插件里相对路径会变成 vscode-webview 导致 403
+        // 把物料脚本转为绝对 URL 并写入画布，供画布加载 mp-card.js 等；插件里相对路径会变成 vscode-webview 导致 403；浏览器里用绝对 URL 避免 iframe/base 解析差异
         const syncComponentsDepsToIframe = () => {
             if (!iframe.value?.contentWindow) return;
             const win = iframe.value.contentWindow;
             const materialScripts = useResource().appSchemaState.materialsDeps.scripts.filter(
                 item => item.components
             );
-            const materialBase = getDesignerMaterialBaseUrl();
-            const componentsDeps = materialBase
-                ? materialScripts.map(s => ({
-                      ...s,
-                      script: toAbsoluteMaterialUrl(s.script, materialBase) ?? s.script,
-                      ...(s.css && {
-                          css: toAbsoluteMaterialUrl(s.css, materialBase) ?? s.css
-                      })
-                  }))
-                : materialScripts;
+            const materialBase =
+                getDesignerMaterialBaseUrl() ||
+                (typeof location !== 'undefined' ? location.origin : null) ||
+                'http://localhost:8090';
+            const base = String(materialBase).replace(/\/$/, '');
+            const componentsDeps = materialScripts.map(s => ({
+                ...s,
+                script: toAbsoluteMaterialUrl(s.script, base) ?? s.script,
+                ...(s.css && { css: toAbsoluteMaterialUrl(s.css, base) ?? s.css })
+            }));
             win.componentsDeps = componentsDeps;
         };
 
@@ -438,6 +443,31 @@ export default {
 
                 const doc = iframe.value.contentDocument;
                 const win = iframe.value.contentWindow;
+
+                // 覆盖 Ionic structure.css 对 body 的 overflow: hidden / position: fixed，使画布可滚动
+                const canvasScrollStyle = doc.createElement('style');
+                canvasScrollStyle.id = 'designer-canvas-scroll-override';
+                canvasScrollStyle.textContent = `
+                    html, body { overflow: auto !important; overflow-x: hidden !important; }
+                    body { position: static !important; height: auto !important; max-height: none !important; min-height: 100% !important; }
+                `;
+                doc.head.appendChild(canvasScrollStyle);
+
+                // 若浏览器把滚轮事件发给 iframe 内部，在 iframe 内也监听并手动滚动
+                const applyWheelScroll = (deltaY: number) => {
+                    const doc = iframe.value?.contentDocument;
+                    if (!doc) return;
+                    const scrollEl = doc.scrollingElement || doc.documentElement;
+                    const nextTop = scrollEl.scrollTop + deltaY;
+                    scrollEl.scrollTop = Math.max(
+                        0,
+                        Math.min(nextTop, scrollEl.scrollHeight - scrollEl.clientHeight)
+                    );
+                };
+                win.addEventListener('wheel', (e: WheelEvent) => {
+                    e.preventDefault();
+                    applyWheelScroll(e.deltaY);
+                }, { passive: false });
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 let isScrolling = false;
@@ -629,6 +659,19 @@ export default {
             hoverState.slot = slotName;
         };
 
+        /** 画布区域滚轮转发：在包装 div 上捕获滚轮并滚动 iframe 内文档，解决浏览器中 iframe 无法用滚轮滚动 */
+        const onCanvasWheel = (e: WheelEvent) => {
+            const el = iframe.value;
+            if (!el?.contentDocument) return;
+            const doc = el.contentDocument;
+            const scrollEl = doc.scrollingElement || doc.documentElement;
+            const nextTop = scrollEl.scrollTop + e.deltaY;
+            scrollEl.scrollTop = Math.max(
+                0,
+                Math.min(nextTop, scrollEl.scrollHeight - scrollEl.clientHeight)
+            );
+        };
+
         // 监听来自 canvas iframe 的图片代理请求
         const handleImageProxyMessage = (event: MessageEvent) => {
             import('../../utils/imageProxy').then(
@@ -663,6 +706,7 @@ export default {
         );
 
         return {
+            onCanvasWheel,
             isMouseDown,
             iframe,
             dragState,
@@ -713,6 +757,10 @@ export default {
     :deep(#pane-blocks) {
         max-height: 400px;
     }
+}
+.canvas-wheel-forward {
+    height: 100%;
+    position: relative;
 }
 .datainit-tip {
     display: flex;

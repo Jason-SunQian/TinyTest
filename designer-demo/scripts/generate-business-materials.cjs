@@ -42,6 +42,37 @@ function defaultConfigure(item) {
   };
 }
 
+/**
+ * 为 schema 的 content 项补全协议要求的 widget 等字段，否则属性面板无法渲染
+ * 参考：https://www.opentiny.design/tiny-engine#/protocol 属性配置面板的渲染配置
+ */
+function ensurePropertyWidgets(properties) {
+  if (!Array.isArray(properties)) return properties;
+  return properties.map((group) => {
+    if (!group.content || !Array.isArray(group.content)) return group;
+    const content = group.content.map((prop) => {
+      const type = prop.type || 'string';
+      const widget =
+        prop.widget && prop.widget.component
+          ? prop.widget
+          : {
+              component: type === 'boolean' ? 'SwitchConfigurator' : 'InputConfigurator',
+              props: prop.widget?.props || {}
+            };
+      return {
+        required: false,
+        readOnly: false,
+        disabled: false,
+        cols: 12,
+        labelPosition: 'top',
+        ...prop,
+        widget
+      };
+    });
+    return { ...group, content };
+  });
+}
+
 function defaultSchema(item) {
   const base = {
     properties: [
@@ -55,7 +86,9 @@ function defaultSchema(item) {
     slots: {}
   };
   if (item.schemaExtra) {
-    if (item.schemaExtra.properties) base.properties = item.schemaExtra.properties;
+    if (item.schemaExtra.properties) {
+      base.properties = ensurePropertyWidgets(item.schemaExtra.properties);
+    }
     if (item.schemaExtra.events) base.events = item.schemaExtra.events;
     if (item.schemaExtra.slots) base.slots = item.schemaExtra.slots;
   }
@@ -95,7 +128,8 @@ function manifestToSnippetChild(item) {
     snippetName: item.component,
     name: { zh_CN: item.nameZh, en_US: item.nameEn },
     icon: item.icon,
-    schema: {}
+    schema: {},
+    ...(item.hiddenInPanel && { hidden: true })
   };
 }
 

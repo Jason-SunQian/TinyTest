@@ -19,7 +19,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@local/mr-components': path.resolve(__dirname, 'materials-src/mr-components.js')
+      '@local/mr-components': path.resolve(__dirname, 'materials-src/mr-components.js'),
+      '@local/runtime': path.resolve(__dirname, 'src/runtime'),
+      'vue-router': path.resolve(__dirname, 'src/runtime/vueRouterStub.ts'),
+      'vue-i18n': path.resolve(__dirname, 'src/runtime/i18nStub.ts')
     }
   },
   publicDir: false,
@@ -32,7 +35,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: (id) => {
-        // mp-card 入口需要 external，避免打进业务包；mr-components 不 external vant，打包进产物
+        // vue、mr-components 由画布/引擎侧提供；pinia 不 external，否则浏览器画布 iframe 无法解析裸模块 "pinia" 导致所有物料加载失败
         if (id === 'vue' || id === '@local/mr-components') {
           return true;
         }
