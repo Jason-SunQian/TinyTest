@@ -29,6 +29,7 @@ import {
 import { utils } from '@opentiny/tiny-engine-utils';
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import Builtin from '@/components/canvas/render/src/builtin/builtin.json';
+import { getBlockFromMaterialStore } from '@/plugins/materials/composable/block-compile';
 /* eslint-disable import/no-cycle */
 import { useMultiSelect } from './composables/useMultiSelect';
 import type { Node, RootNode } from '@/components/canvas/types';
@@ -745,10 +746,15 @@ const setHoverRect = (element?: Element, data?: Node | null) => {
                 // 如果容器盒子有子节点，则以最后一个子节点为拖拽参照物
                 const lastNode = children[children.length - 1];
                 childEle = querySelectById(lastNode.id);
-                const childComponentName = childEle!.getAttribute(NODE_TAG)!;
-                const Childconfigure = getConfigure(childComponentName);
-                lineState.id = lastNode.id;
-                lineState.configure = Childconfigure;
+                // 异步加载的组件（如主工程物料）可能尚未挂载，querySelectById 返回 null，需判空避免 getAttribute 报错
+                if (childEle) {
+                    const childComponentName = childEle.getAttribute(NODE_TAG);
+                    const Childconfigure = childComponentName ? getConfigure(childComponentName) : undefined;
+                    lineState.id = lastNode.id;
+                    lineState.configure = Childconfigure;
+                } else {
+                    childEle = null;
+                }
             }
         }
 
@@ -1325,10 +1331,33 @@ export const canvasApi = {
 export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
     canvasState.iframe = iframe;
     canvasState.emit = emit;
+    // 补丁：无论 DesignCanvas 来自哪套 useMaterial，画布请求 block 时先从已加载物料解析，避免 /material-center/api/block 404 导致「区块 xxx 加载错误」
+    const originalGetBlockByName = controller.getBlockByName;
+    if (typeof originalGetBlockByName === 'function') {
+        controller.getBlockByName = async (name: string) => {
+            const fromStore = getBlockFromMaterialStore(name);
+            if (fromStore) return fromStore;
+            return originalGetBlockByName(name);
+        };
+    }
     // 存放画布外层传进来的插件api
     canvasState.controller = controller;
     canvasState.renderer = renderer;
     renderer.setController(controller);
+    // 画布 iframe 内：loadBlockComponent 返回的是 import() 的模块对象，主工程物料为命名导出 export { MpAccountInput }，
+    // 需从模块中解析出组件，否则 Vue 收到的是普通对象导致不渲染。设计器不修改 packages，在此注入补丁。
+    try {
+        const win = iframe?.contentWindow;
+        const doc = iframe?.contentDocument;
+        if (win && doc && typeof win.loadBlockComponent === 'function') {
+            const orig = win.loadBlockComponent.bind(win);
+            win.loadBlockComponent = (name: string) => {
+                return orig(name).then((mod: any) => (mod && (mod.default || mod[name])) || mod);
+            };
+        }
+    } catch (_) {
+        /* 跨域或 CSP 时忽略 */
+    }
     setLocales(useTranslate().getData(), true);
     if (isVsCodeEnv) {
         const parent = window.parent;

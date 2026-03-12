@@ -11,7 +11,9 @@
         "typecheck": "vue-tsc --noEmit",
         "build:materials": "vite build --config vite.materials.config.ts",
         "generate:materials-json": "node scripts/generate-business-materials.cjs",
-        "validate:materials-json": "node scripts/validate-business-materials.cjs"
+        "validate:materials-json": "node scripts/validate-business-materials.cjs",
+        "validate:bundle-structure": "node scripts/validate-bundle-structure.cjs",
+        "serve:main-project-bundle": "npx serve mock/main-project-bundle -p 3000"
     },
     "dependencies": {
         "@ionic/vue": "^8.7.0",

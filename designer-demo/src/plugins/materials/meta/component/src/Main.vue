@@ -453,11 +453,9 @@ export default {
             change,
             generateNode,
             componentClick,
-            // 暴露 t 函数给模板使用
             t,
             // 暴露 getComponentLabel 函数给模板使用
             getComponentLabel,
-            // 暴露 getComponentName、getMaterialIconName 给模板使用
             getComponentName,
             getMaterialIconName
         };

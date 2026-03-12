@@ -7,6 +7,32 @@ import { useTinyEngineBaseConfig } from '@opentiny/tiny-engine-vite-config';
 import { viteMockServe } from 'vite-plugin-mock';
 import dotenv from 'dotenv';
 
+/**
+ * 构建时改写 npm 画布包中 loadBlockComponent 的返回值：主工程物料为命名导出（如 export { MpAccountInput }），
+ * import() 得到的是模块对象，需解析出组件再交给 Vue，否则画布不渲染。只改 designer-demo 构建，不修改 packages。
+ */
+function patchCanvasLoadBlockComponentPlugin() {
+    const needPatch =
+        (code: string) =>
+            typeof code === 'string' &&
+            code.includes('loadBlockComponent') &&
+            code.includes('blockComponentsBlobUrlMap.get(name)');
+    // 将 return import(...get(name)) 改为 return import(...get(name)).then(mod => (mod && (mod.default || mod[name])) || mod)
+    const replacement =
+        '.then((mod) => (mod && (mod.default || mod[name])) || mod)';
+    // 匹配 return import(/* @vite-ignore */ blockComponentsBlobUrlMap.get(name))，允许空白差异
+    const pattern =
+        /return\s+import\s*\(\s*\/\*\s*@vite-ignore\s*\*\/\s*blockComponentsBlobUrlMap\.get\s*\(\s*name\s*\)\s*\)/g;
+    return {
+        name: 'patch-canvas-load-block-component',
+        transform(code: string, id: string) {
+            if (!needPatch(code)) return null;
+            const newCode = code.replace(pattern, (m) => m + replacement);
+            return newCode !== code ? { code: newCode, map: null } : null;
+        }
+    };
+}
+
 /** 保证 webview iframe（Origin 为 null / vscode-webview）能加载物料脚本/样式，避免 403 / CORS 导致 Failed to fetch dynamically imported module */
 function mockMaterialsCorsPlugin() {
     return {
@@ -111,6 +137,7 @@ export default defineConfig(configEnv => {
             allowedHosts: ['localhost', '127.0.0.1', 'null']
         },
         plugins: [
+            patchCanvasLoadBlockComponentPlugin(),
             mockMaterialsCorsPlugin(),
             viteMockServe({
                 mockPath: 'mock',

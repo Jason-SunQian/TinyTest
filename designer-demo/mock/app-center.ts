@@ -850,6 +850,40 @@ export default [
         }
     },
 
+    // main-project-bundle/bundle.json 模拟主工程物料包接口
+    {
+        url: '/mock/main-project-bundle/bundle.json',
+        method: 'get',
+        response: async () => {
+            logRequest('/mock/main-project-bundle/bundle.json', 'get');
+            try {
+                const base =
+                    typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN
+                        ? String((window as any).TINY_DESIGNER_ORIGIN).replace(/\/$/, '')
+                        : 'http://localhost:8090';
+                const url = `${base}/mock/main-project-bundle/bundle.json`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const bundleData = await res.json();
+                return bundleData;
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error('[Mock] Failed to load main-project-bundle/bundle.json:', error);
+                return {
+                    data: {
+                        framework: 'Vue',
+                        materials: {
+                            components: [],
+                            blocks: [],
+                            packages: [],
+                            snippets: []
+                        }
+                    }
+                };
+            }
+        }
+    },
+
     // business-materials.json 业务物料包接口（VSCode 插件环境固定 Mock 需与此一致）
     {
         url: '/mock/business-materials.json',

@@ -347,7 +347,14 @@ const fetchResource = async ({ isInit = true } = {}) => {
     const { id, type } = getMetaApi(META_SERVICE.GlobalService).getBaseInfo();
     useMessage().publish({ topic: 'app_id_changed', data: id });
 
-    const appData = await fetchAppState();
+    let appData: Record<string, unknown> = {};
+    try {
+        appData = (await fetchAppState()) as Record<string, unknown>;
+    } catch (error) {
+        // 插件环境或无 app 接口时 fetchAppState 可能失败，不阻断物料拉取（见文档 十二、阶段一）
+        // eslint-disable-next-line no-console
+        console.warn('[useResource] fetchAppState failed, will still load materials:', error);
+    }
 
     useMaterial().initMaterial({ isInit, appData });
 

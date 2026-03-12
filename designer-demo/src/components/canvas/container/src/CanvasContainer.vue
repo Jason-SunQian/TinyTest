@@ -176,7 +176,10 @@ export default {
             }
             const win = typeof window !== 'undefined' ? (window as any) : null;
             const designerOrigin = win?.TINY_DESIGNER_ORIGIN ? `${win.TINY_DESIGNER_ORIGIN.replace(/\/$/, '')} ${win.TINY_DESIGNER_ORIGIN.replace(/\/$/, '').replace(/localhost/, '127.0.0.1')}` : '';
-            const allOrigins = designerOrigin ? `${origins} ${designerOrigin}` : origins;
+            // TODO(方案B): 物料域应从配置/设置读取（如 engine.config 或 VSCode materialBundleUrls 解析出的 origin），而非写死
+            // 主工程物料服务器：允许从 localhost:3000 / 3060 加载脚本和样式，避免 CSP 拦截
+            const materialServerOrigins = 'http://localhost:3000 http://127.0.0.1:3000 http://localhost:3060 http://127.0.0.1:3060';
+            const allOrigins = designerOrigin ? `${origins} ${designerOrigin} ${materialServerOrigins}` : `${origins} ${materialServerOrigins}`;
             const scriptSrc = `'self' 'unsafe-inline' 'unsafe-eval' ${allOrigins} ${cdn}`;
             const styleSrc = `'self' 'unsafe-inline' ${allOrigins} ${cdn}`;
             const csp = `script-src ${scriptSrc}; script-src-elem ${scriptSrc}; style-src ${styleSrc}; style-src-elem ${styleSrc}; connect-src 'self' ${allOrigins} ${cdn};`;

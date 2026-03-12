@@ -36,11 +36,19 @@ interface VSCodeMessage {
 
 #### 1. `getInitData(callback)`
 
-获取初始化数据（语言、主题等）。
+获取初始化数据（语言、主题、物料包 URL 等）。设计器在初始化时主动调用，插件通过 callback 返回配置。
 
 **参数：**
 
 - `callback: (data: InitData) => void` - 回调函数，接收初始化数据
+
+**InitData 约定：**
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `language` | string | 语言（如 `en_US`、`zh_CN`） |
+| `theme` | string | 主题（如 `light`、`dark`） |
+| `materialBundleUrls` | string[] | 可选。额外物料包 URL 列表，设计器会合并并拉取；与 HTML 注入的 `window.TINY_MATERIAL_BUNDLE_URLS` 同效，收到后会触发一次物料刷新 |
 
 **示例：**
 
@@ -50,23 +58,36 @@ import { getInitData } from '@/composable/useVSCodeBridge';
 getInitData(data => {
     console.log('语言:', data.language);
     console.log('主题:', data.theme);
+    if (data.materialBundleUrls?.length) {
+        console.log('物料包 URL:', data.materialBundleUrls);
+    }
 });
 ```
 
 **VSCode 插件响应：**
 
 ```typescript
-// 插件收到消息后，通过 callback 返回数据
+// 插件收到消息后，通过 callback 返回数据；materialBundleUrls 可由配置项 lowcode-designer.materialBundleUrls 读取
 panel.webview.postMessage({
     source: 'vscode',
     method: 'getInitData',
     requestId: message.requestId,
     result: {
         language: 'en_US',
-        theme: 'light'
+        theme: 'light',
+        materialBundleUrls: ['http://localhost:3000/bundle.json']  // 可选
     }
 });
 ```
+
+**本地联调（非插件）**：可不通过 URL 参数，改用环境变量。在 `env/.env.development` 或 `env/.env.local` 中配置：
+
+```bash
+# 逗号分隔多个 URL；同源可避免 CORS，例如设计器在 8090 时用：
+VITE_MATERIAL_BUNDLE_URLS=http://localhost:8090/mock/main-project-bundle/bundle.json
+```
+
+设计器会在拉取物料时合并该配置，与 `getInitData.result.materialBundleUrls`、`window.TINY_MATERIAL_BUNDLE_URLS`、URL 参数 `materialBundle`/`materialBundles` 一致对待。
 
 #### 2. `goSave(data, callback?)`
 

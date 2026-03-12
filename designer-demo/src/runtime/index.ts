@@ -4,9 +4,9 @@
  */
 import type { App } from 'vue';
 import { createPinia } from 'pinia';
-import { t, currency, getCurrency, getCurrencySymbol } from './globals';
+import { t, currency, getCurrency, getCurrencySymbol, fd } from './globals';
 
-export { t, currency, getCurrency, getCurrencySymbol } from './globals';
+export { t, currency, getCurrency, getCurrencySymbol, fd } from './globals';
 export { useAccountStore, usePaymentStore } from './stores';
 
 /**
@@ -19,6 +19,7 @@ export function installRuntimeCompat(app: App): void {
     app.config.globalProperties.$currency = currency;
     app.config.globalProperties.$getCurrency = getCurrency;
     app.config.globalProperties.$getCurrencySymbol = getCurrencySymbol;
+    app.config.globalProperties.$fd = fd;
 
     // Pinia + 桩 store，供画布内组件 useAccountStore / usePaymentStore 使用
     const pinia = createPinia();

@@ -61,3 +61,18 @@ export function getCurrencySymbol(currencyCode?: string): string {
     if (currencyCode === 'HKD' || !currencyCode) return 'HK$';
     return currencyCode;
 }
+
+type FdFormatType = 'long' | 'short' | 'tiny';
+
+/**
+ * 日期格式化桩，与主工程 $fd 签名兼容（画布展示用）
+ * 主工程用法：$fd(date, 'short') / $fd(date, 'tiny') 等
+ */
+export function fd(date: string | Date, type: FdFormatType = 'long'): string {
+    if (date === undefined || date === null || date === '') return '';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (Number.isNaN(d.getTime())) return String(date);
+    if (type === 'tiny') return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    if (type === 'short') return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
