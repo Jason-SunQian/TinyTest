@@ -1,0 +1,88 @@
+{
+  "data": {
+    "framework": "Vue",
+    "materials": {
+      "components": [
+        {
+          "version": "1.0.0",
+          "icon": "input",
+          "name": {
+            "zh_CN": "主工程-MpInput",
+            "en_US": "Main-MpInput"
+          },
+          "component": "MpInput",
+          "description": "验证用：模拟主工程物料包中的组件，script 指向设计器已有资源",
+          "docUrl": "",
+          "screenshot": "",
+          "tags": "",
+          "keywords": "",
+          "devMode": "proCode",
+          "group": "主工程组件",
+          "npm": {
+            "package": "@local/mp-input",
+            "script": "/mock/materials/mp-input.js",
+            "exportName": "default",
+            "destructuring": false
+          },
+          "schema": {
+            "properties": [
+              {
+                "name": "0",
+                "label": {
+                  "zh_CN": "基础",
+                  "en_US": "Basic"
+                },
+                "content": []
+              }
+            ],
+            "events": {},
+            "slots": {}
+          },
+          "configure": {
+            "loop": true,
+            "condition": true,
+            "styles": true,
+            "isContainer": false,
+            "isModal": false,
+            "nestingRule": {
+              "childWhitelist": "",
+              "parentWhitelist": "",
+              "descendantBlacklist": "",
+              "ancestorWhitelist": ""
+            },
+            "isNullNode": false,
+            "isLayout": false,
+            "rootSelector": "",
+            "contextMenu": {
+              "actions": [
+                "copy",
+                "remove",
+                "insert",
+                "updateAttr",
+                "bindEvent",
+                "createBlock"
+              ],
+              "disable": []
+            },
+            "clickCapture": true,
+            "framework": "Vue"
+          }
+        }
+      ],
+      "snippets": [
+        {
+          "id": "main-project-group",
+          "title": {
+            "zh_CN": "主工程组件",
+            "en_US": "Main Project"
+          },
+          "children": [
+            "MpInput"
+          ]
+        }
+      ],
+      "blocks": [],
+      "packages": []
+    }
+  }
+}
