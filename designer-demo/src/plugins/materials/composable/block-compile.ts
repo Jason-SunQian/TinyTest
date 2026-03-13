@@ -111,9 +111,16 @@ export const getBlockFromMaterialStore = (name: string): Record<string, { blobUR
     }
     const npm = mat?.npm ?? (mat as { content?: { npm?: { script?: string; css?: string } } })?.content?.npm;
     const script = npm?.script;
-    if (!script) return null;
-    const base = getDesignerMaterialBaseUrl();
-    const scriptUrl =
+    if (!script) {
+        if (typeof console !== 'undefined' && console.warn && tryNames[0]) {
+            // eslint-disable-next-line no-console
+            console.warn('[Materials] getBlockFromMaterialStore 未找到', tryNames[0], 'mat=', mat ? '有' : '无', 'script=', script || '无');
+        }
+        return null;
+    }
+    const base =
+        useMaterial().getBundleBaseUrlForComponent(name) ?? getDesignerMaterialBaseUrl();
+    let scriptUrl =
         typeof script === 'string' && (script.startsWith('http://') || script.startsWith('https://'))
             ? script
             : toAbsoluteMaterialUrl(script, base) || script;
@@ -124,6 +131,15 @@ export const getBlockFromMaterialStore = (name: string): Record<string, { blobUR
             typeof css === 'string' && (css.startsWith('http://') || css.startsWith('https://'))
                 ? css
                 : toAbsoluteMaterialUrl(typeof css === 'string' ? css : css[0], base) || '';
+    }
+    const cacheBust = useMaterial().getMaterialCacheBustParam();
+    if (cacheBust) {
+        if (scriptUrl.startsWith('http')) scriptUrl += (scriptUrl.includes('?') ? '&' : '?') + cacheBust;
+        if (styleUrl.startsWith('http')) styleUrl += (styleUrl.includes('?') ? '&' : '?') + cacheBust;
+    }
+    if (typeof console !== 'undefined' && console.log) {
+        // eslint-disable-next-line no-console
+        console.log('[Materials] getBlockFromMaterialStore 解析成功', name, '->', scriptUrl);
     }
     return {
         [name]: { blobURL: scriptUrl, style: styleUrl }

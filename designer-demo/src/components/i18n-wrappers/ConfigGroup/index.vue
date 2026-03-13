@@ -1,6 +1,5 @@
-/* eslint-disable */
-<!-- eslint-disable vue/block-lang, camelcase -->
 <script lang="tsx">
+/* eslint-disable vue/block-lang, camelcase */
 /* eslint-disable */
 import { h } from 'vue';
 import { ConfigCollapse } from '@opentiny/tiny-engine-common';

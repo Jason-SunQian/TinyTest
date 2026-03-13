@@ -1336,7 +1336,17 @@ export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
     if (typeof originalGetBlockByName === 'function') {
         controller.getBlockByName = async (name: string) => {
             const fromStore = getBlockFromMaterialStore(name);
-            if (fromStore) return fromStore;
+            if (fromStore) {
+                if (typeof console !== 'undefined' && console.log) {
+                    // eslint-disable-next-line no-console
+                    console.log('[Materials] getBlockByName 从物料 store 解析:', name, 'script:', fromStore[name]?.blobURL ? '有' : '无');
+                }
+                return fromStore;
+            }
+            if ((name === 'MpAccountInput' || name === 'MpProgress') && typeof console !== 'undefined' && console.log) {
+                // eslint-disable-next-line no-console
+                console.log('[Materials] getBlockByName 未从 store 解析，走原逻辑:', name);
+            }
             return originalGetBlockByName(name);
         };
     }
@@ -1352,7 +1362,26 @@ export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
         if (win && doc && typeof win.loadBlockComponent === 'function') {
             const orig = win.loadBlockComponent.bind(win);
             win.loadBlockComponent = (name: string) => {
-                return orig(name).then((mod: any) => (mod && (mod.default || mod[name])) || mod);
+                return orig(name).then((mod: any) => {
+                    const component = (mod && (mod.default || mod[name])) || mod;
+                    if (typeof console !== 'undefined' && console.log) {
+                        const modType = mod == null ? 'null' : typeof mod;
+                        const modKeys = mod && typeof mod === 'object' ? Object.keys(mod) : [];
+                        const compType = component == null ? 'null' : typeof component;
+                        const isVueComp = compType === 'object' && component && (typeof component.render === 'function' || typeof component.setup === 'function' || component.__isVueComponent);
+                        console.log('[Materials] loadBlockComponent 结果', name, { modType, modKeys, compType, isVueComp });
+                    }
+                    return component;
+                }).catch((err: unknown) => {
+                    if (typeof console !== 'undefined' && console.error) {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        const stack = err instanceof Error ? err.stack : '';
+                        console.error(`[Materials] 区块 ${name} 加载失败:`, msg);
+                        if (stack) console.error('[Materials] 堆栈:', stack);
+                        console.error('[Materials] 完整错误对象:', err);
+                    }
+                    throw err;
+                });
             };
         }
     } catch (_) {

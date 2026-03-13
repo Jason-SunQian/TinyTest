@@ -323,6 +323,11 @@ export default {
                 ...(s.css && { css: toAbsoluteMaterialUrl(s.css, base) ?? s.css })
             }));
             win.componentsDeps = componentsDeps;
+            if (typeof console !== 'undefined' && console.log && componentsDeps.length) {
+                const names = componentsDeps.flatMap((d: { components?: Record<string, unknown> }) => Object.keys(d.components || {}));
+                // eslint-disable-next-line no-console
+                console.log('[Materials] 画布 componentsDeps 已设置，将预加载并注册的组件:', names);
+            }
         };
 
         const beforeCanvasReady = () => {

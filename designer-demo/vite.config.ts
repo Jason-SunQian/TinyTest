@@ -8,6 +8,29 @@ import { viteMockServe } from 'vite-plugin-mock';
 import dotenv from 'dotenv';
 
 /**
+ * 画布创建 app 时多 provide 一个 Symbol.for('i18n')，与主工程物料桩（canvas-stubs/vue-i18n 的 I18nInjectionKey）一致，
+ * 物料内 inject 该 key 才能拿到值，避免 [Vue warn]: injection "Symbol(global-vue-i18n)" not found 导致组件不渲染。不修改 packages 源码。
+ */
+function patchCanvasProvideI18nStubKeyPlugin() {
+    const needPatch = (code: string) =>
+        typeof code === 'string' &&
+        code.includes('createApp(Main)') &&
+        code.includes('provide(I18nInjectionKey, TinyI18nHost)') &&
+        !code.includes("Symbol.for('global-vue-i18n')");
+    const pattern = /\.provide\(I18nInjectionKey,\s*TinyI18nHost\)/g;
+    const replacement =
+        ".provide(I18nInjectionKey, TinyI18nHost).provide(Symbol.for('i18n'), TinyI18nHost).provide(Symbol.for('global-vue-i18n'), TinyI18nHost)";
+    return {
+        name: 'patch-canvas-provide-i18n-stub-key',
+        transform(code: string, id: string) {
+            if (!needPatch(code)) return null;
+            const newCode = code.replace(pattern, replacement);
+            return newCode !== code ? { code: newCode, map: null } : null;
+        }
+    };
+}
+
+/**
  * 构建时改写 npm 画布包中 loadBlockComponent 的返回值：主工程物料为命名导出（如 export { MpAccountInput }），
  * import() 得到的是模块对象，需解析出组件再交给 Vue，否则画布不渲染。只改 designer-demo 构建，不修改 packages。
  */
@@ -137,6 +160,7 @@ export default defineConfig(configEnv => {
             allowedHosts: ['localhost', '127.0.0.1', 'null']
         },
         plugins: [
+            patchCanvasProvideI18nStubKeyPlugin(),
             patchCanvasLoadBlockComponentPlugin(),
             mockMaterialsCorsPlugin(),
             viteMockServe({

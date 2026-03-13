@@ -61,6 +61,12 @@ const resource = new Map<string, Resource>();
 // 这里涉及到区块发布后的更新问题，所以需要单独缓存区块
 const blockResource = new Map<string, BlockResource>();
 
+/** 组件名 -> 其所在 bundle 的 base URL（用于解析脚本绝对路径，避免主工程物料脚本被错误拼到设计器 origin） */
+const componentBundleBaseMap = new Map<string, string>();
+
+/** 远程 bundle 加载时的时间戳，用于脚本/样式 URL 加 _t 避免强缓存导致用旧 chunk 名 404 */
+let materialBundleLoadTimestamp: number | null = null;
+
 // 这里存放的是物料插件面板里所有显示的组件
 // 物料依赖的包
 const materialState = reactive<MaterialState>({
@@ -150,23 +156,18 @@ const patchBaseProps = (schemaProperties?: Property[]) => {
  * 将component里的内容注册到resource变量中
  * @param data
  */
-const registerComponentToResource = (data: Component) => {
+const registerComponentToResource = (data: Component, bundleBase?: string) => {
     patchBaseProps(data.schema?.properties);
 
     if (Array.isArray(data.component)) {
         const { component, ...others } = data;
         component.forEach(item => {
-            resource.set(item, {
-                item,
-                ...others,
-                type: MATERIAL_TYPE.Component
-            });
+            resource.set(item, { item, ...others, type: MATERIAL_TYPE.Component });
+            if (bundleBase) componentBundleBaseMap.set(item, bundleBase);
         });
     } else {
-        resource.set(data.component, {
-            ...data,
-            type: MATERIAL_TYPE.Component
-        });
+        resource.set(data.component, { ...data, type: MATERIAL_TYPE.Component });
+        if (bundleBase && data.component) componentBundleBaseMap.set(data.component, bundleBase);
     }
 };
 
@@ -174,6 +175,7 @@ const clearMaterials = () => {
     materialState.components = [];
     materialState.blocks = [];
     resource.clear();
+    componentBundleBaseMap.clear();
 };
 
 const clearBlockResources = () => {
@@ -196,17 +198,22 @@ const generateThirdPartyDeps = (components: Component[]) => {
     }> = [];
 
     components.forEach(item => {
-        const { npm, component } = item;
+        // 兼容顶层 npm 与 content.npm（主工程 bundle 可能用 content.npm）
+        const npm = item.npm ?? (item as { content?: { npm?: typeof item.npm } })?.content?.npm;
+        const component = item.component;
 
         if (!npm || !Object.keys(npm).length) return;
 
         const {
-            package: pkg,
+            package: pkgRaw,
             script,
             exportName,
             css,
             destructuring = true
         } = npm;
+        // 主工程 bundle 可能无 package，用组件名做占位以便仍进入 materialsDeps 被画布预加载
+        const pkg = pkgRaw || (script ? `@local/${component}` : '');
+        if (!pkg || !script) return;
         const currentPkg = scripts.find(pkgItem => pkgItem.package === pkg);
 
         if (currentPkg) {
@@ -477,6 +484,16 @@ const getMaterialFilenamesFromDeps = (): string[] => {
 const toDataUrl = (content: string, mime: string) =>
     `data:${mime};base64,${typeof btoa !== 'undefined' ? btoa(unescape(encodeURIComponent(content))) : ''}`;
 
+/** 取组件所在 bundle 的 base URL，解析脚本时用该 base 拼绝对路径（主工程物料来自 3060 等时不会误用 8090） */
+const getBundleBaseUrlForComponent = (name: string): string | null =>
+    componentBundleBaseMap.get(name) ?? componentBundleBaseMap.get(capitalize(camelize(name))) ?? null;
+
+/** 返回用于缓存破坏的查询串（如 _t=123），供 block 按需加载脚本时拼到 URL */
+const getMaterialCacheBustParam = (): string => {
+    const t = materialBundleLoadTimestamp ?? Date.now();
+    return '_t=' + t;
+};
+
 const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     const { scripts, styles } = useResource().appSchemaState.materialsDeps;
     // 避免 base 为空时发布相对路径，iframe 会按 vscode-webview 解析导致 403；有物料脚本时强制用 origin 回退
@@ -506,26 +523,42 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     const effectiveBase =
         (base || (typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN) || 'http://localhost:8090')?.toString().replace(/\/$/, '') || '';
 
-    const scriptUrl = (item: { script?: string; css?: string }, url: string, isCss: boolean) => {
+    const appendCacheBust = (u: string) => {
+        if (!u.startsWith('http://') && !u.startsWith('https://')) return u;
+        const t = materialBundleLoadTimestamp ?? Date.now();
+        return u + (u.includes('?') ? '&' : '?') + '_t=' + t;
+    };
+    const scriptUrl = (
+        item: { script?: string; css?: string; components?: Record<string, unknown> },
+        url: string,
+        isCss: boolean,
+        baseOverride?: string | null
+    ) => {
         const filename = getFilenameFromPath(url);
         if (materialContents && materialContents[filename]) {
             return toDataUrl(materialContents[filename], isCss ? 'text/css' : 'application/javascript');
         }
-        return effectiveBase ? (toAbsoluteMaterialUrl(url, effectiveBase) ?? url) : url;
+        const b = baseOverride ?? effectiveBase;
+        const u = b ? (toAbsoluteMaterialUrl(url, b) ?? url) : url;
+        return appendCacheBust(u);
     };
 
     if (base || materialContents || hasRelative) {
         return {
-            scripts: scriptsList.map(item => ({
-                ...item,
-                script: scriptUrl(item, item.script!, false),
-                ...(item.css && { css: scriptUrl(item, item.css, true) })
-            })),
+            scripts: scriptsList.map(item => {
+                const firstComp = Object.keys(item.components || {})[0];
+                const itemBase = firstComp ? getBundleBaseUrlForComponent(firstComp) ?? effectiveBase : effectiveBase;
+                return {
+                    ...item,
+                    script: scriptUrl(item, item.script!, false, itemBase),
+                    ...(item.css && { css: scriptUrl(item, item.css, true, itemBase) })
+                };
+            }),
             styles: [...styles].map(s =>
                 typeof s === 'string'
                     ? (materialContents && materialContents[getFilenameFromPath(s)]
                         ? toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css')
-                        : (effectiveBase ? toAbsoluteMaterialUrl(s, effectiveBase) ?? s : s))
+                        : appendCacheBust(effectiveBase ? toAbsoluteMaterialUrl(s, effectiveBase) ?? s : s))
                     : s
             )
         };
@@ -559,8 +592,16 @@ const updateCanvasDeps = async () => {
 };
 
 //
-const parseMaterialsDependencies = (materialBundle: Material) => {
+/**
+ * @param materialBundle 物料包
+ * @param options.skipScriptPreload 为 true 时不把该 bundle 的组件脚本加入预加载列表，改为拖拽时按需加载（避免远程 bundle 里一个脚本报错拖垮所有组件）
+ */
+const parseMaterialsDependencies = (
+    materialBundle: Material,
+    options?: { skipScriptPreload?: boolean }
+) => {
     const { packages, components } = materialBundle;
+    const skipPreload = options?.skipScriptPreload === true;
 
     const { scripts: scriptsDeps, styles: stylesDeps } =
         useResource().appSchemaState.materialsDeps;
@@ -587,29 +628,24 @@ const parseMaterialsDependencies = (materialBundle: Material) => {
         }
     });
 
-    // 解析组件npm字段（兼容旧的物料协议）
     const { scripts, styles } = generateThirdPartyDeps(components);
-    // 合并到canvasDeps中
-    scripts.forEach(item => {
-        const existingDep = scriptsDeps.find(
-            dep => dep.package === item.package
-        );
-
-        if (existingDep) {
-            // 合并组件
-            existingDep.components = {
-                ...existingDep.components,
-                ...(item.components || {})
-            };
-        } else {
-            scriptsDeps.push(item);
-        }
-    });
-
-    if (!styles) {
-        return;
+    if (!skipPreload) {
+        scripts.forEach(item => {
+            const existingDep = scriptsDeps.find(
+                dep => dep.package === item.package
+            );
+            if (existingDep) {
+                existingDep.components = {
+                    ...existingDep.components,
+                    ...(item.components || {})
+                };
+            } else {
+                scriptsDeps.push(item);
+            }
+        });
     }
 
+    if (!styles) return;
     if (Array.isArray(styles)) {
         styles.forEach(item => stylesDeps.add(item));
     } else {
@@ -620,20 +656,35 @@ const parseMaterialsDependencies = (materialBundle: Material) => {
 /**
  * 添加物料Bundle文件中的组件类型物料
  * @param materialBundle 物料包Bundle.json文件对象
- * @returns null
+ * @param bundleBase 该 bundle 的 base URL（用于解析组件脚本地址）
+ * @param fromRemoteBundle 是否来自远程 URL（主工程等），为 true 时组件脚本不预加载，拖拽时按需加载
  */
-const addComponents = (materialBundle: Material) => {
+const addComponents = (
+    materialBundle: Material,
+    bundleBase?: string,
+    fromRemoteBundle?: boolean
+) => {
     const { snippets, components } = materialBundle;
-    // 解析物料依赖
-    parseMaterialsDependencies(materialBundle);
+    parseMaterialsDependencies(materialBundle, {
+        skipScriptPreload: fromRemoteBundle === true
+    });
+
+    // 诊断：已进入 materialsDeps 的脚本（画布会据此预加载并注册到 TinyLowcodeComponent）
+    const { scripts: scriptsDeps } = useResource().appSchemaState.materialsDeps;
+    if (typeof console !== 'undefined' && console.log && scriptsDeps?.length) {
+        const compNames = scriptsDeps.flatMap((s: { components?: Record<string, unknown> }) => Object.keys(s.components || {}));
+        const unique = compNames.filter((n: string, i: number, a: string[]) => a.indexOf(n) === i);
+        // eslint-disable-next-line no-console
+        console.log('[Materials] materialsDeps.scripts 已更新，将同步到画布预加载。组件名:', unique);
+    }
 
     // 为组件添加英文翻译（如果不存在）
     components.forEach(component => {
         addEnglishNameToComponent(component);
     });
 
-    // 注册组件到map中
-    components.forEach(registerComponentToResource);
+    // 注册组件到map中（传入 bundleBase 以便解析脚本时用正确 origin）
+    components.forEach(c => registerComponentToResource(c, bundleBase));
     // 添加组件snippets
     addComponentSnippets(snippets, materialState.components);
 };
@@ -665,10 +716,20 @@ const addBlocks = (blocks?: Block[]) => {
 
 /**
  * 获取到符合物料协议的bundle.json之后，处理组件与区块物料
- * @param materials
+ * @param materials 物料包内容
+ * @param bundleUrl 该 bundle 的 URL（如 http://localhost:3060/bundle.json），用于解析组件脚本 base
  */
-const addMaterials = (materials: Material) => {
-    addComponents(materials);
+const addMaterials = (materials: Material, bundleUrl?: string) => {
+    if (bundleUrl) materialBundleLoadTimestamp = Date.now();
+    if (bundleUrl && typeof console !== 'undefined' && console.log) {
+        // eslint-disable-next-line no-console
+        console.log('[Materials] 远程 bundle，组件将按需加载（不预加载脚本）', bundleUrl);
+    }
+    const bundleBase =
+        typeof bundleUrl === 'string'
+            ? bundleUrl.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '')
+            : undefined;
+    addComponents(materials, bundleBase, !!bundleUrl);
     addBlocks(materials.blocks);
 };
 
@@ -708,16 +769,15 @@ const getMaterialsRes = async () => {
 };
 
 const fetchMaterial = async () => {
+    const bundleUrls = getMergeMeta('engine.config')?.material || [];
     const materials = await getMaterialsRes();
-    materials.forEach(response => {
+    materials.forEach((response, index) => {
         if (response.status !== 'fulfilled' || !response.value) return;
-        // 兼容两种返回格式：拦截器返回 res.data.data 时为 { materials }，未解包时为 { data: { materials } }
         const materialsPayload =
             response.value.materials ||
             (response.value as { data?: { materials?: Material } })?.data?.materials;
-        if (materialsPayload) {
-            addMaterials(materialsPayload);
-        }
+        const bundleUrl = typeof bundleUrls[index] === 'string' ? bundleUrls[index] : undefined;
+        if (materialsPayload) addMaterials(materialsPayload, bundleUrl);
     });
     updateCanvasDeps();
 };
@@ -1022,6 +1082,8 @@ export default function useMaterialExport() {
         clearBlockResources,
         getMaterial,
         setMaterial,
+        getBundleBaseUrlForComponent,
+        getMaterialCacheBustParam,
         addMaterials,
         getCanvasDeps,
         updateCanvasDeps,
