@@ -83,8 +83,8 @@ panel.webview.postMessage({
 **本地联调（非插件）**：可不通过 URL 参数，改用环境变量。在 `env/.env.development` 或 `env/.env.local` 中配置：
 
 ```bash
-# 逗号分隔多个 URL；同源可避免 CORS，例如设计器在 8090 时用：
-VITE_MATERIAL_BUNDLE_URLS=http://localhost:8090/mock/main-project-bundle/bundle.json
+# 逗号分隔多个 URL，例如主工程在 3000 端口 serve dist/lowcode-materials/bundle.json 时：
+VITE_MATERIAL_BUNDLE_URLS=http://localhost:3000/bundle.json
 ```
 
 设计器会在拉取物料时合并该配置，与 `getInitData.result.materialBundleUrls`、`window.TINY_MATERIAL_BUNDLE_URLS`、URL 参数 `materialBundle`/`materialBundles` 一致对待。
