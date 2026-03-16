@@ -884,28 +884,5 @@ export default [
         }
     },
 
-    // business-materials.json 业务物料包接口（VSCode 插件环境固定 Mock 需与此一致）
-    {
-        url: '/mock/business-materials.json',
-        method: 'get',
-        response: async () => {
-            logRequest('/mock/business-materials.json', 'get');
-            try {
-                const module = await import('./business-materials.json');
-                const data = module.default || module;
-                return data;
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error('[Mock] Failed to load business-materials.json:', error);
-                return {
-                    data: {
-                        materials: {
-                            components: [],
-                            snippets: []
-                        }
-                    }
-                };
-            }
-        }
-    }
+] as MockMethod[];
 ] as MockMethod[];

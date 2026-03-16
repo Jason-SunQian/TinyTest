@@ -22,13 +22,7 @@ async function startApp() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const registry: any = {
-        [META_SERVICE.Http]: HttpService,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        'engine.config': {
-            id: 'engine.config',
-            theme: 'light',
-            material: ['/mock/bundle.json', '/mock/business-materials.json']
-        }
+        [META_SERVICE.Http]: HttpService
     };
 
     defineEntry(registry);
