@@ -885,4 +885,3 @@ export default [
     },
 
 ] as MockMethod[];
-] as MockMethod[];
