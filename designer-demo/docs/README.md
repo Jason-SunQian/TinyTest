@@ -42,6 +42,11 @@
 -   **[Mock 接口迁移](./MOCK_MIGRATION.md)**
     -   Mock 接口本地化实现方案
 
+### 物料相关
+
+-   **[物料导入快速参考](./物料导入快速参考.md)** ⭐ 改造前必读
+    -   设计器如何从主工程导入物料资产包、协议要点、痛点与改造方向、文档链接
+
 ### 架构设计
 
 -   **[设计器去依赖改造方案](./设计器去依赖改造方案.md)**
@@ -78,6 +83,7 @@
 
 ### 按功能查找
 
+-   **物料导入** → [物料导入快速参考](./物料导入快速参考.md)
 -   **代码提示** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md)
 -   **国际化** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
 -   **插件开发** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
@@ -85,6 +91,7 @@
 
 ### 按问题查找
 
+-   **物料如何从主工程导入设计器？** → [物料导入快速参考](./物料导入快速参考.md)
 -   **设计器改造时能否修改 packages？** → [设计器与 packages 边界约定](./设计器与packages边界约定.md)（**不能**，packages 仅作参考）
 -   **如何添加代码提示关键字？** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md#三如何添加新关键字)
 -   **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
