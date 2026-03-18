@@ -1,7 +1,7 @@
 # Ionic 原子组件 re-export 策略可行性分析
 
-> 本文分析：**在不使用画布桩的情况下**，能否通过 re-export 策略在设计器画布上正确显示带样式的 Ionic mr 原子组件。  
-> 结论供后续改造决策参考，**暂不修改任何代码**。
+> 综合分析：**在不使用画布桩的情况下**，能否通过 re-export 策略在设计器画布上正确显示带样式的 Ionic mr 原子组件。  
+> 含根因分析、可行方案与验证结论，供后续改造决策参考。
 
 ---
 
@@ -13,9 +13,19 @@
 - **样式来源**：
   - 原子组件样式在 `wise-core/css/`（含 `ionic.bundle.css`、`ionic-swiper.css` 等）
   - 主工程在 `src/assets/styles/` 中覆盖部分样式（base.scss 的 `--ion-background-color`、`--van-*` 等）
-- **多次尝试**：直接 re-export Ionic 组件到画布，**无样式**，归因于 Shadow DOM 问题
+- **多次尝试**：直接 re-export Ionic 组件到画布，**无样式**，归因于 Shadow DOM 与 iframe 渲染上下文问题
 
-### 1.2 主工程样式加载链路（已核实）
+### 1.2 Ionic 官方对样式的要求
+
+[Ionic Global Stylesheets](https://ionicframework.com/docs/layout/global-stylesheets) 明确说明：
+
+> **core.css** - This file is the only stylesheet that is **required** in order for Ionic components to work properly. It includes app specific styles, and allows the `color` property to work across components. **If this file is not included the colors will not show up and some elements may not appear properly.**
+
+即：**没有 core.css，颜色不会显示，部分元素可能异常**。仅靠 `:root` 变量不足以让 Ionic 组件正常显示。
+
+[Add Ionic Vue to Existing Project](https://ionicframework.com/docs/vue/add-to-existing) 要求样式必须在**与组件相同的 document** 中加载，通常通过应用入口 import。理论上只要在画布 iframe 的 document 中正确加载 core.css，就能让 Ionic 组件有样式，不依赖「应用工程配置」。
+
+### 1.3 主工程样式加载链路（已核实）
 
 ```
 main.scss
@@ -29,31 +39,16 @@ main.scss
   └── modal.scss
 ```
 
-**注意**：主工程 main.scss **未** import `ionic.bundle.css`，只 import 了 core/normalize/structure/typography。`ionic.bundle.css` 可能由 MrWiseVue 或其它入口加载，或组件结构样式在 Web Component JS 内联。
+**注意**：主工程 main.scss **未** import `ionic.bundle.css`，只 import 了 core/normalize/structure/typography。
 
-### 1.3 wise-core 样式结构（已核实）
-
-| 文件 | 内容 |
-|------|------|
-| `core.css` | `:root` 的 `--ion-*` 变量、`body`、`ion-modal`、`.ion-color-*` 等，**无 @import** |
-| `ionic.bundle.css` | 约 22KB，含 `ion-label` 等，**不含** `ion-segment`（grep 为 0） |
-| `theme.css` | 约 12KB |
-
-- ion-segment 的结构样式可能在 Web Component 的 JS 定义中（Shadow DOM 内联），而非外部 CSS
-
-### 1.4 wise-core 与官方 @ionic/core 的差异（已核实，主工程 mobilebanking）
-
-**已确认：wise-core 与官方 Ionic 不同。**
+### 1.4 wise-core 与官方 @ionic/core 的差异（已核实）
 
 | 核实项 | 核实结果 |
 |--------|----------|
 | **wise-core 来源** | `@mr/wise-core@1.0.1`，内部包；`package.json` 中 `"@ionic/vue": "npm:mr-ionic-vue@8.3.0-4"`，即使用 **mr-ionic-vue**（内部 fork），非官方 @ionic/vue |
 | **与 @ionic/core 关系** | 基于 mr-ionic-vue / mr-ionic-core，与官方 @ionic/core 结构可能不一致；设计器注入 @ionic/core CDN 无效即佐证 |
-| **MrWiseVue 注册** | `main.ts`: `app.use(MrWiseVue, { mode: 'ios', hardwareBackButton, backButtonIcon, backButtonText })`；core.css 有 `html.ios { --ion-default-font: ... }`，说明需 `html.ios` 或 `html.md` class |
-| **主工程样式加载** | `main.scss` 只 import：`core.css`、`normalize.css`、`structure.css`、`typography.css`；**未** import `ionic.bundle.css`；core.css 本身**无** @import |
-| **ionic.bundle.css 加载** | 主工程未显式 import，可能由 mr-ionic-vue 在组件首次加载时动态注入，或通过 Vite 依赖解析打进主 bundle |
-| **theme.scss / base.scss** | theme.scss 大量覆盖 `--ion-color-primary: var(--mr-color-primary)` 等；base.scss 定义 `--ion-background-color: var(--mr-color-bg-200)` |
-| **wise-core/css 目录** | 含 core.css、ionic.bundle.css、theme.css、ionic-swiper.css、normalize.css 等；ionic.bundle.css 约 22KB |
+| **MrWiseVue 注册** | `main.ts`: `app.use(MrWiseVue, { mode: 'ios', ... })`；core.css 有 `html.ios { --ion-default-font: ... }`，说明需 `html.ios` 或 `html.md` class |
+| **wise-core/css 目录** | 含 core.css、ionic.bundle.css、theme.css、ionic-swiper.css、normalize.css 等 |
 
 ---
 
@@ -79,135 +74,108 @@ main.scss
 - 主题通过 `:root` 或宿主上的变量覆盖
 - 部分组件暴露 `::part()` 供外部定制
 
-因此，**只要在画布 document 的 `:root` 上正确设置 Ionic 变量，理论上可让 re-export 的 Ionic 组件获得样式**。
+因此，**理论上**只要在画布 document 的 `:root` 上正确设置 Ionic 变量，并加载 core.css，可让 re-export 的 Ionic 组件获得样式。
 
 ---
 
-## 三、为何此前 re-export 无效果（可能原因）
+## 三、根因分析：为何 re-export 无效果
 
-### 3.1 文档中已尝试的方向
+### 3.1 画布与主工程的 document 分离
 
-| 尝试 | 结果 | 可能原因 |
-|------|------|----------|
-| 画布直接加载 ion-segment | 无样式 | 未注入 wise-core 样式链 |
-| 设计器注入 @ionic/core CSS | 无效 | 主工程用 @mr/wise-core，与 @ionic/core 结构可能不一致 |
-| 物料协议 npm.css | 复杂易失效 | 画布 CSS 注入链路、URL 解析、加载顺序等问题 |
+- 画布在 **iframe** 中，有独立的 document
+- 主工程 main.scss 中的 `@use '@mr/wise-core/css/core.css'` 只影响主应用，**不会**进入画布
+- 画布样式来自：`init_canvas_deps` → `importStyles` → 物料声明的 `npm.css` 等
 
-### 3.2 可能的根因（部分已核实）
+### 3.2 core.css 从未进入画布
 
-1. **mr-bank.css 已含 --ion-* 变量（已核实）**
-   - 物料构建产物 `dist/lowcode-materials/mr-bank.css` 含 **179 处** `ion-`/`--ion-` 相关内容
-   - 含 theme.scss 的 `--ion-color-primary`、`--ion-color-medium` 等覆盖（来自 design-tokens、base-overrides 或业务组件的 import 链）
-   - 含 mp-tags 对 `ion-segment`、`ion-segment-button::part(native)` 的样式
-   - **但** `mr-components.js` 未 import wise-core 的 core.css，故 **wise-core 的 core.css、ionic.bundle.css 未进入 mr-bank.css**
+- 物料构建时，`mr-components.js` 未 import wise-core 的 CSS
+- `mr-bank.css` 来自业务组件、theme、design-tokens 等，**不包含** wise-core 的 `core.css`
+- 即使用 `http://localhost:3000/mr-bank.css` 可访问，画布也**拿不到 core.css**
+- 按 Ionic 官方文档，**无 core.css 则 colors will not show up**
 
-2. **wise-core 组件结构样式的来源**
-   - `ionic.bundle.css` 中 **无** `ion-segment`（grep 为 0），仅有 `ion-label` 等
-   - ion-segment 的结构样式很可能在 **Web Component 的 JS 定义** 中（Shadow DOM 内联），加载组件即自带
-   - 若如此，画布只需：加载 mr-bank.css（提供 --ion-* 变量）+ 正确渲染 IonSegment 组件
+### 3.3 wise-core 与官方不同，CDN 无效
 
-3. **画布可能缺失的环节**
-   - **html.ios / html.md**：core.css 有 `html.ios { --ion-default-font: ... }`，主工程由 MrWiseVue 设置 `mode: 'ios'` 可能给 html 加 class
-   - **body 背景**：core.css 有 `body { background: var(--ion-background-color); color: var(--ion-text-color) }`，若画布未加载 core.css，body 无此样式
-   - **画布 CSS 注入**：需确认 mr-bank.css 是否被正确注入画布 iframe，以及加载顺序
+- 主工程用的是 **@mr/wise-core**（mr-ionic-vue），不是官方 @ionic/core
+- 设计器注入 @ionic/core CDN 无效，需使用 **wise-core 的 core.css**，不能用 @ionic/core 的 CDN 替代
 
----
+### 3.4 wise-core 样式结构（已核实）
 
-## 四、re-export 无桩方案的可行路径（理论）
+| 文件 | 内容 |
+|------|------|
+| `core.css` | `:root` 的 `--ion-*` 变量、`body`、`ion-modal`、`.ion-color-*` 等，**无 @import** |
+| `ionic.bundle.css` | 约 22KB，含 `ion-label` 等，**不含** `ion-segment`（grep 为 0） |
 
-### 4.1 必要条件
+- ion-segment 的结构样式可能在 Web Component 的 JS 定义中（Shadow DOM 内联），而非外部 CSS
 
-1. **画布加载完整 wise-core 样式链**
-   - 至少包含：`core.css`、`normalize.css`、`structure.css`、`typography.css`、`ionic.bundle.css`（或 wise-core 实际使用的等价文件）
-   - 需确认 wise-core 的样式入口与依赖关系
+### 3.5 iframe 内 Vue 渲染上下文问题（2025-03 发现）
 
-2. **画布 :root 具备主工程变量覆盖**
-   - `design-tokens.css`（已有）
-   - `base-overrides.css` 扩展：加入 `--ion-*` 等 Ionic 变量覆盖
-   - 加载顺序：design-tokens → base-overrides → wise-core 样式
+画布在 iframe 内独立运行 Vue 应用，Ionic 组件（含 Shadow DOM）依赖正确的 ref 与渲染上下文。控制台出现：
 
-3. **物料 bundle 声明 npm.css**
-   - mr-components 的 `hasCss: true` 已指向 `mr-bank.css`
-   - 需保证 `mr-bank.css` 构建时包含 wise-core 的 Ionic 样式，或单独提供 `ionic-canvas.css` 并在物料中声明
+- `Missing ref owner context, ref cannot be used on hoisted vnodes`（涉及 IonSegment、IonSegmentButton）
+- `withDirectives can only be used inside render functions`
 
-4. **画布 iframe 正确注入上述样式**
-   - `init_canvas_deps` → `importStyles` → 将样式 URL 转为 `<link>` 注入画布 document
-   - 插件环境下相对路径需转为绝对 URL，避免 403
-
-### 4.2 需要验证的点
-
-| 验证项 | 方法 |
-|--------|------|
-| wise-core 样式入口 | 查看 wise-core 的 package.json exports、main 入口，以及 core.css 是否 import ionic.bundle |
-| mr-bank.css 内容 | 检查物料构建产物，是否包含 Ionic 相关样式 |
-| 变量继承 | 在画布 iframe 内手动添加 `:root { --ion-color-primary: red }`，观察 ion-segment 是否变色 |
-| MrWiseVue 依赖 | 在画布创建 app 时 `app.use(MrWiseVue, { mode: 'ios' })`，对比有无样式差异 |
+这些警告很可能导致 Ionic 组件内部 DOM 或样式未正确挂载，表现为画布上组件**无样式**或显示异常。
 
 ---
 
-## 五、风险与不确定性
+## 四、可行方案（理论 vs 实践）
 
-### 5.1 技术风险
+### 4.1 理论可行路径
 
-- **wise-core 闭源或结构不明**：若无法确认样式入口与变量定义，难以复现主工程环境
-- **构建耦合**：物料构建是否、以及如何把 wise-core 样式打进 mr-bank.css，依赖当前 Vite 配置
-- **版本漂移**：wise-core 升级可能改变样式结构，需持续跟进
+1. **画布加载完整 wise-core 样式链**：至少 core.css、normalize/structure/typography
+2. **画布 :root 具备主工程变量覆盖**：design-tokens、base-overrides 扩展 `--ion-*`
+3. **物料 bundle 声明 npm.css**：mr-bank.css 包含 core.css，或单独提供 core.css URL
+4. **画布 iframe 正确注入上述样式**：`init_canvas_deps` → `importStyles` → `<link>`，插件环境下相对路径需转为绝对 URL
 
-### 5.2 与桩方案的对比
+### 4.2 高概率可行方案（基于 Ionic 官方文档）
+
+在画布 iframe 的 document 中，以 `<link>` 或内联方式加载 **wise-core 的 core.css**：
+
+| 步骤 | 说明 |
+|------|------|
+| 1. 主工程物料构建产出 core.css | 在 mr-components.js 中 `import '@mr/wise-core/css/core.css'`，或复制到 dist 并声明 URL |
+| 2. 物料协议声明该样式 | 让 mr-components 的 `npm.css` 包含 core.css 的 URL |
+| 3. 画布加载 | 通过现有 `init_canvas_deps` → `importStyles` → `<link>` 链路加载 |
+
+**已尝试**：在 mr-components.js 中 import core.css 打进 mr-bank.css，画布仍无样式。根因可能为 **iframe 内 Vue 渲染上下文问题**（见 3.5），而非仅样式缺失。
+
+### 4.3 与桩方案的对比
 
 | 维度 | re-export 无桩 | 画布桩 + 样式自注入 |
 |------|----------------|---------------------|
 | 维护成本 | 依赖 wise-core 样式链，需与主工程同步 | 桩样式独立，与 wise-core 解耦 |
 | 一致性 | 理论上有机会与主工程完全一致 | 需人工对齐视觉，可能有偏差 |
-| 实现难度 | 需打通样式注入全链路，不确定性高 | 已验证可行，文档完善 |
+| 实现难度 | 需打通样式注入 + 解决 iframe/Vue 上下文问题 | 已验证可行，文档完善 |
 | 新增 Ionic 组件 | 若样式链正确，可直接 re-export | 每个组件需单独桩 |
 
 ---
 
-## 六、建议的探索顺序（若坚持尝试 re-export）
+## 五、验证结论与尝试记录（2025-03）
 
-1. **最小验证**：在画布 iframe 内通过控制台或临时脚本，向 `document.head` 注入一段 `:root { --ion-color-primary: red; --ion-color-medium: #666; }`，再拖入 **IonSegment**（需先将 mr-components 中 MrSegment 改为 re-export IonSegment），观察是否有样式变化。
-2. ~~**样式链验证**~~：已核实，见上文 1.2、1.3、3.2。
-3. ~~**mr-bank.css 验证**~~：已核实，含 179 处 ion/--ion，含 --ion-* 变量，但**不含** wise-core 的 core.css。
-4. **按需扩展**：若变量验证有效，可考虑在物料构建中显式 import `@mr/wise-core/css/core.css`，或将其提取并合并进 mr-bank.css，确保画布有 body、html.ios 等基础样式。
+### 5.1 re-export 尝试
 
-若第 1 步无效果，则变量继承或组件实现可能有问题，re-export 无桩方案的成功率较低。
+**已尝试**：re-export IonSegment/IonSegmentButton + mr-components.js 中 `import '@mr/wise-core/css/core.css'` 打进 mr-bank.css + 画布内联 Ionic 变量 + `html.ios` class。
 
----
+**结果**：画布仍无样式，组件呈默认 HTML 外观。
 
-## 七、结论与是否尝试第一步
+**结论**：re-export 方案在当前 wise-core/mr-ionic-vue 与设计器画布加载模型下不可行，**已恢复桩方案**（MrSegmentCanvas、MrSegmentButtonCanvas）。
 
-### 7.1 已核实结论（含主工程 mobilebanking）
+### 5.2 init-canvas 迁移
 
-| 项 | 结果 |
-|----|------|
-| wise-core 与官方 | **已确认不同**：使用 mr-ionic-vue@8.3.0-4（内部 fork），非 @ionic/vue |
-| 主工程 wise-core 加载 | main.scss 只 import core/normalize/structure/typography，**未** import ionic.bundle.css |
-| ionic.bundle.css 加载 | 主工程未显式 import，可能由 mr-ionic-vue 按需注入或 Vite 打进主 bundle |
-| wise-core core.css | 含 `:root` --ion-* 变量、`html.ios`/`html.md`、body、ion-modal 等，无 @import |
-| ionic.bundle.css | 含 ion-label 等，ion-segment 结构样式可能在 Web Component JS 内联 |
-| mr-bank.css | 含 theme 的 --ion-* 覆盖（来自业务组件 import 链），**不含** wise-core 的 core.css |
-| 画布当前方案 | MrSegment/MrSegmentButton/MrLabel 均为**桩**（MrSegmentCanvas 等），非 re-export |
+将 `packages/canvas/init-canvas` 迁移至 `designer-demo`，使画布 HTML 生成在设计器内可维护、可扩展。详见 [init-canvas 迁移文档](./init-canvas-migration.md)。
 
-### 7.2 是否值得尝试第一步最小验证
+**403 问题**：VSCode 插件环境下，画布 iframe 加载 `canvas-entry` 时报 403。**修复**：`initCanvas` 增加 `baseUrl` 参数，将 canvas 脚本 URL 转为绝对路径。
 
-**建议：可尝试，但需接受 wise-core 与官方不同带来的不确定性。**
+**Vue 警告**：画布加载后出现 `Missing ref owner context`、`withDirectives` 等警告，涉及 IonSegment/IonSegmentButton，很可能导致无样式。**建议**：继续使用桩组件。
 
-| 因素 | 说明 |
-|------|------|
-| **wise-core 已核实** | 使用 mr-ionic-vue，与官方不同；设计器注入 @ionic/core CDN 无效是预期结果 |
-| **画布需补齐** | html 加 `ios`/`md` class、加载 core.css（或至少 body + :root 变量）、mr-bank.css 已含 --ion-* 变量 |
-| **验证成本** | 低：画布控制台注入 `:root { --ion-color-primary: red }` + 临时将 MrSegment 改为 re-export IonSegment |
-| **若验证有效** | 说明变量继承正常，可继续投入打通 core.css 注入、html class 等 |
-| **若验证无效** | 可能原因：mr-bank.css 未注入画布、html 缺 ios/md、或 mr-ionic-vue 的 Shadow DOM 实现与预期不符；可继续维持桩方案 |
+### 5.3 最终建议
 
-### 7.3 若验证失败
-
-继续使用画布桩 + 样式自注入仍是当前最稳妥方案。
+- **桩方案**（MrSegmentCanvas、MrSegmentButtonCanvas）为普通 Vue 组件，无 ref/iframe 问题，**推荐继续使用**。
+- **re-export 方案**：若必须使用真实 Ionic 组件，需排查画布 iframe 的 Vue 应用初始化方式及 Ionic 对 iframe 渲染的支持。
 
 ---
 
-## 八、主工程关键路径（mobilebanking）
+## 六、主工程关键路径（mobilebanking）
 
 | 文件 | 说明 |
 |------|------|
@@ -222,10 +190,18 @@ main.scss
 
 ---
 
-## 九、相关文档
+## 七、参考链接
 
+- [Ionic Global Stylesheets](https://ionicframework.com/docs/layout/global-stylesheets) - core.css 为必需
+- [Ionic Vue Add to Existing](https://ionicframework.com/docs/vue/add-to-existing) - 样式 import 方式
+- [Ionic CSS Variables](https://ionicframework.com/docs/theming/css-variables) - 变量与主题
+- [Ionic Shadow Parts](https://ionicframework.com/docs/theming/css-shadow-parts)
+
+---
+
+## 八、相关文档
+
+- [init-canvas 迁移文档](./init-canvas-migration.md)
 - [Ionic 组件导入与桩方案](./Ionic组件导入与桩方案.md)
 - [组件导入注意事项](./组件导入注意事项.md)
 - [物料导入快速参考](./物料导入快速参考.md)
-- [Ionic CSS Variables 官方文档](https://ionicframework.com/docs/v7/theming/css-variables)
-- [Ionic Shadow Parts 官方文档](https://ionicframework.com/docs/v7/theming/css-shadow-parts)
