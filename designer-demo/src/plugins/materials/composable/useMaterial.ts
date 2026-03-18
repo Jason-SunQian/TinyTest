@@ -494,6 +494,9 @@ const getMaterialCacheBustParam = (): string => {
     return '_t=' + t;
 };
 
+/** 主工程物料包样式 fallback：当 bundle 来自远程 URL 且物料未声明 npm.css 时，强制追加 mr-bank.css */
+const MAIN_PROJECT_STYLE_FALLBACK = 'mr-bank.css';
+
 const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     const { scripts, styles } = useResource().appSchemaState.materialsDeps;
     // 避免 base 为空时发布相对路径，iframe 会按 vscode-webview 解析导致 403；有物料脚本时强制用 origin 回退
@@ -503,6 +506,37 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
         base = (win.TINY_DESIGNER_ORIGIN || (import.meta.env as any).VITE_ORIGIN || 'http://localhost:8090').replace(/\/$/, '');
     }
     const scriptsList = [...scripts].filter(item => item.script);
+
+    // 收集远程 bundle 的 base URL，用于样式 fallback（主工程 bundle 可能未声明 npm.css）
+    const remoteBundleBases = new Set<string>();
+    // 1) 从 scripts 中提取（有预加载的远程 bundle）
+    scriptsList.forEach(item => {
+        const firstComp = Object.keys(item.components || {})[0];
+        const itemBase = firstComp ? getBundleBaseUrlForComponent(firstComp) : null;
+        const scriptUrl = item.script || '';
+        const base = itemBase || (scriptUrl.startsWith('http') ? scriptUrl.replace(/\/[^/]*$/, '') : null);
+        if (base && (base.startsWith('http://') || base.startsWith('https://'))) {
+            remoteBundleBases.add(base.replace(/\/$/, ''));
+        }
+    });
+    // 2) 从 engine.config.material 补充（远程 bundle 可能 skipScriptPreload，scripts 中无记录）
+    const materialUrls = getMergeMeta('engine.config')?.material || [];
+    (Array.isArray(materialUrls) ? materialUrls : [materialUrls]).forEach((url: unknown) => {
+        const u = typeof url === 'string' ? url : (url as { url?: string })?.url;
+        if (typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'))) {
+            const base = u.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '').replace(/\/$/, '');
+            if (base) remoteBundleBases.add(base);
+        }
+    });
+
+    // 为主工程等远程 bundle 追加 mr-bank.css fallback（桩样式、ionic-overrides 等）
+    const styleFallbacks: string[] = [];
+    remoteBundleBases.forEach(b => {
+        const fallbackUrl = `${b}/${MAIN_PROJECT_STYLE_FALLBACK}`;
+        const alreadyInStyles = [...styles].some(s => typeof s === 'string' && (s === fallbackUrl || s.includes(MAIN_PROJECT_STYLE_FALLBACK)));
+        if (!alreadyInStyles) styleFallbacks.push(fallbackUrl);
+    });
+    const allStyles = [...styles, ...styleFallbacks];
 
     scriptsList.sort((a, b) => {
         const i = MATERIAL_LOAD_ORDER.indexOf(a.package);
@@ -517,7 +551,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     const hasRelative =
         !base &&
         !materialContents &&
-        [...scriptsList.map(s => s.script), ...styles].some(
+        [...scriptsList.map(s => s.script), ...allStyles].some(
             (u): u is string => typeof u === 'string' && u.startsWith('/')
         );
     const effectiveBase =
@@ -554,7 +588,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
                     ...(item.css && { css: scriptUrl(item, item.css, true, itemBase) })
                 };
             }),
-            styles: [...styles].map(s =>
+            styles: [...allStyles].map(s =>
                 typeof s === 'string'
                     ? (materialContents && materialContents[getFilenameFromPath(s)]
                         ? toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css')
@@ -565,7 +599,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     }
     return {
         scripts: scriptsList,
-        styles: [...styles]
+        styles: [...allStyles]
     };
 };
 
@@ -584,6 +618,10 @@ const updateCanvasDeps = async () => {
         }
     } catch {
         deps = getCanvasDeps();
+    }
+    if (typeof console !== 'undefined' && console.log && deps.styles?.length) {
+        // eslint-disable-next-line no-console -- 诊断画布样式注入
+        console.log('[Materials] 画布样式已下发，共', deps.styles.length, '个:', deps.styles.slice(0, 5).map((s: string) => (s || '').slice(-60)));
     }
     useMessage().publish({
         topic: 'init_canvas_deps',
