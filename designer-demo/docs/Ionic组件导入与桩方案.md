@@ -4,6 +4,19 @@
 
 ---
 
+## 经验总结：Vant 有样式、Ionic 无样式（提取样式无效）
+
+主工程导出原子组件到设计器画布时：
+
+| 组件来源 | 画布表现 | 提取样式 |
+|----------|----------|----------|
+| **Vant 组件** | 能正常显示，有样式 | 提取后可在画布生效 |
+| **Ionic 组件** | 无样式或不可见 | **多次提取样式均无效** |
+
+**原因**：Ionic 使用 Shadow DOM，外部 CSS 难以穿透；画布通过 `init_canvas_deps` → `importStyles` → `<link>` 注入的样式对 Ionic 组件不起作用。因此 Ionic 原子组件需采用**桩 + 样式自注入**，不能依赖「提取样式」方案。
+
+---
+
 ## 一、为何采用桩
 
 | 尝试方向 | 问题 |
@@ -46,7 +59,7 @@
 
 ## 三、Ionic 提取脚本（可选）
 
-主工程 `extract-ionic-overrides.cjs` 从 `theme.scss` 提取 `--ion-*` 变量到 `ionic-overrides.css`。**mr-segment 桩采用样式自注入后不再依赖该文件**；若其他桩（如依赖 design-tokens 的组件）需要主工程主题变量，可保留该脚本。主工程 theme 变更后执行 `pnpm run extract:ionic-overrides` 即可。
+mr-segment 桩采用样式自注入（`injectStubStyles` + `mr-segment-stub-styles.js`），不依赖外部 CSS。主工程已移除 `extract-ionic-overrides.cjs` 与 `ionic-overrides.css`。
 
 ---
 

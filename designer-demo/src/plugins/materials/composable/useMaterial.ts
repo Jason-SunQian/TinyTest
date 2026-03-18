@@ -529,7 +529,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
         }
     });
 
-    // 为主工程等远程 bundle 追加 mr-bank.css fallback（桩样式、ionic-overrides 等）
+    // 为主工程等远程 bundle 追加 mr-bank.css fallback（桩样式等）
     const styleFallbacks: string[] = [];
     remoteBundleBases.forEach(b => {
         const fallbackUrl = `${b}/${MAIN_PROJECT_STYLE_FALLBACK}`;
