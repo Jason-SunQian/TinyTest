@@ -960,6 +960,9 @@ const fillNodePropsWithMaterialDefaults = (
     });
 };
 
+/** 用于 MrSegment 子按钮的唯一 value 候选，避免出码时多个按钮同 value 导致全选 */
+const SEGMENT_BUTTON_VALUE_CANDIDATES = ['default', 'segment', 'button', 'tab1', 'tab2', 'tab3'];
+
 /**
  * 用物料 schema 的默认 props 补全节点树上缺失的字段（不覆盖已有值）
  * 用于预览/出码前保证所有节点都有完整 props，避免「面板显示默认值但节点未写入」导致运行时拿不到
@@ -977,6 +980,24 @@ const patchSchemaWithMaterialDefaults = (schema: Record<string, unknown> | null 
                 if (props[k] !== undefined && props[k] !== '') merged[k] = props[k];
             });
             schema.props = merged;
+        }
+    }
+    // MrSegment 子按钮 value 唯一性修复：防止多个 MrSegmentButton 同 value 导致出码时全选
+    if (componentName === 'MrSegment') {
+        const children = schema.children as Array<Record<string, unknown>> | undefined;
+        if (Array.isArray(children)) {
+            const values = children
+                .filter((c) => c?.componentName === 'MrSegmentButton')
+                .map((c) => String((c.props as Record<string, unknown>)?.value ?? ''));
+            const hasDup = values.length !== new Set(values).size || values.some((v) => !v);
+            if (hasDup) {
+                children.forEach((child, i) => {
+                    if (child?.componentName === 'MrSegmentButton' && child.props && typeof child.props === 'object') {
+                        (child.props as Record<string, unknown>).value =
+                            SEGMENT_BUTTON_VALUE_CANDIDATES[i] ?? `tab${i}`;
+                    }
+                });
+            }
         }
     }
     const children = schema.children as Array<Record<string, unknown>> | undefined;
