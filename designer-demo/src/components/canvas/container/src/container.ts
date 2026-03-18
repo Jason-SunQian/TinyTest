@@ -30,6 +30,10 @@ import { utils } from '@opentiny/tiny-engine-utils';
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import Builtin from '@/components/canvas/render/src/builtin/builtin.json';
 import { getBlockFromMaterialStore } from '@/plugins/materials/composable/block-compile';
+import {
+    BASE_STYLE_CLASS_NAME,
+    COMPONENTS_SKIP_BASE_STYLE
+} from '@/plugins/materials/constants';
 /* eslint-disable import/no-cycle */
 import { useMultiSelect } from './composables/useMultiSelect';
 import type { Node, RootNode } from '@/components/canvas/types';
@@ -1152,6 +1156,17 @@ export const onMouseUp = () => {
                 component: insertData.componentName
             });
             insertData.props = { ...withDefaults.props, ...insertData.props };
+            if (
+                COMPONENTS_SKIP_BASE_STYLE.includes(insertData.componentName) &&
+                insertData.props &&
+                typeof insertData.props.className === 'string'
+            ) {
+                const rest = insertData.props.className
+                    .split(/\s+/)
+                    .filter(c => c && c !== BASE_STYLE_CLASS_NAME)
+                    .join(' ');
+                insertData.props.className = rest || '';
+            }
         }
         if (!sourceId && absolute) {
             insertData.props = insertData.props || {};

@@ -27,6 +27,7 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 
 import meta from '../meta';
+import { BASE_STYLE_CLASS_NAME, COMPONENTS_SKIP_BASE_STYLE } from '../constants';
 import { getMaterialContentsFromExtension } from '@/composable/useVSCodeBridge';
 import {
     getDesignerMaterialBaseUrl,
@@ -982,7 +983,7 @@ const patchSchemaWithMaterialDefaults = (schema: Record<string, unknown> | null 
             schema.props = merged;
         }
     }
-    // MrSegment 子按钮 value 唯一性修复：防止多个 MrSegmentButton 同 value 导致出码时全选
+    // MrSegment 子按钮 value 唯一性修复 + 移除 component-base-style（见 constants.ts）
     if (componentName === 'MrSegment') {
         const children = schema.children as Array<Record<string, unknown>> | undefined;
         if (Array.isArray(children)) {
@@ -990,14 +991,19 @@ const patchSchemaWithMaterialDefaults = (schema: Record<string, unknown> | null 
                 .filter((c) => c?.componentName === 'MrSegmentButton')
                 .map((c) => String((c.props as Record<string, unknown>)?.value ?? ''));
             const hasDup = values.length !== new Set(values).size || values.some((v) => !v);
-            if (hasDup) {
-                children.forEach((child, i) => {
-                    if (child?.componentName === 'MrSegmentButton' && child.props && typeof child.props === 'object') {
+            children.forEach((child, i) => {
+                if (child?.componentName === 'MrSegmentButton' && child.props && typeof child.props === 'object') {
+                    if (hasDup) {
                         (child.props as Record<string, unknown>).value =
                             SEGMENT_BUTTON_VALUE_CANDIDATES[i] ?? `tab${i}`;
                     }
-                });
-            }
+                    const cn = (child.props as Record<string, unknown>).className;
+                    if (typeof cn === 'string' && cn.split(/\s+/).includes(BASE_STYLE_CLASS_NAME)) {
+                        const rest = cn.split(/\s+/).filter(c => c && c !== BASE_STYLE_CLASS_NAME).join(' ');
+                        (child.props as Record<string, unknown>).className = rest || '';
+                    }
+                }
+            });
         }
     }
     const children = schema.children as Array<Record<string, unknown>> | undefined;
@@ -1009,10 +1015,10 @@ const patchSchemaWithMaterialDefaults = (schema: Record<string, unknown> | null 
 const generateNode = ({ type, component }) => {
     const snippet = getSnippet(component) || {};
     const material = getMaterial(component);
-    // 判断是否要加基础样式
     const materialUseBaseStyle = material.configure?.useBaseStyle;
     const globalUseBaseStyle = getOptions(meta.id).useBaseStyle;
-    const useBaseStyle = globalUseBaseStyle && materialUseBaseStyle !== false;
+    const skipBaseStyle = COMPONENTS_SKIP_BASE_STYLE.includes(component);
+    const useBaseStyle = globalUseBaseStyle && materialUseBaseStyle !== false && !skipBaseStyle;
     const defaultPropsFromSchema = getDefaultPropsFromMaterialSchema(material);
     const schema = {
         componentName: component,

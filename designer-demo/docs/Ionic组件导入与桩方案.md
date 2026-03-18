@@ -45,15 +45,39 @@
 
 入口：`entries/mr-components.js` 导出上述桩，manifest 中 MrSegment、MrSegmentButton、MrLabel 的 script 指向该入口。
 
-### 2.2 默认选中配置
+### 2.2 默认选中配置与属性协议
 
-物料 schema 中为 MrSegment 配置 `value` 或 `modelValue`：`default` | `button` | `segment`。
+- **value / v-model**：物料 schema 中为 MrSegment 配置 `value`，对应主工程的 v-model（如 `v-model="segmentValue"`）。可选值：`default` | `segment` | `button` 等，需与子按钮的 `value` 匹配才显示选中态。
+- **scrollable**：主工程常用 `:scrollable="scrollable"`，manifest 的 schemaExtra 需包含该属性。
+- **v-model 协议**：events 中需声明 `onUpdate:value`，当 value 绑定为变量时出码会生成 `v-model:value="state.xxx"`。
 
-### 2.3 无效果时排查
+### 2.3 画布与出码的差异（重要）
+
+| 场景 | 表现 |
+|------|------|
+| **出码/预览** | value 配置正确生效，选中态与切换正常 |
+| **画布设计态** | 属性面板修改 value 后，画布桩可能不实时同步选中态（受 iframe/schema 同步限制） |
+
+**最低要求**：属性可配置、出码正确。画布实时同步为锦上添花，当前以出码为准。
+
+### 2.4 子按钮 value 唯一性
+
+- 各 MrSegmentButton 的 `value` 必须唯一，否则出码后多个按钮会同时显示选中。
+- 设计器在预览/出码前会执行 `patchSchemaWithMaterialDefaults`（`useMaterial.ts`），自动修复重复或空的 value（按 default、segment、button、tab1… 分配）。
+
+### 2.5 子按钮 component-base-style 对齐覆盖
+
+- **现象**：后拖入的 MrSegmentButton 比 snippet 内默认按钮多出 `component-base-style`，带 `margin-top`，导致出码后对齐错位。
+- **原因**：设计器对拖入组件默认加 `component-base-style` 做间距；MrSegmentButton 是 ion-segment 的 flex 子项，额外 margin 会破坏水平对齐。
+- **处理**：在 `designer-demo/src/plugins/materials/constants.ts` 中配置 `COMPONENTS_SKIP_BASE_STYLE`，useMaterial 与 container 据此排除/移除该类名，不修改 packages。
+
+### 2.6 无效果时排查
 
 1. 桩的 `onMounted` 是否调用了 `injectStubStyles`
 2. 主工程入口是否导出桩组件
 3. 画布选中态（蓝色边框）是设计器选中态，不是桩样式；取消选中后下划线应可见
+4. 出码异常时检查子按钮 value 是否重复
+5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
 
 ---
 
