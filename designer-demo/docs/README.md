@@ -47,6 +47,9 @@
 -   **[设计器去依赖改造方案](./设计器去依赖改造方案.md)**
     -   设计器架构改造方案
 
+-   **[设计器与 packages 边界约定](./设计器与packages边界约定.md)** ⚠️ 必读
+    -   设计器改造不得修改 packages；packages 仅作参考，依赖由 npm 提供
+
 ## 🚀 快速开始
 
 ### 添加代码提示关键字
@@ -82,6 +85,7 @@
 
 ### 按问题查找
 
+-   **设计器改造时能否修改 packages？** → [设计器与 packages 边界约定](./设计器与packages边界约定.md)（**不能**，packages 仅作参考）
 -   **如何添加代码提示关键字？** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md#三如何添加新关键字)
 -   **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
 -   **如何迁移插件？** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
