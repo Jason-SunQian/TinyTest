@@ -71,13 +71,49 @@
 - **原因**：设计器对拖入组件默认加 `component-base-style` 做间距；MrSegmentButton 是 ion-segment 的 flex 子项，额外 margin 会破坏水平对齐。
 - **处理**：在 `designer-demo/src/plugins/materials/constants.ts` 中配置 `COMPONENTS_SKIP_BASE_STYLE`，useMaterial 与 container 据此排除/移除该类名，不修改 packages。
 
-### 2.6 无效果时排查
+### 2.6 MrLabel 文本属性（重要，经验总结）
+
+**现象**：设计器中设置 MrLabel「文本」为 123 后，运行/预览时 `<ion-label>` 尺寸 0x0，不显示。
+
+**根因**：`ion-label` / `mr-label` 使用 **默认 slot** 显示内容，不支持 `label` 属性。源码写法为 `<mr-label>{{ tab.label }}</mr-label>`，内容必须在 slot（即 schema 的 `children`）中。
+
+| 错误配置 | 正确配置 |
+|----------|----------|
+| `property: "label"` + InputConfigurator | `property: "children"` + HtmlTextConfigurator |
+| 出码：`<mr-label label="123"></mr-label>`（0x0 不显示） | 出码：`<mr-label>123</mr-label>` |
+
+**主工程 manifest 正确配置**（lowcode-materials/manifest.json）：
+
+1. **schemaExtra**：使用 `property: "children"` + `HtmlTextConfigurator`，使属性面板写入 slot 内容：
+
+```json
+{
+  "property": "children",
+  "label": { "text": { "zh_CN": "文本", "en_US": "Text" } },
+  "widget": { "component": "HtmlTextConfigurator", "props": {} }
+}
+```
+
+2. **snippetSchema**：拖入时默认带 `children`，保证画布与运行都能显示：
+
+```json
+{
+  "componentName": "MrLabel",
+  "props": {},
+  "children": "Label"
+}
+```
+
+**兼容旧 schema**：若已有页面使用 `props.label`，设计器在预览/出码前会通过 `patchSchemaWithMaterialDefaults`（useMaterial）和 `patchMrLabelPropsToChildren`（vue-generator parseSchemaPlugin）自动将 `props.label` 转为 `children`，保证出码正确。建议主工程 manifest 按上述配置，从源头正确。
+
+### 2.7 无效果时排查
 
 1. 桩的 `onMounted` 是否调用了 `injectStubStyles`
 2. 主工程入口是否导出桩组件
 3. 画布选中态（蓝色边框）是设计器选中态，不是桩样式；取消选中后下划线应可见
 4. 出码异常时检查子按钮 value 是否重复
 5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
+6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + HtmlTextConfigurator
 
 ---
 

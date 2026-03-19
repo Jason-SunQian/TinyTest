@@ -983,6 +983,17 @@ const patchSchemaWithMaterialDefaults = (schema: Record<string, unknown> | null 
             schema.props = merged;
         }
     }
+    // MrLabel：ion-label 使用 slot 显示内容，不支持 label 属性。若 schema 误用 props.label，转为 children
+    if (componentName === 'MrLabel') {
+        const props = schema.props as Record<string, unknown> | undefined;
+        const labelVal = props?.label;
+        const children = schema.children;
+        const hasChildren = Array.isArray(children) ? children.length > 0 : (children !== undefined && children !== null && children !== '');
+        if (typeof labelVal === 'string' && labelVal !== '' && !hasChildren) {
+            schema.children = labelVal;
+            if (props) delete props.label;
+        }
+    }
     // MrSegment 子按钮 value 唯一性修复 + 移除 component-base-style（见 constants.ts）
     if (componentName === 'MrSegment') {
         const children = schema.children as Array<Record<string, unknown>> | undefined;
