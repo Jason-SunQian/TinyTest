@@ -41,8 +41,10 @@ async function startApp() {
             },
             appCreated: async ({ app }: { app: App }) => {
                 // 画布/预览用运行时兼容层（$t、$currency、Pinia 桩等）
-                const { installRuntimeCompat } = await import('@/runtime');
-                installRuntimeCompat(app);
+                // 优先从物料 bundle 的 runtimeScript 加载，实现与主工程解耦
+                const { loadRuntimeModule } = await import('@/composable/loadRuntimeFromBundles');
+                const runtime = await loadRuntimeModule();
+                runtime.installRuntimeCompat(app);
 
                 // 在 VSCode 环境中，先设置为英文（避免显示中文），然后等待 VSCode 插件配置
                 // 如果不在 VSCode 环境中，则使用默认语言

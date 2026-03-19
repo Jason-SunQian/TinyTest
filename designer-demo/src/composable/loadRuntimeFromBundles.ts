@@ -1,0 +1,134 @@
+/**
+ * 从物料 bundle 中加载 runtime 模块，实现设计器与主工程 runtime 解耦。
+ * 主工程在 bundle.json 中声明 runtimeScript，设计器优先加载该脚本；
+ * 若无或加载失败，则回退到设计器内置 runtime。
+ */
+import { getMergeMeta } from '@opentiny/tiny-engine-meta-register';
+
+/** 与 getMaterialsRes 一致的 bundle URL 来源 */
+function getBundleUrls(): string[] {
+    const fromConfig = getMergeMeta('engine.config')?.material || [];
+    const configUrls = (Array.isArray(fromConfig) ? fromConfig : [fromConfig])
+        .map((u: unknown) => (typeof u === 'string' ? u : (u as { url?: string })?.url))
+        .filter((u): u is string => typeof u === 'string');
+
+    const fromWindow = (typeof window !== 'undefined' && (window as any).TINY_MATERIAL_BUNDLE_URLS) as string[] | undefined;
+    const windowUrls = Array.isArray(fromWindow) ? fromWindow : [];
+
+    const fromEnv = (import.meta.env as any).VITE_MATERIAL_BUNDLE_URLS as string | undefined;
+    const envUrls = typeof fromEnv === 'string' ? fromEnv.split(',').map((s) => s.trim()).filter(Boolean) : [];
+
+    const fromSearch = typeof window !== 'undefined' ? (() => {
+        const params = new URLSearchParams(window.location.search);
+        const single = params.get('materialBundle');
+        const multi = params.get('materialBundles');
+        if (single) return [single];
+        if (multi) return multi.split(',').map((s) => s.trim()).filter(Boolean);
+        return [];
+    })() : [];
+
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const u of [...configUrls, ...windowUrls, ...envUrls, ...fromSearch]) {
+        if (u && !seen.has(u)) {
+            seen.add(u);
+            result.push(u);
+        }
+    }
+    return result;
+}
+
+/** 将相对 URL 解析为基于 base 的绝对 URL */
+function resolveUrl(url: string, base: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('/')) {
+        const origin = base.replace(/\/[^/]*$/, '');
+        const match = origin.match(/^(https?:\/\/[^/]+)/);
+        return match ? match[1] + url : base.replace(/\/[^/]*$/, '') + url;
+    }
+    const baseDir = base.replace(/\/[^/]*$/, '/');
+    return new URL(url, baseDir).href;
+}
+
+/** 获取 bundle 的 base URL（用于解析相对路径） */
+function getBundleBase(bundleUrl: string): string {
+    const clean = bundleUrl.replace(/[#?].*$/, '');
+    if (clean.startsWith('http://') || clean.startsWith('https://')) {
+        return clean.replace(/\/[^/]*$/, '/');
+    }
+    if (typeof window !== 'undefined') {
+        const base = window.location.origin + (clean.startsWith('/') ? '' : '/');
+        return base.replace(/\/$/, '') + '/';
+    }
+    return clean.replace(/\/[^/]*$/, '/');
+}
+
+/** 从 bundle JSON 中提取 runtimeScript URL */
+function extractRuntimeScript(payload: unknown, bundleBase: string): string | null {
+    if (!payload || typeof payload !== 'object') return null;
+    const obj = payload as Record<string, unknown>;
+    let script: string | undefined;
+    if (typeof obj.runtimeScript === 'string') script = obj.runtimeScript;
+    else if (obj.data && typeof obj.data === 'object' && typeof (obj.data as Record<string, unknown>).runtimeScript === 'string') {
+        script = (obj.data as Record<string, unknown>).runtimeScript as string;
+    }
+    if (!script || typeof script !== 'string') return null;
+    return resolveUrl(script, bundleBase);
+}
+
+/**
+ * 从物料 bundle 中解析出第一个 runtimeScript URL。
+ * 使用原生 fetch 拉取，避免 Http 的 preResponse 拦截器返回 res.data.data 导致 runtimeScript 丢失。
+ * @returns runtimeScript 的绝对 URL，若无则返回 null
+ */
+export async function findRuntimeScriptUrl(): Promise<string | null> {
+    const bundleUrls = getBundleUrls();
+    // eslint-disable-next-line no-console
+    console.log('[loadRuntimeFromBundles] bundle URL 列表:', bundleUrls);
+    if (!bundleUrls.length) return null;
+
+    for (const bundleUrl of bundleUrls) {
+        try {
+            const res = await fetch(bundleUrl).then((r) => r.json());
+            const base = getBundleBase(bundleUrl);
+            const url = extractRuntimeScript(res, base);
+            // eslint-disable-next-line no-console
+            console.log('[loadRuntimeFromBundles] 已拉取', bundleUrl, 'runtimeScript:', url ?? '无');
+            if (url) return url;
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn('[loadRuntimeFromBundles] 拉取 bundle 失败:', bundleUrl, e);
+        }
+    }
+    return null;
+}
+
+export interface RuntimeModule {
+    installRuntimeCompat: (app: import('vue').App) => void;
+}
+
+/**
+ * 加载 runtime 模块：优先从物料 bundle 的 runtimeScript 加载，失败则使用设计器内置 runtime。
+ */
+export async function loadRuntimeModule(): Promise<RuntimeModule> {
+    const url = await findRuntimeScriptUrl();
+    if (url) {
+        try {
+            // eslint-disable-next-line no-console
+            console.log('[loadRuntimeFromBundles] 从 bundle 加载 runtime:', url);
+            const mod = await import(/* @vite-ignore */ url);
+            if (mod && typeof mod.installRuntimeCompat === 'function') {
+                // eslint-disable-next-line no-console
+                console.log('[loadRuntimeFromBundles] 已从 bundle 加载 runtime 成功');
+                return mod as RuntimeModule;
+            }
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn('[loadRuntimeFromBundles] 从 bundle 加载 runtime 失败，回退到内置 runtime:', e);
+        }
+    } else {
+        // eslint-disable-next-line no-console
+        console.log('[loadRuntimeFromBundles] 未找到 runtimeScript，使用设计器内置 runtime');
+    }
+    return import('@/runtime');
+}

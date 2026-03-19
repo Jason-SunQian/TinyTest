@@ -16,8 +16,9 @@ async function startApp() {
     };
 
     const appCreated = async ({ app }: { app: import('vue').App }) => {
-        const { installRuntimeCompat } = await import('./runtime');
-        installRuntimeCompat(app);
+        const { loadRuntimeModule } = await import('./composable/loadRuntimeFromBundles');
+        const runtime = await loadRuntimeModule();
+        runtime.installRuntimeCompat(app);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
