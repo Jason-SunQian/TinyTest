@@ -122,7 +122,21 @@
 
 **vite 配置**：`vantToMr` 中增加 `Button: 'MrButton'`，业务组件 chunk 中 `import { Button } from 'vant'` 会替换为 `import { MrButton } from '@local/mr-components'`。
 
-### 2.8 无效果时排查
+### 2.8 MpAgreementButton 经验总结（业务组件 i18n 文案）
+
+**现象**：画布中 MpAgreementButton 显示 `common.agree` 而非 "Agree and continue"。
+
+**根因**：组件源码用 `$t('common.agree')`，`$t` 来自 `app.config.globalProperties.$t`（runtime 注入）。设计器画布可能用内置 runtime，其 `lowcodeI18n` 无主工程 key，故返回 key 本身。
+
+**正确做法**（与 mp-account-input 一致）：
+
+1. **做 canvas 桩**：`canvas-stubs/components/mp-agreement-button-canvas.vue`，在桩内 `import { t as $t } from '../vue-i18n'`，不依赖 runtime 的 globalProperties。
+2. **entry 导出桩**：`entries/mp-agreement-button.js` 导出 canvas 桩，出码仍引用主工程真实组件。
+3. **FALLBACK 补充**：在 `canvas-stubs/vue-i18n.ts` 的 FALLBACK 中增加 `common.agree`、`common.agreeTip` 等主工程 key。
+
+**规则**：业务组件若在模板中用 `$t('xxx')`，且设计器无该 key，需做 canvas 桩并直接 import vue-i18n 的 t。
+
+### 2.9 无效果时排查
 
 1. 桩的 `onMounted` 是否调用了 `injectStubStyles`
 2. 主工程入口是否导出桩组件
@@ -130,6 +144,7 @@
 4. 出码异常时检查子按钮 value 是否重复
 5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
 6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
+7. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.8 节
 
 ---
 
