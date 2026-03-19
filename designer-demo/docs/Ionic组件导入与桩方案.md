@@ -79,18 +79,18 @@
 
 | 错误配置 | 正确配置 |
 |----------|----------|
-| `property: "label"` + InputConfigurator | `property: "children"` + HtmlTextConfigurator |
+| `property: "label"` + InputConfigurator | `property: "children"` + InputConfigurator |
 | 出码：`<mr-label label="123"></mr-label>`（0x0 不显示） | 出码：`<mr-label>123</mr-label>` |
 
 **主工程 manifest 正确配置**（lowcode-materials/manifest.json）：
 
-1. **schemaExtra**：使用 `property: "children"` + `HtmlTextConfigurator`，使属性面板写入 slot 内容：
+1. **schemaExtra**：使用 `property: "children"` + `InputConfigurator`（单行输入，避免 HtmlTextConfigurator 大区域），使属性面板写入 slot 内容：
 
 ```json
 {
   "property": "children",
   "label": { "text": { "zh_CN": "文本", "en_US": "Text" } },
-  "widget": { "component": "HtmlTextConfigurator", "props": {} }
+  "widget": { "component": "InputConfigurator", "props": {} }
 }
 ```
 
@@ -106,14 +106,30 @@
 
 **兼容旧 schema**：若已有页面使用 `props.label`，设计器在预览/出码前会通过 `patchSchemaWithMaterialDefaults`（useMaterial）和 `patchMrLabelPropsToChildren`（vue-generator parseSchemaPlugin）自动将 `props.label` 转为 `children`，保证出码正确。建议主工程 manifest 按上述配置，从源头正确。
 
-### 2.7 无效果时排查
+**文本配置器选择**：MrLabel、MrButton 等 slot 文本仅需单行输入时，用 `InputConfigurator` 替代 `HtmlTextConfigurator`，避免属性面板展示过大区域。
+
+### 2.7 MrButton 经验总结（Vant 按钮）
+
+**来源**：主工程 `mr-button` 对应 Vant 的 `Button`（`types/components.d.ts` 中 `MrButton: typeof import('vant/es')['Button']`），无需桩，直接 re-export。
+
+**配置要点**：
+
+| 配置项 | 说明 |
+|--------|------|
+| **children** | 按钮文字在 slot 中，用 `property: "children"` + `InputConfigurator`（单行输入，避免 HtmlTextConfigurator 大区域） |
+| **snippetSchema** | 默认 `children: "Button"`，`props: { type: "primary" }` |
+| **type / size 选项** | SelectConfigurator 的 options 的 `label` 一律用**英文**（Default、Primary、Large、Normal 等），项目规定 |
+
+**vite 配置**：`vantToMr` 中增加 `Button: 'MrButton'`，业务组件 chunk 中 `import { Button } from 'vant'` 会替换为 `import { MrButton } from '@local/mr-components'`。
+
+### 2.8 无效果时排查
 
 1. 桩的 `onMounted` 是否调用了 `injectStubStyles`
 2. 主工程入口是否导出桩组件
 3. 画布选中态（蓝色边框）是设计器选中态，不是桩样式；取消选中后下划线应可见
 4. 出码异常时检查子按钮 value 是否重复
 5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
-6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + HtmlTextConfigurator
+6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
 
 ---
 
