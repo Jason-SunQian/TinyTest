@@ -136,7 +136,7 @@ const output = {
 
 ### 与设计器旧配置的区分
 
-设计器仓库中的 `vite.materials.config.ts` 为**旧版物料构建**（designer-demo 本地 materials-src），与主工程无关。主工程使用 `vite.lowcode-materials.config.ts`（物料）和 `vite.runtime.config.ts`（runtime），无需参考或复用 `vite.materials.config.ts`。
+设计器仓库曾使用 `vite.materials.config.ts` 构建本地物料（designer-demo 本地 materials-src），该文件已删除。主工程使用 `vite.lowcode-materials.config.ts`（物料）和 `vite.runtime.config.ts`（runtime）。
 
 ---
 
