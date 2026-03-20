@@ -282,7 +282,13 @@ export default {
                 enableExtraParams && extraParamsLength
                     ? `event,${formatParams}`
                     : formatParams;
-            const defaultMethod = `function ${name} (${finalParams}) {\n}\n`;
+            // onIonInfinite 新建方法时注入注释，提醒开发者需调用 evt.target.complete()
+            const eventName = props.eventBinding?.eventName;
+            const defaultBody =
+                eventName === 'onIonInfinite'
+                    ? '{\n  // After logic\n  // We should set evt.target.complete();\n}'
+                    : '{\n}';
+            const defaultMethod = `function ${name} (${finalParams}) ${defaultBody}\n`;
 
             // 没有现存方法，直接拼接一个新的
             if (!method) {
