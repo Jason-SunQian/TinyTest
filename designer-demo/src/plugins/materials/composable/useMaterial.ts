@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.service.material.useMaterial */
 import { reactive } from 'vue';
 import { utils, constants } from '@opentiny/tiny-engine-utils';
@@ -123,15 +123,15 @@ const patchBaseProps = (schemaProperties?: Property[]) => {
     for (const basePropGroup of properties) {
         const group = schemaProperties.find(item => {
             // 如果存在了包含'其他'字符串的分组，统一为'其他'分组
-            // eslint-disable-next-line camelcase
+             
             if (item.label.zh_CN?.includes('其他')) {
-                // eslint-disable-next-line camelcase
+                 
                 item.label.zh_CN = '其他';
             }
 
             return (
                 (basePropGroup.group && basePropGroup.group === item.group) ||
-                // eslint-disable-next-line camelcase
+                 
                 basePropGroup.label.zh_CN === item.label.zh_CN
             );
         });
@@ -248,14 +248,14 @@ const generateThirdPartyDeps = (components: Component[]) => {
  * 为组件名称添加英文翻译（如果不存在或值是中文）
  */
 const addEnglishNameToComponent = (component: Component) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const componentName = component.name as any;
     if (
         componentName &&
         typeof componentName === 'object' &&
         componentName.zh_CN
     ) {
-        // eslint-disable-next-line camelcase
+         
         const existingEn =
             componentName.en_US || componentName['en-US'] || componentName.en;
 
@@ -298,11 +298,11 @@ const addEnglishNameToComponent = (component: Component) => {
 
         const zhName = componentName.zh_CN;
         if (translations[zhName]) {
-            // eslint-disable-next-line camelcase
+             
             componentName.en_US = translations[zhName];
         } else {
             // 如果没有映射，使用组件名作为回退
-            // eslint-disable-next-line camelcase
+             
             componentName.en_US = component.component || zhName;
         }
     }
@@ -311,14 +311,14 @@ const addEnglishNameToComponent = (component: Component) => {
 /**
  * 为 snippet 添加英文翻译（如果不存在或值是中文）
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const addEnglishNameToSnippet = (snippet: any) => {
     if (!snippet?.name) return;
 
     if (typeof snippet.name === 'object' && snippet.name.zh_CN) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+         
         const nameAny = snippet.name as any;
-        // eslint-disable-next-line camelcase, @typescript-eslint/prefer-destructuring
+         
         const { en_US: enUs, 'en-US': enUsHyphen, en } = nameAny;
         const existingEn = enUs || enUsHyphen || en;
 
@@ -363,22 +363,22 @@ const addEnglishNameToSnippet = (snippet: any) => {
 
         const zhName = snippet.name.zh_CN;
         if (translations[zhName]) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+             
             (snippet.name as any).en_US = translations[zhName];
         } else if (snippet.snippetName) {
             // 如果没有映射，尝试从 snippetName 生成英文名
             const componentName = snippet.snippetName.replace('Canvas', '');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+             
             (snippet.name as any).en_US = componentName || zhName;
         } else {
             // 最后回退
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+             
             (snippet.name as any).en_US = snippet.component || zhName;
         }
     }
 
     // 处理 label
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase
+     
     if (
         snippet.label &&
         typeof snippet.label === 'object' &&
@@ -393,7 +393,7 @@ const addEnglishNameToSnippet = (snippet: any) => {
 
         const zhLabel = snippet.label.zh_CN;
         if (translations[zhLabel]) {
-            /* eslint-disable-next-line @typescript-eslint/no-explicit-any, camelcase */
+             
             (snippet.label as any).en_US = translations[zhLabel];
         }
     }
@@ -417,7 +417,7 @@ const addComponentSnippets = (
     );
     componentSnippets.forEach(snippetGroup => {
         // 为分组 label 添加英文翻译
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const groupLabel = (snippetGroup as any).label;
         if (
             groupLabel &&
@@ -432,7 +432,7 @@ const addComponentSnippets = (
             };
             const zhLabel = groupLabel.zh_CN;
             if (translations[zhLabel]) {
-                // eslint-disable-next-line camelcase
+                 
                 groupLabel.en_US = translations[zhLabel];
             }
         }
@@ -797,7 +797,7 @@ const setMaterial = (name: string, data: Resource) => {
 const getMaterialsRes = async () => {
     const bundleUrls = getMergeMeta('engine.config')?.material || [];
     const materials = await Promise.allSettled(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         bundleUrls.map((url: any) =>
             typeof url === 'string'
                 ? getMetaApi(META_SERVICE.Http).get(url)
@@ -826,7 +826,7 @@ const fetchMaterial = async () => {
  * @param {object} dependencies 区块保存的依赖信息
  */
 const getBlockDeps = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     dependencies: { scripts?: Dependency[]; styles?: any[] } = {}
 ) => {
     const { scripts = [], styles = [] } = dependencies;
@@ -896,7 +896,7 @@ const filterBuiltinMaterials = (materials: Material) => {
 };
 
 const initBuiltinMaterial = () => {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     const { Builtin } = useCanvas().canvasApi.value;
     const builtinMaterials = filterBuiltinMaterials(Builtin!.data.materials);
     const builtinComponentMaterials = filterBuiltinMaterials(
@@ -1146,7 +1146,7 @@ const getComponentDetail = name => {
 // 组装画布依赖，包含物料和工具类的依赖。
 // 通知画布更新依赖
 // 获取物料组件的配置信息
-// eslint-disable-next-line func-names
+ 
 export default function useMaterialExport() {
     return {
         materialState,

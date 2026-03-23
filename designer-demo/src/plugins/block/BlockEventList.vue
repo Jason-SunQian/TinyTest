@@ -52,17 +52,17 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line
+         
         TinyButton,
-        // eslint-disable-next-line
+         
         MetaListItems,
-        // eslint-disable-next-line
+         
         SvgButton
     },
-    // eslint-disable-next-line
+     
     setup() {
         // 获取国际化 t 函数
-        // eslint-disable-next-line
+         
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 

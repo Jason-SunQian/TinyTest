@@ -40,11 +40,11 @@ const { hyphenate } = utils;
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         RadioConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ModalMask,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ResetButton
     },
     props: {
@@ -54,7 +54,7 @@ export default {
         }
     },
     emits: ['update'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         let activedName = '';
         const { t, locale } = useDesignerI18n();

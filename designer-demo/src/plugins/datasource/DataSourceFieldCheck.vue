@@ -37,13 +37,13 @@ import { formDataInjectionSymbols } from './DataSourceFieldForm.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceFieldCheckMultipleLine,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceFieldCheckRanger,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCheckbox: Checkbox,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFormItem: FormItem
     },
     props: {
@@ -52,7 +52,7 @@ export default {
             default: 'string'
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const { t } = useDesignerI18n();
         const formData = inject(formDataInjectionSymbols);

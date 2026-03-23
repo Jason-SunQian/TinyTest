@@ -27,7 +27,7 @@ import { useDesignerI18n } from '@/services/i18nService';
 export default {
     name: 'i18n-color-configurator',
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input
     },
     props: {
@@ -45,11 +45,11 @@ export default {
         }
     },
     emits: ['change', 'update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const color = ref(props.modelValue);
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const tinyInput = ref(null);
 
         const currentPlaceholder = computed(

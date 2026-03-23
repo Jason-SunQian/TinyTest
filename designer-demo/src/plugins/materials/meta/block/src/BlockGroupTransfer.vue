@@ -59,15 +59,15 @@ import { fetchBlockById } from './http';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockList,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockGroupArrange,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SelectAll,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyOption: Option
     },
     props: {
@@ -76,7 +76,7 @@ export default {
             default: () => []
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const {
             check,

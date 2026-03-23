@@ -44,7 +44,7 @@ import { Form, FormItem, Input, Select } from '@opentiny/vue';
 
 import { useDesignerI18n } from '../../services/i18nService';
 
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const serviceFormRef = ref(null);
 
 export const getServiceForm = () => {
@@ -53,13 +53,13 @@ export const getServiceForm = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyForm: Form,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFormItem: FormItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select
     },
     props: {
@@ -68,7 +68,7 @@ export default {
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const { t } = useDesignerI18n();
 

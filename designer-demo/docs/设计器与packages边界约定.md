@@ -12,11 +12,11 @@
 
 ## 二、原因说明
 
-| 要点 | 说明 |
-|------|------|
-| **依赖来源** | 设计器实际依赖的是通过 **npm 安装** 的 `@opentiny/tiny-engine-*`、`@opentiny/tiny-engine-common` 等包，而非本仓库的 `packages` 源码。 |
-| **packages 定位** | `packages` 是 TinyEngine 官方源码的本地副本，**仅用于参考和阅读**，不参与设计器的构建与运行。 |
-| **维护成本** | 若修改 packages，会导致与 npm 包版本不一致；升级依赖时改动会丢失，且无法随设计器独立迭代。 |
+| 要点              | 说明                                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **依赖来源**      | 设计器实际依赖的是通过 **npm 安装** 的 `@opentiny/tiny-engine-*`、`@opentiny/tiny-engine-common` 等包，而非本仓库的 `packages` 源码。 |
+| **packages 定位** | `packages` 是 TinyEngine 官方源码的本地副本，**仅用于参考和阅读**，不参与设计器的构建与运行。                                         |
+| **维护成本**      | 若修改 packages，会导致与 npm 包版本不一致；升级依赖时改动会丢失，且无法随设计器独立迭代。                                            |
 
 ---
 
@@ -30,16 +30,16 @@
 
 ## 四、相关文档
 
-- [插件迁移指南](./PLUGIN_MIGRATION.md) - 插件迁移（复制到 designer-demo，不修改 packages）
-- [代码提示功能扩展指南](./CODE_COMPLETION_GUIDE.md) - 代码提示扩展（不修改 packages）
-- [样式插件迁移](./styles-plugin-migration.md) - 样式插件迁移（避免修改 packages）
-- [国际化体验总结](./I18N_EXPERIENCE_SUMMARY.md) - 国际化（packages 仅作参考）
-- [设计器去依赖改造方案](./设计器去依赖改造方案.md) - 插件迁移实践案例
+-   [插件迁移指南](./PLUGIN_MIGRATION.md) - 插件迁移（复制到 designer-demo，不修改 packages）
+-   [代码提示功能扩展指南](./CODE_COMPLETION_GUIDE.md) - 代码提示扩展（不修改 packages）
+-   [样式插件迁移](./styles-plugin-migration.md) - 样式插件迁移（避免修改 packages）
+-   [国际化体验总结](./I18N_EXPERIENCE_SUMMARY.md) - 国际化（packages 仅作参考）
+-   [设计器去依赖改造方案](./设计器去依赖改造方案.md) - 插件迁移实践案例
 
 ---
 
 ## 五、设计器结构概览
 
-- **designer-demo**：设计器主工程，所有改造与扩展均在此目录内完成。
-- **packages**：TinyEngine 源码参考，**只读**，不参与设计器构建。
-- **物料**：由主工程产出 bundle，设计器通过 URL 加载；设计器本地 `materials-src` 仅作过渡。
+-   **designer-demo**：设计器主工程，所有改造与扩展均在此目录内完成。
+-   **packages**：TinyEngine 源码参考，**只读**，不参与设计器构建。
+-   **物料**：由主工程产出 bundle，设计器通过 URL 加载；设计器本地 `materials-src` 仅作过渡。

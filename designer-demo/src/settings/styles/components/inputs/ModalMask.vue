@@ -61,11 +61,11 @@ export default {
         }
     },
     emits: ['close'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const isAlignBody = props.teleport === 'body';
         const topStyle = ref(0);
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const modalContent = ref(null);
 
         const { PLUGIN_NAME, getPluginByLayout } = useLayout();
@@ -85,7 +85,7 @@ export default {
                 : '.right-panel-wrap';
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-shadow
+         
         const calculateTopStyle = modalContentParam => {
             const innnerHeight = window.getComputedStyle(document.body).height;
             if (isAlignBody && modalContentParam) {

@@ -20,7 +20,7 @@ export default {
         arrangeList: { type: Array as () => unknown[], default: () => [] }
     },
     emits: ['update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const state = reactive({
             type: props.modelValue,

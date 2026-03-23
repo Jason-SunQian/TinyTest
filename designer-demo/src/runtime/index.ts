@@ -4,6 +4,7 @@
  */
 import type { App } from 'vue';
 import { createPinia } from 'pinia';
+
 import { t, currency, getCurrency, getCurrencySymbol, fd } from './globals';
 
 export { t, currency, getCurrency, getCurrencySymbol, fd } from './globals';

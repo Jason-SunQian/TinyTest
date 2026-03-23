@@ -267,7 +267,7 @@
 
 <!-- eslint-disable-next-line vue/max-lines-per-block, vue/block-lang -->
 <script lang="ts">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.setting.styles.BorderGroup */
 import { computed, reactive, watch } from 'vue';
 import { Tooltip } from '@opentiny/vue';
@@ -321,27 +321,27 @@ const BORDER_COLOR = {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SliderConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TabsGroupConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ModalMask,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ResetButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ColorConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         NumericSelect,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ButtonGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip
     },
     props: {
-        // eslint-disable-next-line vue/require-typed-object-prop
+         
         style: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Object,
             default: () => ({})
         },
@@ -355,7 +355,7 @@ export default {
         }
     },
     emits: useEvent(),
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t, locale } = useDesignerI18n();
 
@@ -401,15 +401,15 @@ export default {
         };
 
         const borderRadius = reactive({
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BorderRadius: 0,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BorderTopLeftRadius: 0,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BorderTopRightRadius: 0,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BorderBottomLeftRadius: 0,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BorderBottomRightRadius: 0
         });
 
@@ -578,7 +578,7 @@ export default {
         );
 
         const colorPlaceholder = computed(() => {
-            // eslint-disable-next-line no-void
+             
             void locale.value;
             return t('designer.settings.styles.common.colorPlaceholder');
         });
@@ -674,15 +674,15 @@ export default {
         return {
             borderColorValue,
             borderWidthValue,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             RADIUS_SETTING,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BORDER_SETTING,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BORDER_STYLE_TYPE,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BORDER_PROPERTY,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BORDER_RADIUS_PROPERTY,
             state,
             reset,

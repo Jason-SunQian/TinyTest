@@ -31,7 +31,7 @@ import {
     getConfigItemVisible
 } from './blockSetting';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+ 
 const { fun_ctor } = utils;
 const { SCHEMA_DATA_TYPE } = constants;
 
@@ -40,7 +40,7 @@ const typeList = Object.keys(META_TYPES).map(key => ({
     label: key
 }));
 
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const currentEditData = ref(null);
 
 const itemConfig = ref([]);
@@ -66,7 +66,7 @@ const initSubProperties = () => {
     property.properties = [
         {
             label: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: '默认分组'
             },
             content: []
@@ -115,12 +115,12 @@ const showPropertyConfigItem = computed(() => getConfigItemVisible());
 const label = computed({
     get() {
         const property = getEditProperty();
-        // eslint-disable-next-line camelcase
+         
         return property?.label?.text?.zh_CN || '';
     },
     set(value) {
         const property = getEditProperty();
-        // eslint-disable-next-line camelcase
+         
         property.label.text.zh_CN = value;
     }
 });
@@ -137,7 +137,7 @@ const propertyName = computed({
 });
 
 const getDefaultValue = data => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+     
     const { type: propertyType } = currentEditData.value;
     if (
         propertyType === META_TYPES.string ||

@@ -13,9 +13,9 @@ export const getPageList = {
     callback: async () => {
         const { getPageList: getPageListFn } = usePage();
         const [firstGroup, secondGroup] = await getPageListFn();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const data: any[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const getPages = (list: any[]) => {
             list.forEach(item => {
                 data.push({

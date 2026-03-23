@@ -40,14 +40,14 @@ interface VSCodeMessage {
 
 **参数：**
 
-- `callback: (data: InitData) => void` - 回调函数，接收初始化数据
+-   `callback: (data: InitData) => void` - 回调函数，接收初始化数据
 
 **InitData 约定：**
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `language` | string | 语言（如 `en_US`、`zh_CN`） |
-| `theme` | string | 主题（如 `light`、`dark`） |
+| 字段                 | 类型     | 说明                                                                                                                            |
+| -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `language`           | string   | 语言（如 `en_US`、`zh_CN`）                                                                                                     |
+| `theme`              | string   | 主题（如 `light`、`dark`）                                                                                                      |
 | `materialBundleUrls` | string[] | 可选。额外物料包 URL 列表，设计器会合并并拉取；与 HTML 注入的 `window.TINY_MATERIAL_BUNDLE_URLS` 同效，收到后会触发一次物料刷新 |
 
 **示例：**
@@ -75,7 +75,7 @@ panel.webview.postMessage({
     result: {
         language: 'en_US',
         theme: 'light',
-        materialBundleUrls: ['http://localhost:3000/bundle.json']  // 可选
+        materialBundleUrls: ['http://localhost:3000/bundle.json'] // 可选
     }
 });
 ```
@@ -95,7 +95,7 @@ VITE_MATERIAL_BUNDLE_URLS=http://localhost:3000/bundle.json
 
 **参数：**
 
-- `data: SaveData` - 要保存的数据
+-   `data: SaveData` - 要保存的数据
     ```typescript
     interface SaveData {
         pageId?: string;
@@ -104,7 +104,7 @@ VITE_MATERIAL_BUNDLE_URLS=http://localhost:3000/bundle.json
         [key: string]: any;
     }
     ```
-- `callback?: (success: boolean, error?: any) => void` - 可选的回调函数
+-   `callback?: (success: boolean, error?: any) => void` - 可选的回调函数
 
 **示例：**
 
@@ -149,7 +149,7 @@ panel.webview.postMessage({
 
 **参数：**
 
-- `callback?: (success: boolean, error?: any) => void` - 可选的回调函数
+-   `callback?: (success: boolean, error?: any) => void` - 可选的回调函数
 
 **示例：**
 
@@ -185,7 +185,7 @@ panel.webview.postMessage({
 
 **参数：**
 
-- `theme: string` - 主题名称，如 `'light'` 或 `'dark'`
+-   `theme: string` - 主题名称，如 `'light'` 或 `'dark'`
 
 **VSCode 插件调用：**
 
@@ -208,7 +208,7 @@ panel.webview.postMessage({
 
 **参数：**
 
-- `language: string` - 语言代码，支持简写（`zh`, `en`）或完整代码（`zh_CN`, `en_US`）
+-   `language: string` - 语言代码，支持简写（`zh`, `en`）或完整代码（`zh_CN`, `en_US`）
 
 **VSCode 插件调用：**
 
@@ -261,15 +261,15 @@ panel.webview.postMessage({
 
 在 `designer-demo/src/toolbars/save/js/index.ts` 中，`savePage` 函数已集成 `goSave`：
 
-- VSCode 环境：使用 `goSave` 保存到本地文件
-- 非 VSCode 环境：使用原有的 `handlePageUpdate` API
+-   VSCode 环境：使用 `goSave` 保存到本地文件
+-   非 VSCode 环境：使用原有的 `handlePageUpdate` API
 
 #### 预览功能
 
 在 `packages/toolbars/preview/src/Main.vue` 中，预览功能已集成 `goPreview`：
 
-- VSCode 环境：使用 `goPreview` 由插件发起预览
-- 非 VSCode 环境：使用原有的 `previewPage` 函数
+-   VSCode 环境：使用 `goPreview` 由插件发起预览
+-   非 VSCode 环境：使用原有的 `previewPage` 函数
 
 ## VSCode 插件端实现示例
 
@@ -460,9 +460,9 @@ const handlePreview = () => {
 
 与物料相关的固定 Mock 包括：
 
-| 请求 URL | Mock 数据来源 | 说明 |
-| -------- | -------------- | ---- |
-| `GET /mock/bundle.json` | `mock/app-center.ts` 中对应路由，动态导入 `mock/bundle.json` | 基础物料包 |
+| 请求 URL                            | Mock 数据来源                                                            | 说明                |
+| ----------------------------------- | ------------------------------------------------------------------------ | ------------------- |
+| `GET /mock/bundle.json`             | `mock/app-center.ts` 中对应路由，动态导入 `mock/bundle.json`             | 基础物料包          |
 | `GET /mock/business-materials.json` | `mock/app-center.ts` 中对应路由，动态导入 `mock/business-materials.json` | 业务/原子组件物料包 |
 
 业务/原子组件物料包的 **图标** 与 **国际化** 约定（面板分类 MR Components / MP Components、组件名中英文）：见 `docs/业务与原子组件导入方案.md` 第 **4.7** 节。
@@ -480,15 +480,15 @@ const handlePreview = () => {
 
 **根本原因**：两类组件的 **script 来源不同**，最终进画布 iframe 的 URL 形式不同：
 
-| 来源 | script URL 从哪来 | 在画布 iframe 中的形式 | 插件环境下 |
-|------|-------------------|-------------------------|------------|
-| **内置组件** | 设计器内部 `getImportUrl(pkg)`，用环境变量（CDN / BASE_URL）拼出地址 | **始终是绝对 URL**（如 `https://cdn.../index.mjs` 或 `http://localhost:8090/...`） | ✅ 能加载 |
-| **导入的物料** | 物料包 JSON 里配置的 `script` 字段（如 `/mock/materials/mp-card.js`） | **原样写入 importMap / componentsDeps**，是相对路径 | ❌ 解析错误 |
+| 来源           | script URL 从哪来                                                     | 在画布 iframe 中的形式                                                             | 插件环境下  |
+| -------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------- |
+| **内置组件**   | 设计器内部 `getImportUrl(pkg)`，用环境变量（CDN / BASE_URL）拼出地址  | **始终是绝对 URL**（如 `https://cdn.../index.mjs` 或 `http://localhost:8090/...`） | ✅ 能加载   |
+| **导入的物料** | 物料包 JSON 里配置的 `script` 字段（如 `/mock/materials/mp-card.js`） | **原样写入 importMap / componentsDeps**，是相对路径                                | ❌ 解析错误 |
 
 画布运行在 **iframe（srcdoc）** 里。在插件环境中，该 iframe 的 document 的 base URL 是 **`vscode-webview://...`**，而不是设计器前端的 `http://localhost:8090`。因此：
 
-- 相对路径 `/mock/materials/mp-card.js` 在 iframe 里会被解析成 `vscode-webview://.../mock/materials/mp-card.js`，请求失败；
-- 脚本加载失败 → 组件未注册到 `window.TinyLowcodeComponent` → 画布回退到请求 `GET /material-center/api/block?label=MpCard` → 该接口返回 404，出现「区块 MpCard 加载错误」。
+-   相对路径 `/mock/materials/mp-card.js` 在 iframe 里会被解析成 `vscode-webview://.../mock/materials/mp-card.js`，请求失败；
+-   脚本加载失败 → 组件未注册到 `window.TinyLowcodeComponent` → 画布回退到请求 `GET /material-center/api/block?label=MpCard` → 该接口返回 404，出现「区块 MpCard 加载错误」。
 
 **结论**：不是给「导入的组件」做特殊逻辑，而是让**所有进画布的物料 script/样式 URL 在需要时都变成可解析的地址**。内置组件已经通过 `getImportUrl` 得到绝对 URL；导入的物料在插件环境下需要把相对路径转成「设计器前端绝对 URL」（如 `http://localhost:8090`），这样 iframe 内请求会发到正确域名。
 
@@ -530,7 +530,7 @@ const handlePreview = () => {
 ### 添加新的设计器调用插件的方法
 
 1. 在 `useVSCodeBridge.ts` 中添加新的导出函数
-2. 使用 `generateRequestId()` 生成请求ID
+2. 使用 `generateRequestId()` 生成请求 ID
 3. 将 callback 存储到 `callbackMap`
 4. 调用 `sendMessageToVSCode` 发送请求
 5. 在文档中更新 API 说明

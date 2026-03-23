@@ -82,15 +82,15 @@ const { reactiveObj2String: obj2String, string2Obj } = utils;
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MonacoEditor: VueMonaco,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconDownloadLink: iconDownloadLink()
     },
     inheritAttrs: false,
@@ -101,7 +101,7 @@ export default {
         }
     },
     emits: ['close'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const app = getCurrentInstance();
@@ -123,13 +123,13 @@ export default {
         };
 
         // 提供国际化注入
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const inst: any = (window as any).lowcodeI18n;
         if (inst) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             provide(I18nInjectionKey as any, inst);
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             provide(I18nInjectionKey as any, { global: { t: designerT } });
         }
 
@@ -140,7 +140,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -419,7 +419,7 @@ export default {
         });
 
         return {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             state,
             isEdit,

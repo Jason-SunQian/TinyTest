@@ -54,7 +54,7 @@ export const errorSchema = z.object({
 /**
  * 标准成功响应类型（从 Zod schema 推断）
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export type SuccessResponse<T = any> = {
     status: 'success';
     message: string;

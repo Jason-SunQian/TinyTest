@@ -159,7 +159,7 @@
 </template>
 <!-- eslint-disable-next-line -->
 <script lang="ts">
-/* eslint-disable max-lines */
+ 
 import {
     computed,
     onMounted,
@@ -220,30 +220,30 @@ export const closePanel = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line
+         
         TinyForm,
-        // eslint-disable-next-line
+         
         TinyInput,
-        // eslint-disable-next-line
+         
         TinyButton,
-        // eslint-disable-next-line
+         
         TinyFormItem,
-        // eslint-disable-next-line
+         
         TinyCheckbox,
-        // eslint-disable-next-line
+         
         PluginSetting,
-        // eslint-disable-next-line
+         
         MonacoEditor,
-        // eslint-disable-next-line
+         
         TinyRadioGroup: RadioGroup,
-        // eslint-disable-next-line
+         
         TinyRadio: Radio,
-        // eslint-disable-next-line
+         
         SvgButton,
-        // eslint-disable-next-line
+         
         ButtonGroup
     },
-    // eslint-disable-next-line
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const monacoOptions = {
@@ -313,9 +313,9 @@ export default {
             }
         );
 
-        // eslint-disable-next-line
+         
         const editor = ref(null);
-        // eslint-disable-next-line
+         
         const resourceForm = ref(null);
         onMounted(() => window.dispatchEvent(new Event('resize')));
 
@@ -376,7 +376,7 @@ export default {
                     trigger: 'change'
                 }
             ],
-            // eslint-disable-next-line
+             
             'content.package': [
                 {
                     required: true,
@@ -384,7 +384,7 @@ export default {
                     trigger: 'change'
                 }
             ],
-            // eslint-disable-next-line
+             
             'content.exportName': [
                 {
                     required: true,
@@ -392,7 +392,7 @@ export default {
                     trigger: 'change'
                 }
             ],
-            // eslint-disable-next-line
+             
             'content.instanceName': {
                 required: true,
                 message: t('designer.datasource.required'),
@@ -407,7 +407,7 @@ export default {
         return {
             t,
             align,
-            // eslint-disable-next-line
+             
             PLUGIN_NAME,
             rules,
             resourceForm,
@@ -420,7 +420,7 @@ export default {
             deleteReSource,
             options: monacoOptions,
             handleChangeType,
-            // eslint-disable-next-line
+             
             RESOURCE_CATEGORY
         };
     }

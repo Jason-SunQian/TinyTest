@@ -81,7 +81,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block */
+ 
 import { reactive, ref, watchEffect, computed } from 'vue';
 import { useLayout, useTranslate } from '@opentiny/tiny-engine-meta-register';
 import { PROP_DATA_TYPE } from '@opentiny/tiny-engine-common/js/constants';
@@ -92,13 +92,13 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyOption: Option,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input
     },
     inheritAttrs: false,
@@ -126,22 +126,22 @@ export default {
         }
     },
     emits: ['bind'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const selectValue = ref(props.modelValue);
         const showEditItem = ref(false);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const selectRef = ref<any>(null);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const editForm = reactive<any>({});
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const paramsForm = ref<any[]>([]);
 
         // 过滤掉中文（zh_CN），只保留英文（en_US）和其他语言
         const filteredLocales = computed(() => {
             if (!props.locales) return [];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             return props.locales.filter(
                 (locale: any) => locale.lang !== 'zh_CN'
             );
@@ -164,7 +164,7 @@ export default {
             }
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const filterMethod = (value: any) => {
             const options = selectRef.value.state.cachedOptions;
 
@@ -198,7 +198,7 @@ export default {
         };
 
         const paramsChange = () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const params: Record<string, any> = {};
 
             paramsForm.value.forEach(({ name, value }) => {

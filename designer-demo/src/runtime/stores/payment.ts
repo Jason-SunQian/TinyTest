@@ -18,13 +18,16 @@ export const usePaymentStore = defineStore('common.payment', () => {
     const paymentWayLoading = ref<Record<string, boolean>>({});
 
     function checkPaymentway(
+        // eslint-disable-next-line
         _payway: PaymentWayStub,
+        // eslint-disable-next-line
         _disabledAccounts: string[] = [],
+        // eslint-disable-next-line
         _payAmount = ''
     ): boolean {
         return true;
     }
-
+    // eslint-disable-next-line
     function getPaymentWayKey(_sceneType: string, _channelCode = '') {
         return '';
     }
@@ -35,6 +38,7 @@ export const usePaymentStore = defineStore('common.payment', () => {
         // stub: no-op
     }
     /** 设计器预览：返回一条 mock 数据，便于画布展示列表 */
+    // eslint-disable-next-line
     function getPaymentWay(_cacheKey: string) {
         return [
             {
@@ -48,7 +52,7 @@ export const usePaymentStore = defineStore('common.payment', () => {
                         payerAccountNumber: '****1234',
                         availableBalance: '1,000.00',
                         payerCurrency: 'HKD',
-                        payCode: 'mock_1',
+                        payCode: 'mock_1'
                     },
                     {
                         paymentTool: '0003',
@@ -56,10 +60,10 @@ export const usePaymentStore = defineStore('common.payment', () => {
                         payerAccountNumber: '****5678',
                         availableBalance: '500.00',
                         payerCurrency: 'HKD',
-                        payCode: 'mock_2',
-                    },
-                ],
-            },
+                        payCode: 'mock_2'
+                    }
+                ]
+            }
         ];
     }
     /** 设计器预览：返回第一条作为默认选中 */
@@ -69,6 +73,7 @@ export const usePaymentStore = defineStore('common.payment', () => {
         if (!list?.length) return undefined;
         return { defaultAccount: list[0], index: 0 };
     }
+    // eslint-disable-next-line
     async function calcPaymentWayAmount(): Promise<Record<string, string>> {
         return {};
     }
@@ -83,6 +88,6 @@ export const usePaymentStore = defineStore('common.payment', () => {
         queryPaymentWay,
         getPaymentWay,
         getDefaultPaymentWay,
-        calcPaymentWayAmount,
+        calcPaymentWayAmount
     };
 });

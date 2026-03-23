@@ -3,7 +3,7 @@ export const basePropertyOptions = {
         {
             group: 'others',
             label: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: '其他'
             },
             content: [
@@ -13,7 +13,7 @@ export const basePropertyOptions = {
                     defaultValue: '',
                     label: {
                         text: {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                             
                             zh_CN: '元素id值'
                         }
                     },
@@ -31,7 +31,7 @@ export const basePropertyOptions = {
                     defaultValue: '',
                     label: {
                         text: {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                             
                             zh_CN: '样式类'
                         }
                     },
@@ -49,7 +49,7 @@ export const basePropertyOptions = {
                     defaultValue: '',
                     label: {
                         text: {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                             
                             zh_CN: 'ref引用类'
                         }
                     },

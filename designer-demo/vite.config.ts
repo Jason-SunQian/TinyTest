@@ -35,11 +35,10 @@ function patchCanvasProvideI18nStubKeyPlugin() {
  * import() 得到的是模块对象，需解析出组件再交给 Vue，否则画布不渲染。只改 designer-demo 构建，不修改 packages。
  */
 function patchCanvasLoadBlockComponentPlugin() {
-    const needPatch =
-        (code: string) =>
-            typeof code === 'string' &&
-            code.includes('loadBlockComponent') &&
-            code.includes('blockComponentsBlobUrlMap.get(name)');
+    const needPatch = (code: string) =>
+        typeof code === 'string' &&
+        code.includes('loadBlockComponent') &&
+        code.includes('blockComponentsBlobUrlMap.get(name)');
     // 将 return import(...get(name)) 改为 return import(...get(name)).then(mod => (mod && (mod.default || mod[name])) || mod)
     const replacement =
         '.then((mod) => (mod && (mod.default || mod[name])) || mod)';
@@ -50,7 +49,7 @@ function patchCanvasLoadBlockComponentPlugin() {
         name: 'patch-canvas-load-block-component',
         transform(code: string, id: string) {
             if (!needPatch(code)) return null;
-            const newCode = code.replace(pattern, (m) => m + replacement);
+            const newCode = code.replace(pattern, m => m + replacement);
             return newCode !== code ? { code: newCode, map: null } : null;
         }
     };
@@ -73,14 +72,21 @@ function mockMaterialsCorsPlugin() {
                 if (method === 'OPTIONS') {
                     res.statusCode = 204;
                     res.setHeader('Access-Control-Allow-Origin', '*');
-                    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+                    res.setHeader(
+                        'Access-Control-Allow-Methods',
+                        'GET, OPTIONS'
+                    );
                     res.setHeader('Access-Control-Allow-Headers', '*');
                     res.setHeader('Access-Control-Max-Age', '86400');
                     return res.end();
                 }
                 const publicDir = path.resolve(__dirname, 'public');
                 const filePath = path.join(publicDir, url.replace(/^\//, ''));
-                if (!filePath.startsWith(publicDir) || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+                if (
+                    !filePath.startsWith(publicDir) ||
+                    !fs.existsSync(filePath) ||
+                    !fs.statSync(filePath).isFile()
+                ) {
                     return next();
                 }
                 // eslint-disable-next-line no-console
@@ -91,8 +97,13 @@ function mockMaterialsCorsPlugin() {
                 res.setHeader('Access-Control-Allow-Headers', '*');
                 res.setHeader('Cache-Control', 'no-cache');
                 const ext = path.extname(url).toLowerCase();
-                if (ext === '.js') res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-                else if (ext === '.css') res.setHeader('Content-Type', 'text/css; charset=utf-8');
+                if (ext === '.js')
+                    res.setHeader(
+                        'Content-Type',
+                        'application/javascript; charset=utf-8'
+                    );
+                else if (ext === '.css')
+                    res.setHeader('Content-Type', 'text/css; charset=utf-8');
                 fs.createReadStream(filePath).pipe(res);
             };
             // 必须在栈首处理，否则可能被 Vite 内置逻辑先处理导致 403

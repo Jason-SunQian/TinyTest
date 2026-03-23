@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block, vue/component-api-style, vue/padding-line-between-blocks, import/order, vue/require-typed-ref, @typescript-eslint/prefer-destructuring */
-/* eslint-disable vue/max-lines-per-block, vue/component-api-style */
+/* eslint-disable import/order */
+ 
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { useLayout, useCanvas } from '@opentiny/tiny-engine-meta-register';
 import { canvasState } from '../container';

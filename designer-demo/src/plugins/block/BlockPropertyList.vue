@@ -47,17 +47,17 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaListItems
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         // 获取国际化 t 函数
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 

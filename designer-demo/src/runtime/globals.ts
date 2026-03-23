@@ -8,7 +8,7 @@
  */
 export function t(key: string, ...args: unknown[]): string {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const i18n = (window as any).lowcodeI18n?.global;
         if (i18n?.t && typeof i18n.t === 'function') {
             return i18n.t(key, ...args) ?? key;

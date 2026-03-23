@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable max-lines, import/exports-last, @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention, camelcase, no-inline-comments, line-comment-position, @typescript-eslint/prefer-destructuring, @typescript-eslint/no-unused-vars */
+/* eslint-disable import/exports-last */
 /* metaService: engine.service.page.usePage */
 import { reactive, ref } from 'vue';
 import {
@@ -41,7 +41,7 @@ const DEFAULT_PAGE = {
     name: '',
     route: '',
     serviceName: '',
-    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+     
     page_content: {
         componentName: 'Page',
         css: '',
@@ -64,7 +64,7 @@ const DEFAULT_PAGE = {
     group: 'staticPages'
 };
 
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const selectedTemplateCard = ref(null);
 
 export interface PageData {

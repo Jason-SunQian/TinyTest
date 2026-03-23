@@ -70,22 +70,22 @@ import { useVersionSelectPanel } from './js/usePanel';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyGrid: Grid,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyGridColumn: GridColumn,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SearchEmpty,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ButtonGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const { t } = useDesignerI18n();
         const { confirm } = useModal();
@@ -97,7 +97,7 @@ export default {
             backupList: [],
             title: ''
         });
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const versionGrid = ref(null);
 
         const fetchHistories = () => {

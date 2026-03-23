@@ -14,7 +14,7 @@
  */
 
 /* metaService: engine.plugins.blockmanage.js-blockSetting */
-/* eslint-disable max-lines, import/exports-last */
+/* eslint-disable import/exports-last */
 import { ref, reactive, readonly, onMounted } from 'vue';
 import { extend } from '@opentiny/vue-renderless/common/object';
 import { remove } from '@opentiny/vue-renderless/common/array';
@@ -64,7 +64,7 @@ const STRING_SLOT = ['Slot', 'slot'];
 const currentCategory = ref('');
 
 // 国际化函数
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const t = (key: string, params?: any) => {
     try {
         return i18nServiceT(key, params);
@@ -94,7 +94,7 @@ export const META_TYPES_OPTIONS = Object.entries(META_TYPES).map(
 );
 
 // 组件的枚举
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const META_COMPONENTS_ENUM = {
     CodeConfigurator: 'CodeConfigurator',
     ArrayItemConfigurator: 'ArrayItemConfigurator',
@@ -105,7 +105,7 @@ export const META_COMPONENTS_ENUM = {
     JsSlotConfigurator: 'JsSlotConfigurator',
     SwitchConfigurator: 'SwitchConfigurator'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 // 每个值类型可选的编辑器类型
 export const META_COMPONENT_LIST = {
@@ -134,7 +134,7 @@ export const DEFAULT_ARRAY_CONFIG = [
         defaultValue: '',
         label: {
             text: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.displayValue')
             }
         },
@@ -152,7 +152,7 @@ export const DEFAULT_ARRAY_CONFIG = [
         defaultValue: 'String',
         label: {
             text: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.valueType')
             }
         },
@@ -171,7 +171,7 @@ export const DEFAULT_ARRAY_CONFIG = [
         defaultValue: 'InputConfigurator',
         label: {
             text: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.designer')
             }
         },
@@ -190,7 +190,7 @@ export const DEFAULT_ARRAY_CONFIG = [
         defaultValue: '{}',
         label: {
             text: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.propertyPanelComponentProps')
             }
         },
@@ -209,7 +209,7 @@ export const DEFAULT_ARRAY_CONFIG = [
         defaultValue: '',
         label: {
             text: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.defaultValueLabel')
             }
         },
@@ -227,7 +227,7 @@ export const DEFAULT_ARRAY_CONFIG = [
         defaultValue: '',
         label: {
             text: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.description')
             }
         },
@@ -268,7 +268,7 @@ const DEFAULT_PROPERTY = readonly({
     defaultValue: META_DEFAULT_VALUE[META_TYPES.string],
     label: {
         text: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             zh_CN: ''
         }
     },
@@ -292,11 +292,11 @@ const DEFAULT_EVENT_NAME = 'onCustomEvent';
 // 区块默认的事件schema
 const DEFAULT_EVENT = readonly({
     label: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+         
         zh_CN: ''
     },
     description: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+         
         zh_CN: ''
     }
 });
@@ -348,7 +348,7 @@ export const setEditProperty = property => {
 
     state.arrayConfig = (property?.properties?.[0]?.content || []).map(
         ({
-            // eslint-disable-next-line @typescript-eslint/no-shadow
+             
             property: propertyName,
             type,
             defaultValue,
@@ -489,9 +489,9 @@ export const refreshBlockData = async (block = {}) => {
         const newBlock = await fetchBlockContent(block.id);
 
         if (newBlock) {
-            // eslint-disable-next-line camelcase
+             
             if (newBlock?.public_scope_tenants?.length) {
-                // eslint-disable-next-line camelcase
+                 
                 newBlock.public_scope_tenants =
                     newBlock.public_scope_tenants.map(e => e.id);
             }
@@ -515,7 +515,7 @@ export const refreshBlockData = async (block = {}) => {
     }
 };
 
-// eslint-disable-next-line @typescript-eslint/default-param-last
+ 
 export const findTree = (schema = {}, find) => {
     const { children } = schema;
 
@@ -547,7 +547,7 @@ const findSlots = schema => {
                 slotsNameMap[slotName] = 1;
             }
             // 注意：因为画布中webcomponents会把空格和换行也当作默认插槽，所以默认插槽统一取名default
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             configure.slots[slotName] = { label: { zh_CN: slotName } };
 
             // 如果用户配置了作用域插槽的参数则需要在协议中添加
@@ -622,7 +622,7 @@ const getCategories = () => {
 // 新建区块
 const createBlock = (block = {}) => {
     const { message } = useModal();
-    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+     
     const created_app = getAppId();
 
     const { categories, ...rest } = block;
@@ -634,7 +634,7 @@ const createBlock = (block = {}) => {
         extraParams.categories = categories;
     }
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+     
     const params = { ...rest, ...extraParams, created_app };
 
     if (isVsCodeEnv) {
@@ -642,7 +642,7 @@ const createBlock = (block = {}) => {
 
         if (id) {
             const materialHistories = 'material_histories';
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             params[materialHistories] = Array.isArray(id) ? id : [id];
         }
     }
@@ -683,7 +683,7 @@ const updateBlock = (block = {}) => {
         id: blockId,
         content,
         screenshot,
-        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+         
         public_scope_tenants,
         public: publicType,
         tags,
@@ -707,7 +707,7 @@ const updateBlock = (block = {}) => {
             [nameCn]: block[nameCn],
             content,
             screenshot,
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             public_scope_tenants,
             public: publicType,
             tags,
@@ -774,7 +774,7 @@ const generateBlockDeps = (
 
         if (npm) {
             const { package: pkg, exportName, css, version, script } = npm;
-            // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+             
             const currentPkg = deps.scripts.find(item => item.package === pkg);
 
             if (currentPkg) {
@@ -855,7 +855,7 @@ export const createOrUpdateCategory = async (
     const appId = getAppId();
     const replaceCategoryWithGroup =
         useBlock().shouldReplaceCategoryWithGroup();
-    // eslint-disable-next-line @typescript-eslint/init-declarations
+     
     let requestFunc;
 
     if (replaceCategoryWithGroup) {
@@ -872,7 +872,7 @@ export const createOrUpdateCategory = async (
             requestFunc = createGroup;
         } else {
             requestFunc = createCategory;
-            // eslint-disable-next-line camelcase
+             
             params.category_id = categoryId;
         }
     }
@@ -960,12 +960,12 @@ export const saveArrayConfig = () => {
     property.properties = [
         {
             label: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: t('designer.block.defaultGroupLabel')
             },
             content: state.arrayConfig.map?.(
                 ({
-                    // eslint-disable-next-line @typescript-eslint/no-shadow
+                     
                     property: propertyName,
                     type,
                     component,
@@ -978,7 +978,7 @@ export const saveArrayConfig = () => {
                     defaultValue,
                     label: {
                         text: {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                             
                             zh_CN: description
                         }
                     },

@@ -10,7 +10,7 @@
 import { CloseIcon } from '@opentiny/tiny-engine-common';
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CloseIcon
     },
     props: {
@@ -20,7 +20,7 @@ export default {
         }
     },
     emits: ['close'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const close = () => {
             emit('close');

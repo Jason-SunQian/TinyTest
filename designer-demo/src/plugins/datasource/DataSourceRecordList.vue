@@ -182,19 +182,19 @@ export const close = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyGrid: Grid,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPager: Pager,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRecordUpload,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyLink: Link,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconUpload: iconUpload()
     },
     props: {
@@ -205,10 +205,10 @@ export default {
         }
     },
     emits: ['edit', 'refresh'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const grid = ref(null);
         const { confirm } = useModal();
         const { toClipboard } = useClipboard();
@@ -319,7 +319,7 @@ export default {
             number: {
                 component: Numeric,
                 attrs: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                     
                     'controls-position': 'right'
                 }
             },
@@ -513,7 +513,7 @@ export default {
                     width: 100,
                     fixed: 'right',
                     slots: {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         
                         default: ({ row }: { row: any }) =>
                             h('div', { class: 'option-container' }, [
                                 h('svg-icon', {
@@ -581,7 +581,7 @@ export default {
 
                 if (pageSchema.state[key]) {
                     pageSchema.state[key] = data.map(
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                         
                         ({ _id, ...rest }) => rest
                     );
                 }
@@ -737,7 +737,7 @@ export default {
 
         return {
             align,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             isOpen,
             state,

@@ -26,7 +26,7 @@ import { useDesignerI18n } from '@/services/i18nService';
 const { PAGE_STATUS } = constants;
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ToolbarBase
     },
     props: {
@@ -35,7 +35,7 @@ export default {
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const { t } = useDesignerI18n();
         const { pageState, clearCanvas } = useCanvas();

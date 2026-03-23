@@ -38,11 +38,11 @@ import CreateVariable from './CreateVariable.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CreateRemote,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CreateVariable
     },
     props: {
@@ -56,13 +56,13 @@ export default {
             default: '添加数据源'
         },
         // 显示模式：变量/远程API形式
-        // eslint-disable-next-line vue/require-default-prop
+         
         activeId: {
             type: String,
             default: undefined
         },
         // 远程数据源需要的配置数据
-        // eslint-disable-next-line vue/require-default-prop, vue/require-typed-object-prop
+         
         createData: {
             type: Object,
             default: undefined
@@ -75,12 +75,12 @@ export default {
             type: Boolean,
             default: false
         },
-        // eslint-disable-next-line vue/require-default-prop
+         
         addFunction: {
             type: Function,
             default: undefined
         },
-        // eslint-disable-next-line vue/require-default-prop
+         
         removeFunction: {
             type: Function,
             default: undefined
@@ -91,7 +91,7 @@ export default {
         }
     },
     emits: ['cancel', 'confirm'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const app = getCurrentInstance();
         const state = reactive({ ...props });

@@ -91,15 +91,15 @@ export const api = {
 /* metaComponent: engine.plugins.page */
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PageSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PageFolderSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PageTree
     },
     props: {
@@ -113,7 +113,7 @@ export default {
         }
     },
     emits: ['close'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { confirm } = useModal();
@@ -128,13 +128,13 @@ export default {
         const { PLUGIN_NAME } = useLayout();
 
         // 提供国际化注入
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const inst: any = (window as any).lowcodeI18n;
         if (inst) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             provide(I18nInjectionKey as any, inst);
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             provide(I18nInjectionKey as any, { global: { t: designerT } });
         }
 
@@ -167,7 +167,7 @@ export default {
                     parentId,
                     route: '',
                     name: 'Untitled',
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     page_content: {
                         lifeCycles: {}
                     },
@@ -271,7 +271,7 @@ export default {
         };
 
         return {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             state,
             pageState,

@@ -109,7 +109,7 @@ interface TreeNode {
     parentId?: string | number;
     level: number;
     collapsed?: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     rawData?: any;
 }
 
@@ -121,7 +121,7 @@ const handleSwitchCollapse = (node: TreeNode) => {
 };
 
 const flattenTreeData = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     node: any,
     parentId?: string | number,
     level = 0,

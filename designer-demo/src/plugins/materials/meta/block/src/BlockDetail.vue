@@ -60,16 +60,16 @@ import { setBlockVersionPanelVisible } from './js/usePanel';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconDoubleRight: iconDoubleRight()
     },
     inheritAttrs: false,
     props: {
         detail: {
             type: Object,
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
+             
             default: () => ({})
         },
         isSettingPanel: {
@@ -140,7 +140,7 @@ export default {
             closeDetail,
             deleteBlock,
             openHistory,
-            // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+             
             IconDel: IconDel(),
             isShortcutPanel: panelState.isShortcutPanel
         };

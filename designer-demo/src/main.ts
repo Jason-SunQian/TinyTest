@@ -42,7 +42,9 @@ async function startApp() {
             appCreated: async ({ app }: { app: App }) => {
                 // 画布/预览用运行时兼容层（$t、$currency、Pinia 桩等）
                 // 优先从物料 bundle 的 runtimeScript 加载，实现与主工程解耦
-                const { loadRuntimeModule } = await import('@/composable/loadRuntimeFromBundles');
+                const { loadRuntimeModule } = await import(
+                    '@/composable/loadRuntimeFromBundles'
+                );
                 const runtime = await loadRuntimeModule();
                 runtime.installRuntimeCompat(app);
 
@@ -61,12 +63,16 @@ async function startApp() {
                 // 设置国际化的 Canvas Renderer（用于空画布提示）
                 setupCanvasI18nRenderer();
                 // 订阅 init_canvas_deps，将相对路径转为绝对 URL 后重发，避免 npm 包 materials 发布的相对路径在 iframe 内被解析为 vscode-webview 导致 403
-                const { useMessage } = await import('@opentiny/tiny-engine-meta-register');
-                const { setupCanvasDepsNormalizer } = await import('@/composable/canvasDepsNormalizer');
+                const { useMessage } = await import(
+                    '@opentiny/tiny-engine-meta-register'
+                );
+                const { setupCanvasDepsNormalizer } = await import(
+                    '@/composable/canvasDepsNormalizer'
+                );
                 const msg = useMessage();
                 setupCanvasDepsNormalizer(
-                    (opts) => msg.subscribe(opts),
-                    (opts) => msg.publish(opts)
+                    opts => { msg.subscribe(opts); },
+                    opts => { msg.publish(opts); }
                 );
             }
         }

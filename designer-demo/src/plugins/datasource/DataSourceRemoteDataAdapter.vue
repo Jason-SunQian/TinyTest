@@ -54,20 +54,20 @@ import RemoteDataAdapterForm from './RemoteDataAdapterForm.vue';
 
 const { DEFAULT_INTERCEPTOR } = constants;
 
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const dataHandler = ref(null);
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const willFetch = ref(null);
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const shouldFetch = ref(null);
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const errorHandler = ref(null);
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         RemoteDataAdapterForm
     },
     props: {
@@ -77,7 +77,7 @@ export default {
         }
     },
     emits: ['sendRequst', 'update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
@@ -120,7 +120,7 @@ export default {
                 state.shouldFetch,
                 state.errorHandler
             ],
-            // eslint-disable-next-line @typescript-eslint/no-shadow
+             
             ([
                 dataHandlerValue,
                 willFetchValue,

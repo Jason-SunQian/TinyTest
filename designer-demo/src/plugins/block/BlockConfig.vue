@@ -144,7 +144,7 @@
 </template>
 <!-- eslint-disable-next-line -->
 <script lang="ts">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.plugins.blockmanage.BlockConfig */
 import { reactive, ref, computed, nextTick, watchEffect, inject } from 'vue';
 import {
@@ -173,27 +173,27 @@ const { BLOCK_OPENNESS } = constants;
 
 export default {
     components: {
-        // eslint-disable-next-line
+         
         TinyTag: Tag,
-        // eslint-disable-next-line
+         
         TinyInput: Input,
-        // eslint-disable-next-line
+         
         TinyButton: Button,
-        // eslint-disable-next-line
+         
         TinyForm: Form,
-        // eslint-disable-next-line
+         
         TinyFormItem: FormItem,
-        // eslint-disable-next-line
+         
         TinyRadio: Radio,
-        // eslint-disable-next-line
+         
         TinySelect: Select,
-        // eslint-disable-next-line
+         
         TinyOption: Option
     },
-    // eslint-disable-next-line
+     
     setup() {
         // 获取国际化 t 函数
-        // eslint-disable-next-line
+         
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 
@@ -205,21 +205,21 @@ export default {
             publicOptions: getMetaApi(META_SERVICE.GlobalService).getState()
                 .userInfo.tenants
         });
-        // eslint-disable-next-line
+         
         const groupSelect = ref(null);
 
         const formData = reactive({
             tags: [],
-            // eslint-disable-next-line
+             
             name_cn: '',
             label: '',
             categoryId: '',
             description: '',
             public: '',
-            // eslint-disable-next-line
+             
             public_scope_tenants: []
         });
-        // eslint-disable-next-line
+         
         const blockForm = ref(null);
 
         const categoryList = computed(() =>
@@ -252,7 +252,7 @@ export default {
         });
 
         const rules = {
-            // eslint-disable-next-line
+             
             name_cn: [
                 {
                     required: true,
@@ -261,7 +261,7 @@ export default {
                 }
             ]
         };
-        // eslint-disable-next-line
+         
         const saveTagInput = ref(null);
 
         const deleteTag = tag => {
@@ -309,9 +309,9 @@ export default {
                 block.public = formData.public;
             }
             if (formData.public !== BLOCK_OPENNESS.Special) {
-                // eslint-disable-next-line
+                 
                 formData.public_scope_tenants = [];
-                // eslint-disable-next-line
+                 
                 block.public_scope_tenants = [];
             }
         };
@@ -369,7 +369,7 @@ export default {
             addTag,
             deleteTag,
             confirmTagInput,
-            // eslint-disable-next-line
+             
             BLOCK_OPENNESS,
             changeOpenness,
             clearValidateForm,

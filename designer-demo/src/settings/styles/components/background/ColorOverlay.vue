@@ -13,18 +13,18 @@ import { ColorConfigurator } from '@opentiny/tiny-engine-configurator';
 
 import { BACKGROUND_PROPERTY } from '../../js/styleProperty';
 
-// eslint-disable-next-line vue/define-props-declaration, vue/require-typed-object-prop, @typescript-eslint/no-empty-function
-// eslint-disable-next-line vue/define-props-declaration
+ 
+ 
 const props = defineProps({
     style: {
-        // eslint-disable-next-line vue/require-typed-object-prop
+         
         type: Object,
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
+         
         default: () => {}
     }
 });
 
-// eslint-disable-next-line vue/define-emits-declaration
+ 
 const emit = defineEmits(['updateStyle']);
 
 const modelValue = ref('');

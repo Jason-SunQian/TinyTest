@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block, vue/component-api-style */
+ 
 import { reactive, ref, watchEffect, computed } from 'vue';
 import {
     useProperties,
@@ -75,23 +75,23 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyForm: Form,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFormItem: FormItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+         
         IconEdit: IconEdit(),
-        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+         
         IconDel: IconDel(),
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+         
         IconClose: IconClose(),
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip
     },
     inheritAttrs: false,

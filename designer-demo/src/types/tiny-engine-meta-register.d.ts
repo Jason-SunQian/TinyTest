@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/ban-types */
 declare module '@opentiny/tiny-engine-meta-register' {
     // Hook functions
     export function useCanvas(): any;

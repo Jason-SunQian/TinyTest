@@ -41,15 +41,15 @@ import { iconDeltaDown } from '@opentiny/vue-icon';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconDeltaDown: iconDeltaDown()
     },
     props: {
         modelValue: {
             type: Object as () => Record<string, unknown>,
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
+             
             default: () => ({})
         },
         sortList: {
@@ -58,7 +58,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const state = reactive({
             selectedSort: props.modelValue,

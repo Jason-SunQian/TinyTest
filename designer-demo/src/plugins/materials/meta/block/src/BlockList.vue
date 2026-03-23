@@ -45,7 +45,7 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginBlockList
     },
     props: {
@@ -84,11 +84,11 @@ export default {
         }
     },
     emits: ['check', 'close', 'checkAll', 'cancelCheckAll'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         // const i18n: any = inject(I18nInjectionKey);
 
         const { generateNode, getBlockByName } = useMaterial();

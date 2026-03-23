@@ -20,25 +20,25 @@ import { iconDel } from '@opentiny/vue-icon';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MonacoEditor: VueMonaco,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconDel: iconDel()
     },
     props: {
-        // eslint-disable-next-line vue/require-default-prop
+         
         name: {
             type: String,
             default: undefined
         },
-        // eslint-disable-next-line vue/require-default-prop
+         
         value: {
             type: String,
             default: undefined
         }
     },
     emits: ['remove'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const instance = getCurrentInstance();
 

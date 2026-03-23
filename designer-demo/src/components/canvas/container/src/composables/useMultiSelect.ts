@@ -1,4 +1,4 @@
-/* eslint-disable import/no-cycle, import/order, @typescript-eslint/default-param-last, no-inline-comments, line-comment-position, @typescript-eslint/prefer-destructuring */
+/* eslint-disable import/no-cycle, import/order */
 import { ref } from 'vue';
 import {
     useCanvas,

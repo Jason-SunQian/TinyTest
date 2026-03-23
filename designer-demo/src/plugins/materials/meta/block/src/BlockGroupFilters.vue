@@ -47,13 +47,13 @@ import { CheckboxGroup, Checkbox, Select, Option } from '@opentiny/vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCheckboxGroup: CheckboxGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCheckbox: Checkbox,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyOption: Option
     },
     props: {
@@ -68,7 +68,7 @@ export default {
         }
     },
     emits: ['search'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const initFilterValues = () => {
             return props.filters.reduce(

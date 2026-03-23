@@ -107,19 +107,19 @@ export const api = {
 };
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         VueMonaco,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyDialogBox: DialogBox,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCheckbox: Checkbox,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ToolbarBase
     },
     props: {
@@ -132,7 +132,7 @@ export default {
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         // 统一的国际化钩子：t、locale均可用
         const { t } = useDesignerI18n();
@@ -151,7 +151,7 @@ export default {
             preservationTime: null as ReturnType<typeof setTimeout> | null
         });
 
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const editor = ref(null);
 
         const { isSaved, setSaved, getSchema } = useCanvas();
@@ -268,7 +268,7 @@ export default {
             saveApi,
             delayOptions,
             saveConfig,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             OPEN_DELAY,
             t
         };

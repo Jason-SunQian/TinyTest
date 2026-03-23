@@ -92,7 +92,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang -->
 <script lang="tsx">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.plugins.appmanage.PageTree */
 import { reactive, onMounted, onUnmounted } from 'vue';
 import { Search, Collapse, CollapseItem, Popover } from '@opentiny/vue';
@@ -129,19 +129,19 @@ const { PAGE_STATUS } = constants;
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySearch: Search,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapse: Collapse,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapseItem: CollapseItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+         
         TinyIconSearch: IconSearch(),
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DraggableTree,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton
     },
     props: {
@@ -157,7 +157,7 @@ export default {
         'createFolder',
         'settingHome'
     ],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { confirm } = useModal();
@@ -193,7 +193,7 @@ export default {
 
         onMounted(() => {
             refreshPageList(getAppId());
-            // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+             
             subscriber = subscribe({
                 topic: 'locationHistoryChanged',
                 callback: data => {
@@ -376,13 +376,13 @@ export default {
         };
 
         const updatePage = pageDetail => {
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             const { id, name, page_content } = pageDetail;
             const params = {
                 ...pageDetail,
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 page_content: {
-                    // eslint-disable-next-line camelcase
+                     
                     ...page_content,
                     fileName: name
                 }
@@ -402,7 +402,7 @@ export default {
             const { id } = pageDetail;
 
             // requestUpdatePage加了then和catch回调函数，而handlePageUpdate没有加，是因为handlePageUpdate内部都已经有了类似逻辑
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             return requestUpdatePage(id, { ...pageDetail, page_content: null })
                 .then(() => {
                     useNotify({
@@ -501,16 +501,16 @@ export default {
             switchPage,
             pageSettingState,
             setPopoverRef,
-            // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+             
             IconFolderOpened: IconFolderOpened(),
-            // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+             
             IconFolderClosed: IconFolderClosed(),
             getRowOperations,
             handleClickRow,
             handleMoveNode,
             isPageLocked,
             handleClickPageSettings,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             STATIC_PAGE_GROUP_ID,
             t
         };

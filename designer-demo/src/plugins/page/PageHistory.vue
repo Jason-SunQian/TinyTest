@@ -24,7 +24,7 @@ import { fetchPageHistory } from './http';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockHistoryList
     },
     props: {
@@ -34,7 +34,7 @@ export default {
         }
     },
     emits: ['restorePage'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { pageSettingState, getFamily } = usePage();
         const { getDateFromNow } = useBlock();

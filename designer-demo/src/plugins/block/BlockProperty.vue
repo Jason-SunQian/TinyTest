@@ -32,13 +32,13 @@ import { getEditProperty } from './js/blockSetting';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockGuide,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockPropertyList,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockPropertyForm,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyAlert: Alert
     },
     props: {
@@ -47,10 +47,10 @@ export default {
             default: false
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         // 获取国际化 t 函数
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 

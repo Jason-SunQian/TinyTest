@@ -74,17 +74,17 @@ export const close = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ButtonGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSrouceRemoteDataResult,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteResultMapping
     },
     props: {
@@ -102,11 +102,11 @@ export default {
         }
     },
     emits: ['confirm', 'update:modelValue', 'activeTab'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const dataSourceRemoteResultMappingref = ref(null);
         const { dataSourceState } = useDataSource();
 

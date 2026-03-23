@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block, vue/multi-word-component-names */
+ 
 /* metaService: engine.plugins.materials.layout.Main */
 import { reactive, provide, ref, computed } from 'vue';
 import { Tabs, TabItem } from '@opentiny/vue';
@@ -50,11 +50,11 @@ import PluginPanel from '@/components/i18n-wrappers/PluginPanel/index.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabs: Tabs,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabItem: TabItem
     },
 
@@ -77,7 +77,7 @@ export default {
         }
     },
     emits: ['close', 'fix-panel'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { changeLeftFixedPanels } = useLayout();
 
@@ -100,7 +100,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -111,7 +111,7 @@ export default {
         // 使用provide传给子组件,后续可能会有调整，先暂定
         provide('panelState', panelState);
 
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const rightPanelRef = ref(null);
         const displayComponentIds =
             props.registryData?.options?.displayComponentIds || [];
@@ -144,7 +144,7 @@ export default {
         const title = ref(props.registryData?.title);
 
         return {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             title,
             activeName,

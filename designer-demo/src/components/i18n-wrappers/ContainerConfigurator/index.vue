@@ -51,7 +51,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block */
+ 
 import { ref, onMounted } from 'vue';
 import { Input, Tooltip } from '@opentiny/vue';
 import { MetaListItems } from '@opentiny/tiny-engine-common';
@@ -69,16 +69,16 @@ import { useDesignerI18n } from '@/services/i18nService';
 export default {
     name: 'i18n-container-configurator',
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaListItems,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconDel: iconDel(),
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const { t } = useDesignerI18n();
         const { children: schemaChildren, componentName } =

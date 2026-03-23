@@ -4,7 +4,7 @@
  * 采用 RPC 风格，支持 callback 回调
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/naming-convention, camelcase, import/order, @typescript-eslint/no-use-before-define, no-console */
+/* eslint-disable import/order, @typescript-eslint/no-use-before-define, no-console */
 import { setGlobalMonacoEditorTheme } from '@opentiny/tiny-engine-common';
 
 import { getMetaApi, META_SERVICE } from '@opentiny/tiny-engine-meta-register';
@@ -34,7 +34,7 @@ interface SaveData {
 }
 
 // 语言代码映射（VSCode 可能使用简写）
-// eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+ 
 const LANGUAGE_MAP: Record<string, string> = {
     zh: 'zh_CN',
     en: 'en_US',
@@ -47,7 +47,7 @@ const LANGUAGE_MAP: Record<string, string> = {
 };
 
 // Callback 映射表：requestId -> callback
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const callbackMap = new Map<string, (result?: any, error?: any) => void>();
 
 /**
@@ -87,13 +87,13 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
             if (data?.url) {
                 const { url } = data;
                 const method = data.method || 'unknown';
-                // eslint-disable-next-line no-console
+                 
                 console.log(
                     `[VSCode Bridge] → ${command} ${method.toUpperCase()} ${url}`,
                     { command, callback, url, method, params: data.params, requestData: data.data }
                 );
             } else {
-                // eslint-disable-next-line no-console
+                 
                 console.log(
                     `[VSCode Bridge] → ${command}`,
                     callback,
@@ -104,12 +104,12 @@ const sendMessageToVSCode = (command: string, callback: string, data?: any) => {
             return;
         }
 
-        // eslint-disable-next-line no-console
+         
         console.error(
             '[VSCode Bridge] Failed to send message: VSCode API not available'
         );
     } catch (error) {
-        // eslint-disable-next-line no-console
+         
         const errorMessage =
             error instanceof Error ? error.message : String(error);
         console.error('[VSCode Bridge] Error sending message:', errorMessage);
@@ -143,7 +143,7 @@ const handleVSCodeMessage = (event: MessageEvent) => {
         try {
             callback(message.data, hasError ? message.data : undefined);
         } catch (error) {
-            // eslint-disable-next-line no-console
+             
             const errorMessage =
                 error instanceof Error ? error.message : String(error);
             console.error(
@@ -168,7 +168,7 @@ const handleVSCodeMessage = (event: MessageEvent) => {
     // 插件调用格式：{ source: 'vscode', method: string, params?: any }
     if (message.source === 'vscode' && message.method) {
         const vscodeMessage = message as VSCodeToDesignerMessage;
-        // eslint-disable-next-line no-console
+         
         console.log(
             `[VSCode Bridge] ← ${vscodeMessage.method}`,
             vscodeMessage.params ? { params: vscodeMessage.params } : ''
@@ -189,14 +189,14 @@ const handleVSCodeMessage = (event: MessageEvent) => {
                     break;
 
                 default:
-                    // eslint-disable-next-line no-console
+                     
                     console.warn(
                         `[VSCode Bridge] Unknown method: ${vscodeMessage.method}`
                     );
                     break;
             }
         } catch (error) {
-            // eslint-disable-next-line no-console
+             
             const errorMessage =
                 error instanceof Error ? error.message : String(error);
             console.error(
@@ -234,7 +234,7 @@ const handleSetTheme = (theme: string) => {
             themeService.themeChange(theme);
         }
     } catch (error) {
-        // eslint-disable-next-line no-console
+         
         const errorMessage =
             error instanceof Error ? error.message : String(error);
         console.error('[VSCode Bridge] Failed to set theme:', errorMessage);
@@ -283,7 +283,7 @@ export const getInitData = (callback: (data: InitData) => void) => {
             console.error(`[VSCode Bridge] getInitData ← error:`, errorMessage);
             callback({});
         } else {
-            // eslint-disable-next-line no-console
+             
             console.log(`[VSCode Bridge] getInitData ← success:`, result);
             callback((result as InitData) || {});
         }
@@ -316,7 +316,7 @@ export const goSave = (
             console.error(`[VSCode Bridge] goSave ← error:`, errorMessage);
             callback?.(false, error);
         } else {
-            // eslint-disable-next-line no-console
+             
             console.log(`[VSCode Bridge] goSave ← success`);
             callback?.(true, undefined);
         }
@@ -352,7 +352,7 @@ export const goPreview = (
             console.error(`[VSCode Bridge] goPreview ← error:`, errorMessage);
             callback?.(false, error);
         } else {
-            // eslint-disable-next-line no-console
+             
             console.log(`[VSCode Bridge] goPreview ← success`);
             callback?.(true, undefined);
         }
@@ -420,7 +420,7 @@ export const initVSCodeBridge = () => {
 
     if (!isVSCode) {
         if (import.meta.env.DEV) {
-            // eslint-disable-next-line no-console
+             
             console.debug(
                 '[VSCode Bridge] Not in VSCode environment, communication disabled'
             );
@@ -495,7 +495,7 @@ export const callVSCodeCommand = (
                 );
                 reject(error);
             } else {
-                // eslint-disable-next-line no-console
+                 
                 console.log(
                     `[VSCode Bridge] ${command} ← success: ${method.toUpperCase()} ${url}`,
                     { command, url, method, result }

@@ -9,7 +9,7 @@ export const useAccountStore = defineStore('common.account', () => {
     const maskBalance = ref(false);
     const accountProductMap = ref<unknown[]>([]);
     const accountProductLoading = ref(false);
-    const youthAccountList = ref(undefined);
+    const youthAccountList = ref<unknown[] | undefined>(undefined);
 
     async function requestAccountProduct() {
         // stub: no-op
@@ -24,6 +24,6 @@ export const useAccountStore = defineStore('common.account', () => {
         accountProductLoading,
         requestAccountProduct,
         queryYouthAccountInfo,
-        youthAccountList,
+        youthAccountList
     };
 });

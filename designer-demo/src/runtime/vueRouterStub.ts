@@ -7,7 +7,7 @@ const stubRoute = reactive({
     query: {} as Record<string, string>,
     params: {} as Record<string, string>,
     path: '/',
-    name: undefined as string | undefined,
+    name: undefined as string | undefined
 });
 
 export function useRoute() {
@@ -18,8 +18,9 @@ export function useRouter() {
     return {
         push: () => Promise.resolve(),
         replace: () => Promise.resolve(),
+        // eslint-disable-next-line
         back: () => {},
-        currentRoute: { value: stubRoute },
+        currentRoute: { value: stubRoute }
     };
 }
 

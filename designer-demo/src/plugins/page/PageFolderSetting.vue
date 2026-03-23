@@ -88,17 +88,17 @@ export const closeFolderSettingPanel = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapse: Collapse,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapseItem: CollapseItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ButtonGroup
     },
     props: {
@@ -107,7 +107,7 @@ export default {
             default: false
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const { t } = useDesignerI18n();
         const state = reactive({
@@ -120,7 +120,7 @@ export default {
         const { confirm } = useModal();
         const registry = getMergeMeta(meta.id);
         const pageGeneral = registry.components.PageGeneral;
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const folderGeneralRef = ref(null);
 
         const { PLUGIN_NAME, getPluginByLayout } = useLayout();
@@ -187,7 +187,7 @@ export default {
 
             requestUpdatePage(id, {
                 ...pageSettingState.currentPageData,
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 page_content: null
             })
                 .then(() => {
@@ -260,7 +260,7 @@ export default {
 
         return {
             align,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             saveFolderSetting,
             deleteFolder: throttle(5000, true, deleteFolder),

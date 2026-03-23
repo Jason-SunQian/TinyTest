@@ -145,43 +145,43 @@ import { validateMonacoEditorData } from './js/common';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySearch: Search,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceList,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CreateVariable,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CloseIcon,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabs: Tabs,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabItem: TabItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CreateStore,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyIconSearch: iconSearch()
     },
     props: {
-        // eslint-disable-next-line vue/require-default-prop, vue/require-typed-object-prop
+         
         fixedPanels: {
             type: Array,
             default: undefined
         }
     },
     emits: ['close'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const variableRef = ref(null);
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const storeRef = ref(null);
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const isPanelShow = ref(false);
         const errorMessage = ref('');
         const flag = ref('');
@@ -215,7 +215,7 @@ export default {
                 variable: ''
             }
         });
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const selectedKey = ref(null);
 
         const {
@@ -264,7 +264,7 @@ export default {
                     } else {
                         try {
                             const align2 = getPluginByLayout(PLUGIN_NAME.State);
-                            // eslint-disable-next-line max-depth
+                             
                             if (align2 && align2 !== 'leftTop') {
                                 panelAlign = align2;
                             }
@@ -303,7 +303,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -482,7 +482,7 @@ export default {
                     const { id } = getMetaApi(
                         META_SERVICE.GlobalService
                     ).getBaseInfo();
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     updateGlobalState(id, { global_state: storeList }).then(
                         res => {
                             isPanelShow.value = false;
@@ -514,7 +514,7 @@ export default {
 
             const schema = getSchema();
             const { lifeCycles } = schema;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+             
             const { [key]: deletedKey, ...restState } = schema.state;
 
             if (key.startsWith('datasource')) {
@@ -570,7 +570,7 @@ export default {
                 ).getBaseInfo();
 
                 storeList.splice(index, 1);
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 updateGlobalState(id, { global_state: storeList }).then(res => {
                     useResource().appSchemaState.globalState =
                         res.global_state || [];
@@ -626,7 +626,7 @@ export default {
             t,
             alignStyle,
             firstPanelOffset,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             isBlock,
             isPanelShow,
@@ -648,11 +648,11 @@ export default {
             activeName,
             selectedKey,
             tabClick,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             STATE,
             removeStore,
             storeRef,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             OPTION_TYPE,
             open,
             docsUrl,

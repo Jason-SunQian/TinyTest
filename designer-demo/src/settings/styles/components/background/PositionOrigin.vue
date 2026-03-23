@@ -54,7 +54,7 @@ import { BACKGROUND_PROPERTY } from '../../js/styleProperty';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         InputSelect
     },
     props: {
@@ -68,7 +68,7 @@ export default {
         }
     },
     emits: ['update'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const originOptions = [
             {

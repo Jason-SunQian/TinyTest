@@ -1,4 +1,4 @@
-/* eslint-disable max-lines, max-lines-per-function, import/order, no-inline-comments, line-comment-position, object-shorthand, @typescript-eslint/no-shadow, @typescript-eslint/prefer-destructuring, no-else-return */
+/* eslint-disable import/order */
 import { reactive, computed, toRaw } from 'vue';
 import type { ComputedRef } from 'vue';
 import type { PositionType } from '../container';

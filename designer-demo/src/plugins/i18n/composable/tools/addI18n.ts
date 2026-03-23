@@ -13,18 +13,18 @@ const inputSchema = z.object({
     key: z
         .string()
         .describe('The unique key for the i18n entry, e.g. lowcode.36223242'),
-    // eslint-disable-next-line
+     
     zh_CN: z.string().describe('The Chinese translation text'),
-    // eslint-disable-next-line
+     
     en_US: z.string().describe('The English translation text')
 });
 
 // 定义 data 部分的 Schema（用于新增的 i18n 条目数据）
 const addI18nDataSchema = z.object({
     key: z.string().describe('The unique key of the created entry'),
-    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+     
     zh_CN: z.string().describe('The Chinese translation text'),
-    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+     
     en_US: z.string().describe('The English translation text'),
     type: z.string().describe('The type of the entry')
 });
@@ -47,10 +47,10 @@ export const addI18n = {
         openWorldHint: false
     },
     callback: async (args: z.infer<typeof inputSchema>) => {
-        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+         
         const { key, zh_CN, en_US } = args;
         const { getLangs, ensureI18n } = useTranslate();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const langs = getLangs() as Record<string, any>;
 
         if (langs[key]) {
@@ -64,11 +64,11 @@ export const addI18n = {
         try {
             await ensureI18n(
                 {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     en_US,
                     key,
                     type: 'i18n',
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     zh_CN
                 },
                 true
@@ -77,9 +77,9 @@ export const addI18n = {
             // 成功情况 - 使用通用成功响应
             return createSuccessResponse('I18n entry created successfully', {
                 key,
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN,
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 en_US,
                 type: 'i18n'
             });

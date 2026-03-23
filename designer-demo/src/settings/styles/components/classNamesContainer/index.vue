@@ -187,7 +187,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts" setup>
-/* eslint-disable max-lines, vue/multi-word-component-names */
+ 
 /* metaService: engine.setting.styles.ClassNamesContainer-index */
 import { computed, reactive, ref, nextTick, watch, watchEffect } from 'vue';
 import { Select as TinySelect } from '@opentiny/vue';
@@ -224,7 +224,7 @@ const stateOptions = computed(() =>
         value
     }))
 );
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 const SELECTOR_TYPE = {
     CLASS_NAME: 'className',
     ID: 'id'
@@ -235,7 +235,7 @@ const OPTION_TYPE = {
     REMOVE: 'remove',
     EDIT: 'edit'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 const docsUrl = useHelp().getDocsUrl('stylePanel');
 
@@ -255,9 +255,9 @@ const classNameState = reactive({
     selectorHasError: '',
     selectorErrorKey: ''
 });
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const selectorTextRef = ref(null);
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const newSelectorInputRef = ref(null);
 const { state } = useStyle();
 
@@ -459,7 +459,7 @@ const selectorValidator = selector => {
 
 // 添加现有 class 或者 id 到选中的组件中
 const handleSelectExistingClass = selector => {
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+     
     const found = state.selectorOptionLists.find(
         ({ value }) => value === selector
     );
@@ -496,7 +496,7 @@ const handleCreateNewClass = () => {
     }
 
     // 将类名添加到组件中
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+     
     const found = state.selectorOptionLists.find(
         ({ value }) => value === newSelector
     );

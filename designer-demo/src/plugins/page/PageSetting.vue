@@ -91,7 +91,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang, vue/component-api-style -->
 <script lang="tsx">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.plugins.appmanage.PageSetting */
 import { reactive, ref, computed, onActivated, onDeactivated, h } from 'vue';
 import { Button, Collapse, CollapseItem, Input } from '@opentiny/vue';
@@ -129,12 +129,12 @@ import http from './http';
 const { COMPONENT_NAME } = constants;
 const isShow = ref(false);
 
-// eslint-disable-next-line
+ 
 export const openPageSettingPanel = () => {
     isShow.value = true;
 };
 
-// eslint-disable-next-line
+ 
 export const closePageSettingPanel = () => {
     isShow.value = false;
 
@@ -152,23 +152,23 @@ const PAGE_SETTING_SESSION = {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapse: Collapse,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapseItem: CollapseItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PageInputOutput,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         LifeCycles,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PageHistory,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ButtonGroup
     },
     props: {
@@ -178,7 +178,7 @@ export default {
         }
     },
     emits: ['openNewPage'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { requestCreatePage, requestDeletePage } = http;
@@ -215,7 +215,7 @@ export default {
                     updatePageSettingAfterSave();
                 }
             };
-            // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+             
             const subscribeResult = subscribe(subscribeConfig);
             subscriber = subscribeResult;
         });
@@ -263,22 +263,22 @@ export default {
         };
 
         const createPage = async () => {
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             const { page_content, ...other } = getDefaultPage();
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             const {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 page_content: page_content_state,
                 ...pageSettingStateOther
             } = pageSettingState.currentPageData;
             const createParams = {
                 ...other,
                 ...pageSettingStateOther,
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 page_content: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     ...page_content,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     ...page_content_state,
                     fileName: pageSettingState.currentPageData.name
                 },
@@ -366,13 +366,13 @@ export default {
 
         const editPage = async () => {
             // 更新页面
-            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+             
             const { id, name, page_content } = pageSettingState.currentPageData;
             const params = {
                 ...pageSettingState.currentPageData,
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 page_content: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     ...page_content,
                     fileName: name
                 }
@@ -452,7 +452,7 @@ export default {
                         return h(Input, {
                             placeholder: t('designer.page.historyBackupInfo'),
                             modelValue: state.historyMessage,
-                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                             
                             'onUpdate:modelValue': (value: string) => {
                                 state.historyMessage = value;
                             }
@@ -565,7 +565,7 @@ export default {
 
         return {
             align,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             state,
             isShow,
@@ -579,7 +579,7 @@ export default {
             closePageSettingPanel,
             updatePageLifeCycles,
             restorePage,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PAGE_SETTING_SESSION,
             t
         };

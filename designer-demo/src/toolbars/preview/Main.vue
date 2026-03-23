@@ -11,7 +11,7 @@
 </template>
 <!-- eslint-disable-next-line -->
 <script lang="ts">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.toolbars.preview.Main */
 import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
 import { toRaw } from 'vue';
@@ -32,17 +32,17 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ToolbarBase
     },
     props: {
         options: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Object,
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         // 统一的国际化钩子：t、locale均可用
         const { t } = useDesignerI18n();
@@ -98,9 +98,9 @@ export default {
 
                 // 序列化数据：去除 Vue 响应式包装和不可序列化的属性（函数、循环引用等）
                 // 使用 JSON.parse(JSON.stringify()) 确保数据可以安全地通过 postMessage 传递
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                 
                 let pageSchema: any = null;
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                 
                 let pageData: any = null;
 
                 try {
@@ -123,11 +123,11 @@ export default {
                         const rawPage = toRaw(currentPage);
                         pageData = JSON.parse(JSON.stringify(rawPage));
                         if (pageSchema) {
-                            /* eslint-disable-next-line @typescript-eslint/naming-convention, camelcase */
+                             
                             pageData.page_content = pageSchema;
                         }
                     } else if (pageSchema) {
-                        /* eslint-disable-next-line @typescript-eslint/naming-convention, camelcase */
+                         
                         pageData = { page_content: pageSchema };
                     }
                 } catch (error) {

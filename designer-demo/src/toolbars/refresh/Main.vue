@@ -34,7 +34,7 @@ const REFRESH_PLUGIN_ID = 'engine.toolbars.refresh.custom';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ToolbarBase
     },
     props: {
@@ -43,7 +43,7 @@ export default {
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const { t } = useDesignerI18n();
         const { confirm } = useModal();

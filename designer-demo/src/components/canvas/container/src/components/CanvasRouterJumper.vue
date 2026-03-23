@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/component-api-style, vue/require-typed-object-prop, import/order */
+/* eslint-disable import/order */
 import { reactive, watch, inject } from 'vue';
 import { usePage } from '@opentiny/tiny-engine-meta-register';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';

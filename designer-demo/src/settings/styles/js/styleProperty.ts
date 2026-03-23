@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const PADDING_PROPERTY = {
     Padding: 'padding',
     PaddingTop: 'padding-top',
@@ -18,9 +18,9 @@ export const PADDING_PROPERTY = {
     PaddingBottom: 'padding-bottom',
     PaddingLeft: 'padding-left'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const MARGIN_PROPERTY = {
     Margin: 'margin',
     MarginTop: 'margin-top',
@@ -28,14 +28,14 @@ export const MARGIN_PROPERTY = {
     MarginBottom: 'margin-bottom',
     MarginLeft: 'margin-left'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 export const SPACING_PROPERTY = {
     ...MARGIN_PROPERTY,
     ...PADDING_PROPERTY
 };
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const SIZE_PROPERTY = {
     Width: 'width',
     Height: 'height',
@@ -47,9 +47,9 @@ export const SIZE_PROPERTY = {
     ObjectFit: 'object-fit',
     ObjectPosition: 'object-position'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const TYPO_PROPERTY = {
     FontSize: 'font-size',
     LineHeight: 'line-height',
@@ -60,9 +60,9 @@ export const TYPO_PROPERTY = {
     FontWeight: 'font-weight',
     FontFamily: 'font-family'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const BORDER_STYLE_PROPERTY = {
     BorderStyle: 'border-style',
     BorderTopStyle: 'border-top-style',
@@ -70,9 +70,9 @@ export const BORDER_STYLE_PROPERTY = {
     BorderBottomStyle: 'border-bottom-style',
     BorderLeftStyle: 'border-left-style'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const BORDER_WIDTH_PROPERTY = {
     BorderWidth: 'border-width',
     BorderTopWidth: 'border-top-width',
@@ -80,9 +80,9 @@ export const BORDER_WIDTH_PROPERTY = {
     BorderBottomWidth: 'border-bottom-width',
     BorderLeftWidth: 'border-left-width'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const BORDER_COLOR_PROPERTY = {
     BorderColor: 'border-color',
     BorderTopColor: 'border-top-color',
@@ -90,18 +90,18 @@ export const BORDER_COLOR_PROPERTY = {
     BorderBottomColor: 'border-bottom-color',
     BorderLeftColor: 'border-left-color'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const BORDER_PROPERTY = {
     Border: 'border',
     ...BORDER_STYLE_PROPERTY,
     ...BORDER_WIDTH_PROPERTY,
     ...BORDER_COLOR_PROPERTY
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const BORDER_RADIUS_PROPERTY = {
     BorderRadius: 'border-radius',
     BorderTopLeftRadius: 'border-top-left-radius',
@@ -109,9 +109,9 @@ export const BORDER_RADIUS_PROPERTY = {
     BorderBottomLeftRadius: 'border-bottom-left-radius',
     BorderBottomRightRadius: 'border-bottom-right-radius'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const GRID_PROPERTY = {
     GridGap: 'grid-gap',
     GridColumnGap: 'grid-column-gap',
@@ -122,9 +122,9 @@ export const GRID_PROPERTY = {
     AlignContent: 'align-content',
     JustifyContent: 'justify-content'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const POSITION_PROPERTY = {
     Position: 'position',
     Inset: 'inset',
@@ -136,18 +136,18 @@ export const POSITION_PROPERTY = {
     Clear: 'clear',
     ZIndex: 'z-index'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const FLEX_PROPERTY = {
     FlexDirection: 'flex-direction',
     JustifyContent: 'justify-content',
     AlignItems: 'align-items',
     FlexWrap: 'flex-wrap'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const BACKGROUND_PROPERTY = {
     BackgroundColor: 'background-color',
     BackgroundClip: 'background-clip',
@@ -158,18 +158,18 @@ export const BACKGROUND_PROPERTY = {
     BackgroundAttachment: 'background-attachment',
     TextFillColor: '-webkit-text-fill-color'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const EFFECTS_PROPERTY = {
     Opacity: 'opacity',
     Cursor: 'cursor',
     Outline: 'outline',
     OutlineOffset: 'outline-offset'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention, camelcase */
+ 
 export const Style_Property = {
     ...SIZE_PROPERTY,
     ...TYPO_PROPERTY,
@@ -183,7 +183,7 @@ export const Style_Property = {
     ...BACKGROUND_PROPERTY,
     ...EFFECTS_PROPERTY
 };
-/* eslint-enable @typescript-eslint/naming-convention, camelcase */
+ 
 
 export const UNIT_OPTIONS = [
     {
@@ -292,19 +292,19 @@ export const RADIAL_SIZE_LIST = [
     }
 ];
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const TYPE_TEXT = {
     ImageSetting: 'background-image.svg',
     LinearGradient: 'Linear gradient',
     RadialGradient: 'Radial gradient'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const PROPERTY_DEFAULT_VALUE = {
     'background-position': '0px 0px',
     'background-size': 'auto',
     'background-repeat': 'repeat',
     'background-scroll': 'scroll'
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 

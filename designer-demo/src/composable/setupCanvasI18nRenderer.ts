@@ -1,4 +1,4 @@
-/* eslint-disable import/order, @typescript-eslint/prefer-optional-chain, @typescript-eslint/init-declarations, no-cond-assign, max-depth, @typescript-eslint/max-params, no-else-return */
+/* eslint-disable import/order */
 import { h } from 'vue';
 
 import { useCanvas, useMessage } from '@opentiny/tiny-engine-meta-register';
@@ -43,7 +43,7 @@ function setupCanvasTextReplacer() {
     const replaceText = () => {
         try {
             // 直接获取英文翻译（通过 i18n 实例）
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             const i18nInstance = (window as any).lowcodeI18n;
             let englishText = 'Drag components here';
             let analyzingText = 'Page analyzing...';
@@ -196,7 +196,7 @@ export const setupCanvasI18nRenderer = () => {
     try {
         const { subscribe } = useMessage();
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const setupRenderer = (canvasApi: any) => {
             try {
                 if (
@@ -213,7 +213,7 @@ export const setupCanvasI18nRenderer = () => {
                 }
 
                 // 创建 renderer，始终返回英文文本
-                /* eslint-disable @typescript-eslint/no-explicit-any */
+                 
                 const i18nRenderer = (
                     schema: any,
                     refreshKey: any,
@@ -222,7 +222,7 @@ export const setupCanvasI18nRenderer = () => {
                     isPage = true
                 ) => {
                     // 强制使用英文翻译
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     const i18nInstance = (window as any).lowcodeI18n;
                     let currentText = 'Drag components here';
 
@@ -280,7 +280,7 @@ export const setupCanvasI18nRenderer = () => {
                         );
                     }
                 };
-                /* eslint-enable @typescript-eslint/no-explicit-any */
+                 
 
                 // 设置自定义 renderer
                 canvasApi.setRenderer(i18nRenderer);
@@ -294,7 +294,7 @@ export const setupCanvasI18nRenderer = () => {
         subscribe({
             topic: 'canvasReady',
             subscriber: 'canvasI18nRenderer',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             callback: ({ detail }: any) => {
                 if (detail && detail.setRenderer) {
                     setTimeout(() => {

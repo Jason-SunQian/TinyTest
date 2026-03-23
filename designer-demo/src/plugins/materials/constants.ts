@@ -10,4 +10,7 @@ export const BASE_STYLE_CLASS_NAME = 'component-base-style';
  * 不应用 component-base-style 的组件列表
  * 这些组件作为布局子项（如 ion-segment 内按钮），margin 会破坏 flex 对齐
  */
-export const COMPONENTS_SKIP_BASE_STYLE = ['MrSegmentButton', 'mr-segment-button'];
+export const COMPONENTS_SKIP_BASE_STYLE = [
+    'MrSegmentButton',
+    'mr-segment-button'
+];

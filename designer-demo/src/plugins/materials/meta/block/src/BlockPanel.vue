@@ -58,17 +58,17 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySearch: Search,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyIconSearch: iconSearch(),
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockList,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockGroupPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockVersionSelect
     },
     props: {
@@ -81,11 +81,11 @@ export default {
             default: null
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         // const i18n: any = inject(I18nInjectionKey);
 
         const {

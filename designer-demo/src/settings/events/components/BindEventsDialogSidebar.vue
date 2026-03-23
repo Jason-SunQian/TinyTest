@@ -51,17 +51,17 @@ import { INVALID_VARNAME_CHAR_RE, NEW_METHOD_TYPE } from './constants';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySearch: Search
     },
     props: {
-        // eslint-disable-next-line vue/require-typed-object-prop
+         
         eventBinding: {
             type: Object,
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const { getMethodNameList } = getMetaApi(META_APP.Page);
         const { t } = useDesignerI18n();

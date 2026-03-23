@@ -92,19 +92,19 @@ import DataSourceGlobalDataHandler, {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceList,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceGlobalDataHandler,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceForm,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceSettingRemoteResult
     },
     props: {
@@ -114,7 +114,7 @@ export default {
         }
     },
     emits: ['close', 'fixPanel'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
@@ -151,7 +151,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -248,7 +248,7 @@ export default {
         };
 
         return {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             state,
             open,

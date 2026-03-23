@@ -90,21 +90,21 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyForm,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFormItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
+         
         TinyIconRichTextLink: IconRichTextLink()
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         // 获取国际化 t 函数
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 
@@ -121,14 +121,14 @@ export default {
 
         const label = computed({
             get: () => {
-                // eslint-disable-next-line camelcase
+                 
                 return getEditEvent()?.label?.zh_CN || '';
             },
             set(value) {
                 const event = getEditEvent();
 
                 if (event?.label) {
-                    // eslint-disable-next-line camelcase
+                     
                     event.label.zh_CN = value;
                 }
             }
@@ -136,14 +136,14 @@ export default {
 
         const description = computed({
             get: () => {
-                // eslint-disable-next-line camelcase
+                 
                 return getEditEvent()?.description?.zh_CN || '';
             },
             set(value) {
                 const event = getEditEvent();
 
                 if (event?.description) {
-                    // eslint-disable-next-line camelcase
+                     
                     event.description.zh_CN = value;
                 }
             }
@@ -157,7 +157,7 @@ export default {
             formData.eventName.startsWith('onUpdate:')
         );
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const usePropertysToBeEvent = (item: any) => {
             if (item.label?.text?.zh_CN) label.value = item.label.text.zh_CN;
             renameBlockEventName(
@@ -173,7 +173,7 @@ export default {
                     pattern: REGEXP_EVENT_NAME,
                     // IFormInnerRule
                     validator: (
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                         
                         rule: any,
                         value: string,
                         callback: (e?: Error) => void

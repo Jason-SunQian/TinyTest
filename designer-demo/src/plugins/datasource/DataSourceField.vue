@@ -42,7 +42,7 @@
 <!-- eslint-disable-next-line -->
 <script lang="ts">
 /* metaService: engine.plugins.collections.DataSourceField */
-/* eslint-disable max-lines */
+ 
 import { reactive, ref, watchEffect, nextTick } from 'vue';
 import { Button } from '@opentiny/vue';
 
@@ -56,18 +56,18 @@ import DataSourceFieldForm from './DataSourceFieldForm.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line
+         
         TinyButton: Button,
-        // eslint-disable-next-line
+         
         DataSourceFieldList,
-        // eslint-disable-next-line
+         
         DataSourceFieldType,
-        // eslint-disable-next-line
+         
         DataSourceFieldForm
     },
     props: {
         modelValue: {
-            // eslint-disable-next-line
+             
             type: Array,
             default: () => []
         },
@@ -77,7 +77,7 @@ export default {
         }
     },
     emits: ['update:modelValue', 'openPanel'],
-    // eslint-disable-next-line
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
@@ -100,9 +100,9 @@ export default {
                 icon: ''
             }
         });
-        // eslint-disable-next-line
+         
         const fieldList = ref(null);
-        // eslint-disable-next-line
+         
         const fieldForm = ref(null);
 
         const openNewFieldForm = () => {

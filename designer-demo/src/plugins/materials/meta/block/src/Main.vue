@@ -11,11 +11,11 @@ import BlockPanel from './BlockPanel.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BlockPanel
     },
     props: {},
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const existBlockModule = getMergeMeta('engine.plugins.blockmanage');
 

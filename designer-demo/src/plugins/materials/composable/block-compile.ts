@@ -20,7 +20,11 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { compile as blockCompiler } from '@opentiny/tiny-engine-block-compiler';
 import { utils } from '@opentiny/tiny-engine-utils';
-import { getDesignerMaterialBaseUrl, toAbsoluteMaterialUrl } from '@/utils/designerOrigin';
+
+import {
+    getDesignerMaterialBaseUrl,
+    toAbsoluteMaterialUrl
+} from '@/utils/designerOrigin';
 
 const { capitalize, camelize } = utils;
 
@@ -101,46 +105,80 @@ export const getBlockCompileRes = schema => {
  * 主工程/远程 bundle 的组件走此路径，避免 /material-center/api/block 返回空导致「区块 xxx 加载错误」
  * 由 container.initCanvas 对 controller 补丁调用，确保画布无论用哪套 useMaterial 都能从物料解析
  */
-export const getBlockFromMaterialStore = (name: string): Record<string, { blobURL: string; style: string }> | null => {
-    const tryNames = [name, capitalize(camelize(name))].filter((n, i, a) => a.indexOf(n) === i);
+export const getBlockFromMaterialStore = (
+    name: string
+): Record<string, { blobURL: string; style: string }> | null => {
+    const tryNames = [name, capitalize(camelize(name))].filter(
+        (n, i, a) => a.indexOf(n) === i
+    );
     let mat = null;
     for (const n of tryNames) {
         mat = useMaterial().getMaterial(n);
-        if (mat && (mat.npm?.script ?? (mat as { content?: { npm?: { script?: string } } })?.content?.npm?.script))
+        if (
+            mat &&
+            (mat.npm?.script ??
+                (mat as { content?: { npm?: { script?: string } } })?.content
+                    ?.npm?.script)
+        )
             break;
     }
-    const npm = mat?.npm ?? (mat as { content?: { npm?: { script?: string; css?: string } } })?.content?.npm;
+    const npm =
+        mat?.npm ??
+        (mat as { content?: { npm?: { script?: string; css?: string } } })
+            ?.content?.npm;
     const script = npm?.script;
     if (!script) {
-        if (typeof console !== 'undefined' && console.warn && tryNames[0]) {
-            // eslint-disable-next-line no-console
-            console.warn('[Materials] getBlockFromMaterialStore 未找到', tryNames[0], 'mat=', mat ? '有' : '无', 'script=', script || '无');
+        /* eslint-disable no-console -- 诊断物料解析 */
+        if (console?.warn && tryNames[0]) {
+            console.warn(
+                '[Materials] getBlockFromMaterialStore 未找到',
+                tryNames[0],
+                'mat=',
+                mat ? '有' : '无',
+                'script=',
+                script || '无'
+            );
         }
+        /* eslint-enable no-console */
         return null;
     }
     const base =
-        useMaterial().getBundleBaseUrlForComponent(name) ?? getDesignerMaterialBaseUrl();
+        useMaterial().getBundleBaseUrlForComponent(name) ??
+        getDesignerMaterialBaseUrl();
     let scriptUrl =
-        typeof script === 'string' && (script.startsWith('http://') || script.startsWith('https://'))
+        typeof script === 'string' &&
+        (script.startsWith('http://') || script.startsWith('https://'))
             ? script
             : toAbsoluteMaterialUrl(script, base) || script;
     let styleUrl = '';
     const css = npm?.css;
     if (css) {
         styleUrl =
-            typeof css === 'string' && (css.startsWith('http://') || css.startsWith('https://'))
+            typeof css === 'string' &&
+            (css.startsWith('http://') || css.startsWith('https://'))
                 ? css
-                : toAbsoluteMaterialUrl(typeof css === 'string' ? css : css[0], base) || '';
+                : toAbsoluteMaterialUrl(
+                      typeof css === 'string' ? css : css[0],
+                      base
+                  ) || '';
     }
     const cacheBust = useMaterial().getMaterialCacheBustParam();
     if (cacheBust) {
-        if (scriptUrl.startsWith('http')) scriptUrl += (scriptUrl.includes('?') ? '&' : '?') + cacheBust;
-        if (styleUrl.startsWith('http')) styleUrl += (styleUrl.includes('?') ? '&' : '?') + cacheBust;
+        if (scriptUrl.startsWith('http'))
+            scriptUrl += (scriptUrl.includes('?') ? '&' : '?') + cacheBust;
+        if (styleUrl.startsWith('http'))
+            styleUrl += (styleUrl.includes('?') ? '&' : '?') + cacheBust;
     }
-    if (typeof console !== 'undefined' && console.log) {
-        // eslint-disable-next-line no-console
-        console.log('[Materials] getBlockFromMaterialStore 解析成功', name, '->', scriptUrl);
+    /* eslint-disable no-console -- 诊断物料解析 */
+    if (console?.log) {
+        console.log(
+            '[Materials] getBlockFromMaterialStore 解析成功',
+            name,
+            '->',
+            scriptUrl
+        );
     }
+    /* eslint-enable no-console */
     return {
         [name]: { blobURL: scriptUrl, style: styleUrl }
     };

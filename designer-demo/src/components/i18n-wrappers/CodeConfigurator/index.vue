@@ -23,12 +23,12 @@ import { useDesignerI18n } from '@/services/i18nService';
 export default {
     name: 'i18n-code-configurator',
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaCodeEditor
     },
     inheritAttrs: false,
     emits: ['save', 'open', 'close'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props: Record<string, unknown>, { attrs }) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { locale } = useDesignerI18n();
@@ -52,9 +52,9 @@ export default {
                 /[\u4e00-\u9fa5]/.test(buttonText)
             ) {
                 return {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     zh_CN: buttonText,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     en_US: buttonText === '编辑代码' ? 'Edit Code' : buttonText
                 };
             }
@@ -62,18 +62,18 @@ export default {
             // 如果已经是英文或其他语言，返回多语言对象
             if (typeof buttonText === 'string') {
                 return {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     zh_CN: '编辑代码',
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     en_US: buttonText
                 };
             }
 
             // 默认返回多语言对象
             return {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: '编辑代码',
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 en_US: 'Edit Code'
             };
         });
@@ -94,9 +94,9 @@ export default {
             // 如果是字符串且是中文，返回多语言对象
             if (typeof title === 'string' && /[\u4e00-\u9fa5]/.test(title)) {
                 return {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     zh_CN: title,
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     en_US: title === '编辑代码' ? 'Edit Code' : title
                 };
             }
@@ -104,18 +104,18 @@ export default {
             // 如果已经是英文或其他语言，返回多语言对象
             if (typeof title === 'string') {
                 return {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     zh_CN: '编辑代码',
-                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                     
                     en_US: title
                 };
             }
 
             // 默认返回多语言对象
             return {
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 zh_CN: '编辑代码',
-                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                 
                 en_US: 'Edit Code'
             };
         });

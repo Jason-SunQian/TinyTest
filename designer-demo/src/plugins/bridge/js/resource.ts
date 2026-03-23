@@ -20,7 +20,7 @@ import {
 /**
  * 规范化单个 utils item，确保所有数据都有正确的结构（避免 setUtils 报错）
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const normalizeUtilsItem = (item: any) => {
     // 过滤掉非对象类型的 item（如数组、null、undefined 等）
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
@@ -97,7 +97,7 @@ const DEFAULT_RESOURCE_FUNTION = {
     }
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+ 
 const TempBridge = [
     {
         name: 'clone',
@@ -141,16 +141,16 @@ const TempBridge = [
 ];
 
 const RESOURCE_TYPE = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     Util: 'utils',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     Bridge: 'bridge'
 };
 
 const RESOURCE_CATEGORY = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     Npm: 'npm',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     Function: 'function'
 };
 
@@ -160,9 +160,9 @@ const RESOURCE_TIP_I18N = (t: (k: string) => string) => ({
 });
 
 const ACTION_TYPE = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     Read: 'read',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     Edit: 'edit'
 };
 
@@ -267,25 +267,25 @@ const saveResource = async (data, callback, emit) => {
                             ? resourceApi.appSchemaState.utils
                             : resourceApi.appSchemaState[data.category];
 
-                    // eslint-disable-next-line max-depth
+                     
                     if (Array.isArray(targetArray)) {
                         // 检查是否已存在同名项
                         const existingIndex = targetArray.findIndex(
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                             
                             (item: any) =>
                                 item && item.name === normalizedResult.name
                         );
-                        // eslint-disable-next-line max-depth
+                         
                         if (existingIndex === -1) {
                             targetArray.push(normalizedResult);
                         } else {
                             // 如果已存在，更新它
-                            // eslint-disable-next-line max-depth
+                             
                             targetArray[existingIndex] = normalizedResult;
                         }
                     }
                 }
-                // eslint-disable-next-line max-depth
+                 
             }
         }
 
@@ -302,7 +302,7 @@ const saveResource = async (data, callback, emit) => {
                     if (!isEdit && data.name) {
                         const foundInNewData =
                             resourceApi.appSchemaState.utils.some(
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                 
                                 (item: any) => item.name === data.name
                             );
 
@@ -321,7 +321,7 @@ const saveResource = async (data, callback, emit) => {
                             }
                         }
                     }
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                 })
                 .catch((error: any) => {
                     // eslint-disable-next-line no-console
@@ -341,7 +341,7 @@ const saveResource = async (data, callback, emit) => {
         emit('refresh', data.category);
         state.refresh = true;
         callback();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
     } catch (error: any) {
         useNotify({
             type: 'error',
@@ -359,7 +359,7 @@ const saveResource = async (data, callback, emit) => {
 const deleteData = (name, callback, emit) => {
     const { t } = useDesignerI18n();
     const params = `app=${getAppId()}&id=${state.resource?.id}`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     requestDeleteReSource(params).then((data: any) => {
         if (data) {
             // 使用 data.category 或 state.category 来确定要删除的数组

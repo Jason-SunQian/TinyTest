@@ -246,7 +246,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block, @typescript-eslint/naming-convention, vue/prefer-import-from-vue, import/order, vue/component-definition-name-casing, vue/html-self-closing, vue/v-on-event-hyphenation, vue/html-closing-bracket-newline, vue/attributes-order, vue/component-api-style, no-lonely-if, prefer-template, @typescript-eslint/no-unused-vars, vue/require-explicit-emits, max-lines, vue/block-lang */
+/* eslint-disable import/order */
 import {
     VueMonaco as MonacoEditor,
     SvgButton
@@ -288,23 +288,23 @@ const { EXPRESSION_TYPE } = constants;
 
 // 注意：DATASOUCEPREFIX 需要在 setup 中动态获取，因为需要国际化
 const CONSTANTS = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     THIS: 'this.',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     STATE: 'this.state.',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     STORE: 'this.stores.',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     PROPS: 'this.props.',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     COLLECTION: 'Collection',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     ITEM: 'item',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     DATASOUCE: 'datasource',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     DATASOURCEMAP: 'this.dataSourceMap.',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     INTERVALID: 'intervalId'
 };
 
@@ -331,26 +331,26 @@ const getJsSlotParams = () => {
 };
 
 export default {
-    // eslint-disable-next-line vue/component-definition-name-casing
+     
     name: 'VariableConfigurator',
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MonacoEditor,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyDialogBox: DialogBox,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySearch: Search,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySwitch: Switch,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyAlert: Alert
     },
     inheritAttrs: false,
@@ -359,10 +359,10 @@ export default {
             type: String,
             default: ''
         },
-        // eslint-disable-next-line vue/require-typed-object-prop
-        // eslint-disable-next-line vue/require-typed-object-prop
+         
+         
         modelValue: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: [String, Number, Boolean, Array, Object, Date],
             default: ''
         },
@@ -602,7 +602,7 @@ export default {
                     } else {
                         const ast = parse(setupFn);
                         traverse(ast, {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                             
                             ExpressionStatement(path) {
                                 if (path.toString().includes(sourceRef.name)) {
                                     path.replaceWithSourceString(fetchBodyFn);

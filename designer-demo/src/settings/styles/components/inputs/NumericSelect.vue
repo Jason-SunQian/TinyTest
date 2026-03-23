@@ -27,7 +27,7 @@ import useEvent from '../../js/useEvent';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyNumeric: Numeric
     },
     props: {
@@ -57,7 +57,7 @@ export default {
         }
     },
     emits: useEvent(),
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const numericalModelValue = ref(props.numericalText || null);
         const isNumericHover = ref(false);

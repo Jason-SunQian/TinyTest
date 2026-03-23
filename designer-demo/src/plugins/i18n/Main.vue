@@ -205,7 +205,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
-/* eslint-disable vue/multi-word-component-names */
+ 
 /* metaService: engine.plugins.i18n.Main */
 import {
     computed,
@@ -245,31 +245,31 @@ import { utils, constants } from '@opentiny/tiny-engine-utils';
 
 import { PluginPanel, SearchEmpty } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
-/* eslint-disable max-lines */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+ 
+ 
 const { OPEN_DELAY } = constants;
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyGrid: Grid,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyGridColumn: GridColumn,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFileUpload: FileUpload,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SearchEmpty
     },
     props: {
@@ -278,10 +278,10 @@ export default {
             default: () => []
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         // 组件库iconLoadingShadow图标不能切换颜色，因此不同主题用不同icon
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         const SvgIcon = resolveComponent('SvgIcon');
         const lightSpinnerIcon = iconLoadingShadow();
         const darkSpinnerIcon = () => h(SvgIcon, { name: 'loading' });
@@ -307,7 +307,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -353,7 +353,7 @@ export default {
         const isEditMode = ref(false);
         const isLoading = ref(false);
         const upload = ref('upload');
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const i18nTable = ref(null);
         const selectedRowLength = computed(() => {
             return i18nTable.value?.getAllSelection?.().length || 0;
@@ -363,7 +363,7 @@ export default {
             lang: 'zh_CN',
             label: t('designer.i18n.simplifiedChinese')
         });
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const editingRow = ref(null);
         const validateKey = (rule, value, callback) => {
             // 新增模式，需要校验 key 不重复
@@ -388,7 +388,7 @@ export default {
             currentSearchType.value = i18nSearchTypes.value[0].value;
         });
 
-        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+         
         const sortByLetter = (sortType = 'zh_CN') => {
             langList.value = langList.value.sort((a, b) => {
                 if (
@@ -465,7 +465,7 @@ export default {
                 return;
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-shadow
+             
             const { confirm: confirmDelete } = useModal();
 
             confirmDelete({
@@ -511,7 +511,7 @@ export default {
         };
 
         const openDeletePopover = row => {
-            // eslint-disable-next-line @typescript-eslint/no-shadow
+             
             const { confirm: confirmDelete } = useModal();
 
             confirmDelete({
@@ -570,11 +570,11 @@ export default {
                     if (item) {
                         useTranslate().ensureI18n(
                             {
-                                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                                 
                                 en_US: enData[item] || '',
                                 key: item,
                                 type: 'i18n',
-                                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                                 
                                 zh_CN: zhData[item] || ''
                             },
                             false
@@ -599,7 +599,7 @@ export default {
                 : darkSpinnerIcon;
             isLoading.value = true;
 
-            // eslint-disable-next-line @typescript-eslint/init-declarations
+             
             let loadingInstance = null;
             nextTick(() => {
                 loadingInstance = Loading.service({
@@ -630,7 +630,7 @@ export default {
         };
 
         return {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             sortTypeChanges,
             currentSearchType,
@@ -661,7 +661,7 @@ export default {
             batchDelete,
             docsUrl,
             docsContent,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             OPEN_DELAY,
             t
         };

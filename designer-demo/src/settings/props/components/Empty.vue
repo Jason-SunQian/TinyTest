@@ -17,7 +17,7 @@ export default {
             default: false
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup() {
         const { t } = useDesignerI18n();
         const { getSchema } = useCanvas();

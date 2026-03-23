@@ -26,21 +26,21 @@
 import { Tooltip as TinyTooltip } from '@opentiny/vue';
 import { defineEmits, defineProps, ref, watch } from 'vue';
 
-// eslint-disable-next-line vue/define-props-declaration
+ 
 const props = defineProps({
-    // eslint-disable-next-line vue/require-default-prop, vue/require-typed-object-prop
+     
     options: {
         type: Array,
         default: undefined
     },
-    // eslint-disable-next-line vue/require-typed-object-prop
+     
     modelValue: {
         type: String,
         required: true
     }
 });
 
-// eslint-disable-next-line vue/define-emits-declaration
+ 
 const emit = defineEmits(['update:modelValue']);
 
 const value = ref(props.modelValue);

@@ -39,9 +39,9 @@ const props = defineProps({
 const { t } = useDesignerI18n();
 
 const TIPS_TYPE = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     PAGE: 'page',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     APP: 'app'
 };
 </script>

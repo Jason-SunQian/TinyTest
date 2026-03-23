@@ -8,7 +8,7 @@ async function startApp() {
     const { initHook, HOOK_NAME, META_SERVICE, initPreview } = await import(
         '@opentiny/tiny-engine'
     );
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     const { HttpService } = await import('./composable');
 
     const beforeAppCreate = () => {
@@ -21,7 +21,7 @@ async function startApp() {
         runtime.installRuntimeCompat(app);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const registry: any = {
         [META_SERVICE.Http]: HttpService
     };

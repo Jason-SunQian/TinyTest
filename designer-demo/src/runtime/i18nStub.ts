@@ -6,12 +6,13 @@ import { getCurrentInstance } from 'vue';
 export function useI18n() {
     const instance = getCurrentInstance();
     const $t =
-        (instance?.appContext.config.globalProperties?.$t as ((key: string) => string) | undefined) ??
-        ((key: string) => key);
+        (instance?.appContext.config.globalProperties?.$t as
+            | ((key: string) => string)
+            | undefined) ?? ((key: string) => key);
     return {
         t: $t,
         locale: { value: 'en_US' },
         te: () => false,
-        tm: () => ({}),
+        tm: () => ({})
     };
 }

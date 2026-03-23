@@ -187,7 +187,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.setting.styles.GridBox */
 import { reactive, watchEffect, watch } from 'vue';
 import { Popover, Tooltip } from '@opentiny/vue';
@@ -205,21 +205,21 @@ import { GRID_PROPERTY } from '../../js/styleProperty';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         RadioConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ModalMask,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ResetButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaListItems,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         NumericSelect,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MaskModal,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip
     },
     props: {
@@ -229,7 +229,7 @@ export default {
         }
     },
     emits: ['update'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         let activedName = [];
 
@@ -653,7 +653,7 @@ export default {
 
         return {
             state,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             GRID_PROPERTY,
             updateStyle,
             select,

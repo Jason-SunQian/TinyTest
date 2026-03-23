@@ -63,26 +63,26 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 const ROOT = path.resolve(__dirname, '.');
 
 export default defineConfig({
-  plugins: [vue(), nodePolyfills()],
-  root: ROOT,
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production')
-  },
-  build: {
-    outDir: 'dist/lowcode-materials',
-    emptyOutDir: false,
-    lib: {
-      entry: path.join(ROOT, 'lowcode-materials/entries/runtime.js'),
-      name: 'RuntimeCompat',
-      formats: ['es'],
-      fileName: () => 'runtime.js'
+    plugins: [vue(), nodePolyfills()],
+    root: ROOT,
+    define: {
+        'process.env.NODE_ENV': JSON.stringify('production')
     },
-    rollupOptions: {
-      external: [],  // 不 external vue/pinia，全部打包
-      output: { entryFileNames: 'runtime.js' }
-    }
-  },
-  resolve: { alias: { '@': path.join(ROOT, 'src') } }
+    build: {
+        outDir: 'dist/lowcode-materials',
+        emptyOutDir: false,
+        lib: {
+            entry: path.join(ROOT, 'lowcode-materials/entries/runtime.js'),
+            name: 'RuntimeCompat',
+            formats: ['es'],
+            fileName: () => 'runtime.js'
+        },
+        rollupOptions: {
+            external: [], // 不 external vue/pinia，全部打包
+            output: { entryFileNames: 'runtime.js' }
+        }
+    },
+    resolve: { alias: { '@': path.join(ROOT, 'src') } }
 });
 ```
 
@@ -105,34 +105,34 @@ const output = {
 
 ### 必须保留的
 
-| 内容 | 说明 |
-|------|------|
-| `installRuntimeCompat(app)` | 设计器调用入口，必须导出且签名一致 |
-| 全局属性 `$t`、`$currency`、`$getCurrency`、`$getCurrencySymbol`、`$fd` | 物料组件模板中可能使用 |
-| Pinia + 桩 store（`useAccountStore`、`usePaymentStore` 等） | 物料组件若依赖 store，需与主工程 store id 一致（如 `common.account`、`common.payment`） |
+| 内容                                                                    | 说明                                                                                    |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `installRuntimeCompat(app)`                                             | 设计器调用入口，必须导出且签名一致                                                      |
+| 全局属性 `$t`、`$currency`、`$getCurrency`、`$getCurrencySymbol`、`$fd` | 物料组件模板中可能使用                                                                  |
+| Pinia + 桩 store（`useAccountStore`、`usePaymentStore` 等）             | 物料组件若依赖 store，需与主工程 store id 一致（如 `common.account`、`common.payment`） |
 
 ### 可精简的
 
 主工程可从 `designer-demo/src/runtime` 复制后，按需删除：
 
-| 文件/内容 | 是否必须 | 说明 |
-|-----------|----------|------|
-| `globals.ts` | 必须 | `$t`、`$currency`、`$fd` 等 |
-| `stores/account.ts`、`stores/payment.ts` | 按需 | 物料若不用对应 store，可删除；或复用主工程 `canvas-stubs/stores` |
-| `vueRouterStub.ts`、`i18nStub.ts` | **不属于 runtime 产出** | 用于**物料构建**时的 alias（`vue-router`、`vue-i18n`），应放在 `canvas-stubs/`，由 `vite.lowcode-materials.config.ts` 的 resolve.alias 指向，**不**需打入 runtime.js |
+| 文件/内容                                | 是否必须                | 说明                                                                                                                                                                 |
+| ---------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `globals.ts`                             | 必须                    | `$t`、`$currency`、`$fd` 等                                                                                                                                          |
+| `stores/account.ts`、`stores/payment.ts` | 按需                    | 物料若不用对应 store，可删除；或复用主工程 `canvas-stubs/stores`                                                                                                     |
+| `vueRouterStub.ts`、`i18nStub.ts`        | **不属于 runtime 产出** | 用于**物料构建**时的 alias（`vue-router`、`vue-i18n`），应放在 `canvas-stubs/`，由 `vite.lowcode-materials.config.ts` 的 resolve.alias 指向，**不**需打入 runtime.js |
 
 ### 可扩展的
 
-- **新增全局方法**：在 `globals.ts` 中实现，在 `installRuntimeCompat` 中挂到 `app.config.globalProperties`。
-- **新增 Pinia 桩**：在 `stores/` 下新增，`defineStore('主工程 store id', ...)`，与主工程 store id 一致。
-- **替换实现**：主工程可替换 globals 或 store 的实现，只要对外签名与设计器约定一致即可。
+-   **新增全局方法**：在 `globals.ts` 中实现，在 `installRuntimeCompat` 中挂到 `app.config.globalProperties`。
+-   **新增 Pinia 桩**：在 `stores/` 下新增，`defineStore('主工程 store id', ...)`，与主工程 store id 一致。
+-   **替换实现**：主工程可替换 globals 或 store 的实现，只要对外签名与设计器约定一致即可。
 
 ### 与物料构建的区分
 
-| 用途 | 位置 | 说明 |
-|------|------|------|
-| **runtime.js**（设计器加载） | `lowcode-materials/runtime/`、`entries/runtime.js` | 仅包含 `installRuntimeCompat`、globals、Pinia 桩 |
-| **物料构建 alias**（vue-router、vue-i18n 等） | `canvas-stubs/` | 在 `vite.lowcode-materials.config.ts` 中 alias，物料组件构建时替换，**不**产出到 runtime.js |
+| 用途                                          | 位置                                               | 说明                                                                                        |
+| --------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **runtime.js**（设计器加载）                  | `lowcode-materials/runtime/`、`entries/runtime.js` | 仅包含 `installRuntimeCompat`、globals、Pinia 桩                                            |
+| **物料构建 alias**（vue-router、vue-i18n 等） | `canvas-stubs/`                                    | 在 `vite.lowcode-materials.config.ts` 中 alias，物料组件构建时替换，**不**产出到 runtime.js |
 
 ### 与设计器旧配置的区分
 
@@ -166,5 +166,5 @@ const output = {
 
 ## 兼容性
 
-- **无 runtimeScript**：设计器使用内置 `@/runtime`，行为与解耦前一致。
-- **有 runtimeScript 但加载失败**：控制台打 warning，回退到内置 runtime。
+-   **无 runtimeScript**：设计器使用内置 `@/runtime`，行为与解耦前一致。
+-   **有 runtimeScript 但加载失败**：控制台打 warning，回退到内置 runtime。

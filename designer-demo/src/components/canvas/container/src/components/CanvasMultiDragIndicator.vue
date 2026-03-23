@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable vue/max-lines-per-block, vue/no-bare-strings-in-template, vue/define-props-declaration, vue/define-macros-order, vue/require-typed-object-prop */
+ 
 import { useDesignerI18n } from '@/services/i18nService';
 
 const { t } = useDesignerI18n();

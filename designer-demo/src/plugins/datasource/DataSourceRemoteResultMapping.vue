@@ -63,11 +63,11 @@ export const close = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCheckbox
     },
     props: {
@@ -80,7 +80,7 @@ export default {
             default: () => ({})
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const { t } = useDesignerI18n();
         const state = reactive({

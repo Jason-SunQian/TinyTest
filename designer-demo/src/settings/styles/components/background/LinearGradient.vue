@@ -85,7 +85,7 @@ const state = reactive({
     colorList: []
 });
 
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const rotateSvg = ref(null);
 
 const updateStyle = property => {

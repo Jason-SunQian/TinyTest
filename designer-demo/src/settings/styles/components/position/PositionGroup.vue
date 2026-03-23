@@ -280,7 +280,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
-/* eslint-disable max-lines */
+ 
 /* metaService: engine.setting.styles.PositionGroup */
 import { reactive, watch, watchEffect, computed } from 'vue';
 import { Tooltip } from '@opentiny/vue';
@@ -298,17 +298,17 @@ import { POSITION_PROPERTY } from '../../js/styleProperty';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ModalMask,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ResetButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SelectConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         NumericSelect,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SpacingSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip
     },
 
@@ -320,7 +320,7 @@ export default {
     },
 
     emits: ['update'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         let activedName = '';
         const { t, locale } = useDesignerI18n();
@@ -471,7 +471,7 @@ export default {
                     ? ['0%', '0%', '0%', '0%']
                     : item.value.split(' ');
             Object.keys(state.directionText).forEach((key, directionIndex) => {
-                // eslint-disable-next-line @typescript-eslint/no-shadow
+                 
                 state.directionText[key] = directionArr[directionIndex];
             });
             state.selectedIndex = index;
@@ -519,7 +519,7 @@ export default {
 
         return {
             state,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             POSITION_PROPERTY,
             selectOptions,
             positionOptions,

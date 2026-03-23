@@ -44,13 +44,13 @@ import BridgeSetting, { openPanel, closePanel } from './BridgeSetting.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginPanel,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BridgeManage,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BridgeSetting
     },
     props: {
@@ -59,13 +59,13 @@ export default {
             default: () => []
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const activedName = ref(RESOURCE_TYPE.Util);
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const utilsRef = ref(null);
-        // eslint-disable-next-line new-cap
+         
         const tips = computed(() => RESOURCE_TIP_I18N(t)[activedName.value]);
         const docsContent = computed(() => t('designer.bridge.docs'));
 
@@ -86,7 +86,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -111,10 +111,10 @@ export default {
 
         return {
             t,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             PLUGIN_NAME,
             addResource,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             RESOURCE_TYPE,
             activedName,
             openBridgePanel,

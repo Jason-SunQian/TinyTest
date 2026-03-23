@@ -61,19 +61,19 @@ const { reactiveObj2String: obj2String, string2Obj } = utils;
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabs,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteForm,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteParameter,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteAutoload,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteAdapter
     },
     props: {
@@ -101,11 +101,11 @@ export default {
         }
     },
     emits: ['confirm', 'update:modelValue', 'renderRemoteData'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const dataSourceRemoteAdapteRef = ref(null);
 
         const state = reactive({

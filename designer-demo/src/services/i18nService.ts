@@ -9,7 +9,7 @@ import {
 } from '../config/languages';
 import type { LanguageConfig } from '../config/languages';
 
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console, import/exports-last */
+/* eslint-disable no-console, import/exports-last */
 let warned = false;
 const getI18nInstance = () => {
     const inst = (window as any).lowcodeI18n;
@@ -52,7 +52,7 @@ const setDefaultLocale = (instance: any) => {
 
     // 如果在 VSCode 环境中，不强制设置默认语言，让 VSCode 插件来控制
     if (isVSCode) {
-        // eslint-disable-next-line no-console
+         
         console.log(
             '[i18nService] VSCode environment detected, skipping default locale setting'
         );
@@ -161,7 +161,7 @@ const loadDesignerI18n = () => {
 const switchLanguage = (locale: string) => {
     try {
         if (!isLanguageSupported(locale)) {
-            // eslint-disable-next-line no-console
+             
             console.warn(
                 '[i18nService] switchLanguage: Language not supported:',
                 locale
@@ -175,20 +175,20 @@ const switchLanguage = (locale: string) => {
             instance.global.locale.value = locale;
             const STORAGE_KEY = 'tiny-engine-designer-locale';
             localStorage.setItem(STORAGE_KEY, locale);
-            // eslint-disable-next-line no-console
+             
             console.log(
                 `[i18nService] switchLanguage: ${oldLocale} → ${locale}, current value:`,
                 instance.global.locale.value
             );
             return true;
         }
-        // eslint-disable-next-line no-console
+         
         console.warn(
             '[i18nService] switchLanguage: i18n instance not available'
         );
         return false;
     } catch (error) {
-        // eslint-disable-next-line no-console
+         
         console.error('[i18nService] switchLanguage error:', error);
         return false;
     }

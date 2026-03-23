@@ -2,7 +2,7 @@
 import type { MockMethod } from 'vite-plugin-mock';
 
 const logRequest = (url: string, method: string, query?: any, body?: any) => {
-    // eslint-disable-next-line no-console
+     
     console.log(`[MOCK] ${method.toUpperCase()} ${url}`, {
         query,
         body,
@@ -626,7 +626,7 @@ export default [
         url: '/app-center/api/pages/update/:id',
         method: 'post',
         response: ({ query, body }) => {
-            // eslint-disable-next-line no-console
+             
             console.log('页面更新:', query.id, body);
             return {
                 data: {
@@ -643,7 +643,7 @@ export default [
         url: '/app-center/api/pages/create',
         method: 'post',
         response: ({ body }) => {
-            // eslint-disable-next-line no-console
+             
             console.log('页面创建:', body);
             return {
                 data: {
@@ -660,7 +660,7 @@ export default [
         url: '/app-center/api/pages/delete/:id',
         method: 'get',
         response: ({ query }) => {
-            // eslint-disable-next-line no-console
+             
             console.log('页面删除:', query.id);
             return {
                 data: {
@@ -677,7 +677,7 @@ export default [
         url: '/app-center/api/apps/update/:id',
         method: 'post',
         response: ({ query, body }) => {
-            // eslint-disable-next-line no-console
+             
             console.log('应用更新:', query.id, body);
             return {
                 data: {
@@ -736,7 +736,7 @@ export default [
         url: '/app-center/api/pageHistory/restore',
         method: 'post',
         response: ({ body }) => {
-            // eslint-disable-next-line no-console
+             
             console.log('页面历史恢复:', body);
             return {
                 data: {
@@ -832,7 +832,7 @@ export default [
                 const bundleData = await res.json();
                 return bundleData;
             } catch (error) {
-                // eslint-disable-next-line no-console
+                 
                 console.error('[Mock] Failed to load bundle.json:', error);
                 // 返回空数据，避免应用崩溃
                 return {
@@ -867,7 +867,7 @@ export default [
                 const bundleData = await res.json();
                 return bundleData;
             } catch (error) {
-                // eslint-disable-next-line no-console
+                 
                 console.error('[Mock] Failed to load main-project-bundle/bundle.json:', error);
                 return {
                     data: {

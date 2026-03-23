@@ -140,31 +140,31 @@ export const close = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapse: Collapse,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyButton: Button,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapseItem: CollapseItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabs: Tabs,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabItem: TabItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PluginSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ButtonGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         SvgButton,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteForm,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteParameter,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteAutoload,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceRemoteAdapter,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSrouceRemoteDataResult
     },
     props: {
@@ -192,10 +192,10 @@ export default {
         }
     },
     emits: ['confirm'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const dataSourceRemoteAdapteRef = ref(null);
         const { dataSourceState } = useDataSource();
 

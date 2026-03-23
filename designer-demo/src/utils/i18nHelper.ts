@@ -3,7 +3,7 @@
  * 用于处理材料组件 schema 中的多语言对象
  */
 
-/* eslint-disable import/exports-last, @typescript-eslint/no-explicit-any, @typescript-eslint/prefer-destructuring */
+/* eslint-disable import/exports-last */
 
 /**
  * 从多语言对象中获取当前语言的文本

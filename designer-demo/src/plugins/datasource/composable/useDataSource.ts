@@ -61,24 +61,24 @@ const compareData = () => {
 };
 
 interface DataSourceState {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     dataSource: Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     record: Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     recordCopies: Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     dataSourceColumn: Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     dataSourceColumnCopies: Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     remoteData: Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     remoteDataCopies: Record<string, any>;
     currentRecordId: string;
     isRecordValidate: boolean;
     disCard: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     remoteConfig: Record<string, any>;
 }
 
@@ -87,9 +87,9 @@ const handleConfirmSave = (
     isRecordSame: boolean,
     resolve: (value: unknown) => void,
     isDataSourceSame: boolean,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     callback: (...args: any[]) => any
-    // eslint-disable-next-line @typescript-eslint/max-params
+     
 ) => {
     let {
         name,
@@ -137,7 +137,7 @@ const handleConfirmSave = (
 
     const requestData = { name, data: { columns, data: dataValue, type } };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     callback(id, requestData).then((responseData: any) => {
         if (responseData) {
             localDataSourceState.record = {};
@@ -153,7 +153,7 @@ const handleConfirmSave = (
     return undefined;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const saveDataSource = (callback: (...args: any[]) => any) => {
     const { isRecordSame, isDataSourceSame } = compareData();
     const { confirm } = useModal();

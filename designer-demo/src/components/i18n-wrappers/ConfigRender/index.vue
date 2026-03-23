@@ -62,7 +62,7 @@ import {
 } from '@/utils/i18nHelper';
 
 interface GroupLabel {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     zh_CN?: string;
     [key: string]: string | undefined;
 }
@@ -77,39 +77,39 @@ interface GroupItem {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapse: Collapse,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapseItem: CollapseItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ConfigGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ConfigItem
     },
     props: {
         data: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: [Array, Object],
             default: () => []
         },
         design: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Boolean,
             default: false
         },
         emptyText: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: String,
             default: undefined
         }
     },
     emits: ['selected', 'select-prop', 'select-group'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { locale, t } = useDesignerI18n();
         const activeNames = ref([]);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const getPropsObj = (data?: Record<string, any> | any[]) => {
             const obj = {};
 
@@ -117,18 +117,18 @@ export default {
                 if (content.length) {
                     content.forEach(
                         (item: {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                             
                             schema: string | any[];
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                             
                             widget: { props: { modelValue: any } };
                             property: string | number;
                         }) => {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                             
                             const node: any = item.schema?.length
                                 ? getPropsObj(item.schema)
                                 : {};
 
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                             
                             node.setValue = (value: any) => {
                                 item.widget.props.modelValue = value;
                             };

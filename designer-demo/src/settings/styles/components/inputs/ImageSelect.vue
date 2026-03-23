@@ -32,9 +32,9 @@ import { useProperties } from '@opentiny/tiny-engine-meta-register';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFileUpload: FileUpload
     },
     props: {
@@ -48,7 +48,7 @@ export default {
         }
     },
     emits: ['change'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const state = reactive({
             imageInput: props.modelValue,

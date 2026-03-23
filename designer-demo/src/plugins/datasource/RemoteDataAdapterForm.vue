@@ -18,7 +18,7 @@ import { VueMonaco } from '@opentiny/tiny-engine-common';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MonacoEditor: VueMonaco
     },
     props: {
@@ -32,7 +32,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const change = value => {
             if (typeof value !== 'string') {
@@ -41,7 +41,7 @@ export default {
 
             emit('update:modelValue', value);
         };
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const editor = ref(null);
         const getEditorValue = () => editor.value?.getEditor()?.getValue();
 

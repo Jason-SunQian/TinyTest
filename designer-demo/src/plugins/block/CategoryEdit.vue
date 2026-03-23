@@ -75,9 +75,9 @@ const props = withDefaults(defineProps<Props>(), {
     initialValue: () => ({})
 });
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+ 
 const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const i18n: any = inject(I18nInjectionKey);
 const t = i18n?.global?.t || ((key: string) => key);
 
@@ -102,7 +102,7 @@ const groupLabels = computed(() =>
 const state = reactive({ visible: false });
 const isEdit = computed(() => Object.keys(props.initialValue).length !== 0);
 const groupList = computed(getGroupList);
-// eslint-disable-next-line vue/require-typed-ref
+ 
 const form = ref(null);
 const formData = reactive({ name: '', categoryId: '' });
 

@@ -146,25 +146,25 @@ import StateFullscreenHead from './StateFullscreenHead.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MonacoEditor,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         StateTips,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         StateFullscreenHead,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyForm: Form,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyFormItem: FormItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyRadioGroup: RadioGroup,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         EditorI18nTool,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapse,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCollapseItem
     },
     props: {
@@ -216,7 +216,7 @@ export default {
         const DEFAULT_SETTER = 'function setter() {}';
 
         const LANG_TYPES = {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             JSON: 'json',
             JS: 'javascript'
         };
@@ -485,7 +485,7 @@ export default {
             renderLineHighlightOnlyWhenFocus: true
         };
         const getterExample =
-            // eslint-disable-next-line no-template-curly-in-string
+             
             'function getter() {\r\n  // this.state.name = `${this.props.firstName} ${this.props.lastName}`\r\n}';
         const setterExample =
             "function setter() {\r\n  // const [firstName, lastName] = this.state.name.split(' ')\r\n  // this.emit('update:firstName', firstName)\r\n  // this.emit('update:lastName', lastName)\r\n}";

@@ -62,11 +62,11 @@
 import { computed, reactive, ref } from 'vue';
 
 const props = defineProps({
-    // eslint-disable-next-line vue/require-typed-object-prop
+     
     data: { type: Array, default: () => [] },
-    // eslint-disable-next-line vue/require-default-prop
+     
     active: { type: String, default: undefined },
-    // eslint-disable-next-line vue/require-typed-object-prop
+     
     actives: { type: Array, default: () => [] },
     idKey: { type: String, default: 'id' },
     labelKey: { type: String, default: 'label' },

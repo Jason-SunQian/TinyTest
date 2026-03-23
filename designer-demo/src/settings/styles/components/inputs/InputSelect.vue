@@ -44,11 +44,11 @@ import { Input, Select, Option } from '@opentiny/vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyInput: Input,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinySelect: Select,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyOption: Option
     },
     props: {
@@ -69,7 +69,7 @@ export default {
             default: false
         },
         options: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Array,
             default: () => [
                 {
@@ -92,7 +92,7 @@ export default {
         }
     },
     emits: ['input-change', 'select-change'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const state = reactive({
             focus: false,

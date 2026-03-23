@@ -74,7 +74,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable vue/max-lines-per-block, vue/component-api-style, @typescript-eslint/naming-convention, import/order, vue/require-default-prop, vue/require-typed-object-prop, vue/require-typed-ref, default-case, @typescript-eslint/prefer-destructuring, @typescript-eslint/no-confusing-void-expression, vue/padding-line-between-blocks */
+/* eslint-disable import/order */
 import { onMounted, ref, computed, onUnmounted, watch, watchEffect } from 'vue';
 import { iframeMonitoring } from '@opentiny/tiny-engine-common/js/monitor';
 import {
@@ -123,21 +123,21 @@ import {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasAction,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasResize,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasMenu,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasDivider,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasResizeBorder,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasRouterJumper,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasViewerSwitcher,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         CanvasMultiDragIndicator
     },
     props: {
@@ -375,7 +375,7 @@ export default {
                         // 过滤掉非对象类型的 item（如数组、null、undefined 等）
                         return (
                             utils
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                 
                                 .filter((item: any) => {
                                     // 过滤掉数组、null、undefined 等无效项
                                     return (
@@ -384,7 +384,7 @@ export default {
                                         !Array.isArray(item)
                                     );
                                 })
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                 
                                 .map((item: any) => {
                                     // 确保 content 对象存在
                                     if (!item.content) {

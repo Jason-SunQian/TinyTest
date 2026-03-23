@@ -13,7 +13,7 @@ const durationMap = {
     error: 10000
 };
 
-/* eslint-disable import/exports-last, @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/naming-convention, new-cap, @typescript-eslint/no-confusing-void-expression */
+/* eslint-disable import/exports-last */
 
 interface NotifyOptions {
     [key: string]: unknown;
@@ -34,19 +34,19 @@ const translateMessage = (text: string, locale: string): string => {
     }
 
     // 常见的中文提示映射表
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     const translateMap: Record<string, string> = {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         '保存成功!': 'Save successful!',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         保存成功: 'Save successful',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         保存失败: 'Save failed',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         接口报错: 'API Error',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         '报错接口:': 'Error API:',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         '报错信息:': 'Error message:'
     };
 
@@ -127,7 +127,7 @@ const useNotifyI18n = (config: NotifyOptions) => {
         }
     }
 
-    // eslint-disable-next-line new-cap
+     
     Notify({
         duration: durationMap[type],
         ...otherConfig,

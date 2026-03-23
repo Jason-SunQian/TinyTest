@@ -60,19 +60,19 @@ import {
 export default {
     name: 'i18n-slot-configurator',
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyPopover: Popover,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         IconHelpCircle: iconHelpCircle()
     },
     props: {
         slots: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Array,
             default: () => []
         }
     },
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props) {
         const { locale } = useDesignerI18n();
         const slotList = ref([]);
@@ -212,7 +212,7 @@ export default {
                         slotList.value[i].bind = !slotList.value[i].bind;
 
                         const newChildren = schema.children.filter(
-                            // eslint-disable-next-line @typescript-eslint/no-shadow
+                             
                             ({ componentName, props: slotProps }) =>
                                 componentName !== 'Template' ||
                                 (slotProps?.slot !== name &&
@@ -225,7 +225,7 @@ export default {
                             value: { children: [...newChildren] }
                         });
                     },
-                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                     
                     cancel: () => {}
                 });
             }

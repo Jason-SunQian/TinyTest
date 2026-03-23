@@ -52,7 +52,7 @@ export default {
         iconArrowDown: iconArrowDown()
     },
     emits: ['cancel', 'select'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 

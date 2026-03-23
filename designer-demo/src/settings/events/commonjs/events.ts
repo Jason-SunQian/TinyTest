@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable import/exports-last, @typescript-eslint/naming-convention, camelcase */
+/* eslint-disable import/exports-last */
 /* metaService: engine.setting.event.commonjs-events */
 
 export const commonEvents = {

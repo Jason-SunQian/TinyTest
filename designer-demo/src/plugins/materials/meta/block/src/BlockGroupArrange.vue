@@ -23,9 +23,9 @@ import { Tabs, TabItem } from '@opentiny/vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabs: Tabs,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabItem: TabItem
     },
     props: {
@@ -39,7 +39,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const panelState = inject('panelState', {});
 

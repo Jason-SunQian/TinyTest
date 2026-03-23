@@ -75,28 +75,28 @@ import { getLocalizedText, containsChinese } from '@/utils/i18nHelper';
 export default {
     name: 'i18n-array-item-configurator',
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaList,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaListItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         MetaChildItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         VueDraggableNext
     },
     inheritAttrs: false,
     props: {
         meta: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Object,
             default: () => ({})
         },
-        // eslint-disable-next-line vue/require-typed-object-prop
+         
         expand: {
             type: Boolean,
             default: false
         },
-        // eslint-disable-next-line vue/require-typed-object-prop
+         
         disableDrag: {
             type: Boolean,
             default: false
@@ -104,7 +104,7 @@ export default {
     },
 
     emits: ['update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { locale } = useDesignerI18n();
         const { translate } = useTranslate();

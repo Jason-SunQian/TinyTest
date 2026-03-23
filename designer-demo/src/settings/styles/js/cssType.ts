@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 export const CSS_TYPE = {
     Css: 'css',
     Style: 'style'

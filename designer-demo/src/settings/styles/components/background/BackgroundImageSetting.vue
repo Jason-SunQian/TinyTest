@@ -47,34 +47,34 @@ import BackgroundImageGradient from './BackgroundImageGradient.vue';
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTooltip: Tooltip,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyCheckbox: Checkbox,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         InputSelect,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ColorConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TabsGroupConfigurator,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         PositionOrigin,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ImageSetting,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         LinearGradient,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         RadialGradient,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         ColorOverlay,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BackgroundImageGradient
     },
     props: {
         style: {
-            // eslint-disable-next-line vue/require-typed-object-prop
+             
             type: Object,
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
+             
             default: () => {}
         },
         effect: {
@@ -87,7 +87,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const state = reactive({
             style: {},
@@ -167,7 +167,7 @@ export default {
 
         return {
             state,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+             
             BACKGROUND_PROPERTY,
             selectType,
             updateStyle

@@ -3,7 +3,7 @@ import BindEventsDialogContent from './components/BindEventsDialogContent.vue';
 import BindEventsDialogSidebar from './components/BindEventsDialogSidebar.vue';
 import { commonEvents } from './commonjs/events';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+ 
 export const EventService = commonEvents;
 
 export default {
@@ -15,9 +15,9 @@ export default {
     entry,
     options: { commonEvents },
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BindEventsDialogSidebar,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         BindEventsDialogContent
     }
 };

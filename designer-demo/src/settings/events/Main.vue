@@ -43,7 +43,7 @@ import AdvanceConfig from './components/AdvanceConfig.vue';
 import BindEvents from './components/BindEvents.vue';
 
 defineProps({
-    // eslint-disable-next-line vue/require-default-prop
+     
     fixedPanels: {
         type: Array,
         default: undefined

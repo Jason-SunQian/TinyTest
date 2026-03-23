@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable import/exports-last, import/order, max-lines, @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/no-inferrable-types, @typescript-eslint/prefer-optional-chain, no-param-reassign, @typescript-eslint/init-declarations, @typescript-eslint/no-confusing-void-expression, @typescript-eslint/no-shadow, @typescript-eslint/naming-convention, no-undef-init, no-else-return, @typescript-eslint/no-misused-promises, no-console, @typescript-eslint/prefer-destructuring */
+/* eslint-disable import/exports-last, import/order, no-console */
 import { reactive, toRaw, nextTick, shallowReactive } from 'vue';
 import {
     addScript as appendScript,
@@ -50,19 +50,19 @@ export interface DragOffset {
 }
 
 export const POSITION = Object.freeze({
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     TOP: 'top',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     BOTTOM: 'bottom',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     LEFT: 'left',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     RIGHT: 'right',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     IN: 'in',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     OUT: 'out',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+     
     REPLACE: 'replace'
 } as const);
 
@@ -396,7 +396,7 @@ const insertInner = (
     if (!targetNode) {
         targetNode = useCanvas().pageState.pageSchema;
         if (!targetNode) {
-            // eslint-disable-next-line no-console
+             
             console.error(
                 '[insertInner] node and pageSchema are both null, cannot insert'
             );
@@ -1049,7 +1049,7 @@ export const insertNode = (
     if (!node.parent) {
         const pageSchema = useCanvas().pageState.pageSchema || getSchema();
         if (!pageSchema) {
-            // eslint-disable-next-line no-console
+             
             console.error(
                 '[insertNode] pageSchema and getSchema() are both null, cannot insert'
             );
@@ -1071,7 +1071,7 @@ export const insertNode = (
                     const pageSchema =
                         useCanvas().pageState.pageSchema || getSchema();
                     if (!pageSchema) {
-                        // eslint-disable-next-line no-console
+                         
                         console.error(
                             '[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert'
                         );
@@ -1096,7 +1096,7 @@ export const insertNode = (
                     const pageSchema =
                         useCanvas().pageState.pageSchema || getSchema();
                     if (!pageSchema) {
-                        // eslint-disable-next-line no-console
+                         
                         console.error(
                             '[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert'
                         );
@@ -1353,13 +1353,13 @@ export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
             const fromStore = getBlockFromMaterialStore(name);
             if (fromStore) {
                 if (typeof console !== 'undefined' && console.log) {
-                    // eslint-disable-next-line no-console
+                     
                     console.log('[Materials] getBlockByName 从物料 store 解析:', name, 'script:', fromStore[name]?.blobURL ? '有' : '无');
                 }
                 return fromStore;
             }
             if ((name === 'MpAccountInput' || name === 'MpProgress') && typeof console !== 'undefined' && console.log) {
-                // eslint-disable-next-line no-console
+                 
                 console.log('[Materials] getBlockByName 未从 store 解析，走原逻辑:', name);
             }
             return originalGetBlockByName(name);

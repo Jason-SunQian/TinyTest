@@ -1,6 +1,6 @@
 # Ionic 组件导入与桩方案
 
-> 本文档合并了原「Ionic画布样式问题根因」「Ionic组件桩方案」「主工程mr-segment桩实施指南」「桩样式自注入方案」及「组件导入注意事项」中 mr-segment 相关内容，作为 **Ionic 原子组件（MrSegment、MrSegmentButton、MrLabel 等）** 在设计器画布中的导入与桩实施统一说明。
+> 本文档合并了原「Ionic 画布样式问题根因」「Ionic 组件桩方案」「主工程 mr-segment 桩实施指南」「桩样式自注入方案」及「组件导入注意事项」中 mr-segment 相关内容，作为 **Ionic 原子组件（MrSegment、MrSegmentButton、MrLabel 等）** 在设计器画布中的导入与桩实施统一说明。
 
 ---
 
@@ -8,10 +8,10 @@
 
 主工程导出原子组件到设计器画布时：
 
-| 组件来源 | 画布表现 | 提取样式 |
-|----------|----------|----------|
-| **Vant 组件** | 能正常显示，有样式 | 提取后可在画布生效 |
-| **Ionic 组件** | 无样式或不可见 | **多次提取样式均无效** |
+| 组件来源       | 画布表现           | 提取样式               |
+| -------------- | ------------------ | ---------------------- |
+| **Vant 组件**  | 能正常显示，有样式 | 提取后可在画布生效     |
+| **Ionic 组件** | 无样式或不可见     | **多次提取样式均无效** |
 
 **原因**：Ionic 使用 Shadow DOM，外部 CSS 难以穿透；画布通过 `init_canvas_deps` → `importStyles` → `<link>` 注入的样式对 Ionic 组件不起作用。因此 Ionic 原子组件需采用**桩 + 样式自注入**，不能依赖「提取样式」方案。
 
@@ -19,11 +19,11 @@
 
 ## 一、为何采用桩
 
-| 尝试方向 | 问题 |
-|----------|------|
-| 画布直接加载 ion-segment | Ionic 使用 Shadow DOM，外部 CSS 难以穿透；Vue 与 Ionic Web Components 的 ref 上下文不兼容 |
-| 设计器注入 @ionic/core CSS | 主工程用 @mr/wise-core，与 @ionic/core 结构可能不一致 |
-| 物料协议 npm.css | 画布 CSS 注入链路复杂易失效，调试成本高 |
+| 尝试方向                   | 问题                                                                                      |
+| -------------------------- | ----------------------------------------------------------------------------------------- |
+| 画布直接加载 ion-segment   | Ionic 使用 Shadow DOM，外部 CSS 难以穿透；Vue 与 Ionic Web Components 的 ref 上下文不兼容 |
+| 设计器注入 @ionic/core CSS | 主工程用 @mr/wise-core，与 @ionic/core 结构可能不一致                                     |
+| 物料协议 npm.css           | 画布 CSS 注入链路复杂易失效，调试成本高                                                   |
 
 **结论**：对 MrSegment、MrSegmentButton、MrLabel 等 Ionic 原子组件，采用**画布桩**，与 MpAccountInput、mp-account-picker 等复杂组件做法一致。
 
@@ -37,39 +37,39 @@
 
 桩代码在主工程 `lowcode-materials/canvas-stubs/` 中，需包含：
 
-- `utils/inject-stub-styles.js`：通用注入函数
-- `styles/mr-segment-stub-styles.js`：样式常量（基于 token，fallback #333333 / #92949c）
-- `components/mr-segment-canvas.vue`：`onMounted` 调用 `injectStubStyles`，`provide` 选中值
-- `components/mr-segment-button-canvas.vue`：`onMounted` 调用 `injectStubStyles`，`inject` 父组件选中值
-- `components/mr-label-canvas.vue`：`onMounted` 调用 `injectStubStyles`
+-   `utils/inject-stub-styles.js`：通用注入函数
+-   `styles/mr-segment-stub-styles.js`：样式常量（基于 token，fallback #333333 / #92949c）
+-   `components/mr-segment-canvas.vue`：`onMounted` 调用 `injectStubStyles`，`provide` 选中值
+-   `components/mr-segment-button-canvas.vue`：`onMounted` 调用 `injectStubStyles`，`inject` 父组件选中值
+-   `components/mr-label-canvas.vue`：`onMounted` 调用 `injectStubStyles`
 
 入口：`entries/mr-components.js` 导出上述桩，manifest 中 MrSegment、MrSegmentButton、MrLabel 的 script 指向该入口。
 
 ### 2.2 默认选中配置与属性协议
 
-- **value / v-model**：物料 schema 中为 MrSegment 配置 `value`，对应主工程的 v-model（如 `v-model="segmentValue"`）。可选值：`default` | `segment` | `button` 等，需与子按钮的 `value` 匹配才显示选中态。
-- **scrollable**：主工程常用 `:scrollable="scrollable"`，manifest 的 schemaExtra 需包含该属性。
-- **v-model 协议**：events 中需声明 `onUpdate:value`，当 value 绑定为变量时出码会生成 `v-model:value="state.xxx"`。
+-   **value / v-model**：物料 schema 中为 MrSegment 配置 `value`，对应主工程的 v-model（如 `v-model="segmentValue"`）。可选值：`default` | `segment` | `button` 等，需与子按钮的 `value` 匹配才显示选中态。
+-   **scrollable**：主工程常用 `:scrollable="scrollable"`，manifest 的 schemaExtra 需包含该属性。
+-   **v-model 协议**：events 中需声明 `onUpdate:value`，当 value 绑定为变量时出码会生成 `v-model:value="state.xxx"`。
 
 ### 2.3 画布与出码的差异（重要）
 
-| 场景 | 表现 |
-|------|------|
-| **出码/预览** | value 配置正确生效，选中态与切换正常 |
+| 场景           | 表现                                                                           |
+| -------------- | ------------------------------------------------------------------------------ |
+| **出码/预览**  | value 配置正确生效，选中态与切换正常                                           |
 | **画布设计态** | 属性面板修改 value 后，画布桩可能不实时同步选中态（受 iframe/schema 同步限制） |
 
 **最低要求**：属性可配置、出码正确。画布实时同步为锦上添花，当前以出码为准。
 
 ### 2.4 子按钮 value 唯一性
 
-- 各 MrSegmentButton 的 `value` 必须唯一，否则出码后多个按钮会同时显示选中。
-- 设计器在预览/出码前会执行 `patchSchemaWithMaterialDefaults`（`useMaterial.ts`），自动修复重复或空的 value（按 default、segment、button、tab1… 分配）。
+-   各 MrSegmentButton 的 `value` 必须唯一，否则出码后多个按钮会同时显示选中。
+-   设计器在预览/出码前会执行 `patchSchemaWithMaterialDefaults`（`useMaterial.ts`），自动修复重复或空的 value（按 default、segment、button、tab1… 分配）。
 
 ### 2.5 子按钮 component-base-style 对齐覆盖
 
-- **现象**：后拖入的 MrSegmentButton 比 snippet 内默认按钮多出 `component-base-style`，带 `margin-top`，导致出码后对齐错位。
-- **原因**：设计器对拖入组件默认加 `component-base-style` 做间距；MrSegmentButton 是 ion-segment 的 flex 子项，额外 margin 会破坏水平对齐。
-- **处理**：在 `designer-demo/src/plugins/materials/constants.ts` 中配置 `COMPONENTS_SKIP_BASE_STYLE`，useMaterial 与 container 据此排除/移除该类名，不修改 packages。
+-   **现象**：后拖入的 MrSegmentButton 比 snippet 内默认按钮多出 `component-base-style`，带 `margin-top`，导致出码后对齐错位。
+-   **原因**：设计器对拖入组件默认加 `component-base-style` 做间距；MrSegmentButton 是 ion-segment 的 flex 子项，额外 margin 会破坏水平对齐。
+-   **处理**：在 `designer-demo/src/plugins/materials/constants.ts` 中配置 `COMPONENTS_SKIP_BASE_STYLE`，useMaterial 与 container 据此排除/移除该类名，不修改 packages。
 
 ### 2.6 MrLabel 文本属性（重要，经验总结）
 
@@ -77,10 +77,10 @@
 
 **根因**：`ion-label` / `mr-label` 使用 **默认 slot** 显示内容，不支持 `label` 属性。源码写法为 `<mr-label>{{ tab.label }}</mr-label>`，内容必须在 slot（即 schema 的 `children`）中。
 
-| 错误配置 | 正确配置 |
-|----------|----------|
-| `property: "label"` + InputConfigurator | `property: "children"` + InputConfigurator |
-| 出码：`<mr-label label="123"></mr-label>`（0x0 不显示） | 出码：`<mr-label>123</mr-label>` |
+| 错误配置                                                | 正确配置                                   |
+| ------------------------------------------------------- | ------------------------------------------ |
+| `property: "label"` + InputConfigurator                 | `property: "children"` + InputConfigurator |
+| 出码：`<mr-label label="123"></mr-label>`（0x0 不显示） | 出码：`<mr-label>123</mr-label>`           |
 
 **主工程 manifest 正确配置**（lowcode-materials/manifest.json）：
 
@@ -88,9 +88,9 @@
 
 ```json
 {
-  "property": "children",
-  "label": { "text": { "zh_CN": "文本", "en_US": "Text" } },
-  "widget": { "component": "InputConfigurator", "props": {} }
+    "property": "children",
+    "label": { "text": { "zh_CN": "文本", "en_US": "Text" } },
+    "widget": { "component": "InputConfigurator", "props": {} }
 }
 ```
 
@@ -98,9 +98,9 @@
 
 ```json
 {
-  "componentName": "MrLabel",
-  "props": {},
-  "children": "Label"
+    "componentName": "MrLabel",
+    "props": {},
+    "children": "Label"
 }
 ```
 
@@ -114,11 +114,11 @@
 
 **配置要点**：
 
-| 配置项 | 说明 |
-|--------|------|
-| **children** | 按钮文字在 slot 中，用 `property: "children"` + `InputConfigurator`（单行输入，避免 HtmlTextConfigurator 大区域） |
-| **snippetSchema** | 默认 `children: "Button"`，`props: { type: "primary" }` |
-| **type / size 选项** | SelectConfigurator 的 options 的 `label` 一律用**英文**（Default、Primary、Large、Normal 等），项目规定 |
+| 配置项               | 说明                                                                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **children**         | 按钮文字在 slot 中，用 `property: "children"` + `InputConfigurator`（单行输入，避免 HtmlTextConfigurator 大区域） |
+| **snippetSchema**    | 默认 `children: "Button"`，`props: { type: "primary" }`                                                           |
+| **type / size 选项** | SelectConfigurator 的 options 的 `label` 一律用**英文**（Default、Primary、Large、Normal 等），项目规定           |
 
 **vite 配置**：`vantToMr` 中增加 `Button: 'MrButton'`，业务组件 chunk 中 `import { Button } from 'vant'` 会替换为 `import { MrButton } from '@local/mr-components'`。
 
@@ -156,13 +156,13 @@ mr-segment 桩采用样式自注入（`injectStubStyles` + `mr-segment-stub-styl
 
 ## 四、与组件导入规则的衔接
 
-- **原子组件（MR 开头）**：主工程用 Ionic 的，设计器 mr 入口导出对应桩；不手写另一套实现替代。
-- **mr-segment / mr-segment-button / mr-label**：在 mr-components.js 中导出桩，manifest 增加物料条；MpTags 等依赖它们的业务组件才能正常渲染。
-- **出码**：仍生成真实组件引用（`<mr-segment>`、`<ion-segment>` 等），桩仅用于设计态画布展示。
+-   **原子组件（MR 开头）**：主工程用 Ionic 的，设计器 mr 入口导出对应桩；不手写另一套实现替代。
+-   **mr-segment / mr-segment-button / mr-label**：在 mr-components.js 中导出桩，manifest 增加物料条；MpTags 等依赖它们的业务组件才能正常渲染。
+-   **出码**：仍生成真实组件引用（`<mr-segment>`、`<ion-segment>` 等），桩仅用于设计态画布展示。
 
 ---
 
 ## 五、参考
 
-- [业务与原子组件导入方案](./业务与原子组件导入方案.md)
-- [组件导入注意事项](./组件导入注意事项.md)
+-   [业务与原子组件导入方案](./业务与原子组件导入方案.md)
+-   [组件导入注意事项](./组件导入注意事项.md)

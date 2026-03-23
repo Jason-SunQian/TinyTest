@@ -76,15 +76,15 @@ export const refresh = () => {
 
 export default {
     components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabs,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         TinyTabItem,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceSettingRemote,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceField,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         DataSourceSettingRecordList
     },
     props: {
@@ -102,12 +102,12 @@ export default {
         }
     },
     emits: ['activeTab', 'renderRemoteData'],
-    // eslint-disable-next-line vue/component-api-style
+     
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
         const { dataSourceState } = useDataSource();
-        // eslint-disable-next-line vue/require-typed-ref
+         
         const recordRef = ref(null);
 
         const state = reactive({
