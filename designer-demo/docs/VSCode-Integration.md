@@ -48,7 +48,7 @@ interface VSCodeMessage {
 | -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `language`           | string   | 语言（如 `en_US`、`zh_CN`）                                                                                                     |
 | `theme`              | string   | 主题（如 `light`、`dark`）                                                                                                      |
-| `materialBundleUrls` | string[] | 已废弃。物料包 URL 改由 HTML 注入 `window.TINY_MATERIAL_BUNDLE_URLS` 传递，getInitData 不再返回此字段。 |
+| ~~materialBundleUrls~~ | ~~string[]~~ | 已移除。物料包 URL 由 ASSETMANAGER + lowcode.config.json 解析后注入 `window.TINY_MATERIAL_BUNDLE_URLS`。 |
 
 **示例：**
 
@@ -66,7 +66,7 @@ getInitData(data => {
 
 ```typescript
 // 插件收到消息后，通过 callback 返回数据（语言、主题）
-// 物料包 URL 由 designerWebviewService 在 HTML 中注入 window.TINY_MATERIAL_BUNDLE_URLS
+// 物料包 URL 将由 ASSETMANAGER + lowcode.config.json 实现后在 HTML 中注入 window.TINY_MATERIAL_BUNDLE_URLS
 panel.webview.postMessage({
     source: 'vscode',
     method: 'getInitData',
@@ -85,7 +85,7 @@ panel.webview.postMessage({
 VITE_MATERIAL_BUNDLE_URLS=http://localhost:3000/bundle.json
 ```
 
-设计器通过 `window.TINY_MATERIAL_BUNDLE_URLS` 获取物料包 URL（由插件在 HTML 中注入），getInitData 不再传递物料 URL。
+设计器通过 `window.TINY_MATERIAL_BUNDLE_URLS` 获取物料包 URL；该变量由插件在 HTML 中注入（待 ASSETMANAGER + lowcode.config.json 实现），getInitData 不传递物料 URL。
 
 #### 2. `goSave(data, callback?)`
 
