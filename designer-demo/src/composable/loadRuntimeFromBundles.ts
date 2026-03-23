@@ -6,8 +6,8 @@
 import type { App } from 'vue';
 import { getMergeMeta } from '@opentiny/tiny-engine-meta-register';
 
-/** 与 getMaterialsRes 一致的 bundle URL 来源 */
-function getBundleUrls(): string[] {
+/** 与 getMaterialsRes 一致的 bundle URL 来源，合并 engine.config.material、window、env */
+export function getBundleUrls(): string[] {
     const fromConfig = getMergeMeta('engine.config')?.material || [];
     const configUrls = (Array.isArray(fromConfig) ? fromConfig : [fromConfig])
         .map((u: unknown) =>
@@ -40,25 +40,9 @@ function getBundleUrls(): string[] {
                   .filter(Boolean)
             : [];
 
-    const fromSearch =
-        typeof window !== 'undefined'
-            ? (() => {
-                  const params = new URLSearchParams(window.location.search);
-                  const single = params.get('materialBundle');
-                  const multi = params.get('materialBundles');
-                  if (single) return [single];
-                  if (multi)
-                      return multi
-                          .split(',')
-                          .map(s => s.trim())
-                          .filter(Boolean);
-                  return [];
-              })()
-            : [];
-
     const seen = new Set<string>();
     const result: string[] = [];
-    for (const u of [...configUrls, ...windowUrls, ...envUrls, ...fromSearch]) {
+    for (const u of [...configUrls, ...windowUrls, ...envUrls]) {
         if (u && !seen.has(u)) {
             seen.add(u);
             result.push(u);

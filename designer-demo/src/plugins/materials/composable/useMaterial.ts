@@ -16,7 +16,6 @@ import { reactive } from 'vue';
 import { utils, constants } from '@opentiny/tiny-engine-utils';
 import { meta as BuiltinComponentMaterials } from '@opentiny/tiny-engine-builtin-component';
 import {
-    getMergeMeta,
     getOptions,
     useCanvas,
     useBlock,
@@ -33,6 +32,7 @@ import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
 } from '@/utils/designerOrigin';
+import { getBundleUrls } from '@/composable/loadRuntimeFromBundles';
 
 import {
     getBlockCompileRes,
@@ -520,11 +520,10 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
             remoteBundleBases.add(base.replace(/\/$/, ''));
         }
     });
-    // 2) 从 engine.config.material 补充（远程 bundle 可能 skipScriptPreload，scripts 中无记录）
-    const materialUrls = getMergeMeta('engine.config')?.material || [];
-    (Array.isArray(materialUrls) ? materialUrls : [materialUrls]).forEach((url: unknown) => {
-        const u = typeof url === 'string' ? url : (url as { url?: string })?.url;
-        if (typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'))) {
+    // 2) 从全部物料 URL 来源补充（远程 bundle 可能 skipScriptPreload，scripts 中无记录）
+    const materialUrls = getBundleUrls();
+    materialUrls.forEach((u: string) => {
+        if (u.startsWith('http://') || u.startsWith('https://')) {
             const base = u.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '').replace(/\/$/, '');
             if (base) remoteBundleBases.add(base);
         }
@@ -795,7 +794,7 @@ const setMaterial = (name: string, data: Resource) => {
  * @returns getMaterialsRes: () =>  Promise<Materials>
  */
 const getMaterialsRes = async () => {
-    const bundleUrls = getMergeMeta('engine.config')?.material || [];
+    const bundleUrls = getBundleUrls();
     const materials = await Promise.allSettled(
          
         bundleUrls.map((url: any) =>
@@ -808,7 +807,7 @@ const getMaterialsRes = async () => {
 };
 
 const fetchMaterial = async () => {
-    const bundleUrls = getMergeMeta('engine.config')?.material || [];
+    const bundleUrls = getBundleUrls();
     const materials = await getMaterialsRes();
     materials.forEach((response, index) => {
         if (response.status !== 'fulfilled' || !response.value) return;

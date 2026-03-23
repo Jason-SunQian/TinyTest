@@ -7,7 +7,7 @@
 ## 设计器加载逻辑
 
 1. 设计器在 `appCreated` 时调用 `loadRuntimeModule()`。
-2. `loadRuntimeModule` 从 `engine.config.material`、`window.TINY_MATERIAL_BUNDLE_URLS`、URL 参数、环境变量等获取 bundle URL 列表（与 `getMaterialsRes` 一致）。
+2. `loadRuntimeModule` 从 `engine.config.material`、`window.TINY_MATERIAL_BUNDLE_URLS`、环境变量等获取 bundle URL 列表（与 `getMaterialsRes` 一致）。
 3. 依次请求各 bundle JSON，解析 `runtimeScript` 字段（支持顶层或 `data.runtimeScript`）。
 4. 若找到 `runtimeScript`，则 `import(runtimeScriptUrl)` 动态加载；若无或加载失败，则回退到设计器内置 `@/runtime`。
 

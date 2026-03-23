@@ -48,7 +48,7 @@ interface VSCodeMessage {
 | -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `language`           | string   | 语言（如 `en_US`、`zh_CN`）                                                                                                     |
 | `theme`              | string   | 主题（如 `light`、`dark`）                                                                                                      |
-| `materialBundleUrls` | string[] | 可选。额外物料包 URL 列表，设计器会合并并拉取；与 HTML 注入的 `window.TINY_MATERIAL_BUNDLE_URLS` 同效，收到后会触发一次物料刷新 |
+| `materialBundleUrls` | string[] | 已废弃。物料包 URL 改由 HTML 注入 `window.TINY_MATERIAL_BUNDLE_URLS` 传递，getInitData 不再返回此字段。 |
 
 **示例：**
 
@@ -58,36 +58,34 @@ import { getInitData } from '@/composable/useVSCodeBridge';
 getInitData(data => {
     console.log('语言:', data.language);
     console.log('主题:', data.theme);
-    if (data.materialBundleUrls?.length) {
-        console.log('物料包 URL:', data.materialBundleUrls);
-    }
+    // 物料包 URL 由 HTML 注入 window.TINY_MATERIAL_BUNDLE_URLS，设计器直接读取
 });
 ```
 
 **VSCode 插件响应：**
 
 ```typescript
-// 插件收到消息后，通过 callback 返回数据；materialBundleUrls 可由配置项 lowcode-designer.materialBundleUrls 读取
+// 插件收到消息后，通过 callback 返回数据（语言、主题）
+// 物料包 URL 由 designerWebviewService 在 HTML 中注入 window.TINY_MATERIAL_BUNDLE_URLS
 panel.webview.postMessage({
     source: 'vscode',
     method: 'getInitData',
     requestId: message.requestId,
     result: {
         language: 'en_US',
-        theme: 'light',
-        materialBundleUrls: ['http://localhost:3000/bundle.json'] // 可选
+        theme: 'light'
     }
 });
 ```
 
-**本地联调（非插件）**：可不通过 URL 参数，改用环境变量。在 `env/.env.development` 或 `env/.env.local` 中配置：
+**本地联调（非插件）**：在 `env/.env.development` 或 `env/.env.local` 中配置：
 
 ```bash
 # 逗号分隔多个 URL，例如主工程在 3000 端口 serve dist/lowcode-materials/bundle.json 时：
 VITE_MATERIAL_BUNDLE_URLS=http://localhost:3000/bundle.json
 ```
 
-设计器会在拉取物料时合并该配置，与 `getInitData.result.materialBundleUrls`、`window.TINY_MATERIAL_BUNDLE_URLS`、URL 参数 `materialBundle`/`materialBundles` 一致对待。
+设计器通过 `window.TINY_MATERIAL_BUNDLE_URLS` 获取物料包 URL（由插件在 HTML 中注入），getInitData 不再传递物料 URL。
 
 #### 2. `goSave(data, callback?)`
 
