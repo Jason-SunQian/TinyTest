@@ -64,11 +64,11 @@ export const api = {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MonacoEditor: VueMonaco,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginPanel
     },
     props: {
@@ -78,7 +78,7 @@ export default {
         }
     },
     emits: ['close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const docsUrl = useHelp().getDocsUrl('script');
@@ -98,14 +98,14 @@ export default {
         };
 
         // 提供国际化注入，确保子组件能正确使用 i18n
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const inst: any = (window as any).lowcodeI18n;
         if (inst) {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             provide(I18nInjectionKey as any, inst);
         } else {
             // 兜底：提供仅含 t 的最小实现
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             provide(I18nInjectionKey as any, { global: { t: designerT } });
         }
 
@@ -116,7 +116,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -184,7 +184,7 @@ export default {
         });
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             state,
             monaco,

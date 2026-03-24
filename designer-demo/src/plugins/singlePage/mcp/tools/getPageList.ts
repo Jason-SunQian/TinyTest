@@ -11,12 +11,12 @@ export const getPageList = {
         'Get a page list from the current TinyEngine low-code application. Use this when you need to get a page list from your application.',
     inputSchema: inputSchema.shape,
     callback: async () => {
-         
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { getPageList: fetchPageList } = usePage();
         const [firstGroup, secondGroup] = await fetchPageList();
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any[] = [];
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getPages = (list: any[]) => {
             list.forEach(item => {
                 data.push({

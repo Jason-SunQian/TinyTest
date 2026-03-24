@@ -11,7 +11,7 @@
  */
 
 /* metaService: engine.service.block.useBlock */
- 
+/* eslint-disable max-lines */
 import { ref, reactive, readonly, toRaw } from 'vue';
 import type { DeepReadonly } from 'vue';
 import { extend, copyArray } from '@opentiny/vue-renderless/common/object';
@@ -66,17 +66,17 @@ const nameCn = 'name_cn';
 const DEFAULT_PROPERTIES = readonly<Property[]>([
     {
         label: {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             zh_CN: '基础信息'
         },
         description: {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             zh_CN: '基础信息'
         },
         collapse: {
             number: 6,
             text: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '显示更多'
             }
         },
@@ -179,12 +179,12 @@ const copyCss = (css: string, classNameListParam: string[]) => {
 const copySchema = (
     schema: Partial<BlockContent['schema']>,
     contentList: string[],
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     methods: Record<string, any>
 ) => {
     const content = schema?.properties?.[0]?.content || [];
     let emitList: string[] = [];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const emitListCopies: Record<string, any> = {};
     Object.keys(methods).forEach(key => {
         const item = JSON.stringify(methods[key].value).match(/emit..*?\)/g);
@@ -223,14 +223,14 @@ const copySchema = (
     return schemaCopies;
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const copyMethods = (schema: Record<string, any>) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const methodsListCopies: Record<string, any> = {};
 
     // 因为methods方法里面大部分是用户的业务代码（无法复用）,所以只需要拷贝一个空方法即可
     Object.entries(schema).forEach(([key, value]) => {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ast: any = parseExpression(value.value);
 
         // 清空函数体
@@ -247,19 +247,19 @@ const copyMethods = (schema: Record<string, any>) => {
 };
 
 const copyState = (
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     stateObj: Record<string, any> = {},
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     methodsObj: Record<string, any> = {}
 ) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const stateCopies: Record<string, any> = {};
     const stateKey = Object.keys(stateObj).map(e => `state.${e} `);
 
     stateKey.forEach(e => {
         Object.keys(methodsObj).forEach(methodKey => {
             if (methodsObj[methodKey].value.indexOf(e) !== -1) {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 const key = e.replace('state.', '').replace(' ', '');
                 stateCopies[key] = stateObj[key];
             }
@@ -372,9 +372,9 @@ const getBlockPageSchema = (block: Block) => {
     return content;
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const initBlock = async (block: any = {}, _langs = {}, isEdit?: boolean) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-void
     void _langs;
     const { resetBlockCanvasState, setSaved, getSchema } = useCanvas();
     const { setBreadcrumbBlock } = useBreadcrumb();
@@ -407,7 +407,7 @@ const initBlock = async (block: any = {}, _langs = {}, isEdit?: boolean) => {
 };
 
 const createBlock = ({
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     name_cn,
     label,
     path,
@@ -467,7 +467,7 @@ const createBlock = ({
 
     const block: Block = {
         path,
-         
+        // eslint-disable-next-line camelcase
         [nameCn]: name_cn,
         label,
         histories: [],
@@ -491,7 +491,7 @@ const createBlock = ({
 };
 
 const createEmptyBlock = ({
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     name_cn,
     label,
     path,
@@ -499,7 +499,7 @@ const createEmptyBlock = ({
 }: CreateEmptyBlockOptions) => {
     const block: Block = {
         path,
-         
+        // eslint-disable-next-line camelcase
         [nameCn]: name_cn,
         label,
         categories,
@@ -518,11 +518,11 @@ const createEmptyBlock = ({
 
 const setComponentLinkedValue = ({
     propertyName,
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value
 }: {
     propertyName: string;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     value: any;
 }) => {
     const { schema } = useCanvas().canvasApi.value?.getCurrent?.() || {};
@@ -570,7 +570,7 @@ const addBlockProperty = (property: BlockProperty, block: Block) => {
     }
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const editBlockProperty = (property: BlockProperty, data: any) => {
     if (property.linked) {
         const value = {
@@ -615,7 +615,7 @@ const getBlockEvents = (block = {} as Block) =>
     block?.content?.schema?.events || {};
 
 const addBlockEvent = (
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     { name, event }: { name: string; event: any },
     block: Block
 ) => {
@@ -662,7 +662,7 @@ const appendEventEmit = ({
         const method = getMethods()?.[functionName];
 
         if (method?.type === SCHEMA_DATA_TYPE.JSFunction) {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const ast: any = parseExpression(method.value);
             const params = ast.params.map(
                 (param: { name: string }) => param.name
@@ -831,10 +831,10 @@ const getDateFromNow = (timeStamp = 0) => {
 
 // 将历史记录分组
 const splitBackupGroups = (
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     data: Array<{ updated_at: string | number; message: string; id: string }>
 ) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const backupList: Record<string, any> = {};
 
     if (!data?.length) return backupList;
@@ -938,11 +938,11 @@ const shouldReplaceCategoryWithGroup = () => {
 
 export default function useBlockComposable() {
     return {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         NODE_TYPE_PAGE,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DEFAULT_GROUP_ID,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DEFAULT_GROUP_NAME,
         selectedGroup,
         selectedBlock,

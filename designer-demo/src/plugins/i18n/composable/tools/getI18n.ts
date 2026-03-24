@@ -46,7 +46,7 @@ export const getI18n = {
 
         try {
             const { getLangs } = useTranslate();
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const langs = getLangs() as Record<string, any>;
 
             // 如果提供了key，返回特定的i18n条目（仍使用统一格式）

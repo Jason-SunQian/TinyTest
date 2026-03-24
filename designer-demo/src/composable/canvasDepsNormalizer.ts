@@ -10,7 +10,8 @@ function toAbsoluteUrl(url: string): string {
     if (typeof url !== 'string' || !url) return url;
     const win =
         typeof window !== 'undefined'
-            ? (window as Window & { TINY_DESIGNER_ORIGIN?: string })
+            ? // eslint-disable-next-line @typescript-eslint/naming-convention
+              (window as Window & { TINY_DESIGNER_ORIGIN?: string })
             : undefined;
     const designerBase = (
         getDesignerMaterialBaseUrl() ||
@@ -20,15 +21,25 @@ function toAbsoluteUrl(url: string): string {
     )
         .toString()
         .replace(/\/$/, '');
-    const remoteBase = (getMaterialsBaseFromBundleUrls() || '').replace(/\/$/, '');
+    const remoteBase = (getMaterialsBaseFromBundleUrls() || '').replace(
+        /\/$/,
+        ''
+    );
     const filename = url.replace(/^.*\//, '');
 
     // 远程主工程物料资源优先走 bundle base，避免 webview URI 的 403 和 bare specifier 导致 import map null。
-    if (url.startsWith('vscode-webview:') || url.startsWith('vscode-resource:')) {
+    if (
+        url.startsWith('vscode-webview:') ||
+        url.startsWith('vscode-resource:')
+    ) {
         return remoteBase ? `${remoteBase}/${filename}` : url;
     }
     if (url.startsWith('/')) {
-        return remoteBase ? `${remoteBase}${url}` : designerBase ? `${designerBase}${url}` : url;
+        return remoteBase
+            ? `${remoteBase}${url}`
+            : designerBase
+            ? `${designerBase}${url}`
+            : url;
     }
     if (
         !url.startsWith('http://') &&
@@ -51,9 +62,10 @@ type Deps = {
     styles?: string[] | Set<string>;
 };
 
-export function normalizeCanvasDeps(
-    deps: Deps
-): { normalized: Deps; changed: boolean } {
+export function normalizeCanvasDeps(deps: Deps): {
+    normalized: Deps;
+    changed: boolean;
+} {
     let changed = false;
     const scripts = Array.isArray(deps.scripts) ? deps.scripts : [];
     const styles = Array.isArray(deps.styles)
@@ -69,10 +81,7 @@ export function normalizeCanvasDeps(
                 return { ...item, script: absScript };
             }
         }
-        if (
-            item?.css &&
-            typeof item.css === 'string'
-        ) {
+        if (item?.css && typeof item.css === 'string') {
             const absCss = toAbsoluteUrl(item.css);
             if (absCss !== item.css) {
                 changed = true;

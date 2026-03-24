@@ -24,18 +24,18 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 
 const { HOST_TYPE } = constants;
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const state = reactive<{ langs: Record<string, any> }>({
     langs: {}
 });
 
 const currentLanguage = ref('zh_CN');
 const i18nResource = reactive<{
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     messages: Record<string, any>;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     locales: any[];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [x: string]: any;
 }>({
     messages: {},
@@ -44,7 +44,7 @@ const i18nResource = reactive<{
 const i18nApi = '/app-center/api/i18n/entries';
 const globalParams = {
     host: '',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     host_type: ''
 };
 
@@ -66,7 +66,7 @@ const removeI18n = (key = []) => {
 
     getMetaApi(META_SERVICE.Http).post(`${i18nApi}/bulk/delete`, {
         ...globalParams,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         key_in: key
     });
 };
@@ -78,7 +78,7 @@ const removeI18n = (key = []) => {
  * @returns
  */
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ensureI18n = (obj: { [x: string]: any; key: string }, send?: boolean) => {
     const { locales } = i18nResource;
     const contents = Object.fromEntries(
@@ -117,7 +117,7 @@ const ensureI18n = (obj: { [x: string]: any; key: string }, send?: boolean) => {
     }
 
     try {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const messages: Record<string, any> = {};
         Object.entries(contents).forEach(([locale, message]) => {
             messages[locale] = {
@@ -143,7 +143,7 @@ const getI18nData = () => {
 
 interface I18nOptions {
     init?: boolean;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     local?: any;
     host?: string;
     hostType?: string;
@@ -157,7 +157,7 @@ const getI18n = async ({
 
     if (local) {
         const locales = appSchemaState?.langs?.locales || [];
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const messages: Record<string, any> = {};
         const langs = getLangs();
 
@@ -239,11 +239,11 @@ const initBlockLocalI18n = async (langs = {}) => {
     useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages);
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const format = (str = '', params: Record<string, any> = {}) =>
     str.replace(/\$\{(.+?)\}/g, (_substr, key: string) => params[key] || '');
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const translate = (obj: { [x: string]: any }) => {
     const { type, key = utils.guid() } = obj || {};
 
@@ -272,7 +272,7 @@ const batchCreateI18n = ({
     }
 
     globalParams.host = host;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     globalParams.host_type = hostType || '';
 
     const { locales } = i18nResource;

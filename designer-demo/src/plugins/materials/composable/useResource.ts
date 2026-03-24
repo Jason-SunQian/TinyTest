@@ -31,35 +31,35 @@ import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus';
 const { COMPONENT_NAME, DEFAULT_INTERCEPTOR } = constants;
 
 interface AppSchemaState {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataSource: any[];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pageTree: any[];
     langs: {
         locales: Array<{
             lang: string;
         }>;
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         messages: any;
     };
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     utils: Array<{ [x: string]: any; type: string }>;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     globalState: any[];
     materialsDeps: {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         scripts: any[];
         styles: Set<unknown>;
     };
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     componentsMap?: any;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataHandler?: any;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     willFetch?: any;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     errorHandler?: any;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     bridge?: any;
     isDemo?: boolean;
 }
@@ -67,7 +67,7 @@ interface AppSchemaState {
 /**
  * 规范化单个 utils item，确保所有数据都有正确的结构（避免 setUtils 报错）
  */
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const normalizeUtilsItem = (item: any) => {
     // 过滤掉非对象类型的 item（如数组、null、undefined 等）
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
@@ -186,14 +186,14 @@ function goPage(pageId: string) {
 }
 
 interface PageInfo {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [x: string]: any;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     meta: any;
     id: string;
     fileName: string;
     componentName: string;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: any;
 }
 
@@ -228,9 +228,9 @@ const initBlock = async (blockId: string) => {
     const blockApi = getMetaApi(META_APP.BlockManage);
     const blockContent = await blockApi.getBlockById(blockId);
 
-     
+    // eslint-disable-next-line camelcase
     if (blockContent.public_scope_tenants?.length) {
-         
+        // eslint-disable-next-line camelcase
         blockContent.public_scope_tenants =
             blockContent.public_scope_tenants.map((e: { id: string }) => e.id);
     }
@@ -268,7 +268,7 @@ const initPageOrBlock = async () => {
                 page.componentName === COMPONENT_NAME.Page &&
                 page?.meta?.group !== 'publicPages'
         ) || {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             page_content: {
                 componentName: COMPONENT_NAME.Page
             }
@@ -314,7 +314,7 @@ const fetchAppState = async () => {
     // 规范化并过滤掉无效的 item（如数组、null 等）
     const normalizedUtils = (appData.utils || [])
         .map(normalizeUtilsItem)
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((item: any) => item !== null && item !== undefined);
     appSchemaState.utils = normalizedUtils;
     // eslint-disable-next-line no-console
@@ -353,7 +353,10 @@ const fetchResource = async ({ isInit = true } = {}) => {
     } catch (error) {
         // 插件环境或无 app 接口时 fetchAppState 可能失败，不阻断物料拉取（见文档 十二、阶段一）
         // eslint-disable-next-line no-console
-        console.warn('[useResource] fetchAppState failed, will still load materials:', error);
+        console.warn(
+            '[useResource] fetchAppState failed, will still load materials:',
+            error
+        );
     }
 
     useMaterial().initMaterial({ isInit, appData });
@@ -384,7 +387,7 @@ const getUtilsDeps = () => {
         });
 };
 
- 
+// eslint-disable-next-line func-names
 export default function useResourceExport() {
     return {
         appSchemaState,

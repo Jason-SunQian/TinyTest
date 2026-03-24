@@ -14,7 +14,7 @@
 import { ref } from 'vue';
 
 // 全局共享的面包屑数据
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const breadcrumbData = ref<any[]>([]);
 // 全局共享的类型
 const breadcrumbType = ref<'page' | 'block'>('page');
@@ -34,7 +34,7 @@ if (storedData) {
 }
 
 export default function useBreadcrumb() {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const setBreadcrumbPage = (value: any) => {
         breadcrumbType.value = 'page';
         breadcrumbData.value = value;
@@ -42,7 +42,7 @@ export default function useBreadcrumb() {
         sessionStorage.setItem('breadcrumbType', 'page');
     };
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const setBreadcrumbBlock = (value: any) => {
         breadcrumbType.value = 'block';
         breadcrumbData.value = value;

@@ -117,11 +117,11 @@ const FILE_SIZE_MAX = 4;
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyModal: Modal,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFileUpload: FileUpload
     },
     props: {
@@ -131,7 +131,7 @@ export default {
         }
     },
     emits: ['override', 'merge', 'close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const state = reactive({
@@ -213,7 +213,7 @@ export default {
             mergeData,
             closeImportModal,
             closeImportFailModal,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
             IconHelp: IconHelp(),
             t
         };

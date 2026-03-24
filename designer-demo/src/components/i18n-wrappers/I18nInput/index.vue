@@ -59,16 +59,16 @@ import { useDesignerI18n } from '@/services/i18nService';
 import BindI18n from '../BindI18n/index.vue';
 
 export default {
-     
+    // eslint-disable-next-line vue/component-definition-name-casing
     name: 'I18nInput',
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BindI18n,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconClose: IconClose()
     },
     inheritAttrs: false,
@@ -79,7 +79,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { currentLanguage, getLangs, i18nResource } = useTranslate();
@@ -87,9 +87,9 @@ export default {
         const isBind = computed(() => props.modelValue?.type === 'i18n');
         const inputValue = ref('');
         const i18nValue = ref(props.modelValue?.key || '');
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const addI1i8nRef = ref<any>(null);
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const popoverRef = ref<any>(null);
 
         watchEffect(() => {
@@ -97,13 +97,13 @@ export default {
             inputValue.value = useTranslate().translate(props.modelValue);
         });
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const inputChange = (event: { target: { value: any } }) => {
             // 直接修改时去掉绑定
             emit('update:modelValue', event.target.value);
         };
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const setI18n = (data: any) => {
             emit('update:modelValue', data);
         };

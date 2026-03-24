@@ -7,7 +7,7 @@ import type { App } from 'vue';
 import { getMergeMeta } from '@opentiny/tiny-engine-meta-register';
 
 /** 与 getMaterialsRes 一致的 bundle URL 来源，合并 engine.config.material、window、env */
-export function getBundleUrls(): string[] {
+function getBundleUrls(): string[] {
     const fromConfig = getMergeMeta('engine.config')?.material || [];
     const configUrls = (Array.isArray(fromConfig) ? fromConfig : [fromConfig])
         .map((u: unknown) =>
@@ -62,12 +62,18 @@ export function getBundleUrls(): string[] {
  * 从 bundle URL 推导其 base（用于解析 script/css 相对路径）。
  * 例：http://localhost:3000/bundle.json → http://localhost:3000
  */
-export function getBundleBaseFromUrl(bundleUrl: string): string {
-    const clean = bundleUrl.replace(/[#?].*$/, '').replace(/\/[^/]*$/, '').replace(/\/$/, '');
-    if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+function getBundleBaseFromUrl(bundleUrl: string): string {
+    const clean = bundleUrl
+        .replace(/[#?].*$/, '')
+        .replace(/\/[^/]*$/, '')
+        .replace(/\/$/, '');
+    if (clean.startsWith('http://') || clean.startsWith('https://'))
+        return clean;
     if (typeof window !== 'undefined') {
-        const origin = window.location.origin;
-        return clean.startsWith('/') ? `${origin}${clean}` : `${origin}/${clean}`;
+        const { origin } = window.location;
+        return clean.startsWith('/')
+            ? `${origin}${clean}`
+            : `${origin}/${clean}`;
     }
     return clean;
 }
@@ -76,10 +82,13 @@ export function getBundleBaseFromUrl(bundleUrl: string): string {
  * 从物料 bundle URL 列表中取第一个 HTTP URL 的 base，作为物料脚本/样式的解析基准。
  * 设计器加载组件时应用此 base，而非 design 的 origin（8090）。
  */
-export function getMaterialsBaseFromBundleUrls(): string | null {
+function getMaterialsBaseFromBundleUrls(): string | null {
     const urls = getBundleUrls();
     for (const u of urls) {
-        if (typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'))) {
+        if (
+            typeof u === 'string' &&
+            (u.startsWith('http://') || u.startsWith('https://'))
+        ) {
             const base = getBundleBaseFromUrl(u);
             if (base) return base;
         }
@@ -91,12 +100,15 @@ export function getMaterialsBaseFromBundleUrls(): string | null {
 function toAbsoluteBundleUrl(url: string): string {
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
     if (typeof window === 'undefined') return url;
+    /* eslint-disable @typescript-eslint/naming-convention -- 全局变量/环境变量名保持大写下划线 */
     const win = window as Window & { TINY_DESIGNER_ORIGIN?: string };
+    type EnvWithOrigin = ImportMetaEnv & { VITE_ORIGIN?: string };
     const origin = (
         win.TINY_DESIGNER_ORIGIN ||
-        (import.meta.env as { VITE_ORIGIN?: string }).VITE_ORIGIN ||
+        (import.meta.env as EnvWithOrigin).VITE_ORIGIN ||
         'http://localhost:8090'
     ).replace(/\/$/, '');
+    /* eslint-enable @typescript-eslint/naming-convention */
     return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
 }
 
@@ -155,7 +167,7 @@ function extractRuntimeScript(
  * 使用原生 fetch 拉取，避免 Http 的 preResponse 拦截器返回 res.data.data 导致 runtimeScript 丢失。
  * @returns runtimeScript 的绝对 URL，若无则返回 null
  */
-export async function findRuntimeScriptUrl(): Promise<string | null> {
+async function findRuntimeScriptUrl(): Promise<string | null> {
     const bundleUrls = getBundleUrls();
     // eslint-disable-next-line no-console
     console.log('[loadRuntimeFromBundles] bundle URL 列表:', bundleUrls);
@@ -187,14 +199,14 @@ export async function findRuntimeScriptUrl(): Promise<string | null> {
     return null;
 }
 
-export interface RuntimeModule {
+interface RuntimeModule {
     installRuntimeCompat: (app: App) => void;
 }
 
 /**
  * 加载 runtime 模块：优先从物料 bundle 的 runtimeScript 加载，失败则使用设计器内置 runtime。
  */
-export async function loadRuntimeModule(): Promise<RuntimeModule> {
+async function loadRuntimeModule(): Promise<RuntimeModule> {
     const url = await findRuntimeScriptUrl();
     if (url) {
         try {
@@ -227,3 +239,12 @@ export async function loadRuntimeModule(): Promise<RuntimeModule> {
     }
     return import('@/runtime');
 }
+
+export {
+    getBundleUrls,
+    getBundleBaseFromUrl,
+    getMaterialsBaseFromBundleUrls,
+    findRuntimeScriptUrl,
+    loadRuntimeModule
+};
+export type { RuntimeModule };

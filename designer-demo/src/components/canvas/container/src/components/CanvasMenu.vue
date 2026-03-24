@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable import/order */
+/* eslint-disable vue/max-lines-per-block, vue/component-api-style, @typescript-eslint/naming-convention, import/order, vue/require-typed-ref, prefer-template, @typescript-eslint/no-confusing-void-expression, no-else-return */
 import { ref, reactive, nextTick, computed } from 'vue';
 import {
     canvasState,
@@ -141,7 +141,7 @@ export const openMenu = event => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconRight: iconRight()
     },
     emits: ['insert'],
@@ -237,7 +237,7 @@ export default {
         ]);
 
         // 通过画布右键快捷新建区块
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const { SaveNewBlock } =
             getMergeMeta('engine.plugins.blockmanage')?.components || {};
 
@@ -485,7 +485,7 @@ export default {
         };
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             SaveNewBlock,
             menuState,
             filteredMenus,

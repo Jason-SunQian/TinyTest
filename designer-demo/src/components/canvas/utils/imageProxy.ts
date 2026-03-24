@@ -14,7 +14,7 @@ const isExternalUrl = (url: string): boolean => {
  * 判断是否是 VSCode 环境
  */
 const isVSCodeEnv = (): boolean => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (
         typeof window !== 'undefined' &&
         ((window as any).vscode || (window as any).vscodeBridge)
@@ -32,7 +32,7 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
         );
 
         // 通过代理获取图片，要求 VSCode 插件返回 base64 格式
-         
+        /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention */
         const response = await proxyHttpRequest({
             url,
             method: 'get',
@@ -42,7 +42,7 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
             responseType: 'base64',
             isImage: true
         } as any);
-         
+        /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/naming-convention */
 
         // 插件返回 base64 字符串，添加 data: 前缀
         if (typeof response === 'string') {
@@ -56,7 +56,7 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
                 !response.includes('://') &&
                 response.length > 100
             ) {
-                 
+                // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
                 const imageType =
                     (/\.(jpg|jpeg|png|gif|webp|svg|ico)/i.exec(url))?.[1]
                         ?.toLowerCase() || 'png';
@@ -71,7 +71,7 @@ const loadImageViaProxy = async (url: string): Promise<string> => {
                 return data;
             }
             if (typeof data === 'string' && data.length > 100) {
-                 
+                // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
                 const imageType =
                     (/\.(jpg|jpeg|png|gif|webp|svg|ico)/i.exec(url))?.[1]
                         ?.toLowerCase() || 'png';

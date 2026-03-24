@@ -11,7 +11,7 @@
 </template>
 <!-- eslint-disable-next-line -->
 <script lang="ts">
- 
+/* eslint-disable max-lines */
 /* metaService: engine.toolbars.preview.Main */
 import { previewPage } from '@opentiny/tiny-engine-common/js/preview';
 import { toRaw } from 'vue';
@@ -32,17 +32,17 @@ import {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ToolbarBase
     },
     props: {
         options: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         // 统一的国际化钩子：t、locale均可用
         const { t } = useDesignerI18n();
@@ -98,24 +98,29 @@ export default {
 
                 // 序列化数据：去除 Vue 响应式包装和不可序列化的属性（函数、循环引用等）
                 // 使用 JSON.parse(JSON.stringify()) 确保数据可以安全地通过 postMessage 传递
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let pageSchema: any = null;
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let pageData: any = null;
+
+                const parseAndPatchSchema = (raw: unknown): unknown => {
+                    const stringified = JSON.stringify(raw);
+                    if (!stringified || stringified === 'undefined')
+                        return null;
+                    const parsed = JSON.parse(stringified);
+                    const materialApi = useMaterial();
+                    if (
+                        typeof materialApi?.patchSchemaWithMaterialDefaults ===
+                        'function'
+                    ) {
+                        materialApi.patchSchemaWithMaterialDefaults(parsed);
+                    }
+                    return parsed;
+                };
 
                 try {
                     if (rawPageSchema) {
-                        // 先使用 toRaw 去除响应式包装，再序列化
-                        const rawSchema = toRaw(rawPageSchema);
-                        const stringified = JSON.stringify(rawSchema);
-                        if (stringified && stringified !== 'undefined') {
-                            pageSchema = JSON.parse(stringified);
-                            // 若当前环境有该方法则补全物料默认 props（插件环境下 meta-register 可能未暴露此方法，不依赖以免报错）
-                            const materialApi = useMaterial();
-                            if (typeof materialApi?.patchSchemaWithMaterialDefaults === 'function') {
-                                materialApi.patchSchemaWithMaterialDefaults(pageSchema);
-                            }
-                        }
+                        pageSchema = parseAndPatchSchema(toRaw(rawPageSchema));
                     }
 
                     if (currentPage) {
@@ -123,11 +128,11 @@ export default {
                         const rawPage = toRaw(currentPage);
                         pageData = JSON.parse(JSON.stringify(rawPage));
                         if (pageSchema) {
-                             
+                            /* eslint-disable-next-line @typescript-eslint/naming-convention, camelcase */
                             pageData.page_content = pageSchema;
                         }
                     } else if (pageSchema) {
-                         
+                        /* eslint-disable-next-line @typescript-eslint/naming-convention, camelcase */
                         pageData = { page_content: pageSchema };
                     }
                 } catch (error) {
@@ -137,18 +142,29 @@ export default {
                     useNotify({
                         type: 'error',
                         message:
-                            (error instanceof Error ? error.message : String(error)) ||
+                            (error instanceof Error
+                                ? error.message
+                                : String(error)) ||
                             t('designer.vscode.previewFailed')
                     });
                     return;
                 }
 
                 // 发送前再序列化一次，确保 payload 完全可克隆，避免 postMessage DataCloneError
-                let payloadToSend: { pageId: string; pageSchema: any; pageData: any };
+                type PreviewPayload = {
+                    pageId: string;
+                    pageSchema: unknown;
+                    pageData: unknown;
+                };
+                let payloadToSend: PreviewPayload = {
+                    pageId,
+                    pageSchema: pageSchema ?? null,
+                    pageData: pageData ?? null
+                };
                 try {
                     payloadToSend = JSON.parse(
                         JSON.stringify({ pageId, pageSchema, pageData })
-                    );
+                    ) as PreviewPayload;
                 } catch (e) {
                     useNotify({
                         type: 'error',
@@ -157,25 +173,22 @@ export default {
                     return;
                 }
 
-                goPreview(
-                    payloadToSend,
-                    (success, error) => {
-                        if (!success) {
-                            useNotify({
-                                type: 'error',
-                                message:
-                                    error?.message ||
-                                    t('designer.vscode.previewFailed')
-                            });
-                        } else {
-                            // 预览成功，可以添加成功提示（如果需要）
-                            // eslint-disable-next-line no-console
-                            console.log(
-                                '[Preview] Preview opened successfully in VSCode'
-                            );
-                        }
+                goPreview(payloadToSend, (success, error) => {
+                    if (!success) {
+                        useNotify({
+                            type: 'error',
+                            message:
+                                error?.message ||
+                                t('designer.vscode.previewFailed')
+                        });
+                    } else {
+                        // 预览成功，可以添加成功提示（如果需要）
+                        // eslint-disable-next-line no-console
+                        console.log(
+                            '[Preview] Preview opened successfully in VSCode'
+                        );
                     }
-                );
+                });
                 return;
             }
 

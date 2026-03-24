@@ -68,9 +68,9 @@ import {
 export default {
     name: 'custom-lang-toolbar',
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ToolbarBase
     },
     props: {
@@ -79,7 +79,7 @@ export default {
             default: () => ({})
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const currentLanguage = ref(getCurrentLanguage());
         const supportedLanguages = ref<LanguageConfig[]>(
@@ -88,7 +88,7 @@ export default {
 
         // 监听 i18n 实例的语言变化，同步更新 currentLanguage
         const syncLanguageFromI18n = () => {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const instance: any = (window as any).lowcodeI18n;
             if (instance?.global?.locale?.value) {
                 const newLang = instance.global.locale.value;
@@ -131,7 +131,7 @@ export default {
             () => currentLanguageConfig.value?.flag || '🇺🇸'
         );
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         const toggle = () => {};
 
         const switchTo = (locale: string) => {

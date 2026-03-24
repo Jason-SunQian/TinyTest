@@ -33,7 +33,7 @@ const state = reactive({
 
 const isLoading = ref(false);
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const saveBlock = async (pageSchema: any) => {
     const api = getMetaApi('engine.plugins.customBlockManage');
     const { getCurrentBlock } = useBlock();
@@ -46,7 +46,7 @@ const saveBlock = async (pageSchema: any) => {
     isLoading.value = false;
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const savePage = async (pageSchema: any) => {
     const { currentPage } = useCanvas().pageState;
 
@@ -116,7 +116,7 @@ const savePage = async (pageSchema: any) => {
     // }
 
     // 非 VSCode 环境，使用原有方式保存
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     const params = { page_content: pageSchema };
     isLoading.value = true;
 
@@ -191,7 +191,7 @@ export const saveCommon = (value?: string) => {
     if (pageSettingState?.isAIPage) {
         if (isTemporaryPage.saved) isTemporaryPage.saved = false;
         isTemporaryPage.saved = true;
-         
+        // eslint-disable-next-line camelcase
         pageSettingState.currentPageData.page_content = schemaToSave;
         return Promise.resolve();
     }
@@ -262,7 +262,7 @@ export const openCommon = async () => {
     const pageStatus = useLayout().layoutState?.pageStatus;
     const curPageState = pageStatus?.state;
     const pageInfo = pageStatus?.data;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ERR_MSG: Record<string, string> = {
         [PAGE_STATUS.Release]: '当前页面未锁定，请先锁定再保存',
         [PAGE_STATUS.Empty]: '当前应用无页面，请先新建页面再保存',
@@ -324,7 +324,7 @@ export const getAutoSaveStatus = () => {
     }
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const setAutoSaveStatus = (status: any) => {
     try {
         localStorage.setItem(AUTO_SAVED, JSON.stringify(status));

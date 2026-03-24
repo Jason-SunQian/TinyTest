@@ -27,7 +27,7 @@ defineEmits<{
     click: [];
 }>();
 
- 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const TinySteps = Steps;
 
 // 使用 useDesignerI18n 确保国际化正常工作

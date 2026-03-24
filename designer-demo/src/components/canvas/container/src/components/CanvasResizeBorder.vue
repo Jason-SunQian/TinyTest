@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable import/order */
+/* eslint-disable vue/max-lines-per-block, vue/component-api-style, vue/require-default-prop, eqeqeq, import/order, vue/require-typed-object-prop */
 import { reactive, watch } from 'vue';
 
 import { useLayout, useCanvas } from '@opentiny/tiny-engine-meta-register';

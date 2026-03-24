@@ -3,7 +3,7 @@
  * 用于在 VSCode 环境中从 mock 文件中获取数据
  */
 
- 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { MockMethod } from 'vite-plugin-mock';
 
 // 动态导入 mock 文件

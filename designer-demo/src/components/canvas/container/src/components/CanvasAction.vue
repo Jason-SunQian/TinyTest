@@ -173,7 +173,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable import/order */
+/* eslint-disable vue/max-lines-per-block, import/order, @typescript-eslint/naming-convention, new-cap, @typescript-eslint/prefer-destructuring, @typescript-eslint/explicit-member-accessibility, @typescript-eslint/no-misused-promises, vue/require-typed-object-prop, vue/require-default-prop, vue/component-api-style, vue/require-typed-ref */
 import { watchPostEffect, ref, watch, computed, nextTick } from 'vue';
 import {
     IconDel,
@@ -224,22 +224,22 @@ const STYLE_UNSET = 'unset';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconDel: IconDel(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconSetting: IconSetting(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconChevronLeft: IconChevronLeft(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconArrowDown: IconArrowDown(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconArrowUp: IconArrowUp(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconCopy: IconCopy(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconEyeclose: IconEyeclose(),
         shortCutPopover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover
     },
     props: {
@@ -452,13 +452,13 @@ export default {
         const labelStyle = ref('');
 
         const positions = {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             LEFT: 'left',
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             RIGHT: 'right',
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             TOP: 'top',
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BOTTOM: 'bottom',
             isHorizontal(position) {
                 return [this.LEFT, this.RIGHT].includes(position);
@@ -469,13 +469,13 @@ export default {
         };
 
         class Align {
-             
+            // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
             alignLeft = false;
-             
+            // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
             horizontalValue = 0;
-             
+            // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
             alignTop = false;
-             
+            // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
             verticalValue = 0;
 
             constructor({
@@ -526,7 +526,7 @@ export default {
                 return this.styleObj2Str(styleObj);
             }
 
-             
+            // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
             styleObj2Str = styleObj => {
                 return Object.entries(styleObj)
                     .map(([key, value]) => {

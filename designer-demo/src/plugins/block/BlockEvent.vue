@@ -40,17 +40,17 @@ import { getEditEvent } from './js/blockSetting';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyRow,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCol,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyAlert,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockGuide,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockEventList,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockEventForm
     },
     props: {
@@ -59,10 +59,10 @@ export default {
             default: false
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         // 获取国际化 t 函数
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 

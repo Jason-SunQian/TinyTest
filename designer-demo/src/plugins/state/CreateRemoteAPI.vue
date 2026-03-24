@@ -122,7 +122,7 @@
 <!-- eslint-disable-next-line -->
 <script lang="ts">
 /* metaService: engine.plugins.state.CreateRemoteAPI */
- 
+/* eslint-disable max-lines */
 import { getCurrentInstance, reactive } from 'vue';
 import {
     ButtonGroup,
@@ -145,27 +145,27 @@ import CreateFunction from './CreateRemoteFunction.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line
         MonacoEditor,
-         
+        // eslint-disable-next-line
         CreateFunction,
-         
+        // eslint-disable-next-line
         TinyForm: Form,
-         
+        // eslint-disable-next-line
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line
         TinyInput: Input,
-         
+        // eslint-disable-next-line
         TinySwitch: Switch,
-         
+        // eslint-disable-next-line
         TinyButtonGroup: ButtonGroup,
-         
+        // eslint-disable-next-line
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line
         IconPlus: iconPlus(),
-         
+        // eslint-disable-next-line
         TinyButton: Button,
-         
+        // eslint-disable-next-line
         MetaDescription
     },
     props: {
@@ -185,7 +185,7 @@ export default {
         }
     },
     emits: ['addFunction', 'removeFunction'],
-     
+    // eslint-disable-next-line
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const instance = getCurrentInstance();

@@ -128,7 +128,7 @@
                                     class="code-icon"
                                     @click="
                                         editorModalRef?.open &&
-                                        editorModalRef.open()
+                                            editorModalRef.open()
                                     "
                                 ></icon-writing>
                             </tiny-tooltip>
@@ -192,7 +192,7 @@ import {
 
 const { parseFunction: generateFunction } = utils;
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const hasRule = (required: any, rules: string | any[]) => {
     if (required) {
         return true;
@@ -201,65 +201,65 @@ const hasRule = (required: any, rules: string | any[]) => {
 };
 
 export default {
-     
+    // eslint-disable-next-line vue/component-definition-name-casing, vue/multi-word-component-names
     name: 'ConfigItem',
     components: {
         // MultiTypeSelector 使用组件名，如果已全局注册
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip: Tooltip,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconWriting: IconWriting(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconPlusCircle: IconPlusCircle(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconHelpCircle: IconHelpCircle()
     },
     props: {
         properties: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: [Array, Object],
             default: () => []
         },
         property: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         },
         isTopLayer: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Boolean,
             default: false
         },
         onlyEdit: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Boolean,
             default: false
         },
         group: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         },
         metaComponents: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         },
         showMessageError: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Boolean,
             default: false
         }
     },
     emits: ['update:modelValue'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props: Record<string, unknown>, { emit }) {
         // 使用国际化的 CodeConfigurator（已通过 configurators 注册覆盖）
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const CodeConfigurator = getConfigurator('CodeConfigurator');
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const VariableConfigurator = getConfigurator('VariableConfigurator');
 
         const { t, locale } = useDesignerI18n();
@@ -271,7 +271,7 @@ export default {
                 hasRule(props.property?.required, props.property?.rules)
             )
         });
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const editorModalRef = ref<any>(null);
         const currentProperty = inject('currentProperty', null);
         const propsObj = inject('propsObj', null);
@@ -333,7 +333,7 @@ export default {
                 }
                 if (typeof labelObj?.text === 'object' && labelObj.text) {
                     // 如果 label.text 是对象，尝试获取第一个值
-                     
+                    // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                     const firstKey = Object.keys(labelObj.text)[0];
                     if (firstKey && labelObj.text[firstKey]) {
                         return labelObj.text[firstKey];
@@ -383,7 +383,7 @@ export default {
             const currentLang = locale.value;
 
             // 优先使用 description
-             
+            // eslint-disable-next-line no-inline-comments, line-comment-position
             if (props.property?.description) {
                 // 先尝试获取当前语言的翻译
                 let desc = getLocalizedText(
@@ -506,10 +506,10 @@ export default {
         });
 
         const updateValue = (value: {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             type?: any;
             componentName?: string;
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             props?: { name: any };
         }) => {
             const { property, type } = props.property;
@@ -519,20 +519,25 @@ export default {
             if (value?.type === SCHEMA_DATA_TYPE.JSExpression) {
                 const schema = getSchema();
                 // 安全检查：确保 schema 存在（VSCode 环境中可能为 null）
-                if (schema && schema.componentName) {
+                if (schema?.componentName) {
                     const currentComponent = schema.componentName;
-                    const material = useMaterial().getMaterial(currentComponent);
-                    
+                    const material =
+                        useMaterial().getMaterial(currentComponent);
+
                     // 安全检查：确保 material 存在
                     if (material?.schema?.events) {
                         const { events = {} } = material.schema;
 
-                        if (Object.keys(events).includes(`onUpdate:${property}`)) {
+                        if (
+                            Object.keys(events).includes(`onUpdate:${property}`)
+                        ) {
                             // 默认情况下，v-model 在组件上都是使用 modelValue 作为 prop，并以 update:modelValue 作为对应的事件。
                             // 支持指定参数的 v-model，如：`v-model:visible`，如果组件使用的是除 modelValue 之外的其它参数，则将该参数显式声明为 prop
                             const model =
-                                property === 'modelValue' ? true : { prop: property };
-                             
+                                property === 'modelValue'
+                                    ? true
+                                    : { prop: property };
+                            // eslint-disable-next-line no-param-reassign
                             value = { ...value, model };
                         }
                     }
@@ -544,7 +549,7 @@ export default {
             if (property === 'children') {
                 const schema = getSchema();
                 // 安全检查：确保 schema 存在
-                if (schema && schema.id) {
+                if (schema?.id) {
                     operateNode({
                         type: 'updateAttributes',
                         id: schema.id,
@@ -552,7 +557,9 @@ export default {
                     });
                 } else {
                     // eslint-disable-next-line no-console
-                    console.warn('[ConfigItem] Cannot update children: schema is null or missing id');
+                    console.warn(
+                        '[ConfigItem] Cannot update children: schema is null or missing id'
+                    );
                 }
             } else {
                 if (
@@ -571,7 +578,7 @@ export default {
                     )
                 ) {
                     // icon以组件形式传入，实现类似:icon="IconPlus"的图标配置（排除Icon组件本身）
-                     
+                    // eslint-disable-next-line no-param-reassign
                     value = {
                         componentName: 'Icon',
                         props: {
@@ -589,7 +596,7 @@ export default {
         };
 
         const setVerifyFailed = (
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             result: { failed: any; message: any },
             message: string
         ) => {
@@ -619,7 +626,7 @@ export default {
             return !isEmptyInputValue(value);
         };
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const verifyValue = (value = '', rules: any[] = []) => {
             const result = {
                 failed: false,
@@ -636,7 +643,7 @@ export default {
                 return result;
             }
 
-             
+            // eslint-disable-next-line @typescript-eslint/prefer-destructuring
             const length = rules.length;
             const { getProp } = useProperties();
 
@@ -678,7 +685,7 @@ export default {
 
         const executeRelationAction = (
             value: string | undefined,
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             preValue: any
         ) => {
             const { onChange, rules } = props.property;
@@ -706,7 +713,7 @@ export default {
             Object.assign(verification, verifyValue(value, rules));
         };
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const onModelUpdate = (data: any, shouldUpdate = true) => {
             const preValue = bindValue.value;
             widget.value.props.modelValue = data;
@@ -722,7 +729,7 @@ export default {
         const parentData = inject('data', null);
         provide(
             'path',
-             
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, prefer-template
             `${parentPath ? parentPath + '.' : ''}${props.property.property}`
         );
         provide('data', useProperties().getSchema());
@@ -771,7 +778,7 @@ export default {
             }
         };
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const isRelatedComponents = (component: string) =>
             [
                 'RelatedEditorConfigurator',
@@ -786,9 +793,9 @@ export default {
         );
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             CodeConfigurator,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             VariableConfigurator,
             verification,
             showCodeEditIcon,

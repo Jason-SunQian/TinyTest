@@ -29,7 +29,7 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip
     },
     props: {
@@ -42,7 +42,7 @@ export default {
             default: '帮助'
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         return { t };

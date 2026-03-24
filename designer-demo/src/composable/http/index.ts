@@ -1,4 +1,4 @@
- 
+/* eslint-disable max-lines */
 import { createApp } from 'vue';
 import { HttpService } from '@opentiny/tiny-engine';
 import { useBroadcastChannel } from '@vueuse/core';
@@ -17,12 +17,12 @@ const { post: globalNotify } = useBroadcastChannel({
     name: BROADCAST_CHANNEL.Notify
 });
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const procession: any = {
     promiseLogin: null,
     mePromise: {}
 };
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let loginVM: any = null;
 
 const showError = (url?: string, message?: string) => {
@@ -216,7 +216,7 @@ const createVSCodeHttpAdapter = () => {
         return vscodeHttpAdapter;
     }
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isVsCodeEnv = (window as any).vscode || (window as any).vscodeBridge;
 
     if (!isVsCodeEnv) {
@@ -271,10 +271,16 @@ const createVSCodeHttpAdapter = () => {
             // eslint-disable-next-line no-console
             console.log(
                 `[HTTP Service] 请求处理: ${method.toUpperCase()} ${requestUrl}`,
-                { isFixedMock, command: command || (isFixedMock ? 'fixed-mock' : 'proxyHttpRequest'), normalizedUrl: requestUrl }
+                {
+                    isFixedMock,
+                    command:
+                        command ||
+                        (isFixedMock ? 'fixed-mock' : 'proxyHttpRequest'),
+                    normalizedUrl: requestUrl
+                }
             );
 
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let response: { data: any; locale?: string } = { data: null };
 
             if (isFixedMock) {
@@ -288,10 +294,14 @@ const createVSCodeHttpAdapter = () => {
                 if (mockResult) {
                     response = mockResult;
                     // eslint-disable-next-line no-console
-                    console.log(`[HTTP Service] 固定 Mock 返回: ${method.toUpperCase()} ${requestUrl}`);
+                    console.log(
+                        `[HTTP Service] 固定 Mock 返回: ${method.toUpperCase()} ${requestUrl}`
+                    );
                 } else {
                     // eslint-disable-next-line no-console
-                    console.warn(`[HTTP Service] 固定 Mock 未找到数据: ${method.toUpperCase()} ${requestUrl}，返回空响应`);
+                    console.warn(
+                        `[HTTP Service] 固定 Mock 未找到数据: ${method.toUpperCase()} ${requestUrl}，返回空响应`
+                    );
                     response = { data: null };
                 }
             } else if (command) {
@@ -312,7 +322,10 @@ const createVSCodeHttpAdapter = () => {
 
                 response = result || { data: null };
                 // eslint-disable-next-line no-console
-                console.log(`[HTTP Service] 插件接口返回: ${method.toUpperCase()} ${requestUrl}`, { command });
+                console.log(
+                    `[HTTP Service] 插件接口返回: ${method.toUpperCase()} ${requestUrl}`,
+                    { command }
+                );
             } else {
                 const { callVSCodeCommand } = await import(
                     '../useVSCodeBridge'
@@ -341,7 +354,9 @@ const createVSCodeHttpAdapter = () => {
 
                 response = result || { data: null };
                 // eslint-disable-next-line no-console
-                console.log(`[HTTP Service] 插件返回(未知接口): ${method.toUpperCase()} ${requestUrl}`);
+                console.log(
+                    `[HTTP Service] 插件返回(未知接口): ${method.toUpperCase()} ${requestUrl}`
+                );
             }
 
             // 返回符合axios响应格式的数据
@@ -352,7 +367,7 @@ const createVSCodeHttpAdapter = () => {
                 headers: {},
                 config
             };
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             // eslint-disable-next-line no-console
             console.error(
@@ -362,13 +377,13 @@ const createVSCodeHttpAdapter = () => {
                 error?.message || error
             );
             // 如果代理失败，返回错误响应
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const errorResponse = {
                 data: { error: error?.message || 'Request failed' },
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 status: (error as any)?.status || 500,
                 statusText:
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (error as any)?.statusText || 'Internal Server Error',
                 headers: {},
                 config
@@ -391,7 +406,7 @@ const preRequest = (
         config.baseURL = '';
     }
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isVsCodeEnv = (window as any).vscode || (window as any).vscodeBridge;
 
     if (isVsCodeEnv) {
@@ -404,12 +419,14 @@ const preRequest = (
         const http = HttpService.apis.getHttp();
         if (http) {
             const adapter = createVSCodeHttpAdapter();
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (adapter && (http.defaults as any).adapter !== adapter) {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (http.defaults as any).adapter = adapter;
                 // eslint-disable-next-line no-console
-                console.log('[HTTP Service] VSCode adapter 已设置，请求将走拦截');
+                console.log(
+                    '[HTTP Service] VSCode adapter 已设置，请求将走拦截'
+                );
             }
         }
 
@@ -417,14 +434,16 @@ const preRequest = (
         if (!config.adapter) {
             const adapter = createVSCodeHttpAdapter();
             if (adapter) {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 config.adapter = adapter;
             }
         }
     } else if (config.url?.includes('/platform-center/api/user/me')) {
         // eslint-disable-next-line no-console
         console.log(
-            `[HTTP Service] 非 VSCode 环境: ${config.method?.toUpperCase() || 'GET'} ${config.url} 将发往服务器`
+            `[HTTP Service] 非 VSCode 环境: ${
+                config.method?.toUpperCase() || 'GET'
+            } ${config.url} 将发往服务器`
         );
     }
 
@@ -451,15 +470,15 @@ const preResponse = (
 };
 
 const openLogin = () => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!(window as any).lowcode) {
         const loginDom = document.createElement('div');
         document.body.appendChild(loginDom);
         loginVM = createApp(Login).mount(loginDom);
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).lowcode = {
             platformCenter: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 Session: {
                     rebuiltCallback() {
                         loginVM.closeLogin();
@@ -479,23 +498,23 @@ const openLogin = () => {
                 procession,
                 '/api/rebuildSession'
             );
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             procession.promiseLogin.then((response: any) => {
                 HttpService.apis
                     .request(response.config)
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .then(resolve as any, reject as any);
             });
         }
     });
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const errorResponse = (error: any) => {
     const { response } = error;
 
     if (response?.status === LOGIN_EXPIRED_CODE) {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((window as any).vscodeBridge || (window as any).vscode) {
             return Promise.resolve(true);
         }
@@ -513,9 +532,9 @@ const errorResponse = (error: any) => {
 };
 
 const getConfig = (env = import.meta.env) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const baseURL = (env as any).VITE_ORIGIN;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dev = (env as any).MODE?.includes('dev');
     const getTenant = () => new URLSearchParams(location.search).get('tenant');
 
@@ -523,16 +542,16 @@ const getConfig = (env = import.meta.env) => {
         baseURL,
         withCredentials: dev,
         headers: {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             ...(dev && { 'x-lowcode-mode': 'develop' }),
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             'x-lowcode-org': getTenant()
         }
     };
 };
 
 const customizeHttpService = () => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isVsCodeEnv = (window as any).vscode || (window as any).vscodeBridge;
 
     const axiosConfig = getConfig();
@@ -541,22 +560,24 @@ const customizeHttpService = () => {
     if (isVsCodeEnv) {
         const adapter = createVSCodeHttpAdapter();
         if (adapter) {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (axiosConfig as any).adapter = adapter;
             // eslint-disable-next-line no-console
-            console.log('[HTTP Service] VSCode adapter 已创建并设置到 axiosConfig');
+            console.log(
+                '[HTTP Service] VSCode adapter 已创建并设置到 axiosConfig'
+            );
         } else {
             // eslint-disable-next-line no-console
             console.warn('[HTTP Service] Failed to create VSCode adapter');
         }
     }
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const options = {
         axiosConfig,
         interceptors: {
             request: [preRequest],
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             response: [[preResponse, errorResponse]]
         }
     };
@@ -572,23 +593,25 @@ const customizeHttpService = () => {
                 const adapter = createVSCodeHttpAdapter();
                 if (adapter) {
                     // 检查是否已经设置了adapter
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if ((http.defaults as any).adapter !== adapter) {
-                         
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (http.defaults as any).adapter = adapter;
                         // eslint-disable-next-line no-console
-                        console.log('[HTTP Service] VSCode adapter 已设置到 axios 实例');
+                        console.log(
+                            '[HTTP Service] VSCode adapter 已设置到 axios 实例'
+                        );
                     }
                 }
             } else {
                 // 如果HttpService还没初始化，稍后重试
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setTimeout(ensureAdapter, 50);
             }
         };
 
         // 立即尝试设置，如果失败则延迟重试
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ensureAdapter();
     }
 

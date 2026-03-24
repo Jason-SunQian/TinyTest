@@ -14,7 +14,7 @@ import { getMergeMeta } from '@opentiny/tiny-engine-meta-register';
 import meta from './meta';
 
 export default {
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const registry = getMergeMeta(meta.id);
         const { layout, ...restRegistry } = registry;

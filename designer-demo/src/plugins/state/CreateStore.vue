@@ -113,21 +113,21 @@ import StateFullscreenHead from './StateFullscreenHead.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MonacoEditor,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         StateTips,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         StateFullscreenHead,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapse,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapseItem
     },
     props: {
@@ -267,7 +267,7 @@ export default {
         };
 
         const getters = computed(() => {
-             
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             const { getters } = state.storeData.variable || {};
             if (getters) {
                 return getScriptString(getters);
@@ -275,7 +275,7 @@ export default {
             return '';
         });
         const actions = computed(() => {
-             
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             const { actions } = state.storeData.variable || {};
             if (actions) {
                 return getScriptString(actions);
@@ -340,11 +340,11 @@ export default {
         };
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             STATE,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             GETTERS,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             ACTIONS,
             isDemoShow,
             state,

@@ -78,34 +78,35 @@ export const close = () => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyDialogBox: DialogBox,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyAlert
     },
     inheritAttrs: false,
     props: {
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         eventBinding: {
             type: Object,
             default: () => ({})
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props) {
         const {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BindEventsDialogSidebar,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BindEventsDialogContent
         } = getMergeMeta(META_ID).components;
         const { t } = useDesignerI18n();
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { PLUGIN_NAME, activePlugin } = useLayout();
-        const { pageState, canvasApi, setCurrentSchema, getCurrentSchema } = useCanvas();
+        const { pageState, canvasApi, setCurrentSchema, getCurrentSchema } =
+            useCanvas();
         const { getMethods, saveMethod } = getMetaApi(META_APP.Page);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { highlightMethod } = getMetaApi(META_APP.Page);
@@ -261,7 +262,7 @@ export default {
             ).join(',');
         };
 
-         
+        // eslint-disable-next-line @typescript-eslint/max-params
         const rewriteMethodParams = (
             method,
             name,
@@ -571,9 +572,9 @@ export default {
         };
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BindEventsDialogSidebar,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BindEventsDialogContent,
             state,
             dialogVisible,

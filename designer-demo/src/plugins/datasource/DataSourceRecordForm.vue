@@ -77,7 +77,7 @@ import { extend } from '@opentiny/vue-renderless/common/object';
 
 import { useDesignerI18n } from '@/services/i18nService';
 
- 
+/* eslint-disable @typescript-eslint/naming-convention */
 const CONSTANTS = {
     REQUIRED: 'required',
     EVENT_NAME: 'change',
@@ -87,7 +87,7 @@ const CONSTANTS = {
     FIELD_TYPE_DATETIME: 'datetime',
     FIELD_TYPE_NUMBER: 'number'
 };
- 
+/* eslint-enable @typescript-eslint/naming-convention */
 
 const isOpen = ref(false);
 const recordFormData = reactive({});
@@ -122,13 +122,13 @@ export const init = data => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginSetting
     },
     props: {
@@ -148,7 +148,7 @@ export default {
         }
     },
     emits: ['save', 'delete', 'duplicate'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const recordForm = ref('recordForm');

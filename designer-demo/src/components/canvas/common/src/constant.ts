@@ -6,8 +6,8 @@ export const NODE_INACTIVE_UID = 'data-ia-uid';
 // 设计态
 // 运行态
 export const DESIGN_MODE = {
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     DESIGN: 'design',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     RUNTIME: 'runtime'
 };

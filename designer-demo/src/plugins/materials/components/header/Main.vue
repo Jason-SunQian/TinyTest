@@ -21,7 +21,7 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton
     },
     props: {
@@ -31,19 +31,19 @@ export default {
         }
     },
     emits: ['fix-panel'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props) {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
 
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         const { PLUGIN_NAME } = useLayout();
         const panelFixed = computed(() =>
             props.fixedPanels?.includes(PLUGIN_NAME.Materials)
         );
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             panelFixed,
             t

@@ -53,20 +53,20 @@ import { SPACING_PROPERTY, POSITION_PROPERTY } from '../../js/styleProperty';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ResetButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         NumericSelect
     },
     props: {
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         property: {
             type: Object,
             default: () => ({})
         }
     },
     emits: useEvent(),
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         let sliderFlag = true;
         const options = [0, 4, 8, 12, 16, 20, 24, 32];

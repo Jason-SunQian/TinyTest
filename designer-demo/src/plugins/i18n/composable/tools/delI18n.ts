@@ -38,7 +38,7 @@ export const delI18n = {
     callback: (args: z.infer<typeof inputSchema>) => {
         const { key } = args;
         const { getLangs, removeI18n } = useTranslate();
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const langs = getLangs() as Record<string, any>;
 
         if (!langs[key]) {

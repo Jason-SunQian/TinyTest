@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
- 
+/* eslint-disable vue/max-lines-per-block, vue/component-api-style, @typescript-eslint/naming-convention, no-inline-comments, line-comment-position, @typescript-eslint/restrict-plus-operands, vue/require-typed-object-prop, vue/require-typed-ref */
 import {
     getMetaApi,
     META_SERVICE,
@@ -64,7 +64,7 @@ const COMPONENT_WHITELIST = ['RouterView'];
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover
     },
     props: {

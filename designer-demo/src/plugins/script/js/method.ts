@@ -42,12 +42,12 @@ const state = reactive({
     hasErrorPopup: false
 });
 
- 
+// eslint-disable-next-line vue/require-typed-ref
 const monaco = ref(null);
 
 let scriptAst = null;
 
- 
+// eslint-disable-next-line
 export const getMethods = () => {
     const pageSchema = useCanvas().getSchema?.() || {};
 

@@ -30,11 +30,11 @@ const mergedEnUS = {
     }
 };
 
- 
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export default {
     zh_CN: mergedZhCN,
     en_US: mergedEnUS,
     ja_JP: jaJP,
     ko_KR: koKR
 };
- 
+/* eslint-enable @typescript-eslint/naming-convention, camelcase */

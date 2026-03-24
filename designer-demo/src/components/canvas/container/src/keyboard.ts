@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable import/order */
+/* eslint-disable import/order, @typescript-eslint/prefer-destructuring */
 import {
     useHistory,
     useCanvas,

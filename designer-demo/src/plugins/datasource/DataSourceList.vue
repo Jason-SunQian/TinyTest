@@ -70,11 +70,11 @@ export const clearActive = () => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton
     },
     emits: ['edit'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const setDataSourceTips = computed(() =>

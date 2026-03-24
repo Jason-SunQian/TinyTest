@@ -1,6 +1,6 @@
 /* metaService: engine.setting.styles.parser */
 
-/* eslint-disable import/exports-last */
+/* eslint-disable @typescript-eslint/no-explicit-any, import/exports-last */
 import postcss from 'postcss';
 
 const handleRules = (node: any) => {

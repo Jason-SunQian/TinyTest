@@ -12,7 +12,7 @@ import { VideoGuide } from '@opentiny/tiny-engine-common';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         VideoGuide
     },
     props: {
@@ -25,7 +25,7 @@ export default {
             default: ''
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props) {
         return {
             videoSrc: props.video,

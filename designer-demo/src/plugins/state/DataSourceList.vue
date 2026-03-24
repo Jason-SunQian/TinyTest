@@ -62,9 +62,9 @@ const { COMPONENT_NAME } = constants;
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SearchEmpty
     },
     props: {
@@ -76,19 +76,19 @@ export default {
             type: String,
             default: ''
         },
-         
+        // eslint-disable-next-line vue/require-default-prop
         stateScope: {
             type: String,
             default: undefined
         },
-         
+        // eslint-disable-next-line vue/require-default-prop
         selectedKey: {
             type: String,
             default: undefined
         }
     },
     emits: ['openPanel', 'remove', 'removeStore'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const filteredKey = computed(() =>
             props.modelValue.filter(key => key.includes(props.query))
@@ -147,9 +147,9 @@ export default {
             filteredKey,
             confirmClick,
             openPanel,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             STATE,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             OPTION_TYPE
         };
     }

@@ -179,31 +179,31 @@ const openPanel = () => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapse,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapseItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockEvent,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockConfig,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginSetting,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockProperty,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockHistoryList,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         LifeCycles,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         CloseIcon,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockDeployDialog,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ButtonGroup
     },
     props: {
@@ -212,10 +212,10 @@ export default {
             default: () => ({})
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         // 获取国际化 t 函数
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 
@@ -231,7 +231,7 @@ export default {
 
             return currentEditBlock;
         });
-         
+        // eslint-disable-next-line vue/require-typed-ref
         const blockConfigForm = ref(null);
 
         const { PLUGIN_NAME, getPluginByLayout } = useLayout();
@@ -332,11 +332,11 @@ export default {
 
         const previewHistory = item => {
             if (item) {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 const page_content = item.content;
                 previewPage(
                     {
-                         
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                         page_content,
                         id: item.blockId || item.block_id,
                         history: item.id,
@@ -371,7 +371,7 @@ export default {
 
         return {
             align,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             state,
             isOpen,

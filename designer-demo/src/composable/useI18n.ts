@@ -39,7 +39,7 @@ export function useI18n() {
         );
     });
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const t = (key: string, params: Record<string, any> = {}) => {
         return translate(key, params);
     };
@@ -61,13 +61,13 @@ export function useI18n() {
 }
 
 export function useT() {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (key: string, params: Record<string, any> = {}) =>
         translate(key, params);
 }
 
 export function useLanguageSwitcher() {
-     
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const { currentLocale, changeLanguage, supportedLanguages } = useI18n();
 
     const switchToChinese = () => changeLanguage('zh_CN');

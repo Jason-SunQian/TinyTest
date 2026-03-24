@@ -22,7 +22,7 @@ const snippets = [
     }
 ];
 
- 
+/* eslint-disable @typescript-eslint/naming-convention */
 const TYPES = {
     KeyWord: 'KeyWord',
     Function: 'Function',
@@ -30,9 +30,9 @@ const TYPES = {
     Value: 'Value',
     Variable: 'Variable'
 };
- 
+/* eslint-enable @typescript-eslint/naming-convention */
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getApiSuggestions = (monaco: any, range: any, wordContent: string) =>
     keyWords
         .map(item => ({
@@ -44,7 +44,7 @@ const getApiSuggestions = (monaco: any, range: any, wordContent: string) =>
         }))
         .filter(({ insertText }) => insertText.startsWith(wordContent));
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getSnippetsSuggestions = (monaco: any, range: any, wordContent: string) =>
     snippets
         .map(item => ({
@@ -75,11 +75,11 @@ const getUserWords = () => {
         stores: {
             type: TYPES.Variable,
             getInsertText: (value: string) => `this.stores.${value}`,
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data: globalState
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .filter((item: any) => item.id)
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .map((item: any) => [
                     item.id,
                     ...[
@@ -92,11 +92,11 @@ const getUserWords = () => {
         storeFn: {
             type: TYPES.Method,
             getInsertText: (value: string) => `this.stores.${value}()`,
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data: globalState
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .filter((item: any) => item.id)
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .map((item: any) =>
                     Object.keys(item.actions || {}).map(
                         (name: string) => `${item.id}.${name}`
@@ -107,32 +107,32 @@ const getUserWords = () => {
         utils: {
             type: TYPES.Variable,
             getInsertText: (value: string) => `this.utils.${value}`,
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data: utils.map((item: any) => item.name)
         },
         dataSource: {
             type: TYPES.Method,
             getInsertText: (value: string) =>
                 `this.dataSourceMap.${value}.load()`,
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data: dataSource.map((item: any) => item.name)
         },
         bridge: {
             type: TYPES.Variable,
             getInsertText: (value: string) => `this.bridge.${value}`,
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data: bridge.map((item: any) => item.name)
         }
     };
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getUserSuggestions = (monaco: any, range: any, wordContent: string) => {
     const userWords = getUserWords();
 
     return (
         Object.entries(userWords)
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
             .map(([_itemKey, itemContent]: [string, any]) =>
                 itemContent.data.map((item: string) => ({
                     kind: monaco.languages.CompletionItemKind[itemContent.type],
@@ -149,7 +149,7 @@ const getUserSuggestions = (monaco: any, range: any, wordContent: string) => {
     );
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getCurrentChar = (model: any, position: any) => {
     const currentChar = model.getValueInRange({
         startLineNumber: position.lineNumber,
@@ -165,9 +165,9 @@ const getCurrentChar = (model: any, position: any) => {
     };
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getWords = (model: any, position: any) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const words: any[] = [];
 
     const currentWord = model.getWordUntilPosition(position).word
@@ -188,7 +188,7 @@ const getWords = (model: any, position: any) => {
     return words.reverse();
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getRange = (position: any, words: any[]) => ({
     startLineNumber: position.lineNumber,
     endLineNumber: position.lineNumber,
@@ -205,14 +205,14 @@ const getRange = (position: any, words: any[]) => ({
  * @param conditionFn 可选的过滤函数
  * @returns 注册的代码提示提供者数组
  */
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initCompletion = (
     monacoInstance: any,
     editorModel: any,
     conditionFn?: (item: any) => boolean
 ) => {
     const completionItemProvider = {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
         provideCompletionItems(
             model: any,
             position: any,
@@ -225,7 +225,7 @@ export const initCompletion = (
                 };
             }
             const words = getWords(model, position);
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const wordContent = words.map((item: any) => item.word).join('');
             const range = getRange(position, words);
 
@@ -248,7 +248,7 @@ export const initCompletion = (
                 wordContent
             );
             return {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 suggestions: [
                     ...apiSuggestions,
                     ...snippetSuggestions,

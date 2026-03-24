@@ -65,13 +65,13 @@ const getCurrentClassSelector = () => {
 };
 
 // 根据当前选中的组件，随机生成一个 css 类名
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const genRandomClassNames = (componentName: any) => {
     return `.${componentName}-${generateRandomLetters(5)}`.toLowerCase();
 };
 
 const getPropsFromExpression = (propValue: { value: string }) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let res: any[] = [];
 
     try {
@@ -102,7 +102,7 @@ const getPropsFromExpression = (propValue: { value: string }) => {
     return res;
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseClassOrIdProps = (propValue: any) => {
     if (typeof propValue === 'string' && propValue) {
         return propValue.split(' ').filter(Boolean);
@@ -118,12 +118,12 @@ const parseClassOrIdProps = (propValue: any) => {
 };
 
 const getClassNameAndIdList = (schema: {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: { className: any; id: any };
 }) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let classNameList: any[] = [];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let idList: any[] = [];
 
     if (!schema) {
@@ -329,7 +329,7 @@ const updateGlobalStyle = (newSelector: string) => {
 };
 
 // 更新 style 对象到 schema
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const updateStyle = (properties: any) => {
     const { canvasApi, getSchema: getCanvasPageSchema } = useCanvas();
     const { getSchema } = useProps();

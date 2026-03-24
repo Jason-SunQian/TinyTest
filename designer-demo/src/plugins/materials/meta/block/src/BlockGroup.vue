@@ -190,7 +190,7 @@
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang, vue/component-api-style -->
 <script lang="tsx">
 /* metaService: engine.plugins.materials.block.BlockGroup */
- 
+/* eslint-disable max-lines */
 import { inject, reactive, ref, nextTick, h } from 'vue';
 import {
     Input,
@@ -225,23 +225,23 @@ import { setBlockPanelVisible } from './js/usePanel';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect: Select,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyOption: Option,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyDialogBox: DialogBox,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover
     },
     props: {
@@ -467,7 +467,7 @@ export default {
                             setBlockPanelVisible(false);
                         }
                     });
-                     
+                    // eslint-disable-next-line new-cap
                     Notify({
                         type: 'success',
                         message: messageSuccess,
@@ -505,9 +505,9 @@ export default {
             handleChangeDeletePopoverVisible(visible);
         };
 
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         const TinyIconYes = iconYes();
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         const TinyIconClose = iconClose();
 
         return {
@@ -533,9 +533,9 @@ export default {
             handleSelectVisibleChange,
             isAllGroupId,
             validateIcon,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             TinyIconYes,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             TinyIconClose,
             t
         };

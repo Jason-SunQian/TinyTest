@@ -130,17 +130,17 @@ import NumericSelect from '../inputs/NumericSelect.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         NumericSelect,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip: Tooltip,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconPlus: IconPlus(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MetaCollapse: ConfigCollapse
     },
     props: {
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         style: {
             type: Object,
             default: () => ({})
@@ -154,7 +154,7 @@ export default {
             default: 'top'
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const state = reactive({
             activeNames: ['0']

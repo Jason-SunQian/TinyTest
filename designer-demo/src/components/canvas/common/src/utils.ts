@@ -1,9 +1,9 @@
 // 定义全局类型声明
 declare global {
     interface Window {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any
         TinyComponentLibs: Record<string, unknown>;
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any
         TinyLowcodeComponent: Record<string, unknown>;
     }
 }

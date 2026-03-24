@@ -58,9 +58,9 @@ export const api = {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginPanel,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PageSettingContent
     },
     props: {
@@ -74,7 +74,7 @@ export default {
         }
     },
     emits: ['close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { pageState } = useCanvas();
@@ -87,13 +87,13 @@ export default {
         const { PLUGIN_NAME } = useLayout();
 
         // 提供国际化注入
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const inst: any = (window as any).lowcodeI18n;
         if (inst) {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             provide(I18nInjectionKey as any, inst);
         } else {
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             provide(I18nInjectionKey as any, { global: { t: designerT } });
         }
 
@@ -133,7 +133,7 @@ export default {
                     parentId: pageSettingState.ROOT_ID,
                     route: '',
                     name: 'Untitled',
-                     
+                    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                     page_content: {
                         componentName: 'Page',
                         css: '',
@@ -257,7 +257,7 @@ export default {
         };
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             pageState,
             openNewPage,

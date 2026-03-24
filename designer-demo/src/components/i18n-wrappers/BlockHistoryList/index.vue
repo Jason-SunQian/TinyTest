@@ -69,7 +69,7 @@ import { useDesignerI18n } from '@/services/i18nService';
 interface HistoryItem {
     id: string;
     version?: string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     updated_at: string;
     message?: string;
     [key: string]: unknown;

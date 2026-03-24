@@ -1,5 +1,5 @@
-<script lang="tsx">
- 
+<script lang="ts">
+/* eslint-disable camelcase */
 /* eslint-disable */
 import { h } from 'vue';
 import { ConfigCollapse } from '@opentiny/tiny-engine-common';
@@ -44,7 +44,7 @@ export default {
         // Vue 3 会自动解包 computed ref，所以 this.emptyText 应该是字符串值
         // 但如果传入了空字符串或 undefined，使用 i18n 作为 fallback
         const emptyTextValue = this.emptyText || '';
-         
+        // eslint-disable-next-line camelcase
         const emptyText =
             emptyTextValue || this.t('designer.settings.props.emptyText');
 

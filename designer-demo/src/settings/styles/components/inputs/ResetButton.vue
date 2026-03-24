@@ -15,7 +15,7 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button
     },
     props: {
@@ -25,7 +25,7 @@ export default {
         }
     },
     emits: ['reset'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const displayText = computed(() =>

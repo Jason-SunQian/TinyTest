@@ -67,7 +67,7 @@ export const ENABLED_LANGUAGES: LanguageConfig[] = [
 export const DEFAULT_LANGUAGE = 'en_US';
 
 // 语言代码映射（用于TinyEngine兼容）
- 
+/* eslint-disable @typescript-eslint/naming-convention, camelcase */
 export const LANGUAGE_CODE_MAP: Record<string, string> = {
     zh_CN: 'zh_CN',
     en_US: 'en_US',
@@ -76,7 +76,7 @@ export const LANGUAGE_CODE_MAP: Record<string, string> = {
     fr_FR: 'fr_FR',
     de_DE: 'de_DE'
 };
- 
+/* eslint-enable @typescript-eslint/naming-convention, camelcase */
 
 // 获取当前启用的语言列表
 export const getEnabledLanguages = (): LanguageConfig[] => {

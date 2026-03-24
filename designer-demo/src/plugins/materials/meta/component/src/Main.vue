@@ -35,9 +35,7 @@
                             <li class="component-item">
                                 <div class="component-item-component">
                                     <svg-icon
-                                        :name="
-                                            getMaterialIconName(child)
-                                        "
+                                        :name="getMaterialIconName(child)"
                                     />
                                 </div>
                                 <span
@@ -76,20 +74,20 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySearch: Search,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconSearch: iconSearch(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapse: Collapse,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapseItem: CollapseItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         CanvasDragItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SearchEmpty
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const COMPONENT_PANEL_COLUMNS = '1fr 1fr 1fr';
         const SHORTCUT_PANEL_COLUMNS = '1fr 1fr 1fr 1fr 1fr 1fr';
@@ -99,7 +97,7 @@ export default {
 
         // 获取国际化 t 函数和语言
         const { t, locale: currentLocaleRef } = useDesignerI18n();
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
 
         interface PanelState {
@@ -121,67 +119,68 @@ export default {
             Record<string, string>
         > = {
             容器组件: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '容器组件',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Container Components'
             },
             布局与容器: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '布局与容器',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Layout and Containers'
             },
             基础元素: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '基础元素',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Basic Elements'
             },
             高级元素: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '高级元素',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Advanced Elements'
             },
             form: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '表单',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Form'
             },
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             'data-display': {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '数据展示',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Data Display'
             },
             table: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '表格',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Table'
             },
             layout: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '布局',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Layout'
             },
             basic: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '基础',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Basic'
             },
             advanced: {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: '高级',
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: 'Advanced'
             },
             // 业务物料分类：mr 原子组件 / mp 业务组件，与 locale 一致时显示英文
+            /* eslint-disable @typescript-eslint/naming-convention, camelcase */
             原子组件: {
                 zh_CN: '原子组件',
                 en_US: 'MR Components'
@@ -190,6 +189,7 @@ export default {
                 zh_CN: '业务组件',
                 en_US: 'MP Components'
             }
+            /* eslint-enable @typescript-eslint/naming-convention, camelcase */
         };
 
         // 获取组件标签的国际化文本
@@ -271,7 +271,7 @@ export default {
         };
 
         // 获取组件名称的国际化文本
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getComponentName = (child: any) => {
             const currentLocale =
                 currentLocaleRef.value ||
@@ -299,12 +299,12 @@ export default {
                         if (zhName && TRANSLATION_MAP[zhName]) {
                             enName = TRANSLATION_MAP[zhName];
                             // 动态更新 child.name.en_US，以便后续使用
-                             
+                            // eslint-disable-next-line max-depth, camelcase
                             if (
                                 !child.name.en_US ||
                                 /[\u4e00-\u9fa5]/.test(child.name.en_US)
                             ) {
-                                 
+                                // eslint-disable-next-line camelcase
                                 child.name.en_US = enName;
                             }
                         }
@@ -352,14 +352,14 @@ export default {
 
                 if (children.length > 0) {
                     result.push({
-                         
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-expect-error 数据类型兼容
                         groupId: component.groupId,
                         group: component.group,
-                         
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-expect-error 数据类型兼容
                         groupName: component.groupName,
-                         
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-expect-error 数据类型兼容
                         label: component.label,
                         children
@@ -427,14 +427,14 @@ export default {
             { immediate: false }
         );
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const componentClick = (data: any) => {
             const { isShortcutPanel, emitEvent } = panelState;
             const { addComponent } = useCanvas().canvasApi.value;
 
             if (isShortcutPanel) {
                 // FIXME: 类型修复
-                 
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-expect-error
                 addComponent?.(data, isShortcutPanel);
                 emitEvent('close');

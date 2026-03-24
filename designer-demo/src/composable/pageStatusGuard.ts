@@ -6,7 +6,7 @@ import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus';
 import { ENABLE_PAGE_LOCK_GUARD } from '@/config/featureFlags';
 
 const { PAGE_STATUS } = constants;
- 
+// eslint-disable-next-line @typescript-eslint/init-declarations
 let scope: ReturnType<typeof effectScope> | undefined;
 
 const shouldForceOccupy = (state?: string) =>

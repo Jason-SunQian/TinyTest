@@ -29,7 +29,7 @@ import { Form, FormItem, Input } from '@opentiny/vue';
 
 import { useDesignerI18n } from '../../services/i18nService';
 
- 
+// eslint-disable-next-line vue/require-typed-ref
 const dataSourceNameRef = ref(null);
 
 export const getDataSourceName = () => {
@@ -38,11 +38,11 @@ export const getDataSourceName = () => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input
     },
     props: {
@@ -52,7 +52,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 

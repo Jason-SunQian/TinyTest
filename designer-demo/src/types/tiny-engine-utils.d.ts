@@ -1,4 +1,4 @@
- 
+/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any */
 declare module '@opentiny/tiny-engine-utils' {
     export const constants: {
         OPEN_DELAY: {

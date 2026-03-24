@@ -151,7 +151,10 @@ export const getBlockFromMaterialStore = (
         useMaterial().getBundleBaseUrlForComponent(name) ??
         getMaterialsBaseFromBundleUrls() ??
         (() => {
-            const envBase = (import.meta.env as { VITE_MATERIALS_BASE_URL?: string }).VITE_MATERIALS_BASE_URL;
+            const envBase =
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                (import.meta.env as { VITE_MATERIALS_BASE_URL?: string })
+                    .VITE_MATERIALS_BASE_URL;
             return typeof envBase === 'string' && envBase.trim()
                 ? envBase.trim().replace(/\/$/, '')
                 : null;

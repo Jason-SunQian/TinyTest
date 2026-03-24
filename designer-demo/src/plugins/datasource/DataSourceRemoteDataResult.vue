@@ -34,16 +34,16 @@ import useClipboard from 'vue-clipboard3';
 
 import { useDesignerI18n } from '../../services/i18nService';
 
- 
+// eslint-disable-next-line vue/require-typed-ref
 const editor = ref(null);
 
 export const getResponseData = () => editor.value.getEditor().getValue();
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MonacoEditor,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton
     },
     props: {
@@ -53,7 +53,7 @@ export default {
         }
     },
     emits: ['copy', 'change'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const state = reactive({

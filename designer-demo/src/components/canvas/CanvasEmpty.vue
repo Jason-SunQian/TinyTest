@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-/* eslint-disable @typescript-eslint/no-unused-vars, import/order */
+/* eslint-disable @typescript-eslint/no-unused-vars, vue/require-default-prop, import/order, vue/define-props-declaration */
 import { computed } from 'vue';
 
 import { useDesignerI18n } from '@/services/i18nService';

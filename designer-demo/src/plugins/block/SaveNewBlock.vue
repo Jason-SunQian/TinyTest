@@ -91,31 +91,31 @@ import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyDialogBox: DialogBox,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect: Select
     },
     props: { boxVisibility: Boolean, fromCanvas: Boolean },
     emits: ['close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 
         const formData = reactive({
             label: '',
             path: 'default',
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             name_cn: '',
             group: ''
         });
@@ -129,7 +129,7 @@ export default {
         const { PLUGIN_NAME, activePlugin } = useLayout();
         const { isSaved } = useCanvas();
         const { confirm } = useModal();
-         
+        // eslint-disable-next-line vue/require-typed-ref
         const formRef = ref(null);
 
         const categoryList = computed(() =>
@@ -148,7 +148,7 @@ export default {
                 item => item.value === value
             );
             if (foundItem) {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 const { category_id: categoryId, id } = foundItem;
                 formData.path = categoryId || '';
                 formData.categories = [id];
@@ -182,7 +182,7 @@ export default {
         };
 
         const rules = {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             name_cn: [
                 {
                     required: true,

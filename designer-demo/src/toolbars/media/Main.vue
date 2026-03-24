@@ -139,7 +139,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
- 
+/* eslint-disable max-lines */
 /* metaService: engine.toolbars.media.custom.Main */
 import {
     ref,
@@ -161,13 +161,13 @@ import { MEDIA_MOBILE_ONLY } from '@/config/featureFlags';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySwitch: Switch,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ToolbarBase
     },
     props: {
@@ -185,10 +185,10 @@ export default {
         }
     },
     emits: ['setViewPort'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let timer: ReturnType<typeof setTimeout> | null = null;
         let prevWidthVal = '';
         let prevScaleVal = '';
@@ -215,17 +215,17 @@ export default {
             title: t('designer.toolbar.media.addLargeBreakpoint'),
             list: [
                 {
-                     
+                    // eslint-disable-next-line new-cap
                     icon: IconWebPlus(),
                     text: '1280px'
                 },
                 {
-                     
+                    // eslint-disable-next-line new-cap
                     icon: IconWebPlus(),
                     text: '1440px'
                 },
                 {
-                     
+                    // eslint-disable-next-line new-cap
                     icon: IconWebPlus(),
                     text: '1920px'
                 }
@@ -415,7 +415,7 @@ export default {
 
         const mediaMap = computed(() => {
             return media.value.reduce(
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (output: Record<string, any>, obj, index) => {
                     output[obj.view] = { ...toRaw(obj), index };
                     return output;
@@ -552,14 +552,14 @@ export default {
 
         // 初始化 viewpoint
         // 如果只显示手机竖屏，默认选择 mobile；否则使用当前设备类型或默认 desktop
-         
+        // eslint-disable-next-line vue/no-ref-object-reactivity-loss
         const dimensionValue = dimension.value;
         const defaultMode = MEDIA_MOBILE_ONLY
             ? 'mobile'
             : dimensionValue.deviceType || 'desktop';
-         
+        // eslint-disable-next-line vue/no-ref-object-reactivity-loss
         const mediaMapValue = mediaMap.value;
-         
+        // eslint-disable-next-line vue/no-ref-object-reactivity-loss
         const mediaValue = media.value;
         const firstMediaView = mediaValue[0]?.view;
         const targetDevice =

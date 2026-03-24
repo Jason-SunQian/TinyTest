@@ -19,7 +19,7 @@
 import { ref } from 'vue';
 
 export default {
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const visible = ref(false);
         const url = ref('');

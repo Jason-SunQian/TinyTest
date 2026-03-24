@@ -10,20 +10,20 @@
  *
  */
 
- 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const STATE = {
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     CURRENT_STATE: 'current',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     GLOBAL_STATE: 'global'
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const OPTION_TYPE = {
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     ADD: 'add',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     UPDATE: 'update',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     COPY: 'copy'
 };

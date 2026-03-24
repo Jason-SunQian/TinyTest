@@ -145,19 +145,19 @@ const { string2Obj } = utils;
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SwitchConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip: Tooltip,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         VariableConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         InputConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         CodeConfigurator
     },
     inheritAttrs: false,
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         const { pageState } = useCanvas();
@@ -196,7 +196,7 @@ export default {
         );
 
         const setLoopKey = (value = '') => {
-             
+            // eslint-disable-next-line no-param-reassign
             const cleanedValue = value.replace(/\s*/g, '');
             const { getSchema, setProp } = useProperties();
             const schema = getSchema();
@@ -260,11 +260,11 @@ export default {
                     value: { condition: value }
                 });
             } else {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const {
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     condition: _schemaCondition,
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     children,
                     ...rest
                 } = schema;
@@ -314,13 +314,13 @@ export default {
                 setLoopIndex(DEFAULT_LOOP_NAME.INDEX);
             } else {
                 setLoopKey();
-                 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const {
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     loop: _loop,
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     loopArgs: _loopArgs,
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     children: _children,
                     ...rest
                 } = schema;
@@ -362,7 +362,7 @@ export default {
             state,
             setLoop,
             setLoopItem,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             DEFAULT_LOOP_NAME,
             openEditor,
             setLoopIndex,

@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable import/order */
+/* eslint-disable vue/component-api-style, @typescript-eslint/naming-convention, vue/require-explicit-emits, import/order */
 import { computed, ref } from 'vue';
 
 import {
@@ -47,13 +47,13 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconSetting: iconSetting(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconClose: iconClose(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ConfigGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ConfigItem
     },
     emits: ['active'],

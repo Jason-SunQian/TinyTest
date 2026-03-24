@@ -166,21 +166,21 @@ const { OPEN_DELAY } = constants;
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyDialogBox: DialogBox,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySearch: Search,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MonacoEditor: VueMonaco,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MetaListItems,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconYes: iconYes()
     },
 
@@ -195,7 +195,7 @@ export default {
         }
     },
     emits: ['updatePageLifeCycles', 'bind'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { confirm } = useModal();
@@ -262,7 +262,7 @@ export default {
             });
         };
 
-         
+        // eslint-disable-next-line vue/require-typed-ref
         const editorRef = ref(null);
 
         const openLifeCyclesPanel = item => {
@@ -360,7 +360,7 @@ export default {
             editorConfirm,
             editorDidMount,
             handleEditorChange,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             OPEN_DELAY
         };
     }

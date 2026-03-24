@@ -90,9 +90,9 @@ import DraggableTree from './DraggableTree.vue';
 const { PAGE_STATUS } = constants;
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginPanel,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DraggableTree
     },
     props: {
@@ -102,7 +102,7 @@ export default {
         }
     },
     emits: ['close', 'fix-panel'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { pageState } = useCanvas();
@@ -135,7 +135,7 @@ export default {
                     handleFixPanel();
                 } else {
                     // 其他事件正常 emit
-                     
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (emit as (event: string, ...args: unknown[]) => void)(
                         eventName,
                         ...args
@@ -152,7 +152,7 @@ export default {
             }
 
             const translateChild = (childData: typeof data) => {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 childData.forEach(item => {
                     item.show = pageState.nodesStatus[item.id] !== false;
                     item.showEye = !item.show;
@@ -362,7 +362,7 @@ export default {
             return iconName.toLowerCase();
         };
 
-         
+        // eslint-disable-next-line vue/require-typed-ref
         const panelRef = ref(null);
 
         const eventFilter = () => {
@@ -390,7 +390,7 @@ export default {
             delNode,
             showNode,
             state,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             pageState,
             getIconName,

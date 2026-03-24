@@ -46,11 +46,11 @@ import DataSourceFieldForm from './DataSourceFieldForm.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DataSourceFieldForm,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconDel: IconDel()
     },
     props: {
@@ -60,7 +60,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const fieldTypes = computed(() => getFieldTypeOptions(t));

@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable import/exports-last, import/order, no-console */
+/* eslint-disable import/exports-last, import/order, max-lines, @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/no-inferrable-types, @typescript-eslint/prefer-optional-chain, no-param-reassign, @typescript-eslint/init-declarations, @typescript-eslint/no-confusing-void-expression, @typescript-eslint/no-shadow, @typescript-eslint/naming-convention, no-undef-init, no-else-return, @typescript-eslint/no-misused-promises, no-console, @typescript-eslint/prefer-destructuring */
 import { reactive, toRaw, nextTick, shallowReactive } from 'vue';
 import {
     addScript as appendScript,
@@ -50,19 +50,19 @@ export interface DragOffset {
 }
 
 export const POSITION = Object.freeze({
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     TOP: 'top',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     BOTTOM: 'bottom',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     LEFT: 'left',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     RIGHT: 'right',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     IN: 'in',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     OUT: 'out',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     REPLACE: 'replace'
 } as const);
 
@@ -396,7 +396,7 @@ const insertInner = (
     if (!targetNode) {
         targetNode = useCanvas().pageState.pageSchema;
         if (!targetNode) {
-             
+            // eslint-disable-next-line no-console
             console.error(
                 '[insertInner] node and pageSchema are both null, cannot insert'
             );
@@ -753,7 +753,9 @@ const setHoverRect = (element?: Element, data?: Node | null) => {
                 // 异步加载的组件（如主工程物料）可能尚未挂载，querySelectById 返回 null，需判空避免 getAttribute 报错
                 if (childEle) {
                     const childComponentName = childEle.getAttribute(NODE_TAG);
-                    const Childconfigure = childComponentName ? getConfigure(childComponentName) : undefined;
+                    const Childconfigure = childComponentName
+                        ? getConfigure(childComponentName)
+                        : undefined;
                     lineState.id = lastNode.id;
                     lineState.configure = Childconfigure;
                 } else {
@@ -1049,7 +1051,7 @@ export const insertNode = (
     if (!node.parent) {
         const pageSchema = useCanvas().pageState.pageSchema || getSchema();
         if (!pageSchema) {
-             
+            // eslint-disable-next-line no-console
             console.error(
                 '[insertNode] pageSchema and getSchema() are both null, cannot insert'
             );
@@ -1071,7 +1073,7 @@ export const insertNode = (
                     const pageSchema =
                         useCanvas().pageState.pageSchema || getSchema();
                     if (!pageSchema) {
-                         
+                        // eslint-disable-next-line no-console
                         console.error(
                             '[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert'
                         );
@@ -1096,7 +1098,7 @@ export const insertNode = (
                     const pageSchema =
                         useCanvas().pageState.pageSchema || getSchema();
                     if (!pageSchema) {
-                         
+                        // eslint-disable-next-line no-console
                         console.error(
                             '[insertNode] node.node is null and pageSchema/getSchema() are both null, cannot insert'
                         );
@@ -1349,18 +1351,30 @@ export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
     // 补丁：无论 DesignCanvas 来自哪套 useMaterial，画布请求 block 时先从已加载物料解析，避免 /material-center/api/block 404 导致「区块 xxx 加载错误」
     const originalGetBlockByName = controller.getBlockByName;
     if (typeof originalGetBlockByName === 'function') {
-        controller.getBlockByName = async (name: string) => {
+        controller.getBlockByName = (name: string) => {
             const fromStore = getBlockFromMaterialStore(name);
             if (fromStore) {
                 if (typeof console !== 'undefined' && console.log) {
-                     
-                    console.log('[Materials] getBlockByName 从物料 store 解析:', name, 'script:', fromStore[name]?.blobURL ? '有' : '无');
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        '[Materials] getBlockByName 从物料 store 解析:',
+                        name,
+                        'script:',
+                        fromStore[name]?.blobURL ? '有' : '无'
+                    );
                 }
                 return fromStore;
             }
-            if ((name === 'MpAccountInput' || name === 'MpProgress') && typeof console !== 'undefined' && console.log) {
-                 
-                console.log('[Materials] getBlockByName 未从 store 解析，走原逻辑:', name);
+            if (
+                (name === 'MpAccountInput' || name === 'MpProgress') &&
+                typeof console !== 'undefined' &&
+                console.log
+            ) {
+                // eslint-disable-next-line no-console
+                console.log(
+                    '[Materials] getBlockByName 未从 store 解析，走原逻辑:',
+                    name
+                );
             }
             return originalGetBlockByName(name);
         };
@@ -1377,26 +1391,54 @@ export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
         if (win && doc && typeof win.loadBlockComponent === 'function') {
             const orig = win.loadBlockComponent.bind(win);
             win.loadBlockComponent = (name: string) => {
-                return orig(name).then((mod: any) => {
-                    const component = (mod && (mod.default || mod[name])) || mod;
-                    if (typeof console !== 'undefined' && console.log) {
-                        const modType = mod == null ? 'null' : typeof mod;
-                        const modKeys = mod && typeof mod === 'object' ? Object.keys(mod) : [];
-                        const compType = component == null ? 'null' : typeof component;
-                        const isVueComp = compType === 'object' && component && (typeof component.render === 'function' || typeof component.setup === 'function' || component.__isVueComponent);
-                        console.log('[Materials] loadBlockComponent 结果', name, { modType, modKeys, compType, isVueComp });
-                    }
-                    return component;
-                }).catch((err: unknown) => {
-                    if (typeof console !== 'undefined' && console.error) {
-                        const msg = err instanceof Error ? err.message : String(err);
-                        const stack = err instanceof Error ? err.stack : '';
-                        console.error(`[Materials] 区块 ${name} 加载失败:`, msg);
-                        if (stack) console.error('[Materials] 堆栈:', stack);
-                        console.error('[Materials] 完整错误对象:', err);
-                    }
-                    throw err;
-                });
+                return orig(name)
+                    .then((mod: any) => {
+                        const component =
+                            (mod && (mod.default || mod[name])) || mod;
+                        if (typeof console !== 'undefined' && console.log) {
+                            const modType =
+                                mod === null || mod === undefined
+                                    ? 'null'
+                                    : typeof mod;
+                            const modKeys =
+                                mod && typeof mod === 'object'
+                                    ? Object.keys(mod)
+                                    : [];
+                            const compType =
+                                component === null || component === undefined
+                                    ? 'null'
+                                    : typeof component;
+                            const isVueComp =
+                                compType === 'object' &&
+                                component &&
+                                (typeof component.render === 'function' ||
+                                    typeof component.setup === 'function' ||
+                                    component.__isVueComponent);
+                            console.log(
+                                '[Materials] loadBlockComponent 结果',
+                                name,
+                                { modType, modKeys, compType, isVueComp }
+                            );
+                        }
+                        return component;
+                    })
+                    .catch((err: unknown) => {
+                        if (typeof console !== 'undefined' && console.error) {
+                            const msg =
+                                err instanceof Error
+                                    ? err.message
+                                    : String(err);
+                            const stack = err instanceof Error ? err.stack : '';
+                            console.error(
+                                `[Materials] 区块 ${name} 加载失败:`,
+                                msg
+                            );
+                            if (stack)
+                                console.error('[Materials] 堆栈:', stack);
+                            console.error('[Materials] 完整错误对象:', err);
+                        }
+                        throw err;
+                    });
             };
         }
     } catch (_) {

@@ -221,21 +221,21 @@ import ResetButton from '../inputs/ResetButton.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         NumericSelect,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ModalMask,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ResetButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ColorConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SelectConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TabsGroupConfigurator
     },
     props: {
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         style: {
             type: Object,
             default: () => ({})
@@ -250,7 +250,7 @@ export default {
         }
     },
     emits: useEvent(),
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         let activedName = '';
         const showModal = ref(false);

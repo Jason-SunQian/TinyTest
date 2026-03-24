@@ -3,7 +3,7 @@ import { HOOK_NAME } from '@opentiny/tiny-engine-meta-register';
 import useResource from './useResource';
 import useMaterial from './useMaterial';
 
- 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ResourceService = {
     id: 'engine.service.resource',
     type: 'MetaService',
@@ -13,7 +13,7 @@ export const ResourceService = {
     }
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const MaterialService = {
     id: 'engine.service.material',
     type: 'MetaService',

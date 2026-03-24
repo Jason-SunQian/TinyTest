@@ -80,22 +80,22 @@ export const close = () => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DataHandlerEditor,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginSetting,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapse: Collapse,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapseItem: CollapseItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ButtonGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         const { confirm } = useModal();
@@ -135,7 +135,7 @@ export default {
                 }
             };
 
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             requestGlobalDataHandler(id, { data_source_global: handler }).then(
                 data => {
                     if (data) {
@@ -175,7 +175,7 @@ export default {
 
         return {
             align,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             isOpen,
             close,

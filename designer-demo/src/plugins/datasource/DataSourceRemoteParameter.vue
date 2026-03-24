@@ -13,7 +13,7 @@ import { VueMonaco } from '@opentiny/tiny-engine-common';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MonacoEditor: VueMonaco
     },
     props: {
@@ -23,7 +23,7 @@ export default {
         }
     },
     emits: ['update:modelValue'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const change = value => {
             if (typeof value !== 'string') {

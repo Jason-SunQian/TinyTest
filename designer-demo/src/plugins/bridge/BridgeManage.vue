@@ -63,20 +63,20 @@ import {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySearch: Search,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyIconSearch: iconSearch(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SearchEmpty,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton
     },
     props: {
         name: { type: String, default: RESOURCE_TYPE.Util }
     },
     emits: ['open'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const list = ref([]);
@@ -140,7 +140,7 @@ export default {
             openEdit,
             refresh,
             getType,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             RESOURCE_TYPE,
             searchBridgeData
         };

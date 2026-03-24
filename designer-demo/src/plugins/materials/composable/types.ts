@@ -10,23 +10,23 @@ export interface Block {
     label: string;
     framework: string;
     content: BlockResource;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_by?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     updated_by?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_at: Date;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     updated_at: Date;
     assets: Assets;
     createdBy: CreatedBy;
     updatedBy: number;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     last_build_info: BuildInfo;
     description?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tags: any[];
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     current_history: number;
     screenshot: string;
     path: string;
@@ -34,23 +34,23 @@ export interface Block {
     isOfficial?: boolean;
     public: number;
     isDefault?: boolean;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     tiny_reserved?: boolean;
     author?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     name_cn?: string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     npm_name: string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_app?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     content_blocks?: unknown;
     histories: History[];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     categories: any[];
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase, @typescript-eslint/no-explicit-any
     public_scope_tenants: any[];
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     histories_length: number;
     state?: unknown;
 }
@@ -71,13 +71,13 @@ export interface BlockResource {
     componentName: string;
     fileName: string;
     css?: string;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props: Record<string, any>;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataSource?: Record<string, any>;
     schema: Schema;
     children: Schema[];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state?: Record<string, any>;
     methods: {
         [key: string]: TypeValuePair;
@@ -107,7 +107,7 @@ export type DataTypeEnum =
     | 'JSResouce';
 
 export interface Locale {
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     zh_CN?: string;
 }
 
@@ -120,7 +120,7 @@ export interface Linked {
     componentName: string;
     property: string;
     id: string;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     blockProperty: any;
 }
 
@@ -134,30 +134,30 @@ export interface History {
     message: string;
     content: unknown;
     assets?: Assets;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     build_info?: BuildInfo;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_by?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     updated_by?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_at: Date | string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     updated_at: Date | string;
     screenshot?: string;
     path?: string;
     label?: string;
     description?: unknown;
     mode?: string | null;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     block_id: number;
     version?: string | null;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     npm_name?: string;
     i18n?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_app?: unknown;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     content_blocks?: unknown;
 }
 
@@ -171,35 +171,35 @@ export interface Component {
     id?: number | string;
     version?: string;
     name: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         zh_CN?: string;
     };
     component: string;
     icon: string;
     description?: string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     doc_url?: string;
     screenshot?: string;
     tags?: string;
     keywords?: string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     dev_mode?: string;
     npm?: Npm;
     group?: string;
     configure?: Configure;
     content?: { configure?: Configure; schema?: Schema };
     createdBy?: number;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     created_at?: Date | string;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     updated_at?: Date | string;
     public?: number;
     framework?: string;
     isOfficial?: boolean;
     isDefault?: boolean;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     tiny_reserved?: boolean;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     component_metadata?: {
         events?: unknown[];
         attrs?: unknown[];
@@ -251,22 +251,22 @@ export interface Property {
         cols?: number;
         widget: {
             component: string;
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             props?: Record<string, any>;
         };
         description?: Locale;
         labelPosition?: string;
         type?: string;
         defaultValue?: unknown;
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rules?: any[];
         hidden?: boolean;
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         device?: any[];
         onChange?: string;
         properties?: ContentProperty[];
         linked?: Linked | null;
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         handle?: Record<string, any>;
     }>;
     name?: string;
@@ -285,7 +285,7 @@ export interface ContentProperty {
         };
         widget: {
             component: string;
-             
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             props: Record<string, any>;
         };
         labelPosition?: string;
@@ -341,7 +341,7 @@ export interface Npm {
 }
 
 export type Dependency = Omit<Npm, 'exportName'> & {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     components?: any;
 };
 
@@ -353,15 +353,15 @@ export interface NestingRule {
 }
 
 export interface Schema {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     props?: Record<string, any>;
     children?: Schema[];
     componentName?: string;
     componentType?: string;
     properties?: Property[];
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     events?: Record<string, any>;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     slots?: Record<string, any>;
     lifeCycles?: Record<string, TypeValuePair>;
     id?: string;
@@ -384,7 +384,7 @@ export type ComponentMap = Dependency & { componentName: string };
 export interface InitMaterialOptions {
     isInit?: boolean;
     appData?: {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [x: string]: any;
         componentsMap?: ComponentMap[];
     };

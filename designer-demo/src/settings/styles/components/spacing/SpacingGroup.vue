@@ -486,20 +486,20 @@ import SpacingSetting from './SpacingSetting.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ModalMask,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SpacingSetting
     },
     props: {
         style: {
-             
+            // eslint-disable-next-line vue/require-typed-object-prop
             type: Object,
             default: () => ({})
         }
     },
     emits: useEvent(),
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { setPosition } = useModal();
 

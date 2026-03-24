@@ -204,31 +204,31 @@ import {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ConfigItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MetaCodeEditor,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconChevronLeft: iconChevronLeft(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconPlusCircle: iconPlusCircle(),
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MetaListItems,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         // 获取国际化 t 函数
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 
@@ -273,7 +273,7 @@ export default {
         });
         watch(
             () => getEditProperty(),
-             
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             propertyValue => {
                 if (!propertyValue) {
                     return;
@@ -330,7 +330,7 @@ export default {
             widgetComponentList,
             handleChangeWidgetComponent,
             arrayConfig,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             DEFAULT_ARRAY_CONFIG,
             handleEdit,
             del,

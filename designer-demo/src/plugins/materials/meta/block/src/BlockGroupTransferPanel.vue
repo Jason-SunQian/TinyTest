@@ -23,7 +23,7 @@ import BlockList from './BlockList.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockList
     },
     props: {

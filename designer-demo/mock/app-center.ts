@@ -2,7 +2,7 @@
 import type { MockMethod } from 'vite-plugin-mock';
 
 const logRequest = (url: string, method: string, query?: any, body?: any) => {
-     
+    // eslint-disable-next-line no-console
     console.log(`[MOCK] ${method.toUpperCase()} ${url}`, {
         query,
         body,
@@ -626,7 +626,7 @@ export default [
         url: '/app-center/api/pages/update/:id',
         method: 'post',
         response: ({ query, body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('页面更新:', query.id, body);
             return {
                 data: {
@@ -643,7 +643,7 @@ export default [
         url: '/app-center/api/pages/create',
         method: 'post',
         response: ({ body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('页面创建:', body);
             return {
                 data: {
@@ -660,7 +660,7 @@ export default [
         url: '/app-center/api/pages/delete/:id',
         method: 'get',
         response: ({ query }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('页面删除:', query.id);
             return {
                 data: {
@@ -677,7 +677,7 @@ export default [
         url: '/app-center/api/apps/update/:id',
         method: 'post',
         response: ({ query, body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('应用更新:', query.id, body);
             return {
                 data: {
@@ -736,7 +736,7 @@ export default [
         url: '/app-center/api/pageHistory/restore',
         method: 'post',
         response: ({ body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('页面历史恢复:', body);
             return {
                 data: {
@@ -823,8 +823,12 @@ export default [
             try {
                 // 插件 webview 内相对 URL 会按 vscode-webview 解析被 CSP 拦截；服务端 mock 无 window，用 localhost 自请求
                 const base =
-                    typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN
-                        ? String((window as any).TINY_DESIGNER_ORIGIN).replace(/\/$/, '')
+                    typeof window !== 'undefined' &&
+                    (window as any).TINY_DESIGNER_ORIGIN
+                        ? String((window as any).TINY_DESIGNER_ORIGIN).replace(
+                              /\/$/,
+                              ''
+                          )
                         : 'http://localhost:8090';
                 const url = `${base}/mock/bundle.json`;
                 const res = await fetch(url);
@@ -832,7 +836,7 @@ export default [
                 const bundleData = await res.json();
                 return bundleData;
             } catch (error) {
-                 
+                // eslint-disable-next-line no-console
                 console.error('[Mock] Failed to load bundle.json:', error);
                 // 返回空数据，避免应用崩溃
                 return {
@@ -858,8 +862,12 @@ export default [
             logRequest('/mock/main-project-bundle/bundle.json', 'get');
             try {
                 const base =
-                    typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN
-                        ? String((window as any).TINY_DESIGNER_ORIGIN).replace(/\/$/, '')
+                    typeof window !== 'undefined' &&
+                    (window as any).TINY_DESIGNER_ORIGIN
+                        ? String((window as any).TINY_DESIGNER_ORIGIN).replace(
+                              /\/$/,
+                              ''
+                          )
                         : 'http://localhost:8090';
                 const url = `${base}/mock/main-project-bundle/bundle.json`;
                 const res = await fetch(url);
@@ -867,8 +875,11 @@ export default [
                 const bundleData = await res.json();
                 return bundleData;
             } catch (error) {
-                 
-                console.error('[Mock] Failed to load main-project-bundle/bundle.json:', error);
+                // eslint-disable-next-line no-console
+                console.error(
+                    '[Mock] Failed to load main-project-bundle/bundle.json:',
+                    error
+                );
                 return {
                     data: {
                         framework: 'Vue',
@@ -882,6 +893,5 @@ export default [
                 };
             }
         }
-    },
-
+    }
 ] as MockMethod[];

@@ -79,19 +79,19 @@ export const formDataInjectionSymbols = Symbol('DataSourceFieldFormData');
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ButtonGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         I18nInput,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DataSourceFieldCheck
     },
     props: {
@@ -117,7 +117,7 @@ export default {
         }
     },
     emits: ['save', 'cancel'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
@@ -126,7 +126,7 @@ export default {
             isOpen: null
         });
 
-         
+        // eslint-disable-next-line vue/require-typed-ref
         const form = ref(null);
 
         watchEffect(() => {
@@ -210,7 +210,7 @@ export default {
                     },
                     { validator: validateIsReserveValue }
                 ],
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'format.min': [
                     {
                         validator: (rule, value, callback) => {
@@ -230,7 +230,7 @@ export default {
                         trigger: 'change'
                     }
                 ],
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'format.max': [
                     {
                         validator: (rule, value, callback) => {

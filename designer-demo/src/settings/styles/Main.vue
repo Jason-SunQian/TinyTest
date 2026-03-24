@@ -163,43 +163,43 @@ import { styleStrRemoveRoot } from './js/cssConvert';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginPanel,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SizeGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         LayoutGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         FlexBox,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         GridBox,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PositionGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BorderGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SpacingGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BackgroundGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TypographyGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         EffectGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ClassNamesContainer,
         TinyCollapse: Collapse,
         TinyCollapseItem: CollapseItem,
         TinyInput: Input
     },
     props: {
-         
+        // eslint-disable-next-line vue/require-default-prop, vue/require-typed-object-prop
         fixedPanels: {
             type: Array,
             default: undefined
         }
     },
     emits: ['close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const CodeConfigurator = getConfigurator('CodeConfigurator');
         const VariableConfigurator = getConfigurator('VariableConfigurator');
@@ -342,7 +342,7 @@ export default {
 
         return {
             updateCollapseStatus,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             CodeConfigurator,
             VariableConfigurator,

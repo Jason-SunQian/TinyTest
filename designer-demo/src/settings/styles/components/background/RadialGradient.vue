@@ -34,27 +34,27 @@ import { BACKGROUND_PROPERTY, RADIAL_SIZE_LIST } from '../../js/styleProperty';
 import PositionOrigin from './PositionOrigin.vue';
 import BackgroundImageGradient from './BackgroundImageGradient.vue';
 
- 
+// eslint-disable-next-line vue/define-props-declaration
 const props = defineProps({
     style: {
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         type: Object,
-         
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         default: () => {}
     },
-     
+    // eslint-disable-next-line vue/require-typed-object-prop
     effect: {
         type: String,
         default: 'dark'
     },
-     
+    // eslint-disable-next-line vue/require-typed-object-prop
     placement: {
         type: String,
         default: 'top'
     }
 });
 
- 
+// eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['updateStyle']);
 
 const state = reactive({
@@ -107,9 +107,9 @@ onMounted(() => {
         styleObj[BACKGROUND_PROPERTY.BackgroundImage]
     );
     if (gradientMatch) {
-         
+        // eslint-disable-next-line @typescript-eslint/prefer-destructuring
         state.radialSize = gradientMatch[1];
-         
+        // eslint-disable-next-line @typescript-eslint/prefer-destructuring
         state[BACKGROUND_PROPERTY.BackgroundImage] = gradientMatch[2];
     }
 
@@ -129,7 +129,7 @@ onMounted(() => {
         styleObj[BACKGROUND_PROPERTY.BackgroundImage].match(rColorStopList);
     if (colorStopListMatch?.length) {
         state.colorList = colorStopListMatch.map((item, index) => {
-             
+            // eslint-disable-next-line @typescript-eslint/prefer-destructuring
             const [color, percent] = item.split(' ');
             return {
                 color,

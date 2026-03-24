@@ -107,21 +107,21 @@ export const close = () => {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ButtonGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginSetting,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DataSourceType,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DataSourceName,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         DataSourceSettings
     },
     props: {
@@ -139,14 +139,14 @@ export default {
         }
     },
     emits: ['update:modelValue', 'save', 'activeTab', 'renderRemoteData'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
 
         const { message } = useModal();
         const { dataSourceState } = useDataSource();
 
-         
+        // eslint-disable-next-line vue/require-typed-ref
         const settingRef = ref(null);
 
         const state = reactive({
@@ -413,7 +413,7 @@ export default {
 
                                     if (pageSchema.state[key]) {
                                         pageSchema.state[key] = record.data.map(
-                                             
+                                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                             ({ _id, ...other }) => other
                                         );
                                     }
@@ -499,7 +499,7 @@ export default {
             align,
             panelWidth,
             settingRef,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             state,
             isOpen,

@@ -35,11 +35,11 @@ import ModalMask, { useModal } from '../inputs/ModalMask.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TabsGroupConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ModalMask,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ResetButton
     },
     props: {
@@ -55,14 +55,14 @@ export default {
             type: String,
             default: null
         },
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         disabled: {
             type: Object,
             default: () => ({})
         }
     },
     emits: useEvent(),
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { setPosition } = useModal();
         const { t } = useDesignerI18n();

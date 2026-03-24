@@ -113,7 +113,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block, vue/block-lang, @typescript-eslint/naming-convention -->
 <script lang="ts">
- 
+/* eslint-disable max-lines */
 /* metaService: engine.setting.event.BindEvents */
 import { computed, reactive, watchEffect, watch, nextTick, toRaw } from 'vue';
 import { Popover, Button } from '@opentiny/vue';
@@ -138,9 +138,9 @@ import AddEventsDialog from './AddEventsDialog.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockLinkEvent,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BindEventsDialog,
         TinyPopover: Popover,
         TinyButton: Button,
@@ -149,7 +149,7 @@ export default {
         AddEventsDialog
     },
     inheritAttrs: false,
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { PLUGIN_NAME, activePlugin } = useLayout();
         const { pageState, getCurrentSchema, canvasApi } = useCanvas();
@@ -209,7 +209,7 @@ export default {
 
             // 处理数组情况（多选）
             if (Array.isArray(currentSchema) && currentSchema.length > 0) {
-                 
+                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                 currentSchema = currentSchema[0];
             }
 
@@ -239,15 +239,15 @@ export default {
                     // 从 renderEventList 中获取事件元数据，如果没有则使用默认值
                     const componentEvent = renderEventList.value[eventName] || {
                         label: {
-                             
+                            // eslint-disable-next-line camelcase
                             zh_CN: eventName,
-                             
+                            // eslint-disable-next-line camelcase
                             en_US: eventName
                         },
                         description: {
-                             
+                            // eslint-disable-next-line camelcase
                             zh_CN: `${eventName} 事件`,
-                             
+                            // eslint-disable-next-line camelcase
                             en_US: `${eventName} event`
                         },
                         type: 'event',
@@ -404,7 +404,7 @@ export default {
             // 获取当前选中的组件
             let currentSchema = getCurrentSchema();
             if (Array.isArray(currentSchema) && currentSchema.length > 0) {
-                 
+                // eslint-disable-next-line @typescript-eslint/prefer-destructuring
                 currentSchema = currentSchema[0];
             }
             if (!currentSchema) {
@@ -476,18 +476,18 @@ export default {
             Object.assign(state.customEvents, {
                 [eventName]: {
                     label: {
-                         
+                        // eslint-disable-next-line camelcase
                         zh_CN: eventDescription,
-                         
+                        // eslint-disable-next-line camelcase
                         en_US: eventDescription
                     },
                     description: {
-                         
+                        // eslint-disable-next-line camelcase
                         zh_CN: t(
                             'designer.settings.events.bind.customEventDescription',
                             { name: eventDescription }
                         ),
-                         
+                        // eslint-disable-next-line camelcase
                         en_US: t(
                             'designer.settings.events.bind.customEventDescription',
                             { name: eventDescription }

@@ -33,10 +33,10 @@ import http from './http';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCheckbox: Checkbox
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         const { pageSettingState, STATIC_PAGE_GROUP_ID } = usePage();

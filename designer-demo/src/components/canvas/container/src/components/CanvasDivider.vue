@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable import/order */
+/* eslint-disable vue/max-lines-per-block, vue/component-api-style, import/order, vue/require-typed-object-prop */
 import { reactive, watch } from 'vue';
 import { useCanvas } from '@opentiny/tiny-engine-meta-register';
 import { extend } from '@opentiny/vue-renderless/common/object';

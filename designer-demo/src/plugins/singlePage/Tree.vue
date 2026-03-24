@@ -57,12 +57,12 @@
 <!-- eslint-disable vue/max-lines-per-block, vue/require-typed-object-prop -->
 <script lang="ts" setup>
 /* metaService: engine.plugins.appmanage.Tree */
- 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { computed, defineEmits, defineProps, ref, watch } from 'vue';
 
 import LayerLines from './LayerLines.vue';
 
- 
+// eslint-disable-next-line vue/define-props-declaration, vue/require-typed-object-prop
 const props = defineProps({
     data: {
         type: Object,
@@ -80,7 +80,7 @@ const props = defineProps({
         type: String,
         default: 'children'
     },
-     
+    // eslint-disable-next-line vue/require-default-prop
     active: {
         type: String,
         default: undefined
@@ -99,7 +99,7 @@ const props = defineProps({
     }
 });
 
- 
+// eslint-disable-next-line vue/define-emits-declaration
 const emit = defineEmits(['clickRow', 'moveNode']);
 
 const useCollapseMap = () => {
@@ -118,7 +118,7 @@ const useCollapseMap = () => {
 
 const { collapseMap, setCollapse, switchCollapse } = useCollapseMap();
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface TreeNode {
     id: string | number;
     label: string;
@@ -135,7 +135,7 @@ const handleSwitchCollapse = (node: TreeNode) => {
     }
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const flattenTreeData = (
     node: any,
     parentId?: string | number,
@@ -205,7 +205,7 @@ const filteredNodes = ref<TreeNode[]>([]);
 // 下面两个 watch 对应的两个重新计算 filteredNodes 的场景。场景2比场景1多了展开匹配到的节点的操作
 
 // 场景1. 页面树的结构发生变化，或者有节点收起或者展开，重新计算 filteredNodes
- 
+// eslint-disable-next-line @typescript-eslint/no-shadow
 watch(nodes, nodes => {
     filteredNodes.value = nodes.filter(node =>
         node.label.toLowerCase().includes(props.filterValue.toLowerCase())
@@ -258,18 +258,18 @@ const filteredNodesWithAncestors = computed(() => {
 
 // └ │ ├
 const lines = {
-     
+    // eslint-disable-next-line no-inline-comments, line-comment-position
     node: 0b01, // └
-     
+    // eslint-disable-next-line no-inline-comments, line-comment-position
     layer: 0b10, // │
-     
+    // eslint-disable-next-line no-inline-comments, line-comment-position
     layerNode: 0b11 // ├
 };
 
 const layerLine = computed(() => {
     const result: Record<number, Record<number, number>> = {};
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const nodes = filteredNodesWithAncestors.value;
 
     for (const [index, node] of nodes.entries()) {

@@ -55,15 +55,15 @@ import { useDesignerI18n } from '@/services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyBreadcrumb: Breadcrumb,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyBreadcrumbItem: BreadcrumbItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockDeployDialog,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton: Button,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ToolbarBase
     },
     props: {
@@ -72,22 +72,22 @@ export default {
             default: () => ({})
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
 
         // 在 Main.vue 内部直接定义 CONSTANTS（简单直接）
         const CONSTANTS = computed(() => ({
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PAGETEXT: t('designer.toolbar.page'),
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BLOCKTEXT: t('designer.leftPanel.blockManagement')
         }));
 
         const PLUGINS_ID = {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PAGEID: 'engine.plugins.appmanage',
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BLOCKID: 'engine.plugins.blockmanage'
         };
 

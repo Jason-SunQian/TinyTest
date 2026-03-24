@@ -88,22 +88,22 @@ const includesBlockInGroups = blockId => blockMap.has(blockId);
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySearch: Search,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginSetting,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockGroupTransfer,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockGroupFilters,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyIconSearch: iconSearch()
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         // 获取国际化 t 函数
         const { t } = useDesignerI18n();
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         // const i18n: any = inject(I18nInjectionKey);
 
         const {
@@ -249,7 +249,7 @@ export default {
 
             const params = {
                 groupId: validGroup.value.groupId,
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 label_contains: state.searchValue.trim(),
                 tag: filters?.tag,
                 publicType: filters?.publicType,
@@ -342,7 +342,7 @@ export default {
             closeGroupPanel,
             addBlocks,
             searchBlocks,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             t
         };

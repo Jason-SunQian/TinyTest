@@ -169,7 +169,7 @@
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
 /* metaService: engine.plugins.blockmanage.Main */
- 
+/* eslint-disable max-lines */
 import { ref, reactive, computed, watch, provide, inject, h } from 'vue';
 import {
     Search as TinySearch,
@@ -222,7 +222,7 @@ import {
 } from './js/http';
 
 const { SORT_TYPE } = constants;
- 
+// eslint-disable-next-line
 const externalBlock = ref(null);
 
 const openSettingPanel = async ({ isOpen = true, item: block = {} }) => {
@@ -252,35 +252,35 @@ export const api = {
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySearch,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyOption,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SvgButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyDropdown,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyDropdownMenu,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginPanel,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SaveNewBlock,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockSetting,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockGroupArrange,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         CategoryEdit,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginBlockList,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         TinyIconSearch: IconSearch()
     },
     props: {
@@ -290,9 +290,9 @@ export default {
         }
     },
     emits: ['close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const i18n: any = inject(I18nInjectionKey);
         const t = i18n?.global?.t || ((key: string) => key);
 
@@ -352,7 +352,7 @@ export default {
             currentDeleteGroupId: null
         });
 
-         
+        // eslint-disable-next-line
         const groupSelect = ref(null);
         const { PLUGIN_NAME } = useLayout();
         const panelState = reactive({ emitEvent: emit });
@@ -506,7 +506,7 @@ export default {
         };
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             state,
             groupSelect,

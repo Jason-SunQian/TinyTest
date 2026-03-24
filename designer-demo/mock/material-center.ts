@@ -1,8 +1,8 @@
-/* eslint-disable no-console, @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any, no-console, @typescript-eslint/naming-convention, camelcase, @typescript-eslint/no-unused-vars */
 import type { MockMethod } from 'vite-plugin-mock';
 
 const logRequest = (url: string, method: string, query?: any, body?: any) => {
-     
+    // eslint-disable-next-line no-console
     console.log(`[MOCK] ${method.toUpperCase()} ${url}`, {
         query,
         body,
@@ -158,7 +158,7 @@ export default [
         url: '/material-center/api/block/create',
         method: 'post',
         response: ({ body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块创建:', body);
             return {
                 data: {
@@ -175,7 +175,7 @@ export default [
         url: '/material-center/api/block/update/:id',
         method: 'post',
         response: ({ query, body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块更新:', query.id, body);
             return {
                 data: {
@@ -192,7 +192,7 @@ export default [
         url: '/material-center/api/block/delete/:id',
         method: 'get',
         response: ({ query }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块删除:', query.id);
             return {
                 data: {
@@ -209,7 +209,7 @@ export default [
         url: '/material-center/api/block-groups/create',
         method: 'post',
         response: ({ body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块分组创建:', body);
             return {
                 data: {
@@ -226,7 +226,7 @@ export default [
         url: '/material-center/api/block-groups/update/:id',
         method: 'post',
         response: ({ query, body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块分组更新:', query.id, body);
             return {
                 data: {
@@ -243,7 +243,7 @@ export default [
         url: '/material-center/api/block-groups/delete/:id',
         method: 'get',
         response: ({ query }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块分组删除:', query.id);
             return {
                 data: {
@@ -278,7 +278,7 @@ export default [
         url: '/material-center/api/block-categories',
         method: 'post',
         response: ({ body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块分类创建:', body);
             return {
                 data: {
@@ -295,7 +295,7 @@ export default [
         url: '/material-center/api/block-categories/:id',
         method: 'put',
         response: ({ query, body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块分类更新:', query.id, body);
             return {
                 data: {
@@ -312,7 +312,7 @@ export default [
         url: '/material-center/api/block-categories/:id',
         method: 'delete',
         response: ({ query }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块分类删除:', query.id);
             return {
                 data: {
@@ -329,7 +329,7 @@ export default [
         url: '/material-center/api/block/deploy',
         method: 'post',
         response: ({ body }) => {
-             
+            // eslint-disable-next-line no-console
             console.log('区块部署:', body);
             return {
                 data: {

@@ -270,29 +270,29 @@ import { SIZE_PROPERTY } from '../../js/styleProperty';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ModalMask,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ResetButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         NumericSelect,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SelectConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TabsGroupConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         MaskModal,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyPopover: Popover,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip: Tooltip,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         IconEllipsis: iconEllipsis()
     },
     props: {
-         
+        // eslint-disable-next-line vue/require-typed-object-prop
         style: {
             type: Object,
             default: () => ({})
@@ -307,7 +307,7 @@ export default {
         }
     },
     emits: useEvent(),
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         let activedName = '';
         const { t } = useDesignerI18n();
@@ -442,7 +442,7 @@ export default {
 
         const updatePositionStyle = () => {
             const styleObj = {
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 'object-position': `${state.leftValue}% ${state.topValue}%`
             };
             updateStyle(styleObj);
@@ -501,9 +501,9 @@ export default {
 
         return {
             state,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             OVERFLOW_TYPE,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             SIZE_PROPERTY,
             fitOptions,
             originOptions,

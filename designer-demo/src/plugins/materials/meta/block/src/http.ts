@@ -48,7 +48,7 @@ export const fetchGroupBlocks = ({ groupId, value }) =>
         `/material-center/api/block${getParams({
             groups: groupId,
             framework: getMergeMeta('engine.config')?.dslMode,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             label_contains: value
         })}`
     );
@@ -158,7 +158,7 @@ export const fetchBlockById = blockId =>
 // 根据分组ID获取当前分组可以添加的区块
 export const fetchAvailableBlocks = ({
     groupId,
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     label_contains,
     author,
     tag,
@@ -166,12 +166,12 @@ export const fetchAvailableBlocks = ({
 }) =>
     getMetaApi(META_SERVICE.Http).get(
         `/material-center/api/block/notgroup/${groupId}${getParams({
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             label_contains,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             name_cn_contains: label_contains,
             createdBy: author,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             tags_contains: tag,
             public: publicType
         })}`
@@ -194,7 +194,7 @@ export const requestRestoreBackup = ({ blockId, backupId }) =>
     getMetaApi(META_SERVICE.Http).post(
         `/material-center/api/block/update/${blockId}`,
         {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             current_history: backupId
         }
     );

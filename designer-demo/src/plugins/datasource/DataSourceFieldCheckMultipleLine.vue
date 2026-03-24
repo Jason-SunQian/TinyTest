@@ -29,12 +29,12 @@ import { formDataInjectionSymbols } from './DataSourceFieldForm.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyRadio: Radio,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         const formData = inject(formDataInjectionSymbols);

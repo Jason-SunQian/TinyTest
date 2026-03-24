@@ -55,31 +55,31 @@ import Empty from './components/Empty.vue';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ConfigRender,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockLinkField,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BlockDescription,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         Empty,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         PluginPanel
     },
     props: {
-         
+        // eslint-disable-next-line vue/require-default-prop, vue/require-typed-object-prop
         fixedPanels: {
             type: Array,
             default: undefined
         }
     },
     emits: ['close'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         const { t } = useDesignerI18n();
         const { pageState, getCurrentSchema, getNodeWithParentById } =
             useCanvas();
-         
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         useProperty().getProperty({ pageState });
         const { getProps, setProp } = useProperties();
         const { fillNodePropsWithMaterialDefaults } = useMaterial();
@@ -145,10 +145,18 @@ export default {
             nextTick(() => {
                 try {
                     const schema = getCurrentSchema();
-                    if (schema && typeof fillNodePropsWithMaterialDefaults === 'function') {
-                        const schemaNode = Array.isArray(schema) ? schema[0] : schema;
+                    if (
+                        schema &&
+                        typeof fillNodePropsWithMaterialDefaults === 'function'
+                    ) {
+                        const schemaNode = Array.isArray(schema)
+                            ? schema[0]
+                            : schema;
                         if (schemaNode?.componentName) {
-                            fillNodePropsWithMaterialDefaults(schemaNode, setProp);
+                            fillNodePropsWithMaterialDefaults(
+                                schemaNode,
+                                setProp
+                            );
                         }
                     }
                 } catch (e) {
@@ -213,7 +221,7 @@ export default {
         });
 
         return {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
             isBlock,
             properties: localProperties,

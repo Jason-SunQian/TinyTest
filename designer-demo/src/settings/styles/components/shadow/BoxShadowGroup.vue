@@ -19,7 +19,7 @@
 import { reactive } from 'vue';
 
 export default {
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const state = reactive({
             dateList: [

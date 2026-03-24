@@ -1,4 +1,4 @@
- 
+/* eslint-disable @typescript-eslint/naming-convention */
 declare module '@opentiny/tiny-engine-common' {
     import type { Component } from 'vue';
 
@@ -31,7 +31,7 @@ declare module '@opentiny/tiny-engine-common' {
     export * from './dist/index.js';
 }
 
- 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module '@opentiny/tiny-engine-common/js/http' {
     export const handlePageUpdate: (updateParams: {
         id: string;

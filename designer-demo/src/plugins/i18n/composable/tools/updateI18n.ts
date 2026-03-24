@@ -11,14 +11,14 @@ import {
 // 定义为普通对象，用于传递给 inputSchema 字段
 const inputSchema = z.object({
     key: z.string().describe('The unique key for the i18n entry to update'),
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     zh_CN: z
         .string()
         .optional()
         .describe(
             'The Chinese translation text (optional, only update if provided)'
         ),
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     en_US: z
         .string()
         .optional()
@@ -30,9 +30,9 @@ const inputSchema = z.object({
 // 定义 data 部分的 Schema（用于更新的 i18n 条目数据）
 const updateI18nDataSchema = z.object({
     key: z.string().describe('The unique key of the updated entry'),
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     zh_CN: z.string().describe('The updated Chinese translation text'),
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     en_US: z.string().describe('The updated English translation text'),
     type: z.string().describe('The type of the entry'),
     originalEntry: z
@@ -57,14 +57,14 @@ export const updateI18n = {
         openWorldHint: false
     },
     callback: async (args: z.infer<typeof inputSchema>) => {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         const { key, zh_CN, en_US } = args;
         // 验证至少有一个翻译字段
         const translationValidation = z
             .object({
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: z.string().optional(),
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: z.string().optional()
             })
             .safeParse(args);
@@ -78,7 +78,7 @@ export const updateI18n = {
         }
 
         const { getLangs, ensureI18n } = useTranslate();
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const langs = getLangs() as Record<string, any>;
 
         if (!langs[key]) {
@@ -96,9 +96,9 @@ export const updateI18n = {
             // Update with new translations, keeping existing values for ones not provided
             const updatedEntry = {
                 key,
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 zh_CN: zh_CN || existingEntry.zh_CN,
-                 
+                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                 en_US: en_US || existingEntry.en_US,
                 type: existingEntry.type
             };

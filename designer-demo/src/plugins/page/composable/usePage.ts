@@ -1,4 +1,4 @@
- 
+/* eslint-disable max-lines */
 /**
  * Copyright (c) 2023 - present TinyEngine Authors.
  * Copyright (c) 2023 - present Huawei Cloud Computing Technologies Co., Ltd.
@@ -40,7 +40,7 @@ const DEFAULT_PAGE = {
     app: '',
     name: '',
     route: '',
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     page_content: {
         componentName: 'Page',
         css: '',
@@ -63,13 +63,13 @@ const DEFAULT_PAGE = {
     group: 'staticPages'
 };
 
- 
+// eslint-disable-next-line vue/require-typed-ref
 const selectedTemplateCard = ref(null);
 
 interface PageData {
     id: string | number;
     parentId: string | number;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [x: string]: any;
 }
 
@@ -82,17 +82,17 @@ interface PageNode {
 interface PageSettingState {
     currentPageDataCopy: PageData;
     currentPageData: PageData;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pages: any[];
     oldParentId?: string | number | null;
     isNew: boolean;
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     ROOT_ID: string;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateTreeData?: any;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     treeDataMapping: Record<string, any>;
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     defaultPage?: any;
 }
 
@@ -105,7 +105,7 @@ const pageSettingState = reactive<PageSettingState>({
     oldParentId: null,
     isNew: false,
     // 根节点ID
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     ROOT_ID: '0',
     updateTreeData: null,
     treeDataMapping: {},
@@ -128,7 +128,7 @@ interface PageOptions {
 }
 
 interface MaterialsOptions {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useBaseStyle: any;
     blockBaseStyle: { className: string; style: string };
     componentBaseStyle: { className: string; style: string };
@@ -179,7 +179,7 @@ const getDefaultPage = () => {
 
     return {
         ...DEFAULT_PAGE,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         page_content: {
             ...DEFAULT_PAGE.page_content,
             props: {
@@ -211,7 +211,7 @@ const syncPageContent = () => {
         // 不同步会导致：
         // 1. 保存检测失效 - isCurrentDataSame()无法检测到真实变更
         // 2. 未保存提示缺失 - 用户离开页面时不会收到未保存变更警告
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         pageSettingState.currentPageData.page_content = pageContent;
     }
 };
@@ -233,9 +233,9 @@ const updatePageSettingAfterSave = () => {
 const isCurrentDataSame = () => {
     syncPageContent();
 
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: Record<string, any> = pageSettingState.currentPageData || {};
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dataCopy: Record<string, any> =
         pageSettingState.currentPageDataCopy || {};
     let isEqual = true;
@@ -371,7 +371,7 @@ interface GroupData {
 }
 
 const getPageList = async (appId?: string) => {
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pagesData: any[] = await http.fetchPageList(
         appId || getMetaApi(META_SERVICE.GlobalService).getBaseInfo().id
     );
@@ -401,7 +401,7 @@ const getPageList = async (appId?: string) => {
               }
             : namedNode;
 
-         
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { children, ...other } = node;
 
         if (node.group === 'staticPages') {
@@ -423,7 +423,7 @@ const getPageList = async (appId?: string) => {
     return pageSettingState.pages;
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAncestorsRecursively = (id: string): any[] => {
     if (id === pageSettingState.ROOT_ID) {
         return [];
@@ -465,7 +465,7 @@ const getAncestors = async (id: string, withFolders?: boolean) => {
  */
 const flatternFolder = (
     pagesOrFolders: Array<
-        { isPage: boolean; children?: any[] } & Record<string, any>  
+        { isPage: boolean; children?: any[] } & Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
     >
 ) => {
     // 页面数组中没有文件夹，无需处理
@@ -547,11 +547,11 @@ const switchPage = (pageId: string | number, clearPreview = false) => {
         .fetchPageDetail(pageId)
         .then(
             (data: {
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 [x: string]: any;
                 isPage: boolean;
                 name: string;
-                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 occupier: any;
             }) => {
                 if (data.isPage) {
@@ -621,17 +621,17 @@ const switchPageWithConfirm = (pageId: string, clearPreview = false) => {
 };
 
 const updatePageContent = (
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     familyPages: Array<{
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         id: any;
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase, @typescript-eslint/no-explicit-any
         page_content: any;
     }>,
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     currentPage: {
         id: string;
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase, @typescript-eslint/no-explicit-any
         page_content?: any;
     }
 ) => {
@@ -640,24 +640,24 @@ const updatePageContent = (
     );
     // 替换为当前页面最新的 schema
     if (currentPageSchema) {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         currentPageSchema.page_content = currentPage.page_content;
     }
 };
 
 const fetchPageDetailIfNeeded = async (page: {
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase, @typescript-eslint/no-explicit-any
     page_content: any;
     id: string;
 }) => {
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
     if (!page.page_content) {
         try {
             const pageDetail = await http.fetchPageDetail(page.id);
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             page.page_content = pageDetail.page_content;
         } catch (error) {
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             page.page_content = {};
             throw new Error(String(error));
         }
@@ -665,12 +665,12 @@ const fetchPageDetailIfNeeded = async (page: {
 };
 
 const updateParentId = (
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     page: { parentId: any },
-     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pages: any[],
     index: number,
-     
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     ROOT_ID: string
 ) => {
     if (
@@ -681,7 +681,7 @@ const updateParentId = (
     }
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handlePageDetail = async (pages: any[]) => {
     const { ROOT_ID } = pageSettingState;
 
@@ -705,7 +705,7 @@ const getFamily = async (currentPage: { id: string }) => {
         .reverse()
         .map(item => ({
             id: item.id,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
             page_content: item.page_content,
             name: item.name,
             parentId: item.parentId,
@@ -790,7 +790,7 @@ const updatePageById = async (id, params) => {
         const pageDetail = await http.fetchPageDetail(id);
         const filteredParams = Object.fromEntries(
             Object.entries(params).filter(
-                 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 ([_key, value]) => value !== undefined && value !== null
             )
         );
@@ -830,9 +830,9 @@ export default () => {
         getFamily,
         getPageChildren,
         updatePageSettingAfterSave,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         STATIC_PAGE_GROUP_ID,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         COMMON_PAGE_GROUP_ID,
         createNewPage,
         deletePage,

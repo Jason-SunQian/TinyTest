@@ -13,7 +13,7 @@ const FALLBACK_OCCUPIER = {
 };
 const { PAGE_STATUS } = constants;
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ensureOccupier = (occupier?: Record<string, any>) => {
     const userInfo = getMetaApi(META_SERVICE.GlobalService).getState()
         ?.userInfo;
@@ -21,7 +21,7 @@ export const ensureOccupier = (occupier?: Record<string, any>) => {
     return occupier || userInfo || FALLBACK_OCCUPIER;
 };
 
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getEnsuredCanvasStatus = (occupier?: Record<string, any>) => {
     const ensured = ensureOccupier(occupier);
     const status = getCanvasStatus(ensured);

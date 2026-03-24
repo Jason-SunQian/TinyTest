@@ -139,15 +139,15 @@ import { useDesignerI18n } from '../../services/i18nService';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyForm: Form,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyFormItem: FormItem,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyInput: Input,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect: Select,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyRadio: Radio
     },
     props: {
@@ -160,7 +160,7 @@ export default {
             default: false
         }
     },
-     
+    // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
         const {
@@ -199,7 +199,7 @@ export default {
                 state.defaultPageId = '';
             } else {
                 state.childPageList = await getPageChildren(id);
-                 
+                // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
                 const defaultPage = state.childPageList?.find(
                     item => item.isDefault
                 );
@@ -223,7 +223,7 @@ export default {
         };
 
         const changeDefaultPage = () => {
-             
+            // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
             const foundPage = state.childPageList.find(
                 item => item.id === state.defaultPageId
             );

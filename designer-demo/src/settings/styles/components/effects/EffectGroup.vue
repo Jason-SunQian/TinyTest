@@ -127,7 +127,7 @@
 
 <!-- eslint-disable vue/max-lines-per-block -->
 <script lang="ts">
- 
+/* eslint-disable max-lines */
 /* metaService: engine.setting.styles.EffectGroup */
 import { reactive, computed } from 'vue';
 import { Select, Option, OptionGroup } from '@opentiny/vue';
@@ -148,23 +148,23 @@ import { BORDER_STYLE_TYPE } from '../../js/cssType';
 
 export default {
     components: {
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinySelect: Select,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyOption: Option,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyOptionGroup: OptionGroup,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         SliderConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ColorConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         TabsGroupConfigurator,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ModalMask,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         ResetButton,
-         
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         InputSelect
     },
     props: {
@@ -174,7 +174,7 @@ export default {
         }
     },
     emits: ['update'],
-     
+    // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
         let activedName = [];
 
@@ -564,9 +564,9 @@ export default {
             state,
             cursorGroup,
             outlineOptions,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             EFFECTS_PROPERTY,
-             
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             BORDER_STYLE_TYPE,
             outlineSuffixOptions,
             updateOpacity,
