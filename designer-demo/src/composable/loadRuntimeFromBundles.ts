@@ -48,7 +48,56 @@ export function getBundleUrls(): string[] {
             result.push(u);
         }
     }
-    return result;
+    // 优先返回 HTTP(S) bundle（主工程远程物料），避免 webview 本地 URI 抢占解析基准导致资源回落到错误地址。
+    const httpFirst = result.filter(
+        u => u.startsWith('http://') || u.startsWith('https://')
+    );
+    const nonHttp = result.filter(
+        u => !u.startsWith('http://') && !u.startsWith('https://')
+    );
+    return [...httpFirst, ...nonHttp];
+}
+
+/**
+ * 从 bundle URL 推导其 base（用于解析 script/css 相对路径）。
+ * 例：http://localhost:3000/bundle.json → http://localhost:3000
+ */
+export function getBundleBaseFromUrl(bundleUrl: string): string {
+    const clean = bundleUrl.replace(/[#?].*$/, '').replace(/\/[^/]*$/, '').replace(/\/$/, '');
+    if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+    if (typeof window !== 'undefined') {
+        const origin = window.location.origin;
+        return clean.startsWith('/') ? `${origin}${clean}` : `${origin}/${clean}`;
+    }
+    return clean;
+}
+
+/**
+ * 从物料 bundle URL 列表中取第一个 HTTP URL 的 base，作为物料脚本/样式的解析基准。
+ * 设计器加载组件时应用此 base，而非 design 的 origin（8090）。
+ */
+export function getMaterialsBaseFromBundleUrls(): string | null {
+    const urls = getBundleUrls();
+    for (const u of urls) {
+        if (typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'))) {
+            const base = getBundleBaseFromUrl(u);
+            if (base) return base;
+        }
+    }
+    return null;
+}
+
+/** 在 webview 中 fetch 相对路径会被解析为 vscode-webview:// 导致 CSP 拦截，需转成设计器 HTTP origin 的绝对 URL */
+function toAbsoluteBundleUrl(url: string): string {
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (typeof window === 'undefined') return url;
+    const win = window as Window & { TINY_DESIGNER_ORIGIN?: string };
+    const origin = (
+        win.TINY_DESIGNER_ORIGIN ||
+        (import.meta.env as { VITE_ORIGIN?: string }).VITE_ORIGIN ||
+        'http://localhost:8090'
+    ).replace(/\/$/, '');
+    return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
 }
 
 /** 将相对 URL 解析为基于 base 的绝对 URL */
@@ -114,8 +163,9 @@ export async function findRuntimeScriptUrl(): Promise<string | null> {
 
     for (const bundleUrl of bundleUrls) {
         try {
-            const res = await fetch(bundleUrl).then(r => r.json());
-            const base = getBundleBase(bundleUrl);
+            const absoluteUrl = toAbsoluteBundleUrl(bundleUrl);
+            const res = await fetch(absoluteUrl).then(r => r.json());
+            const base = getBundleBase(absoluteUrl);
             const url = extractRuntimeScript(res, base);
             // eslint-disable-next-line no-console
             console.log(

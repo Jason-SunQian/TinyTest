@@ -100,6 +100,7 @@ import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
 } from '@/utils/designerOrigin';
+import { getMaterialsBaseFromBundleUrls } from '@/composable/loadRuntimeFromBundles';
 import {
     canvasState,
     onMouseUp,
@@ -312,15 +313,23 @@ export default {
             const materialScripts = useResource().appSchemaState.materialsDeps.scripts.filter(
                 item => item.components
             );
-            const materialBase =
+            const designerBase = String(
                 getDesignerMaterialBaseUrl() ||
-                (typeof location !== 'undefined' ? location.origin : null) ||
-                'http://localhost:8090';
-            const base = String(materialBase).replace(/\/$/, '');
+                    (typeof location !== 'undefined' ? location.origin : null) ||
+                    'http://localhost:8090'
+            ).replace(/\/$/, '');
+            const remoteBundleBase =
+                getMaterialsBaseFromBundleUrls()?.replace(/\/$/, '') || null;
+            const depBase = String(remoteBundleBase || designerBase).replace(
+                /\/$/,
+                ''
+            );
             const componentsDeps = materialScripts.map(s => ({
                 ...s,
-                script: toAbsoluteMaterialUrl(s.script, base) ?? s.script,
-                ...(s.css && { css: toAbsoluteMaterialUrl(s.css, base) ?? s.css })
+                script: toAbsoluteMaterialUrl(s.script, depBase) ?? s.script,
+                ...(s.css && {
+                    css: toAbsoluteMaterialUrl(s.css, depBase) ?? s.css
+                })
             }));
             win.componentsDeps = componentsDeps;
             if (typeof console !== 'undefined' && console.log && componentsDeps.length) {

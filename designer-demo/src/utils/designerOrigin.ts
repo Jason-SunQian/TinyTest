@@ -70,5 +70,12 @@ export function toAbsoluteMaterialUrl(
         return base + url;
     }
     if (isMaterialsBase) return `${base}/${url}`;
+    // 相对路径（如 mr-components.js）且 base 为 HTTP/HTTPS 时，拼成绝对 URL，避免画布 iframe（about:srcdoc）无法解析
+    if (
+        (base.startsWith('http://') || base.startsWith('https://')) &&
+        !url.startsWith('data:')
+    ) {
+        return `${base.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
+    }
     return url;
 }

@@ -21,6 +21,7 @@ import {
 import { compile as blockCompiler } from '@opentiny/tiny-engine-block-compiler';
 import { utils } from '@opentiny/tiny-engine-utils';
 
+import { getMaterialsBaseFromBundleUrls } from '@/composable/loadRuntimeFromBundles';
 import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
@@ -142,9 +143,29 @@ export const getBlockFromMaterialStore = (
         /* eslint-enable no-console */
         return null;
     }
-    const base =
+    // 主工程物料（来自 bundle.json）必须从 bundle 的 base（如 3000）加载，绝不能误用 design 的 base（8090）
+    const scriptFilename =
+        typeof script === 'string' ? script.replace(/^.*\//, '') : '';
+    const isMainProjectAsset = /^(mr-|mp-|mr-bank\.css)/.test(scriptFilename);
+    const materialsBase =
         useMaterial().getBundleBaseUrlForComponent(name) ??
-        getDesignerMaterialBaseUrl();
+        getMaterialsBaseFromBundleUrls() ??
+        (() => {
+            const envBase = (import.meta.env as { VITE_MATERIALS_BASE_URL?: string }).VITE_MATERIALS_BASE_URL;
+            return typeof envBase === 'string' && envBase.trim()
+                ? envBase.trim().replace(/\/$/, '')
+                : null;
+        })();
+    if (isMainProjectAsset && !materialsBase) {
+        /* eslint-disable no-console -- 诊断物料解析 */
+        console.warn(
+            '[Materials] 主工程物料 base 无法推导（请确保 VITE_MATERIAL_BUNDLE_URLS 包含 HTTP bundle，如 http://localhost:3000/bundle.json）',
+            name
+        );
+        /* eslint-enable no-console */
+        return null;
+    }
+    const base = materialsBase ?? getDesignerMaterialBaseUrl();
     let scriptUrl =
         typeof script === 'string' &&
         (script.startsWith('http://') || script.startsWith('https://'))

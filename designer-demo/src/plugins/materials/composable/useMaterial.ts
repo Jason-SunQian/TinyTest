@@ -28,11 +28,15 @@ import {
 import meta from '../meta';
 import { BASE_STYLE_CLASS_NAME, COMPONENTS_SKIP_BASE_STYLE } from '../constants';
 import { getMaterialContentsFromExtension } from '@/composable/useVSCodeBridge';
+import { normalizeCanvasDeps } from '@/composable/canvasDepsNormalizer';
 import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
 } from '@/utils/designerOrigin';
-import { getBundleUrls } from '@/composable/loadRuntimeFromBundles';
+import {
+    getBundleUrls,
+    getMaterialsBaseFromBundleUrls
+} from '@/composable/loadRuntimeFromBundles';
 
 import {
     getBlockCompileRes,
@@ -159,16 +163,32 @@ const patchBaseProps = (schemaProperties?: Property[]) => {
  */
 const registerComponentToResource = (data: Component, bundleBase?: string) => {
     patchBaseProps(data.schema?.properties);
+    const shouldReplaceBase = (name: string, nextBase?: string) => {
+        if (!nextBase) return false;
+        const current = componentBundleBaseMap.get(name);
+        if (!current) return true;
+        const currentHttp =
+            current.startsWith('http://') || current.startsWith('https://');
+        const nextHttp =
+            nextBase.startsWith('http://') || nextBase.startsWith('https://');
+        // 已有 HTTP base 时，不允许被非 HTTP（如 vscode-webview/mock）覆盖
+        if (currentHttp && !nextHttp) return false;
+        return true;
+    };
 
     if (Array.isArray(data.component)) {
         const { component, ...others } = data;
         component.forEach(item => {
             resource.set(item, { item, ...others, type: MATERIAL_TYPE.Component });
-            if (bundleBase) componentBundleBaseMap.set(item, bundleBase);
+            if (shouldReplaceBase(item, bundleBase)) {
+                componentBundleBaseMap.set(item, bundleBase as string);
+            }
         });
     } else {
         resource.set(data.component, { ...data, type: MATERIAL_TYPE.Component });
-        if (bundleBase && data.component) componentBundleBaseMap.set(data.component, bundleBase);
+        if (data.component && shouldReplaceBase(data.component, bundleBase)) {
+            componentBundleBaseMap.set(data.component, bundleBase as string);
+        }
     }
 };
 
@@ -548,14 +568,48 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     });
 
     // 只要有 base、materialContents，或任一脚本/样式是相对路径，都做绝对化，避免 iframe 按 vscode-webview 解析相对路径导致 403
+    const isRelativePath = (u: string) =>
+        typeof u === 'string' &&
+        !u.startsWith('http://') &&
+        !u.startsWith('https://') &&
+        !u.startsWith('data:') &&
+        !u.startsWith('vscode-webview:');
     const hasRelative =
         !base &&
         !materialContents &&
         [...scriptsList.map(s => s.script), ...allStyles].some(
-            (u): u is string => typeof u === 'string' && u.startsWith('/')
+            (u): u is string => isRelativePath(u)
         );
     const effectiveBase =
         (base || (typeof window !== 'undefined' && (window as any).TINY_DESIGNER_ORIGIN) || 'http://localhost:8090')?.toString().replace(/\/$/, '') || '';
+    const firstRemoteBase =
+        (remoteBundleBases.size > 0
+            ? Array.from(remoteBundleBases)[0]
+            : getMaterialsBaseFromBundleUrls()) || '';
+    const safeDefaultBase =
+        (firstRemoteBase && firstRemoteBase.startsWith('http')
+            ? firstRemoteBase
+            : effectiveBase) || '';
+    const absolutize = (u: string): string => {
+        if (
+            !u ||
+            u.startsWith('http://') ||
+            u.startsWith('https://') ||
+            u.startsWith('data:')
+        ) {
+            return u;
+        }
+        // webview 样式地址（尤其 mr-bank.css）在 iframe 内常返回 403，优先改写回远程 bundle 地址
+        if (
+            u.startsWith('vscode-webview:') &&
+            getFilenameFromPath(u) === MAIN_PROJECT_STYLE_FALLBACK &&
+            firstRemoteBase
+        ) {
+            return `${firstRemoteBase.replace(/\/$/, '')}/${MAIN_PROJECT_STYLE_FALLBACK}`;
+        }
+        const b = safeDefaultBase.replace(/\/$/, '');
+        return b ? toAbsoluteMaterialUrl(u, b) ?? `${b}/${u.replace(/^\//, '')}` : u;
+    };
 
     const appendCacheBust = (u: string) => {
         if (!u.startsWith('http://') && !u.startsWith('https://')) return u;
@@ -572,7 +626,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
         if (materialContents && materialContents[filename]) {
             return toDataUrl(materialContents[filename], isCss ? 'text/css' : 'application/javascript');
         }
-        const b = baseOverride ?? effectiveBase;
+        const b = (baseOverride || safeDefaultBase || effectiveBase).replace(/\/$/, '');
         const u = b ? (toAbsoluteMaterialUrl(url, b) ?? url) : url;
         return appendCacheBust(u);
     };
@@ -584,22 +638,48 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
                 const itemBase = firstComp ? getBundleBaseUrlForComponent(firstComp) ?? effectiveBase : effectiveBase;
                 return {
                     ...item,
-                    script: scriptUrl(item, item.script!, false, itemBase),
-                    ...(item.css && { css: scriptUrl(item, item.css, true, itemBase) })
+                    script: absolutize(scriptUrl(item, item.script!, false, itemBase)),
+                    ...(item.css && {
+                        css: absolutize(scriptUrl(item, item.css, true, itemBase))
+                    })
                 };
             }),
-            styles: [...allStyles].map(s =>
-                typeof s === 'string'
-                    ? (materialContents && materialContents[getFilenameFromPath(s)]
-                        ? toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css')
-                        : appendCacheBust(effectiveBase ? toAbsoluteMaterialUrl(s, effectiveBase) ?? s : s))
-                    : s
-            )
+            styles: [...allStyles].map(s => {
+                if (typeof s !== 'string') return s;
+                if (materialContents && materialContents[getFilenameFromPath(s)])
+                    return toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css');
+                // 主工程样式（如 mr-bank.css）使用远程 bundle 的 base，否则会误用 design 的 origin 导致 404
+                const styleBase =
+                    getFilenameFromPath(s) === MAIN_PROJECT_STYLE_FALLBACK &&
+                    remoteBundleBases.size > 0
+                        ? Array.from(remoteBundleBases)[0]
+                        : effectiveBase;
+                return appendCacheBust(absolutize(styleBase ? toAbsoluteMaterialUrl(s, styleBase) ?? s : s));
+            })
         };
     }
+    // 最终兜底：发布给画布前，保证 import-map 中 script 地址不是裸相对路径；
+    // 否则浏览器会把该 specifier 记为 null，出现“blocked by a null value”。
     return {
-        scripts: scriptsList,
-        styles: [...allStyles]
+        scripts: scriptsList.map(item => ({
+            ...item,
+            script: item.script ? absolutize(item.script) : item.script,
+            ...(item.css && { css: absolutize(item.css) })
+        })),
+        styles: [...allStyles].map(s => {
+            if (typeof s !== 'string') return s;
+            if (materialContents && materialContents[getFilenameFromPath(s)])
+                return toDataUrl(materialContents[getFilenameFromPath(s)], 'text/css');
+            const baseForStyle =
+                getFilenameFromPath(s) === MAIN_PROJECT_STYLE_FALLBACK && firstRemoteBase
+                    ? firstRemoteBase
+                    : safeDefaultBase;
+            const abs =
+                baseForStyle && !s.startsWith('http')
+                    ? toAbsoluteMaterialUrl(s, baseForStyle) ?? `${baseForStyle.replace(/\/$/, '')}/${s.replace(/^\//, '')}`
+                    : s;
+            return appendCacheBust(abs);
+        })
     };
 };
 
@@ -619,6 +699,8 @@ const updateCanvasDeps = async () => {
     } catch {
         deps = getCanvasDeps();
     }
+    // 在源头先做一次归一化，避免先发布 webview 相对/伪绝对 URL 再二次修正导致双请求（一个 403 一个 200）。
+    deps = normalizeCanvasDeps(deps).normalized as ReturnType<typeof getCanvasDeps>;
     if (typeof console !== 'undefined' && console.log && deps.styles?.length) {
         // eslint-disable-next-line no-console -- 诊断画布样式注入
         console.log('[Materials] 画布样式已下发，共', deps.styles.length, '个:', deps.styles.slice(0, 5).map((s: string) => (s || '').slice(-60)));
@@ -636,33 +718,86 @@ const updateCanvasDeps = async () => {
  */
 const parseMaterialsDependencies = (
     materialBundle: Material,
-    options?: { skipScriptPreload?: boolean }
+    options?: { skipScriptPreload?: boolean; bundleBase?: string }
 ) => {
     const { packages, components } = materialBundle;
     const skipPreload = options?.skipScriptPreload === true;
+    const bundleBase = options?.bundleBase || null;
 
     const { scripts: scriptsDeps, styles: stylesDeps } =
         useResource().appSchemaState.materialsDeps;
 
     packages?.forEach(pkg => {
-        if (
-            !pkg.script ||
-            !pkg.package ||
-            scriptsDeps.find(item => item.package === pkg.package)
-        ) {
+        if (!pkg.script || !pkg.package) {
             return;
         }
 
-        scriptsDeps.push(pkg);
+        // 远程 bundle 的 package 依赖若使用相对路径（如 mr-components.js），需要按该 bundle 的 base 绝对化，
+        // 否则后续预加载会按设计器 origin（8090）解析，导致 404。
+        const normalizedScript =
+            typeof pkg.script === 'string' && bundleBase
+                ? toAbsoluteMaterialUrl(pkg.script, bundleBase) || pkg.script
+                : pkg.script;
+        const normalizedCss = Array.isArray(pkg.css)
+            ? pkg.css.map(css =>
+                  typeof css === 'string' && bundleBase
+                      ? toAbsoluteMaterialUrl(css, bundleBase) || css
+                      : css
+              )
+            : typeof pkg.css === 'string' && bundleBase
+            ? toAbsoluteMaterialUrl(pkg.css, bundleBase) || pkg.css
+            : pkg.css;
 
-        if (!pkg.css) {
-            return;
-        }
-
-        if (Array.isArray(pkg.css)) {
-            pkg.css.forEach(item => stylesDeps.add(item));
+        const existingDep = scriptsDeps.find(item => item.package === pkg.package);
+        if (existingDep) {
+            const currentScript = existingDep.script || '';
+            const nextScript = normalizedScript || '';
+            const currentHttp =
+                currentScript.startsWith('http://') ||
+                currentScript.startsWith('https://');
+            const nextHttp =
+                nextScript.startsWith('http://') || nextScript.startsWith('https://');
+            // 同包冲突时，优先保留 HTTP 远程地址，不允许被本地 webview/mock 相对地址回写覆盖。
+            if (!(currentHttp && !nextHttp)) {
+                existingDep.script = normalizedScript;
+            }
+            if (normalizedCss !== undefined) {
+                const currentCss = existingDep.css;
+                const currentCssHttp =
+                    typeof currentCss === 'string' &&
+                    (currentCss.startsWith('http://') ||
+                        currentCss.startsWith('https://'));
+                const nextCssHttp =
+                    typeof normalizedCss === 'string' &&
+                    (normalizedCss.startsWith('http://') ||
+                        normalizedCss.startsWith('https://'));
+                if (!(currentCssHttp && !nextCssHttp)) {
+                    existingDep.css = normalizedCss;
+                }
+            }
+            const pkgComponents =
+                (pkg as unknown as { components?: Record<string, unknown> })
+                    .components || {};
+            existingDep.components = {
+                ...(existingDep.components || {}),
+                ...pkgComponents
+            };
         } else {
-            stylesDeps.add(pkg.css);
+            scriptsDeps.push({
+                ...pkg,
+                script: normalizedScript,
+                css: normalizedCss
+            });
+        }
+
+        if (!normalizedCss) {
+            return;
+        }
+
+        if (Array.isArray(normalizedCss)) {
+            normalizedCss.forEach(item => stylesDeps.add(item));
+        } else {
+            stylesDeps.add(normalizedCss);
         }
     });
 
@@ -704,7 +839,8 @@ const addComponents = (
 ) => {
     const { snippets, components } = materialBundle;
     parseMaterialsDependencies(materialBundle, {
-        skipScriptPreload: fromRemoteBundle === true
+        skipScriptPreload: fromRemoteBundle === true,
+        bundleBase
     });
 
     // 诊断：已进入 materialsDeps 的脚本（画布会据此预加载并注册到 TinyLowcodeComponent）
@@ -753,6 +889,68 @@ const addBlocks = (blocks?: Block[]) => {
 };
 
 /**
+ * 将 bundle 内的相对资源地址（components/packages 的 script/css）按 bundleBase 绝对化。
+ * 这样后续无论走预加载链路还是拖拽按需加载，都不会回落到设计器 origin（8090）。
+ */
+const normalizeMaterialAssetUrls = (
+    materials: Material,
+    bundleBase?: string
+): Material => {
+    if (!bundleBase) return materials;
+    const toAbsString = (u: string) => toAbsoluteMaterialUrl(u, bundleBase) || u;
+
+    const components = (materials.components || []).map(component => {
+        const npm = component.npm
+            ? {
+                  ...component.npm,
+                  script: component.npm.script
+                      ? toAbsString(component.npm.script)
+                      : component.npm.script,
+                  css:
+                      typeof component.npm.css === 'string'
+                          ? toAbsString(component.npm.css)
+                          : component.npm.css
+              }
+            : component.npm;
+        const contentNpm = (component as { content?: { npm?: { script?: string; css?: string | string[] } } }).content?.npm;
+        const content =
+            contentNpm && (component as { content?: Record<string, unknown> }).content
+                ? {
+                      ...(component as { content?: Record<string, unknown> }).content,
+                      npm: {
+                          ...contentNpm,
+                          script:
+                              typeof contentNpm.script === 'string'
+                                  ? toAbsString(contentNpm.script)
+                                  : contentNpm.script,
+                          css:
+                              typeof contentNpm.css === 'string'
+                                  ? toAbsString(contentNpm.css)
+                                  : contentNpm.css
+                      }
+                  }
+                : (component as { content?: Record<string, unknown> }).content;
+        return {
+            ...component,
+            npm,
+            ...(content ? { content } : {})
+        };
+    });
+
+    const packages = (materials.packages || []).map(pkg => ({
+        ...pkg,
+        script: pkg.script ? toAbsString(pkg.script) : pkg.script,
+        css: typeof pkg.css === 'string' ? toAbsString(pkg.css) : pkg.css
+    }));
+
+    return {
+        ...materials,
+        components,
+        packages
+    };
+};
+
+/**
  * 获取到符合物料协议的bundle.json之后，处理组件与区块物料
  * @param materials 物料包内容
  * @param bundleUrl 该 bundle 的 URL（如 http://localhost:3060/bundle.json），用于解析组件脚本 base
@@ -767,8 +965,9 @@ const addMaterials = (materials: Material, bundleUrl?: string) => {
         typeof bundleUrl === 'string'
             ? bundleUrl.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '')
             : undefined;
-    addComponents(materials, bundleBase, !!bundleUrl);
-    addBlocks(materials.blocks);
+    const normalized = normalizeMaterialAssetUrls(materials, bundleBase);
+    addComponents(normalized, bundleBase, !!bundleUrl);
+    addBlocks(normalized.blocks);
 };
 
 const getMaterial = (name?: string): Partial<Resource & BlockResource> => {
