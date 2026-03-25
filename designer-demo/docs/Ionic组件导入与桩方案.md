@@ -219,6 +219,7 @@
 6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
 7. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.10 节
 8. 单独拖入的 MrBackButton 无返回箭头 / Default Href 为空：见 **§2.8**；确认设计器已加载 `patchPropertiesGetProps` 对 MrBackButton 的补全
+9. `MrTitle` 放到 `MrContent` 内不显示：确认 `mr-title-stub` 不再在非 Header 场景绝对定位；本次已修复设计器画布里 `mr-content + MrTitle` 可正常渲染
 
 ---
 
