@@ -51,6 +51,9 @@
 -   **[Ionic re-export 策略可行性分析](./Ionic-re-export策略可行性分析.md)**
     -   不用画布桩、纯 re-export 显示 Ionic 组件的可行性；Shadow DOM 与 CSS 变量；建议验证步骤
 
+-   **[Ionic 组件导入与桩方案](./Ionic组件导入与桩方案.md)**
+    -   画布桩、MrLabel/MrButton 的 `children` 与 manifest；**2.6.1**（属性面板 Text 为空）、**2.8**（单独拖入 MrBackButton 时 Default Href 为空）的设计器侧说明与修复要点
+
 ### 架构设计
 
 -   **[设计器去依赖改造方案](./设计器去依赖改造方案.md)**

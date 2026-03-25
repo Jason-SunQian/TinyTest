@@ -188,6 +188,13 @@ export const saveCommon = (value?: string) => {
         schemaToSave = pageSchema;
     }
 
+    const materialApi = getMetaApi('engine.service.material') as {
+        patchSchemaWithMaterialDefaults?: (s: unknown) => void;
+    };
+    if (typeof materialApi?.patchSchemaWithMaterialDefaults === 'function') {
+        materialApi.patchSchemaWithMaterialDefaults(schemaToSave);
+    }
+
     if (pageSettingState?.isAIPage) {
         if (isTemporaryPage.saved) isTemporaryPage.saved = false;
         isTemporaryPage.saved = true;

@@ -74,6 +74,10 @@ async function startApp() {
                     opts => { msg.subscribe(opts); },
                     opts => { msg.publish(opts); }
                 );
+                const { patchPropertiesGetPropsForSlotChildrenSync } = await import(
+                    '@/composable/patchPropertiesGetProps'
+                );
+                patchPropertiesGetPropsForSlotChildrenSync();
             }
         }
     });

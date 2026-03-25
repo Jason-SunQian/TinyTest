@@ -108,6 +108,36 @@
 
 **文本配置器选择**：MrLabel、MrButton 等 slot 文本仅需单行输入时，用 `InputConfigurator` 替代 `HtmlTextConfigurator`，避免属性面板展示过大区域。
 
+#### 2.6.1 属性面板「文本」为空，画布与 input.json 正常（MrLabel / MrButton / MrTitle）
+
+> 与上文「ion-label 必须用 slot、manifest 配 `property: children`」是两件不同的事：manifest 配对了，仍可能出现**面板不显示、JSON 里却是顶层 `children` 字符串**的情况。
+
+**现象**
+
+-   画布上 MrLabel / MrButton 文字正常，保存后的 `input.json` 里也有文案。
+-   JSON 中常见结构为：节点顶层 **`"children": "234"`**（字符串），而 **`props` 里只有 `className` 等**，没有 `props.children`。
+-   选中组件后，右侧属性面板里「Text」/「Button Text」**输入框为空**。
+-   对比：**MpProgress**、**MpAccountInput** 等把业务字段写在 **`props`**（如 `percentage`、`label`）里的组件，面板能正常回显。
+
+**根因（设计器协议，非 manifest 配错）**
+
+1.  TinyEngine 属性面板在 `packages/settings/props/src/composable/useProperties.ts` 中通过 **`mergeProps(toRaw(schema.props), 物料分组)`** 生成表单项；**只从 `schema.props[prop.property]` 取值**。物料里 Text 对应的是 **`property: "children"`**，即读 **`props.children`**。
+2.  引擎在不少场景下会把「纯文本 slot」持久化为**节点上的 `children` 字符串**（与 `props` 同级），**不自动写回 `props.children`**。画布与出码链路会读节点 `children`，故显示正常；**属性面板只认 `props`，故为空**。
+3.  仅在保存/预览前做 `patchSchemaWithMaterialDefaults`、或在 `fillNodePropsWithMaterialDefaults` 里 **`setProp('children', …)`**，仍可能**不生效**：`getProps` 在「同一节点再次选中」时会对 `mergeProps` **短路**，不会重新合并，`pageState.properties` 不会随 `props` 更新而刷新。
+
+**设计器侧处理（designer-demo）**
+
+| 环节 | 说明 |
+| ---- | ---- |
+| **同步规则** | `slotChildrenPropsSync.ts`：`syncSlotStringChildrenWithPropsChildren` 在 **`schema.children`（字符串）与 `props.children`（及误配的 `props.text`）之间做对齐**，与 MrTitle 同类问题一致。 |
+| **选中即生效** | `patchPropertiesGetProps.ts`：在应用 **`getProps` → `mergeProps` 之前** 调用上述同步（在 `main.ts` 的 `appCreated` 里安装补丁）。这样**第一次选中**即可在面板看到文案。 |
+| **保存/预览** | `useMaterial.ts` 中 `patchSchemaWithMaterialDefaults` 对整棵树调用同一同步，保证落盘与出码前节点上字段一致。 |
+
+**结论**
+
+-   **主工程 manifest**：继续采用 **`property: "children"` + `InputConfigurator` + snippet 默认 `children`** 即可，无需为「面板回显」再改成别的 property 名。
+-   **数据形态**：页面 JSON 中出现顶层 **`children: "..."` 字符串** 是引擎常见写法；设计器通过上述同步把「面板可读」的 **`props.children`** 与之一致，而不是要求业务手工改 JSON 结构。
+
 ### 2.7 MrButton 经验总结（Vant 按钮）
 
 **来源**：主工程 `mr-button` 对应 Vant 的 `Button`（`types/components.d.ts` 中 `MrButton: typeof import('vant/es')['Button']`），无需桩，直接 re-export。
@@ -122,7 +152,50 @@
 
 **vite 配置**：`vantToMr` 中增加 `Button: 'MrButton'`，业务组件 chunk 中 `import { Button } from 'vant'` 会替换为 `import { MrButton } from '@local/mr-components'`。
 
-### 2.8 MpAgreementButton 经验总结（业务组件 i18n 文案）
+### 2.8 MrHeader / MrBackButton：整段拖拽 vs 清空后单独拖子组件
+
+**现象**
+
+-   **整段拖拽**推荐 snippet（MrHeader 内已含 MrToolbar、MrBackButton、MrTitle 等）时，子节点 **MrBackButton** 的「Default Href」常为 **`javascript:void(0)`**，画布返回箭头与出码正常。
+-   **先拖 MrHeader，清空子节点，再逐个拖入** MrToolbar、MrBackButton、MrTitle 时，**单独拖入的 MrBackButton** 面板上 **Default Href 为空**；画布上可能缺少返回箭头，**出码后** `ion-back-button` 也可能因缺少有效 `default-href` 而不显示。
+    
+**补测结论**：在完成 `defaultHref` 补全与相关修补后，上述“清空后逐个拖入”流程已验证可用，推荐仍以该结构组装 Header。
+
+**原因**
+
+1.  **物料约定**：manifest 里 MrBackButton 的 `defaultHref` 的 **`defaultValue` 故意为 `""`**（见主工程 `manifest.json` 说明），避免与「运行时占位」等同而被出码逻辑整块省略；真正运行/设计态占位由 **`javascript:void(0)`** 承担。`patchSchemaWithMaterialDefaults`（保存/预览前）会为节点补上该值。
+2.  **snippet 与单拖差异**：整段 snippet 往往在子节点 schema 里**已写入** `props.defaultHref`；**单独从物料面板拖入**的 MrBackButton 常只有空 `props`，不会自动带上 snippet 里的默认值。
+3.  **属性面板**：`mergeProps` 只读 `schema.props`；空则与物料 `defaultValue: ""` 合并，面板显示为空。仅靠 `fillNodePropsWithMaterialDefaults` 里 `setProp` 补全，仍会遇到与 **§2.6.1** 相同的 **`getProps` 短路**，首次选中不一定刷新出 `javascript:void(0)`。
+
+**设计器处理**
+
+-   在 **`patchPropertiesGetProps.ts`** 中，于 **`getProps` → `mergeProps` 之前** 对 **MrBackButton** 就地写入：若 `defaultHref` 为空则设为 **`javascript:void(0)`**，与 `useMaterial.ts` 里保存/预览前的修补一致。
+-   这样**第一次选中**单独拖入的 MrBackButton，面板即可见 Default Href，且节点引用被就地更新，画布与后续保存/出码一致。
+
+**主工程 manifest**：无需为「单独拖拽」再改协议；保持 `defaultHref` + 说明文案即可。
+
+### 2.9 MrButtons：拖入后选中圈不显示/无法在画布命中（空 children）
+
+**现象**
+
+-   将 `MrButtons` 拖入 `MrToolbar` 内后，从左侧 tree 插件里选中 `MrButtons`，画布上不会出现选中圈（蓝色边框/轮廓）。
+-   仍能正常点击/选择其它组件；但 `MrButtons` 本身没有选中态表现。
+
+**你这次验证的结论**
+
+-   当 `MrButtons` 仍处于“空容器”（未向其内部继续拖入子组件）时，更容易出现上述不高亮/不易命中的问题。
+-   一旦继续把可见子组件拖入 `MrButtons` 内（使其内部产生渲染内容/尺寸），一般就能恢复正常选中效果。
+
+**原因（与画布选中机制相关）**
+
+画布选中态依赖节点对应 DOM 的 `getBoundingClientRect()` 矩形区域。`MrButtons` 在画布中使用真实 `IonButtons` 时，即便内部有子节点，也存在得到 0 宽高的情况（导致选中圈不绘制）。因此建议与 `MrToolbar/MrBackButton/MrTitle` 一样使用**画布桩**，保证始终有可计算尺寸。
+
+**建议做法**
+
+1. 设计时确保 `MrButtons` 内至少包含一个可见子组件（例如 `MrBackButton` 或可见的按钮文本节点），避免“空容器不可选”的问题。
+2. **推荐**：在主工程 `lowcode-materials/entries/mr-components.js` 将 `MrButtons` 改为导出 `mr-buttons-canvas.vue` 画布桩（与 header 其它子组件一致），避免选中框依赖真实 `IonButtons` 的不稳定尺寸。
+
+### 2.10 MpAgreementButton 经验总结（业务组件 i18n 文案）
 
 **现象**：画布中 MpAgreementButton 显示 `common.agree` 而非 "Agree and continue"。
 
@@ -136,7 +209,7 @@
 
 **规则**：业务组件若在模板中用 `$t('xxx')`，且设计器无该 key，需做 canvas 桩并直接 import vue-i18n 的 t。
 
-### 2.9 无效果时排查
+### 2.11 无效果时排查
 
 1. 桩的 `onMounted` 是否调用了 `injectStubStyles`
 2. 主工程入口是否导出桩组件
@@ -144,7 +217,8 @@
 4. 出码异常时检查子按钮 value 是否重复
 5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
 6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
-7. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.8 节
+7. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.10 节
+8. 单独拖入的 MrBackButton 无返回箭头 / Default Href 为空：见 **§2.8**；确认设计器已加载 `patchPropertiesGetProps` 对 MrBackButton 的补全
 
 ---
 

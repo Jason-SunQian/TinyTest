@@ -60,6 +60,7 @@ import type {
     Schema,
     Snippet
 } from './types';
+import { syncSlotStringChildrenWithPropsChildren } from './slotChildrenPropsSync';
 
 const { camelize, capitalize, deepClone } = utils;
 const { MATERIAL_TYPE } = constants;
@@ -1267,6 +1268,14 @@ const getDefaultPropsFromMaterialSchema = (material: Partial<Resource>) => {
             );
         }
     );
+    /** MrBackButton：物料里 defaultValue 置空以便出码不把 defaultHref 与「默认值」等同而省略；运行态仍用 javascript:void(0) */
+    const matComp = (material as { component?: string }).component;
+    if (matComp === 'MrBackButton') {
+        const dh = defaults.defaultHref;
+        if (dh === undefined || dh === '') {
+            defaults.defaultHref = 'javascript:void(0)';
+        }
+    }
     return defaults;
 };
 
@@ -1282,6 +1291,14 @@ const fillNodePropsWithMaterialDefaults = (
     setProp: (name: string, value: unknown) => void
 ): void => {
     if (!nodeSchema?.componentName || typeof setProp !== 'function') return;
+    if (nodeSchema.componentName === 'MrBackButton') {
+        const p = nodeSchema.props || {};
+        const cur = p.defaultHref;
+        if (cur === undefined || cur === '') {
+            setProp('defaultHref', 'javascript:void(0)');
+        }
+        return;
+    }
     const material = getMaterial(nodeSchema.componentName);
     const defaultProps = getDefaultPropsFromMaterialSchema(material);
     const props = nodeSchema.props || {};
@@ -1336,6 +1353,36 @@ const patchSchemaWithMaterialDefaults = (
         if (typeof labelVal === 'string' && labelVal !== '' && !hasChildren) {
             schema.children = labelVal;
             if (props) delete props.label;
+        }
+    }
+    // MrTitle / MrLabel / MrButton：slot 文案在 schema.children 字符串与 props.children（及误配的 props.text）间对齐
+    syncSlotStringChildrenWithPropsChildren(schema);
+    // MrBackButton：节点上显式写入 defaultHref，避免出码与「物料 defaultValue」相同而被省略
+    if (componentName === 'MrBackButton') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const dh = props.defaultHref;
+        if (dh === undefined || dh === '') {
+            props.defaultHref = 'javascript:void(0)';
+        }
+    }
+    // Header 工具栏链：与 generateNode 跳过列表一致，清理历史 schema 上误带的 component-base-style
+    if (
+        COMPONENTS_SKIP_BASE_STYLE.includes(componentName || '') &&
+        schema.props &&
+        typeof schema.props === 'object'
+    ) {
+        const p = schema.props as Record<string, unknown>;
+        const cn = p.className;
+        if (
+            typeof cn === 'string' &&
+            cn.split(/\s+/).includes(BASE_STYLE_CLASS_NAME)
+        ) {
+            const rest = cn
+                .split(/\s+/)
+                .filter(c => c && c !== BASE_STYLE_CLASS_NAME)
+                .join(' ');
+            p.className = rest || '';
         }
     }
     // MrSegment 子按钮 value 唯一性修复 + 移除 component-base-style（见 constants.ts）
