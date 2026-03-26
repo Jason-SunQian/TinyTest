@@ -21,5 +21,7 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'MrTitle',
     'mr-title',
     'MrButtons',
-    'mr-buttons'
+    'mr-buttons',
+    'MrFooter',
+    'mr-footer'
 ];
