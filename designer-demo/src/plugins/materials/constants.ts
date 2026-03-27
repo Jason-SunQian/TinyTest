@@ -37,5 +37,9 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'MrItemOptions',
     'mr-item-options',
     'MrItemOption',
-    'mr-item-option'
+    'mr-item-option',
+    'MrAccordionGroup',
+    'mr-accordion-group',
+    'MrAccordion',
+    'mr-accordion'
 ];
