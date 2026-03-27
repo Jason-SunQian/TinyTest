@@ -45,5 +45,13 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'MrRadio',
     'mr-radio',
     'MrCheckbox',
-    'mr-checkbox'
+    'mr-checkbox',
+    'MrReorderGroup',
+    'mr-reorder-group',
+    'MrReorder',
+    'mr-reorder',
+    'MrCellGroup',
+    'mr-cell-group',
+    'MrCell',
+    'mr-cell'
 ];
