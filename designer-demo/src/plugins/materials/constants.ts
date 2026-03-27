@@ -26,6 +26,8 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'mr-footer',
     'MrSwitch',
     'mr-switch',
+    'MrToggle',
+    'mr-toggle',
     'MrCollapse',
     'mr-collapse',
     'MrCollapseItem',

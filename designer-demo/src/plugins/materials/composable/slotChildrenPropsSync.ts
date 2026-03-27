@@ -5,7 +5,8 @@
 export const COMPONENTS_SLOT_TEXT_BINDS_TO_PROPS_CHILDREN = new Set([
     'MrTitle',
     'MrLabel',
-    'MrButton'
+    'MrButton',
+    'MrToggle'
 ]);
 
 export const syncSlotStringChildrenWithPropsChildren = (
@@ -25,9 +26,8 @@ export const syncSlotStringChildrenWithPropsChildren = (
         else props.children = value;
     };
     if (typeof ch === 'string' && ch.trim() !== '') {
-        if (props.children === undefined || props.children === '') {
-            applyChildren(ch);
-        }
+        // 只要节点 children 有值，就以它为准回写 props.children，避免面板回显被旧默认值覆盖
+        if (props.children !== ch) applyChildren(ch);
         if (
             (componentName === 'MrLabel' || componentName === 'MrButton') &&
             (props.text === undefined || props.text === '')

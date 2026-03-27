@@ -1401,6 +1401,31 @@ const patchSchemaWithMaterialDefaults = (
         }
     }
 
+    // MrToggle：若 modelValue 为常量（true/false），自动转为 this.state.xxx 的双向绑定，避免出码后“点不动/不回写”
+    if (componentName === 'MrToggle') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const isExpr =
+            mv &&
+            typeof mv === 'object' &&
+            (mv as Record<string, unknown>).type === 'JSExpression';
+        if (!isExpr) {
+            let i = 1;
+            let stateKey = `mrToggle${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
+                i += 1;
+                stateKey = `mrToggle${i}`;
+            }
+            rootState[stateKey] = mv === undefined || mv === '' ? false : mv;
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
+        }
+    }
+
     // MrCollapse：若 modelValue 为常量/空，自动转为 this.state.xxx 的双向绑定，避免出码后折叠交互不生效
     if (componentName === 'MrCollapse') {
         const props = (schema.props as Record<string, unknown>) || {};

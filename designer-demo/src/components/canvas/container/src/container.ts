@@ -1206,6 +1206,41 @@ export const onMouseUp = () => {
                 };
             }
 
+            // MrToggle：默认需要 v-model 语义（否则 modelValue 常量会导致“点不动/不回写”）
+            if (insertData.componentName === 'MrToggle') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                let i = 1;
+                let stateKey = `mrToggle${i}`;
+                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    i += 1;
+                    stateKey = `mrToggle${i}`;
+                }
+
+                stateObj[stateKey] =
+                    insertData.props?.modelValue === undefined
+                        ? false
+                        : insertData.props.modelValue;
+                updateSchema({ state: stateObj });
+
+                insertData.props = insertData.props || {};
+                insertData.props.modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
+            }
+
             // MrCollapse：默认需要 v-model 语义（数组/字符串），否则折叠交互无法生效
             if (insertData.componentName === 'MrCollapse') {
                 const rootSchema = getSchema();
