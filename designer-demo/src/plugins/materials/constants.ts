@@ -33,5 +33,9 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'MrItem',
     'mr-item',
     'MrItemSliding',
-    'mr-item-sliding'
+    'mr-item-sliding',
+    'MrItemOptions',
+    'mr-item-options',
+    'MrItemOption',
+    'mr-item-option'
 ];
