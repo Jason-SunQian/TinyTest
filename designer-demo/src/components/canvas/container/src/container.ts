@@ -1227,10 +1227,15 @@ export const onMouseUp = () => {
                     stateKey = `mrCollapse${i}`;
                 }
 
+                const listStateKey = `mrCollapseItems${i}`;
                 // 默认给一个数组，符合主工程常见写法：ref(['0'])
                 stateObj[stateKey] = Array.isArray(insertData.props?.modelValue)
                     ? insertData.props.modelValue
                     : ['0'];
+                stateObj[listStateKey] = [
+                    { id: '1', title: 'Item 1', value: 'Value 1', content: 'Content 1' },
+                    { id: '2', title: 'Item 2', value: 'Value 2', content: 'Content 2' }
+                ];
                 updateSchema({ state: stateObj });
 
                 insertData.props = insertData.props || {};
@@ -1239,6 +1244,45 @@ export const onMouseUp = () => {
                     value: `this.state.${stateKey}`,
                     model: true
                 };
+
+                // 循环模板：自动把首个 MrCollapseItem 配置成可直接出码的 loop 结构
+                const firstChild = Array.isArray(insertData.children)
+                    ? insertData.children[0]
+                    : undefined;
+                if (firstChild && firstChild.componentName === 'MrCollapseItem') {
+                    firstChild.loop = {
+                        type: 'JSExpression',
+                        value: `this.state.${listStateKey}`
+                    };
+                    firstChild.loopArgs = ['item', 'index'];
+                    firstChild.props = firstChild.props || {};
+                    firstChild.props.key = {
+                        type: 'JSExpression',
+                        value: 'item.id || index'
+                    };
+                    firstChild.props.name = {
+                        type: 'JSExpression',
+                        value: 'item.id'
+                    };
+                    firstChild.props.title = {
+                        type: 'JSExpression',
+                        value: 'item.title'
+                    };
+                    firstChild.props.value = {
+                        type: 'JSExpression',
+                        value: 'item.value'
+                    };
+                    if (Array.isArray(firstChild.children) && firstChild.children[0]) {
+                        const textNode = firstChild.children[0];
+                        if (textNode.componentName === 'Text') {
+                            textNode.props = textNode.props || {};
+                            textNode.props.text = {
+                                type: 'JSExpression',
+                                value: 'item.content'
+                            };
+                        }
+                    }
+                }
             }
         }
         if (!sourceId && absolute) {
