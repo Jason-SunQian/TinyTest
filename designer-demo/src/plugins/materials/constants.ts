@@ -29,5 +29,9 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'MrCollapse',
     'mr-collapse',
     'MrCollapseItem',
-    'mr-collapse-item'
+    'mr-collapse-item',
+    'MrItem',
+    'mr-item',
+    'MrItemSliding',
+    'mr-item-sliding'
 ];
