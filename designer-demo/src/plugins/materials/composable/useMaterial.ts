@@ -1328,6 +1328,15 @@ const patchSchemaWithMaterialDefaults = (
     schema: Record<string, unknown> | null | undefined
 ): void => {
     if (!schema || typeof schema !== 'object') return;
+
+    // root state（用于 MrSwitch 等需要 v-model 语义的组件自动生成 state 变量）
+    const rootState =
+        (schema as any).state &&
+        typeof (schema as any).state === 'object' &&
+        !Array.isArray((schema as any).state)
+            ? { ...(schema as any).state }
+            : {};
+
     const componentName = schema.componentName as string | undefined;
     if (componentName) {
         const material = getMaterial(componentName);
@@ -1364,6 +1373,56 @@ const patchSchemaWithMaterialDefaults = (
         const dh = props.defaultHref;
         if (dh === undefined || dh === '') {
             props.defaultHref = 'javascript:void(0)';
+        }
+    }
+
+    // MrSwitch：若 modelValue 为常量（true/false），自动转为 this.state.xxx 的双向绑定，避免出码后“点不动/回弹”
+    if (componentName === 'MrSwitch') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const isExpr =
+            mv &&
+            typeof mv === 'object' &&
+            (mv as Record<string, unknown>).type === 'JSExpression';
+        if (!isExpr) {
+            let i = 1;
+            let stateKey = `mrSwitch${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
+                i += 1;
+                stateKey = `mrSwitch${i}`;
+            }
+            rootState[stateKey] = mv === undefined || mv === '' ? false : mv;
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
+        }
+    }
+
+    // MrCollapse：若 modelValue 为常量/空，自动转为 this.state.xxx 的双向绑定，避免出码后折叠交互不生效
+    if (componentName === 'MrCollapse') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const isExpr =
+            mv &&
+            typeof mv === 'object' &&
+            (mv as Record<string, unknown>).type === 'JSExpression';
+        if (!isExpr) {
+            let i = 1;
+            let stateKey = `mrCollapse${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
+                i += 1;
+                stateKey = `mrCollapse${i}`;
+            }
+            rootState[stateKey] = Array.isArray(mv) ? mv : ['0'];
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
         }
     }
     // Header 工具栏链：与 generateNode 跳过列表一致，清理历史 schema 上误带的 component-base-style
@@ -1433,6 +1492,9 @@ const patchSchemaWithMaterialDefaults = (
             patchSchemaWithMaterialDefaults(child);
         });
     }
+
+    // 写回 root state（如果新增了 MrSwitch state 变量）
+    (schema as any).state = rootState;
 };
 
 const generateNode = ({ type, component }) => {

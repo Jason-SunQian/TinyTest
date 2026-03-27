@@ -1144,7 +1144,7 @@ export const onMouseUp = () => {
     const { position, forbidden } = lineState;
     const absolute = canvasState.type === 'absolute';
     const lineId = lineState.id;
-    const { getNodeWithParentById, getSchema } = useCanvas();
+    const { getNodeWithParentById, getSchema, updateSchema } = useCanvas();
 
     if (draging && !forbidden) {
         const { parent, node } = getNodeWithParentById(lineId) || {}; // target
@@ -1168,6 +1168,77 @@ export const onMouseUp = () => {
                     .filter(c => c && c !== BASE_STYLE_CLASS_NAME)
                     .join(' ');
                 insertData.props.className = rest || '';
+            }
+
+            // MrSwitch：默认需要 v-model 语义（否则 modelValue 常量会导致“点不动/回弹”）
+            // 同时自动创建 page schema.state 变量并绑定到 this.state.xxx（与 TinyInput 的 model:true 机制一致）
+            if (insertData.componentName === 'MrSwitch') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                let i = 1;
+                let stateKey = `mrSwitch${i}`;
+                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    i += 1;
+                    stateKey = `mrSwitch${i}`;
+                }
+
+                stateObj[stateKey] =
+                    insertData.props?.modelValue === undefined
+                        ? false
+                        : insertData.props.modelValue;
+                updateSchema({ state: stateObj });
+
+                insertData.props = insertData.props || {};
+                insertData.props.modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
+            }
+
+            // MrCollapse：默认需要 v-model 语义（数组/字符串），否则折叠交互无法生效
+            if (insertData.componentName === 'MrCollapse') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                let i = 1;
+                let stateKey = `mrCollapse${i}`;
+                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    i += 1;
+                    stateKey = `mrCollapse${i}`;
+                }
+
+                // 默认给一个数组，符合主工程常见写法：ref(['0'])
+                stateObj[stateKey] = Array.isArray(insertData.props?.modelValue)
+                    ? insertData.props.modelValue
+                    : ['0'];
+                updateSchema({ state: stateObj });
+
+                insertData.props = insertData.props || {};
+                insertData.props.modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
             }
         }
         if (!sourceId && absolute) {
