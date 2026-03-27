@@ -1284,6 +1284,73 @@ export const onMouseUp = () => {
                     }
                 }
             }
+
+            // MrRadioGroup：默认需要 v-model 语义，否则运行态无法切换选中项
+            if (insertData.componentName === 'MrRadioGroup') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                let i = 1;
+                let stateKey = `mrRadioGroup${i}`;
+                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    i += 1;
+                    stateKey = `mrRadioGroup${i}`;
+                }
+
+                const firstRadioName = Array.isArray(insertData.children)
+                    ? insertData.children.find((child: any) => child?.componentName === 'MrRadio')?.props?.name
+                    : undefined;
+                stateObj[stateKey] = firstRadioName ?? '';
+                updateSchema({ state: stateObj });
+
+                insertData.props = insertData.props || {};
+                insertData.props.modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
+            }
+
+            // MrCheckboxGroup：默认需要 v-model 语义，否则运行态无法勾选/取消
+            if (insertData.componentName === 'MrCheckboxGroup') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                let i = 1;
+                let stateKey = `mrCheckboxGroup${i}`;
+                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    i += 1;
+                    stateKey = `mrCheckboxGroup${i}`;
+                }
+
+                stateObj[stateKey] = [];
+                updateSchema({ state: stateObj });
+
+                insertData.props = insertData.props || {};
+                insertData.props.modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
+            }
         }
         if (!sourceId && absolute) {
             insertData.props = insertData.props || {};

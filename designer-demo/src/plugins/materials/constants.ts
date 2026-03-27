@@ -41,5 +41,9 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'MrAccordionGroup',
     'mr-accordion-group',
     'MrAccordion',
-    'mr-accordion'
+    'mr-accordion',
+    'MrRadio',
+    'mr-radio',
+    'MrCheckbox',
+    'mr-checkbox'
 ];

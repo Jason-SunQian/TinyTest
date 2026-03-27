@@ -1425,6 +1425,64 @@ const patchSchemaWithMaterialDefaults = (
             };
         }
     }
+    // MrRadioGroup：若 modelValue 为常量/空，自动转为 this.state.xxx 的双向绑定，避免出码后无法切换
+    if (componentName === 'MrRadioGroup') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const isExpr =
+            mv &&
+            typeof mv === 'object' &&
+            (mv as Record<string, unknown>).type === 'JSExpression';
+        if (!isExpr) {
+            let i = 1;
+            let stateKey = `mrRadioGroup${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
+                i += 1;
+                stateKey = `mrRadioGroup${i}`;
+            }
+            const children = schema.children as
+                | Array<Record<string, unknown>>
+                | undefined;
+            const firstRadioNode = Array.isArray(children)
+                ? children.find(c => c?.componentName === 'MrRadio')
+                : undefined;
+            const firstRadioName = firstRadioNode?.props
+                ? (firstRadioNode.props as Record<string, unknown>).name
+                : undefined;
+            rootState[stateKey] =
+                mv === undefined || mv === '' ? firstRadioName ?? '' : mv;
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
+        }
+    }
+    // MrCheckboxGroup：若 modelValue 为常量/空，自动转为 this.state.xxx 的双向绑定，避免出码后无法勾选
+    if (componentName === 'MrCheckboxGroup') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const isExpr =
+            mv &&
+            typeof mv === 'object' &&
+            (mv as Record<string, unknown>).type === 'JSExpression';
+        if (!isExpr) {
+            let i = 1;
+            let stateKey = `mrCheckboxGroup${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
+                i += 1;
+                stateKey = `mrCheckboxGroup${i}`;
+            }
+            rootState[stateKey] = Array.isArray(mv) ? mv : [];
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
+        }
+    }
     // Header 工具栏链：与 generateNode 跳过列表一致，清理历史 schema 上误带的 component-base-style
     if (
         COMPONENTS_SKIP_BASE_STYLE.includes(componentName || '') &&
