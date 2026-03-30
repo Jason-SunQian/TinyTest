@@ -1325,17 +1325,22 @@ const SEGMENT_BUTTON_VALUE_CANDIDATES = [
  * 用于预览/出码前保证所有节点都有完整 props，避免「面板显示默认值但节点未写入」导致运行时拿不到
  */
 const patchSchemaWithMaterialDefaults = (
-    schema: Record<string, unknown> | null | undefined
+    schema: Record<string, unknown> | null | undefined,
+    /** 递归子节点时传入，保证 MrForm/MrSwitch 等写入的是页面根 state，而非子节点上的空 state */
+    sharedPageState?: Record<string, unknown>
 ): void => {
     if (!schema || typeof schema !== 'object') return;
 
+    const isRootVisit = sharedPageState === undefined;
+
     // root state（用于 MrSwitch 等需要 v-model 语义的组件自动生成 state 变量）
-    const rootState =
-        (schema as any).state &&
+    const rootState: Record<string, unknown> =
+        sharedPageState ??
+        ((schema as any).state &&
         typeof (schema as any).state === 'object' &&
         !Array.isArray((schema as any).state)
             ? { ...(schema as any).state }
-            : {};
+            : {});
 
     const componentName = schema.componentName as string | undefined;
     if (componentName) {
@@ -1423,6 +1428,99 @@ const patchSchemaWithMaterialDefaults = (
                 value: `this.state.${stateKey}`,
                 model: true
             };
+        }
+    }
+
+    // MrForm：给 MpInput 子项自动补 this.state.xxx.yyy 绑定，避免输入值在重渲染时丢失
+    if (componentName === 'MrForm') {
+        const MR_FORM_FIELD_EXPR = /^this\.state\.(mrForm\d+)\.(.+)$/;
+        const children = schema.children as Array<Record<string, unknown>> | undefined;
+
+        let stateKey: string | null = null;
+        if (Array.isArray(children)) {
+            for (const ch of children) {
+                if (ch?.componentName !== 'MpInput' && ch?.componentName !== 'MrField')
+                    continue;
+                const mv = (ch.props as Record<string, unknown> | undefined)?.modelValue as
+                    | Record<string, unknown>
+                    | undefined;
+                if (
+                    mv &&
+                    typeof mv === 'object' &&
+                    mv.type === 'JSExpression' &&
+                    typeof mv.value === 'string'
+                ) {
+                    const m = mv.value.trim().match(MR_FORM_FIELD_EXPR);
+                    if (m) {
+                        stateKey = m[1];
+                        break;
+                    }
+                }
+            }
+        }
+        if (!stateKey) {
+            let i = 1;
+            let k = `mrForm${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, k)) {
+                i += 1;
+                k = `mrForm${i}`;
+            }
+            stateKey = k;
+        }
+
+        const prevNest =
+            rootState[stateKey] &&
+            typeof rootState[stateKey] === 'object' &&
+            !Array.isArray(rootState[stateKey])
+                ? { ...(rootState[stateKey] as Record<string, unknown>) }
+                : {};
+        const formState: Record<string, unknown> = { ...prevNest };
+        let touched = false;
+        if (Array.isArray(children)) {
+            children.forEach((child, idx) => {
+                if (child?.componentName !== 'MpInput' && child?.componentName !== 'MrField')
+                    return;
+                const childProps = (child.props as Record<string, unknown>) || {};
+                if (!child.props) child.props = childProps;
+                const fieldName =
+                    typeof childProps.name === 'string' && childProps.name.trim()
+                        ? childProps.name.trim()
+                        : `field${idx + 1}`;
+                const mv = childProps.modelValue;
+                const isExpr =
+                    mv &&
+                    typeof mv === 'object' &&
+                    (mv as Record<string, unknown>).type === 'JSExpression';
+                if (!isExpr) {
+                    touched = true;
+                    childProps.modelValue = {
+                        type: 'JSExpression',
+                        value: `this.state.${stateKey}.${fieldName}`,
+                        model: true
+                    };
+                    if (!(fieldName in formState)) {
+                        formState[fieldName] =
+                            mv === undefined || mv === null ? '' : mv;
+                    }
+                } else if (!(fieldName in formState)) {
+                    formState[fieldName] = '';
+                }
+            });
+        }
+        if (touched || Object.keys(formState).length > 0) {
+            rootState[stateKey] = formState;
+        }
+        // @complete 演示：指回当前表单 state key，并提供提交开关/上次提交结果占位
+        if (stateKey) {
+            if (rootState.demoFormTargetKey === undefined || rootState.demoFormTargetKey === '') {
+                rootState.demoFormTargetKey = stateKey;
+            }
+            if (rootState.formDemoSubmitEnabled === undefined) {
+                rootState.formDemoSubmitEnabled = false;
+            }
+            if (rootState.formDemoLastSubmit === undefined) {
+                rootState.formDemoLastSubmit = null;
+            }
         }
     }
 
@@ -1572,12 +1670,14 @@ const patchSchemaWithMaterialDefaults = (
         | undefined;
     if (Array.isArray(children)) {
         children.forEach(child => {
-            patchSchemaWithMaterialDefaults(child);
+            patchSchemaWithMaterialDefaults(child, rootState);
         });
     }
 
-    // 写回 root state（如果新增了 MrSwitch state 变量）
-    (schema as any).state = rootState;
+    // 仅页面根 schema 持有 state，避免子节点递归时用空对象覆盖/污染
+    if (isRootVisit) {
+        (schema as any).state = rootState;
+    }
 };
 
 const generateNode = ({ type, component }) => {

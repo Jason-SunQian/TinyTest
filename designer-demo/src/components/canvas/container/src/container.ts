@@ -1241,6 +1241,86 @@ export const onMouseUp = () => {
                 };
             }
 
+            // MrForm：默认注入可持久的字段 v-model 绑定，避免输入后重渲染丢失；并注入 @complete 演示用方法与 state
+            if (insertData.componentName === 'MrForm') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                let i = 1;
+                let stateKey = `mrForm${i}`;
+                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    i += 1;
+                    stateKey = `mrForm${i}`;
+                }
+
+                const formState: Record<string, unknown> = {};
+                if (Array.isArray(insertData.children)) {
+                    insertData.children.forEach((child: any, idx: number) => {
+                        if (child?.componentName !== 'MpInput' && child?.componentName !== 'MrField')
+                            return;
+                        const fieldName =
+                            typeof child?.props?.name === 'string' && child.props.name.trim()
+                                ? child.props.name.trim()
+                                : `field${idx + 1}`;
+                        formState[fieldName] = child?.props?.modelValue ?? '';
+                        child.props = child.props || {};
+                        child.props.modelValue = {
+                            type: 'JSExpression',
+                            value: `this.state.${stateKey}.${fieldName}`,
+                            model: true
+                        };
+                    });
+                }
+                stateObj[stateKey] = formState;
+                stateObj.demoFormTargetKey = stateKey;
+                stateObj.formDemoSubmitEnabled = false;
+                stateObj.formDemoLastSubmit = null;
+
+                const methodsPrev =
+                    rootSchema &&
+                    typeof rootSchema === 'object' &&
+                    (rootSchema as any).methods &&
+                    typeof (rootSchema as any).methods === 'object'
+                        ? { ...(rootSchema as any).methods }
+                        : {};
+                if (!(methodsPrev as any).onDemoFormRecalculateSubmit) {
+                    (methodsPrev as any).onDemoFormRecalculateSubmit = {
+                        type: 'JSFunction',
+                        value:
+                            'function onDemoFormRecalculateSubmit(value) {\n' +
+                            '  var key = this.state.demoFormTargetKey;\n' +
+                            '  var form = key && this.state[key] ? this.state[key] : {};\n' +
+                            '  var fullName = String(form.fullName != null ? form.fullName : \'\').trim();\n' +
+                            '  var email = String(form.email != null ? form.email : \'\').trim();\n' +
+                            '  var amount = String(form.amount != null ? form.amount : \'\').trim();\n' +
+                            '  var emailOk = email.length > 0 && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n' +
+                            '  this.state.formDemoSubmitEnabled = !!(fullName && emailOk && amount);\n' +
+                            '}\n'
+                    };
+                }
+                if (!(methodsPrev as any).onDemoFormSubmit) {
+                    (methodsPrev as any).onDemoFormSubmit = {
+                        type: 'JSFunction',
+                        value:
+                            'function onDemoFormSubmit(values) {\n' +
+                            '  this.state.formDemoLastSubmit = values || {};\n' +
+                            "  console.log('[demo] mr-form submit', values);\n" +
+                            '}\n'
+                    };
+                }
+
+                updateSchema({ state: stateObj, methods: methodsPrev });
+            }
+
             // MrCollapse：默认需要 v-model 语义（数组/字符串），否则折叠交互无法生效
             if (insertData.componentName === 'MrCollapse') {
                 const rootSchema = getSchema();
