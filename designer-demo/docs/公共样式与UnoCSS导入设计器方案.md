@@ -10,6 +10,11 @@
 - 设计器（`designer-demo`）与主工程解耦；设计器侧仅消费“注入/可访问的资源 URL”，不直接依赖主工程源码。
 - 不修改 `packages/`，所有改造都在 `designer-demo` 与插件侧完成。
 
+**定位与当前诉求（避免误解）**：
+
+- 设计器**独立部署、独立运行**；与主工程的同步方式是：**主工程在本地 `build` 后，将产物（物料 bundle、style bundle）通过插件或 URL 导入设计器**，并随主工程迭代**反复执行**这一过程。
+- 公共样式能力采用 **主工程预构建 `tokens.css` + `utilities.css` + `styles.json`**，由设计器在画布依赖中加载；**不采用**浏览器内 UnoCSS runtime 动态生成 CSS——这不是“未完成的技术债”，而是与上述交付方式一致、**可维护且可控**的正式选型。
+
 ---
 
 ## 1. 现状梳理：设计器如何加载“物料相关样式”
@@ -43,7 +48,7 @@
 3. **主题/Token 与主工程一致**（可选但强相关）  
    `text-color-secondary` 等通常依赖 CSS 变量或主题 token；若 token 未同步，画布会“有样式类但颜色不对”。
 
-因此“公共样式导入”的本质是：把 **(utilities CSS + token CSS + 覆盖 CSS + 主题 CSS)** 作为可加载依赖注入画布。
+因此“公共样式导入”的本质是：把 **token CSS（默认主题）+ UnoCSS 预生成的 utilities CSS** 作为可加载依赖注入画布（组件级覆盖仍由物料 `mr-bank.css` 等承担）。
 
 ---
 
@@ -63,8 +68,8 @@
 
 公共样式与物料样式有两个关键差异，建议作为**独立配置源**管理：
 
-- **生命周期不同**：物料 bundle 更偏“组件资产包”；公共样式更偏“项目设计体系/主题体系”。
-- **加载策略不同**：物料 CSS 往往“固定且较小”；utilities（UnoCSS）可能“动态生成或需要 runtime”。
+- **生命周期不同**：物料 bundle 更偏“组件资产包”；公共样式更偏“项目设计体系（UnoCSS + token）”。
+- **更新节奏不同**：物料随组件变更；style bundle 随主工程 `build:lowcode-styles` 与版本发布更新，与主工程保持同一套 `uno.config.ts` 与主题 token。
 
 结论（推荐）：
 
@@ -73,47 +78,21 @@
 
 ---
 
-## 4. 关键难点：UnoCSS 是“按需生成”，设计器如何支持动态 class？
+## 4. UnoCSS 与「动态 class」：当前采用预构建方式
 
-你希望在属性面板随手输入 class，画布就能看到效果。对 UnoCSS 来说，关键在于：
+UnoCSS 在主工程侧通常是**扫描源码 + 按需生成**；设计器里还可能输入**尚未出现在主工程源码**中的 class。业界有两种思路：
 
-- 主工程构建时的 UnoCSS 通常是“扫描源码 class → 生成 CSS”，它不会自动覆盖“设计器里临时输入的新 class”。
+| 思路 | 说明 | 本项目是否采用 |
+| --- | --- | --- |
+| **浏览器内 runtime** | 在 iframe 里动态生成 CSS，任意 class 理论上即时生效 | **未采用**（复杂度高、与「独立设计器 + 主工程构建导入」的交付方式不一致） |
+| **构建期预生成** | 主工程 `build:lowcode-styles`：扫描源码 + 维护 `safelist.extra.txt`，产出 `utilities.css` | **采用** |
 
-因此有三种策略（从稳妥到体验最佳）：
+**当前做法**：
 
-### 方案 A：预生成 utilities.css（基于扫描 + safelist）
+- 主工程 **`pnpm run build:lowcode-styles`** 使用与线上一致的 **`uno.config.ts`**，生成 **`utilities.css`**（含预置常用类 + 源码扫描 + 手工 safelist）。
+- 若设计器里某 class 未命中生成结果，在 **`lowcode-styles/safelist.extra.txt`** 中补充后**重新执行构建**即可；这与「主工程发版、设计器重新导入产物」的工作流一致，**不是技术债**，而是**显式、可版本化的样式交付**。
 
-做法：
-
-- 统计主工程代码中出现的 class（含模板/脚本字符串等）
-- 配一个 `safelist` 覆盖设计器常用类
-- 构建产物输出 `utilities.css`（体积可控、但覆盖有限）
-
-优点：实现简单、稳定；缺点：**设计器输入的新类可能没效果**（体验会“时灵时不灵”）。
-
-### 方案 B：在画布中启用 UnoCSS runtime（推荐）
-
-做法：
-
-- 把 UnoCSS runtime（或等价的运行时生成器）作为画布依赖脚本注入
-- runtime 监听 DOM/class 变化，动态生成对应 CSS 并注入到 iframe
-- 同步主工程的 UnoCSS 配置（preset、transformer、theme、shortcuts、variants…）
-
-优点：**体验最佳**（输入即生效）；缺点：要处理 CSP/性能/配置同步与版本兼容。
-
-### 方案 C：限制 class 输入为“可选列表”（配合补全）
-
-做法：
-
-- 设计器侧只允许从“已知 class 列表”里选（可提供搜索/补全）
-- 不支持任意输入（或任意输入会给 warning）
-
-优点：可控、不会出现“无效 class”；缺点：与“随手写 class”目标不完全一致。
-
-推荐结论：
-
-- 若目标是“像写主工程一样写 class，并且立刻生效”，**优先方案 B（UnoCSS runtime）**。
-- 若你们对性能/安全特别敏感，可以先用 **A 跑通链路**，再平滑升级到 B。
+**可选增强**（与 runtime 无关）：在属性面板做 class 补全、或对未命中类给出提示，改善体验，仍基于预构建产物。
 
 ---
 
@@ -126,35 +105,30 @@
 ```
 dist/lowcode-styles/
 ├── styles.json                # 样式清单（协议文件）
-├── tokens.css                 # 设计 token / css variables（与物料一致或复用）
+├── tokens.css                 # 默认主题 token（与 extract-design-tokens 一致）
 ├── themes/                    # 可选：多主题时再引入
 │   ├── default-light.css
 │   └── ...
-├── utilities.css              # 方案A：预生成 UnoCSS utilities（可选）
-└── unocss-runtime.js          # 方案B：UnoCSS runtime（可选）
+└── utilities.css              # 预生成 UnoCSS utilities（主工程 build）
 ```
 
-`styles.json` 建议字段：
+`styles.json` 建议字段（**当前实现以 `prebuilt` 为准**）：
 
 ```json
 {
   "version": "1.0.0",
   "tokens": ["./tokens.css"],
-  "themes": {
-    "default-light": "./themes/default-light.css",
-    "default-dark": "./themes/default-dark.css"
-  },
   "utilities": {
-    "mode": "runtime",
-    "css": "./utilities.css",
-    "runtimeScript": "./unocss-runtime.js"
+    "mode": "prebuilt",
+    "css": "./utilities.css"
   }
 }
 ```
 
 说明：
 
-- `mode=runtime` 表示启用 runtime；`mode=prebuilt` 表示仅加载 `utilities.css`。
+- **`utilities.mode` 使用 `prebuilt`**：仅加载 `utilities.css`，不额外引入画布内脚本。
+- 若将来协议需要扩展（例如多主题 `themes`），可在 `styles.json` 中增加字段；**与是否采用 runtime 无关**。
 - 即使复用 `dist/lowcode-materials/mr-bank.css` 里的 token，也建议在 style bundle 里“显式声明”，便于解耦与版本控制。
 - **`overrides` 字段与独立 `overrides.css` 不作为默认产物**；若将来确有「页面级全局基线」需求，再扩展协议即可。
 
@@ -174,9 +148,9 @@ dist/lowcode-styles/
 设计器职责（只消费 URL 与清单，不关心来源）：
 
 1. 读取 `window.TINY_STYLE_BUNDLE_URLS`
-2. 拉取每个 `styles.json`，合并得到“要加载的 CSS/JS URL 列表”
-3. 将 CSS URL 加到画布依赖 `styles` 中；将 runtime 脚本（如果有）加入画布依赖 `scripts` 中
-4. 依赖归一化由现有逻辑处理（相对路径 → 绝对 URL）
+2. 拉取每个 `styles.json`，合并得到“要加载的 CSS URL 列表”
+3. 将 CSS URL 加到画布依赖 `styles` 中（依赖归一化由现有逻辑处理：相对路径 → 绝对 URL）
+4. （若协议未来扩展脚本类依赖，再按需加入 `scripts`；**当前主工程产物为纯 CSS**）
 5. **主题切换（可选）**：仅当设计器或插件提供「画布主题」能力时，才根据当前主题选择 `themes[themeId]` 并更新画布。若设计器暂无画布主题切换 UI，可**只注入一套默认主题**（见第 9.2.1 节），不必先做多套 `themes/*.css` 的切换逻辑。
 
 > 关键点：这条链路与物料加载很像，但**协议文件从 `bundle.json` 变成 `styles.json`**，避免把“公共样式体系”强塞进“物料资产包协议”。
@@ -208,9 +182,7 @@ dist/lowcode-styles/
 
 - **class 自动补全**：从 `styles.json` 或额外 `classes.json` 提供可选 class 列表，给属性面板输入框做提示（类似 code completion，但在属性面板）。
 - **常用组合 snippets**：提供“一键插入 class 组合”的模板（例如 `flex items-center justify-between`），降低记忆成本。
-- **无效 class 提示**：
-  - 方案A：当 class 在 `utilities.css` 中不存在时给出 warning
-  - 方案B：runtime 生成失败或被 CSP 拦截时给出提示（引导用户检查 style bundle 是否加载成功）
+- **无效 class 提示**（可选）：当 class 在 `utilities.css` 中不存在时给出 warning，提示用户主工程补 safelist 并重新生成产物；或检查 style bundle 是否加载成功（Network/CSP）。
 
 ---
 
@@ -218,27 +190,25 @@ dist/lowcode-styles/
 
 ### 7.1 风险点
 
-- **CSP 放行**：runtime 脚本与 CSS 的 origin 必须在 iframe CSP 允许列表内（当前已覆盖常见 localhost 物料域；后续若端口/域名变化要同步）。
-- **性能**（方案B）：runtime 扫描 DOM + 动态生成 CSS 需要限流与缓存，避免画布频繁重渲染时卡顿。
+- **CSP 放行**：style bundle 与物料静态资源的 **CSS URL** 的 origin 需在 iframe CSP 允许范围内（当前已覆盖常见 localhost 物料域；端口/域名变化时需同步）。
 - **主题一致性**：token/主题变量若与主工程不一致，会出现“类生效但颜色/字号不一致”。
-- **版本兼容**：主工程升级 UnoCSS preset 或 token 命名时，需要通过 `styles.json version` 做兼容策略。
+- **版本兼容**：主工程升级 UnoCSS preset 或 token 命名时，需重新执行 `build:lowcode-styles` 并重新导入；可通过 `styles.json` 的 `version` 做对齐说明。
 
 ### 7.2 验证清单（建议按顺序）
 
 1. 仅加载 `tokens.css`：物料组件在画布上的基础视觉一致（组件覆盖仍主要由 `mr-bank.css` 等物料样式承担）
-2. 加载 `utilities.css`（方案A）：输入 `flex items-center` 等常用类能生效
-3. 启用 runtime（方案B）：输入一个主工程里没出现过的类也能立刻生效
-4. **（可选）** 若已做多主题：切换主题后 `text-color-secondary` 等依赖 token 的类随主题变化；若仅单主题，则验证与主工程默认主题（如 `default-light`）一致即可
-5. 出码一致性：属性面板 className → 出码生成的 class 与主工程写法一致
+2. 加载 `utilities.css`：输入 `flex items-center` 等常用类能生效
+3. **（可选）** 若已做多主题：切换主题后 `text-color-secondary` 等依赖 token 的类随主题变化；若仅单主题，则验证与主工程默认主题（如 `default-light`）一致即可
+4. 出码一致性：属性面板 className → 出码生成的 class 与主工程写法一致
 
 ---
 
 ## 8. 结论（推荐落地顺序）
 
-1. 先定义 style bundle 产物结构与 `styles.json` 协议（本文件第 5 节）
-2. 先跑通方案 A（预生成 utilities.css），保证链路正确、快速可用
-3. 再评估并升级到方案 B（UnoCSS runtime），满足“任意输入 class 即生效”的最终体验
-4. 最后做体验增强：class 自动补全、组合 snippets、无效 class 提示
+1. 定义 style bundle 产物结构与 `styles.json` 协议（本文件第 5 节），**utilities 以 `prebuilt` 为准**。
+2. 主工程 **`pnpm run build:lowcode-styles`** 稳定产出 `tokens.css` + `utilities.css`，与物料同目录或单独 serve 后，由插件/env 注入设计器。
+3. 设计器侧验证画布与出码；缺类时维护 **`safelist.extra.txt`** 并重新构建，与主工程发版节奏一致。
+4. **可选**体验增强：class 自动补全、组合 snippets、未命中 class 提示（均不依赖 runtime）。
 
 ---
 
@@ -270,7 +240,7 @@ dist/lowcode-styles/
 
 推荐做法：
 
-- **预生成** `utilities.css`（方案 A，先跑通链路）
+- **预生成** `utilities.css`（主工程 `build:lowcode-styles`）
 - 生成方式建议由两部分组成：
   - **扫描主工程源码**：收集模板/脚本中出现过的 class
   - **维护 safelist**：覆盖设计器“可编辑输入但不一定出现在主工程源码”的常用 utilities（例如布局类、排版类、色彩类的常见组合）
@@ -280,7 +250,7 @@ dist/lowcode-styles/
 - UnoCSS 默认是“扫描 → 生成”，设计器里手动输入的新 class **可能主工程没出现过**
 - 没 safelist 时就会出现“有时生效、有时不生效”的体验断层
 
-> 后续若要做到“任意输入 class 都即时生效”，再升级到 runtime（方案 B）。
+> 若需覆盖新 class（如设计器里首次使用的类名），在 **`safelist.extra.txt`** 补充后重新执行 `pnpm run build:lowcode-styles` 即可。
 
 #### B. themes/styles token（颜色与设计变量）
 
@@ -379,6 +349,46 @@ dist/lowcode-styles/
 
 ---
 
+## 11. 实践验证总结（已测通）
+
+以下结论来自在 **VSCode 插件 Extension Development Host** 中打开设计器、并配合主工程 **`pnpm run build:lowcode-styles`** 产物的联调验证。
+
+### 11.1 已验证能力
+
+1. **组件属性 → Class Name**
+   - 可直接填写主工程习惯的 **UnoCSS utilities**（如 `flex`、`items-center`、`text-h3`、`py-12px`）及 **语义色 / token 相关类**（如 `text-color-secondary`、`bg-color-*` 等，具体以 `uno.config.ts` 与生成 `utilities.css` 为准）。
+   - 画布预览与出码均能保留 class，视觉与主工程开发方式一致。
+
+2. **Styles 面板**
+   - **Global Styles**：可选用全局类（如工具类、带 `bg-color-*` 语义的类），与 Class Name 链路共用同一套注入的 `tokens.css` + `utilities.css`。
+   - **CSS Editor（自定义 CSS）**：可在规则中书写 **`color: var(--mr-color-primary-500);`** 等 **主题变量**，说明 `tokens.css` 中的 `--mr-color-*` 已在画布 iframe 内生效，设计器侧可像主工程一样引用 token。
+
+3. **主工程产物链路**
+   - 静态服务与物料同目录时（如 `http://localhost:3000/styles.json`），设计器通过 **`VITE_STYLE_BUNDLE_URLS` 或 `window.TINY_STYLE_BUNDLE_URLS`** 拉取 `styles.json`，再加载其引用的 `tokens.css`、`utilities.css`，无需再依赖设计器内 `public/mock` 兜底。
+
+### 11.2 实施过程中值得记录的点
+
+| 问题 | 原因 | 处理思路 |
+| --- | --- | --- |
+| `styles.json` 拉取报 CSP / `Failed to fetch` | Webview 内相对路径会落到 `vscode-webview://`，`fetch` 受 `connect-src` 限制 | 使用 **可访问的 http(s) 绝对 URL**；设计器侧用 **`TINY_DESIGNER_ORIGIN` 等** 将 `/mock/...` 或相对路径转为设计器真实 HTTP origin 再请求 |
+| 画布长时间加载、依赖重复下发 | 仅在消息层补丁 `init_canvas_deps`，画布回传 deps 时丢失样式 → 反复判定「缺样式」 | 将 style bundle 的 **styles 写入 `materialsDeps` 源数据**，与 `getCanvasDeps` 同源，避免循环重载 |
+| 个别 class 不生效 | UnoCSS 按需生成，设计器里新输入的类未必出现在主工程源码扫描结果中 | 维护 **`safelist.extra.txt`** 并重新生成 `utilities.css` |
+
+### 11.3 协议与产物取舍
+
+- **样式交付方式为预构建**：`utilities.mode` 为 **`prebuilt`**，**不采用**画布内 UnoCSS runtime；与「主工程 build → 导入设计器」的流程一致，**非技术债**。
+- **默认不产出 `overrides.css`**：组件级覆盖继续依赖物料 **`mr-bank.css`** 等；style bundle 聚焦 **tokens + utilities**。
+- **主题**：首版以 **默认主题 token**（`extract-design-tokens` → `:root`）与主工程一致即可；设计器内无画布主题切换时再扩展多主题。
+
+### 11.4 建议的回归检查（发版前）
+
+- [ ] Network：`styles.json` → `tokens.css`、`utilities.css` 均为 200，且来源为主工程静态服务。
+- [ ] Class Name：`flex items-center text-h3 text-color-secondary` 与一组长尾类（如 `py-12px`、`bg-color-*`）画布可见。
+- [ ] CSS Editor：任意写一条 `var(--mr-color-primary-500)` 类规则，画布可见。
+- [ ] 出码：上述 class 与自定义 CSS 能正确落盘。
+
+---
+
 文档维护者：开发团队
-最后更新：2026-03-31
+最后更新：2026-04-02
 
