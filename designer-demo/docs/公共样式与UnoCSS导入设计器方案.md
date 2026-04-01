@@ -143,6 +143,33 @@ dist/lowcode-styles/
 - 把本地目录 `dist/lowcode-styles` serve 成可访问 URL
 - 注入 `styles.json` 的 URL（支持多个来源）
 
+### 5.2.1 私服/静态发布建议（与物料一致）
+
+推荐将样式包与物料包采用**同一套静态发布策略**：
+
+- 物料：`.../<buildId>/bundle.json` + 同目录的 `mr-components.js`、`mp-*.js`、`mr-bank.css` 等
+- 样式：`.../<buildId>/styles.json` + 同目录的 `tokens.css`、`utilities.css`
+
+这样设计器/插件只需要注入两个 URL（同 buildId）：
+
+- `.../<buildId>/bundle.json`
+- `.../<buildId>/styles.json`
+
+并通过 URL 的 buildId 进行缓存隔离与快速回滚。
+
+### 5.2.2 当前阶段的决策（避免误解）
+
+受限于当前**缺少静态发布工具/权限**，团队暂时按以下方式推进：
+
+- **短期（当前）**：继续使用本地 `serve` 联调主工程产物，并通过 URL 注入给设计器验证。
+  - 示例：`npx serve dist/lowcode-materials -p 3000 --cors`
+  - 设计器配置：`VITE_STYLE_BUNDLE_URLS=http://localhost:3000/styles.json` 或插件注入 `window.TINY_STYLE_BUNDLE_URLS`
+- **中期（待定）**：与 VSCode 插件开发者对齐 ASSETMANAGER 能力后，再决定最终分发方案：
+  - **静态发布**：版本化目录托管（URL 直接访问 `styles.json/tokens.css/utilities.css`）
+  - **npm 私服分发**：发布为 npm 包，由插件安装后本地 serve，再注入 URL
+
+> 说明：设计器侧协议始终是“URL 列表”，不关心来源。是否走静态还是 npm，将由插件侧能力与团队权限共同决定；因此本节只记录推荐形态与阶段性选择，避免误导为“当前必须上私服发布”。
+
 ### 5.3 设计器消费点（建议）
 
 设计器职责（只消费 URL 与清单，不关心来源）：
@@ -390,5 +417,5 @@ dist/lowcode-styles/
 ---
 
 文档维护者：开发团队
-最后更新：2026-04-02
+最后更新：2026-04-02（补充静态发布版本化建议）
 
