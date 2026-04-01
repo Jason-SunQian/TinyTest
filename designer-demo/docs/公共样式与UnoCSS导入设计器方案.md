@@ -346,6 +346,8 @@ dist/lowcode-styles/
 
 主工程（`mobilebanking`）已提供脚本 **`pnpm run build:lowcode-styles`**（见根目录 `package.json`）。
 
+> 相关命令的完整说明见《物料导入快速参考》中的 **「四点六、主工程脚本命令速查」**，避免重复与口径不一致。
+
 ### 10.1 生成内容
 
 - 先执行 `lowcode-materials/scripts/extract-design-tokens.cjs`，生成 **`tokens.css`**（`:root[theme='default']` → `:root`，与画布物料 token 同源）。
