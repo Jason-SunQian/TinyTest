@@ -127,11 +127,9 @@
 dist/lowcode-styles/
 ├── styles.json                # 样式清单（协议文件）
 ├── tokens.css                 # 设计 token / css variables（与物料一致或复用）
-├── overrides.css              # 公共覆盖（base overrides）
-├── themes/
+├── themes/                    # 可选：多主题时再引入
 │   ├── default-light.css
-│   ├── default-dark.css
-│   └── ...                    # 其它主题
+│   └── ...
 ├── utilities.css              # 方案A：预生成 UnoCSS utilities（可选）
 └── unocss-runtime.js          # 方案B：UnoCSS runtime（可选）
 ```
@@ -142,7 +140,6 @@ dist/lowcode-styles/
 {
   "version": "1.0.0",
   "tokens": ["./tokens.css"],
-  "overrides": ["./overrides.css"],
   "themes": {
     "default-light": "./themes/default-light.css",
     "default-dark": "./themes/default-dark.css"
@@ -159,6 +156,7 @@ dist/lowcode-styles/
 
 - `mode=runtime` 表示启用 runtime；`mode=prebuilt` 表示仅加载 `utilities.css`。
 - 即使复用 `dist/lowcode-materials/mr-bank.css` 里的 token，也建议在 style bundle 里“显式声明”，便于解耦与版本控制。
+- **`overrides` 字段与独立 `overrides.css` 不作为默认产物**；若将来确有「页面级全局基线」需求，再扩展协议即可。
 
 ### 5.2 VSCode 插件注入协议（建议）
 
@@ -179,7 +177,7 @@ dist/lowcode-styles/
 2. 拉取每个 `styles.json`，合并得到“要加载的 CSS/JS URL 列表”
 3. 将 CSS URL 加到画布依赖 `styles` 中；将 runtime 脚本（如果有）加入画布依赖 `scripts` 中
 4. 依赖归一化由现有逻辑处理（相对路径 → 绝对 URL）
-5. 主题切换时（如果插件调用 `setTheme`）：选择对应 `themes[themeId]` 的 CSS 并更新画布
+5. **主题切换（可选）**：仅当设计器或插件提供「画布主题」能力时，才根据当前主题选择 `themes[themeId]` 并更新画布。若设计器暂无画布主题切换 UI，可**只注入一套默认主题**（见第 9.2.1 节），不必先做多套 `themes/*.css` 的切换逻辑。
 
 > 关键点：这条链路与物料加载很像，但**协议文件从 `bundle.json` 变成 `styles.json`**，避免把“公共样式体系”强塞进“物料资产包协议”。
 
@@ -192,7 +190,8 @@ dist/lowcode-styles/
 - `window.TINY_STYLE_BUNDLE_URLS: string[]`（VSCode 插件注入）
 - `import.meta.env.VITE_STYLE_BUNDLE_URLS: string`（逗号分隔，非插件本地联调）
 - `engine.config.styleBundles`（可选，保持与 engine.config.material 类似风格）
-- **开发态兜底**：若以上均未提供，开发环境默认加载 `'/mock/styles.json'`（用于快速验证）
+
+以上均未配置时，**不会**自动加载本地 mock；需通过插件或 env 显式提供 `styles.json` URL。
 
 对应实现文件：
 
@@ -226,10 +225,10 @@ dist/lowcode-styles/
 
 ### 7.2 验证清单（建议按顺序）
 
-1. 仅加载 `tokens.css + overrides.css`：物料组件在画布上的基础视觉一致
+1. 仅加载 `tokens.css`：物料组件在画布上的基础视觉一致（组件覆盖仍主要由 `mr-bank.css` 等物料样式承担）
 2. 加载 `utilities.css`（方案A）：输入 `flex items-center` 等常用类能生效
 3. 启用 runtime（方案B）：输入一个主工程里没出现过的类也能立刻生效
-4. 切换主题：`text-color-secondary` 等依赖 token 的类随主题切换正确变化
+4. **（可选）** 若已做多主题：切换主题后 `text-color-secondary` 等依赖 token 的类随主题变化；若仅单主题，则验证与主工程默认主题（如 `default-light`）一致即可
 5. 出码一致性：属性面板 className → 出码生成的 class 与主工程写法一致
 
 ---
@@ -240,6 +239,143 @@ dist/lowcode-styles/
 2. 先跑通方案 A（预生成 utilities.css），保证链路正确、快速可用
 3. 再评估并升级到方案 B（UnoCSS runtime），满足“任意输入 class 即生效”的最终体验
 4. 最后做体验增强：class 自动补全、组合 snippets、无效 class 提示
+
+---
+
+## 9. 主工程 CSS 提取策略（建议）
+
+本节回答一个核心问题：**为了让设计器里 `Class Name` 与 Styles 面板“像开发 Vue 页面一样好用”，主工程到底要提取哪些 CSS，哪些不需要提取？**
+
+### 9.1 设计器的主要使用场景
+
+设计器侧主要有两类“用到公共样式”的方式：
+
+1. **组件属性面板 → `Class Name`**
+   - 开发者输入 utilities / 语义类（如 `flex items-center text-h3 text-color-secondary`）
+   - 期望：画布即时生效、出码保留 class、运行态表现与主工程一致
+2. **Styles 面板 → Global Styles**
+   - 开发者配置页面级/全局级样式（可能仍然以类名与 token 为主）
+   - 期望：在画布中能看到效果、并与主工程的设计体系一致
+
+以上两种场景的共同依赖是：
+
+- **utilities（UnoCSS 生成的类）**
+- **theme tokens（utilities 引用的 CSS 变量/主题色/字号等）**
+
+### 9.2 必须提取（强建议）
+
+#### A. UnoCSS utilities → `utilities.css`
+
+目的：保证 `Class Name` 里写的 utilities 在画布中一定有对应 CSS 规则。
+
+推荐做法：
+
+- **预生成** `utilities.css`（方案 A，先跑通链路）
+- 生成方式建议由两部分组成：
+  - **扫描主工程源码**：收集模板/脚本中出现过的 class
+  - **维护 safelist**：覆盖设计器“可编辑输入但不一定出现在主工程源码”的常用 utilities（例如布局类、排版类、色彩类的常见组合）
+
+为什么要 safelist：
+
+- UnoCSS 默认是“扫描 → 生成”，设计器里手动输入的新 class **可能主工程没出现过**
+- 没 safelist 时就会出现“有时生效、有时不生效”的体验断层
+
+> 后续若要做到“任意输入 class 都即时生效”，再升级到 runtime（方案 B）。
+
+#### B. themes/styles token（颜色与设计变量）
+
+目的：保证 utilities 与语义色（例如 `text-color-secondary`）引用的 **CSS 变量** 在设计器内存在且与主工程一致。
+
+##### 9.2.1 主题怎么处理？——推荐先「单主题精简」，多主题延后
+
+与主工程一致的事实是：
+
+- 运行态 App **同一时间只跑一套主题**；多套主题文件在 `themes/styles` 里存在，但**切换发生在主工程配置/运行时**，不是页面里随便混用多套。
+- 设计器侧若**没有**「画布主题」切换入口，则画布只需要 **固定一套 token**，与主工程**默认主题**对齐即可（你们当前多为 **`default-light`** 或与之一致的 token 集）。
+
+因此提取策略可以**再精简一档**（推荐作为第一版落地）：
+
+| 策略 | 做法 | 适用 |
+| --- | --- | --- |
+| **单主题（推荐首版）** | 构建时只把**默认主题**对应的 token CSS（如 `default-light.css`）与「跨主题不变」的基础变量合并进 **一份 `tokens.css`**（或 `theme-default.css`）；`styles.json` 里 **`themes` 可省略或只保留一项**，设计器始终加载这一份 | 设计器无画布主题切换、与主工程默认主题对齐即可 |
+| **多主题（后续增强）** | 保留 `themes/<id>.css` + `styles.json.themes` 映射；由插件注入当前主题 id 或设计器提供切换后再动态换 CSS | 需要在设计器里预览 dark/colorful 等 |
+
+**不处理多主题可以吗？**
+
+- **可以。** 首版只保证「画布颜色与主工程默认主题一致」，不实现设计器内主题切换，复杂度最低。
+- 若业务方要求在画布预览非默认主题，再补：**插件/设计器约定主题 id → 换一份 theme CSS URL**（或换整个 style bundle 的 `styles.json` 指向）。
+
+##### 9.2.2 若采用多主题时的产物形态（参考）
+
+- `tokens.css`：跨主题不变的基础变量（若有）
+- `themes/<themeId>.css`：各主题变量集
+- `styles.json.themes`：主题 id → 相对路径映射；设计器/插件在有能力切换时再消费
+
+首版若走单主题，可将上述合并为「**仅 `tokens.css` + `utilities.css`**」，`themes` 目录可暂不产出。
+
+### 9.3 不建议提取（通常无需重复）
+
+#### C. `assets/styles` 下覆盖 Vant/Ionic 的样式（通常不需要再抽一份）
+
+主工程常见有一批用于 **覆盖 Vant/Ionic 组件外观** 的 SCSS（例如 `src/assets/styles/*.scss`）。
+
+这类样式通常：
+
+- **并不会在页面上通过 class 直接引用**（开发者也不会在设计器 `Class Name` 输入这些 selector）
+- 已经通过主工程物料构建链路进入 `dist/lowcode-materials`（例如 `mr-bank.css` 与各物料组件自身的 CSS/依赖 CSS）
+
+因此建议策略是：
+
+- **优先依赖物料链路提供的 `mr-bank.css`/组件 CSS** 来还原“组件外观一致性”
+- Style Bundle 只负责“utilities + tokens”，不要重复搬运组件覆盖样式
+
+### 9.4 一句话落地清单（用于实施）
+
+主工程产物 `dist/lowcode-styles/`（或你们约定目录）建议至少包含：
+
+- ✅ `styles.json`
+- ✅ `utilities.css`（UnoCSS 预生成，含 safelist）
+- ✅ **主题 token（二选一）**
+  - **精简首版**：仅 `tokens.css`（已含默认主题 + 若有则含基础变量），不强制 `themes/` 目录
+  - **多主题版**：`tokens.css`（可选）+ `themes/*.css` + `styles.json.themes` 映射
+
+并明确约束：
+
+- ❌ 不把 Vant/Ionic 的大量覆盖 SCSS 再抽一份到 Style Bundle（避免重复与冲突）
+
+---
+
+## 10. 主工程已实现：构建样式产物与验证方式
+
+主工程（`mobilebanking`）已提供脚本 **`pnpm run build:lowcode-styles`**（见根目录 `package.json`）。
+
+### 10.1 生成内容
+
+- 先执行 `lowcode-materials/scripts/extract-design-tokens.cjs`，生成 **`tokens.css`**（`:root[theme='default']` → `:root`，与画布物料 token 同源）。
+- 使用 **`uno.config.ts`** + `UnoCSS createGenerator` 预生成 **`utilities.css`**；输入包含：
+  - `lowcode-styles/safelist.extra.txt` 手动补充
+  - 对 `src/**/*.{vue,ts,tsx,js,jsx}` 的 class 字符串启发式扫描
+  - 少量常用类预设（flex / text-h* / text-color-* 等）
+
+输出目录：
+
+- **`dist/lowcode-styles/`**：规范产物目录（`styles.json`、`tokens.css`、`utilities.css`）。
+- 若存在 **`dist/lowcode-materials/`**，脚本会把上述文件 **同步复制一份到该目录**，便于与现有「单目录静态服务」共用（例如与 `bundle.json` 同端口访问）。
+
+### 10.2 本地验证步骤（你来执行）
+
+1. 在主工程根目录执行：`pnpm run build:lowcode-styles`
+2. 用静态服务托管 **`dist/lowcode-materials`**（或同时托管包含 `styles.json` 的目录），确认浏览器能打开：
+   - `http://<host>:<port>/styles.json` → 200 JSON
+   - `http://<host>:<port>/tokens.css` → 200
+   - `http://<host>:<port>/utilities.css` → 200
+3. 在设计器插件环境配置 **`VITE_STYLE_BUNDLE_URLS=http://localhost:3000/styles.json`**（或插件注入 `window.TINY_STYLE_BUNDLE_URLS` 指向同一 URL）。
+4. 打开设计器 DevTools → **Network**，确认拉取的是 **`styles.json`** 且后续 CSS 来自 `localhost:3000`。
+5. 在组件 **Class Name** 输入：`flex items-center text-h3 text-color-secondary`，画布与出码应与主工程一致。
+
+### 10.3 补充类名覆盖
+
+若某类在画布不生效，可将该 class 逐行加入主工程 **`lowcode-styles/safelist.extra.txt`** 后重新执行 `pnpm run build:lowcode-styles`。
 
 ---
 
