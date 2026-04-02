@@ -178,6 +178,38 @@
 
 ---
 
+## 9. 当前落地结论（口径1）与实现摘要（避免后续误导）
+> 本节用于统一团队对“提示=是否可用”的口径，避免后续继续讨论时把提示来源与运行态契约混在一起。
+
+### 9.1 口径：运行态一致（口径1）
+- 设计器里 `this.<namespace>.<member>` 出现的成员（关键字/二级补全），必须来自“主工程运行态会真正注入/注册到 `this.<namespace>` 上”的那份清单。
+- 当工具因为环境差异在非 native 场景下返回 `reject`（例如 `chooseImage/uploadFile` 内部 `mrBox.canIUse('chooseImage')` 拦截），这属于主工程自身在浏览器/非 native 环境的既有行为；因此只要出码后调用的是主工程同一实现，设计器与主工程表现应保持一致，允许出现 `reject`，但不允许出现“提示了主工程运行态根本没有的成员”（否则会出现 `undefined is not a function` 这类硬失败，破坏口径1）。
+
+### 9.2 当前 completion config schema（v2 方向）
+- `completion-utils.json` 使用结构化的 `namespaces`：
+  - `namespaces.<namespace>.members[]`
+  - `namespace` 对应设计器里 `this.<namespace>`（例如 `utils`、`http`）
+  - `members[]` 至少包含 `name`，可选 `detail/signature`
+
+### 9.3 当前设计器补全策略（二级通用化）
+- 二级补全不再为 `http` 写特化 demo，而是统一解析光标形态：
+  - 当光标位于 `this.<namespace>.<prefix>` 时，触发对应 `namespaces[namespace].members` 的过滤补全。
+- members 的获取优先来自注入配置 `window.TINY_COMPLETION_CONFIG.namespaces[namespace].members`。
+- 设计器仍保留与运行态动态工具列表的合并能力（确保 Bridge/动态注入不丢失）。
+
+### 9.4 产物生成与远程动态加入
+- 主工程在物料构建链路中生成 `completion-utils.json`，并放入与物料同目录：
+  - `dist/lowcode-materials/completion-utils.json`
+- 设计器通过环境变量远程拉取该产物（与 `VITE_STYLE_BUNDLE_URLS` 类似）：
+  - `VITE_COMPLETION_CONFIG_URL=<url>/completion-utils.json`
+
+### 9.5 后续批量提取 utils 的规则（必须遵守）
+- 可以用源码分析（`src/utils/**` 导出）做 signature/doc 提取与候选生成。
+- 但最终写入 `namespaces.<namespace>.members` 的集合，必须满足口径1：即“运行态实际会注入的成员交集”。
+- 对 native 依赖能力：允许 `reject` 行为存在；但不允许“提示了不存在的成员”。
+
+---
+
 文档维护者：开发团队
 最后更新：2026-03-30
 
