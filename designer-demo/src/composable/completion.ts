@@ -6,7 +6,64 @@
 
 import { useCanvas, useResource } from '@opentiny/tiny-engine-meta-register';
 
-import { getAllKeywords } from '@/config/completion-keywords';
+import {
+    getAllKeywords,
+    getInjectedNamespaceMembers
+} from '@/config/completion-keywords';
+
+type CompletionUtilsConfig = {
+    version?: string;
+    namespaces?: Record<
+        string,
+        {
+            members?: Array<{ name?: string }>;
+        }
+    >;
+    [k: string]: unknown;
+};
+
+let completionUtilsConfigLoaded = false;
+let completionUtilsConfigLoading: Promise<void> | null = null;
+
+async function ensureCompletionUtilsConfigLoaded() {
+    if (completionUtilsConfigLoaded) return;
+    if (completionUtilsConfigLoading) return completionUtilsConfigLoading;
+
+    completionUtilsConfigLoading = (async () => {
+        if (typeof window === 'undefined') return;
+        if ((window as any).TINY_COMPLETION_CONFIG) {
+            completionUtilsConfigLoaded = true;
+            return;
+        }
+
+        const env = import.meta.env as any;
+        const url: string | undefined = env?.VITE_COMPLETION_CONFIG_URL;
+        if (!url) {
+            return;
+        }
+
+        // 相对路径：尽量转成绝对路径，避免 VSCode webview origin 导致 fetch 失败
+        let absoluteUrl = url;
+        if (typeof url === 'string' && url.startsWith('/')) {
+            const win = window as Window & { TINY_DESIGNER_ORIGIN?: string };
+            const origin =
+                win.TINY_DESIGNER_ORIGIN ||
+                ((import.meta.env as any)?.VITE_ORIGIN as string) ||
+                window.location.origin;
+            absoluteUrl = `${origin.replace(/\/$/, '')}${url}`;
+        }
+
+        const res = await fetch(absoluteUrl);
+        if (!res.ok) return;
+        const cfg = (await res.json()) as CompletionUtilsConfig;
+        (window as any).TINY_COMPLETION_CONFIG = cfg;
+        completionUtilsConfigLoaded = true;
+    })().finally(() => {
+        completionUtilsConfigLoading = null;
+    });
+
+    return completionUtilsConfigLoading;
+}
 
 // 使用配置文件中的关键字列表
 const keyWords = getAllKeywords();
@@ -196,6 +253,95 @@ const getRange = (position: any, words: any[]) => ({
     endColumn: words[words.length - 1].endColumn
 });
 
+type ThisNamespaceMemberContext = {
+    namespace: string;
+    prefix: string;
+    range: {
+        startLineNumber: number;
+        endLineNumber: number;
+        startColumn: number;
+        endColumn: number;
+    };
+};
+
+/**
+ * 泛化二级补全上下文解析：光标位于 this.<namespace>.| 或 this.<namespace>.pre|
+ *
+ * @example this.http.post / this.utils.formatDate
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const parseThisNamespaceMemberContext = (
+    model: any,
+    position: any
+): ThisNamespaceMemberContext | null => {
+    const line = model.getLineContent(position.lineNumber);
+    const before = line.slice(0, position.column - 1);
+
+    // group1: namespace, group2: prefix（可为空）
+    const m = before.match(/this\.([A-Za-z_$][\w$]*)\.(\w*)$/);
+    if (!m) return null;
+
+    const namespace = m[1];
+    const prefix = m[2] || '';
+
+    return {
+        namespace,
+        prefix,
+        range: {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: position.column - prefix.length,
+            endColumn: position.column
+        }
+    };
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getThisNamespaceMemberSuggestions = (
+    monaco: any,
+    model: any,
+    position: any
+) => {
+    const ctx = parseThisNamespaceMemberContext(model, position);
+    if (!ctx) return null;
+
+    // 运行态动态 utils（来自 appSchemaState.utils）只在 namespace = utils 时并入
+    const runtimeMembers =
+        ctx.namespace === 'utils'
+            ? (useResource().appSchemaState.utils || []).map((item: any) => ({
+                  name: item?.name
+              }))
+            : [];
+
+    const injectedMembers = getInjectedNamespaceMembers(ctx.namespace);
+
+    const byName = new Map<string, { name: string; detail?: string; signature?: string }>();
+    for (const m of injectedMembers || []) {
+        if (m?.name) {
+            byName.set(m.name, m as any);
+        }
+    }
+    for (const m of runtimeMembers || []) {
+        if (m?.name && !byName.has(m.name)) {
+            byName.set(m.name, m as any);
+        }
+    }
+
+    const members = Array.from(byName.values()).filter(m =>
+        m.name.startsWith(ctx.prefix)
+    );
+
+    return {
+        suggestions: members.map(m => ({
+            label: m.name,
+            kind: monaco.languages.CompletionItemKind.Method,
+            insertText: m.name,
+            detail: [m.detail, m.signature].filter(Boolean).join(' '),
+            range: ctx.range
+        }))
+    };
+};
+
 /**
  * 初始化 Monaco Editor 的代码提示功能
  * 扩展了原始功能，添加了项目特定的关键字提示
@@ -213,7 +359,7 @@ export const initCompletion = (
 ) => {
     const completionItemProvider = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-        provideCompletionItems(
+        async provideCompletionItems(
             model: any,
             position: any,
             _context: any,
@@ -222,6 +368,19 @@ export const initCompletion = (
             if (editorModel && model.id !== editorModel.id) {
                 return {
                     suggestions: []
+                };
+            }
+            await ensureCompletionUtilsConfigLoaded();
+            const nsMember = getThisNamespaceMemberSuggestions(
+                monacoInstance,
+                model,
+                position
+            );
+            if (nsMember) {
+                return {
+                    suggestions: nsMember.suggestions.filter((item: any) =>
+                        conditionFn ? conditionFn(item) : true
+                    )
                 };
             }
             const words = getWords(model, position);

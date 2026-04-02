@@ -1,7 +1,6 @@
 /**
  * 迁移自 src/main.js，无类型改动，保持行为一致
  */
-/* eslint-disable import/order */
 import type { App } from 'vue';
 import { DEFAULT_LANGUAGE } from '@/config/languages';
 
@@ -18,7 +17,9 @@ import useNotifyI18n from './utils/useNotifyI18n';
 
 async function startApp() {
     const registry = await import('../registry');
-    const { init, initHook, HOOK_NAME } = await import('@opentiny/tiny-engine');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const engine: any = await import('@opentiny/tiny-engine');
+    const { init, initHook, HOOK_NAME } = engine;
 
     init({
         // 合并多个注册表

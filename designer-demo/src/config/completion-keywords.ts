@@ -24,6 +24,57 @@ export const customKeywords = [
 ];
 
 /**
+ * completion-utils 配置中“二级成员”定义
+ */
+export interface CompletionMemberDefinition {
+    name: string;
+    detail?: string;
+    signature?: string;
+}
+
+type TinyCompletionConfigV2 = {
+    version?: string;
+    namespaces?: Record<
+        string,
+        {
+            members?: CompletionMemberDefinition[];
+        }
+    >;
+    // 兼容老结构：{ utils: { members }, http: { members } }
+    [k: string]: unknown;
+};
+
+/**
+ * 读取 window 注入的二级成员（namespace -> members）
+ * 兼容两种结构：
+ * - v2：TINY_COMPLETION_CONFIG.namespaces[namespace].members
+ * - v1：TINY_COMPLETION_CONFIG[namespace].members
+ */
+export const getInjectedNamespaceMembers = (
+    namespace: string
+): CompletionMemberDefinition[] => {
+    if (!namespace || typeof window === 'undefined') return [];
+
+    const cfg = (window as unknown as {
+        TINY_COMPLETION_CONFIG?: TinyCompletionConfigV2;
+    }).TINY_COMPLETION_CONFIG;
+
+    if (!cfg || typeof cfg !== 'object') return [];
+
+    const fromNamespaces = cfg.namespaces?.[namespace]?.members;
+    if (Array.isArray(fromNamespaces) && fromNamespaces.length) {
+        return fromNamespaces.filter(m => typeof m?.name === 'string') as CompletionMemberDefinition[];
+    }
+
+    const fromLegacy = (cfg as any)?.[namespace]?.members;
+    if (Array.isArray(fromLegacy) && fromLegacy.length) {
+        return fromLegacy.filter(m => typeof m?.name === 'string') as CompletionMemberDefinition[];
+    }
+
+    return [];
+};
+
+/**
  * 获取所有关键字（包括原始关键字和自定义关键字）
  * 如果需要添加更多关键字，可以在这里扩展
  */
