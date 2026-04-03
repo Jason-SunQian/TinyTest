@@ -3,178 +3,85 @@
 > 目的：把主工程（`/Users/mac/Desktop/Project/2025/mobilebanking`）通用工具方法（`utils/`）以“关键字 + 可选 snippets”的形式注入设计器，提升开发者在低代码设计器中编写 JS 的代码补全体验。
 >
 > 约束：设计器与物料解耦；设计器改造不触碰 `packages/`（`packages` 仅用于参考）。
+>
+> **落地与排障请以 [§10 已落地成果与经验总结](#10-已落地成果与经验总结2026-04) 为准。**  
+> **口径与 schema 见 [§9](#9-当前落地结论口径1与实现摘要避免后续误导)。**  
+> 下文 **§0–§1** 为与当前实现对齐的摘要；原「分步规划 / editorOnly 优先 / 人工 keywords 清单」等**已过时**，不再作为执行依据。
 
 ---
 
 ## 0. 背景与目标
 
-1. 主工程会生成物料资产包（`dist/lowcode-materials`），并由 VSCode 插件导入设计器。
-2. 设计器（`designer-demo`）与物料资产包协议解耦：设计器通过 bundle URL 加载组件与 snippets schema。
-3. 现在希望进一步解耦“通用工具提示”：把主工程 `utils/` 里的通用工具方法导入到设计器的 Monaco 代码提示体系中。
-
-目标：
-
-- 支持开发者在设计器 JS 编辑器中获得补全提示（关键字形式）。
-- 可选支持常用 snippets 快速插入（例如 try/catch、http 调用模板、常用表达式模板）。
-- 设计器侧只消费“注入的配置数据”，不直接依赖主工程源码。
+1. 主工程产出物料（如 `dist/lowcode-materials`），设计器经插件或 URL 加载；通用工具补全需与主工程 **同一套 `@/utils` 契约**，避免「能提示不能跑」或「跑的是另一套实现」。
+2. **当前状态（主线）**：设计器 **`this.utils.*` 补全** + 出码运行 **`this.utils` = `@/utils` 命名空间** 已打通；维护方式为主工程 **`pnpm run build:lowcode-utils`**（或物料构建）刷新 `completion-utils.json` 与 `utils.js`，**不必再单独维护一份「常用工具关键字」人工表**（除非产品上要白名单降噪）。
+3. **仍属可选增强**：代码 **snippets**、更完整的 **signature/文档**、补全列表与运行态键 **100% 对齐**（TS Compiler API）等——见 **§6 未勾选项** 与 **§8**。
 
 ---
 
-## 1. 总体信息流（建议方案）
+## 1. 架构摘要（取代原 §1–§5 规划稿）
 
-推荐把“代码提示能力”做成同一类交付物：`completion config`。
+### 1.1 交付物与职责
 
-信息流：
+| 交付物 | 产出位置 | 作用 |
+|--------|----------|------|
+| `completion-utils.json` | `dist/lowcode-utils/`（可同步到 `dist/lowcode-materials/`） | 设计器 Monaco：`namespaces.utils` / `namespaces.http` 等二级成员 |
+| `utils.js` | 同上，再按 manifest **复制**到可被 `import.meta.glob` 命中的路径 | 运行态 `this.utils` |
 
-1. 主工程 `utils/` 被统计/提取，生成一份纯数据交付物（例如 `completion-utils.json`）。
-2. VSCode 插件把该交付物解析为可注入的配置，并在打开设计器 webview 时注入到全局变量。
-3. `designer-demo` 读取注入配置，合并到本地 `completion-keywords.ts` 与现有 completion 逻辑中。
-4. Monaco 依据合并后的关键字与 snippets 产生补全建议。
+真源：**`src/utils/index.ts` → `@/utils` 聚合**；**不再**依赖 `extensions/utils-*.json` 演示文件。
 
-关键点：
+### 1.2 信息流（实际实现）
 
-- 提示是“编辑器体验”（editorOnly）优先，避免提示与运行态存在强耦合。
-- 只有在确实由 Bridge/运行时注入保证存在的对象，才将其标记为 runtimeBacked。
+1. 主工程 **`lowcode-utils/scripts/build.mjs`** 扫描 index 生成 `completion-utils.json`，生成 barrel **`utils.js`**。
+2. 设计器 **`VITE_COMPLETION_CONFIG_URL`** 指向上述 JSON → `fetch` → **`window.TINY_COMPLETION_CONFIG`**（也可由插件提前注入同结构对象，效果等价）。
+3. **`designer-demo/src/composable/completion.ts`**：`ensureCompletionUtilsConfigLoaded()` + **`getInjectedNamespaceMembers()`**（见 `completion-keywords.ts`）；在 **`this.<namespace>.`** 上下文中与 **`appSchemaState.utils`** 等合并；Monaco 列表右侧文案用 **`label.description`**（见 §10.3）。
 
----
+### 1.3 与旧稿差异（避免误读）
 
-## 2. 第 1 步：统计主工程 `utils/` 需要提取什么
-
-2.1 统计要回答的三个问题
-
-- 导出形态：`function` / `const` / `namespace` / `class` / 对象树分别有哪些，以及导出名是什么。
-- 编辑器可用性：哪些工具方法适合做提示？哪些可能因为运行态依赖而不适合（或只做“提示名字”）。
-- 使用频率：高频优先，避免把提示空间塞满导致噪音。
-
-2.2 建议统计输出（未来会落地为配置清单字段）
-
-每条候选工具方法建议记录：
-
-- `key`：设计器里希望出现的关键字（例如 `formatMoney`、`request`、`utils.formatMoney` 的最终呈现片段）
-- `display`：提示展示名（可与 key 相同，也可更友好）
-- `kind`：`function` / `const` / `namespace`
-- `signature`：参数与返回（用于 detail/doc）
-- `doc`：一句话说明 + 常见调用示例（用于提示 detail）
-- `snippet`（可选）：当需要快速插入模板时提供 snippet 模板
-- `runtimeAvailability`：
-  - `editorOnly`：仅提示，不保证运行时一定存在
-  - `requiresBridge`：运行时需 Bridge 提供（提示可提示，但建议标注）
-  - `requiresRuntimeInjection`：运行时需通过 runtime 注入（提示可用，但应标注来源）
-- `source`：主工程 `utils` 中的路径 + 导出名（用于回溯与维护）
-
-2.3 统计分级建议
-
-- 高优先级：登录/请求/http、基础格式化（时间/金额）、常见校验、常用通用转换
-- 中优先级：相对业务化但仍可在低代码里高频复用的工具
-- 低优先级：强依赖业务上下文/必须特定注入才能运行的工具（除非能确定运行时注入链路）
-
----
-
-## 3. 第 2 步：导入之前，需要生成怎样的内容给插件
-
-3.1 推荐先落地“可维护的纯数据清单”
-
-建议生成类似 `completion-utils.json` 的交付物（建议随版本号变化）：
-
-- `version`：配置版本，用于兼容升级
-- `keywords`：关键字与 namespace/函数条目的列表（最终供 Monaco 使用）
-- `snippets`：snippets 列表（可选；与 keywords 关联）
-- `meta`（可选）：主工程标识、构建时间、适用范围（可选）
-
-建议优势：
-
-- 插件无需解析 TS 源码，只需读取数据并注入设计器。
-- 设计器只消费注入配置，仍保持与主工程解耦。
-
-3.2 两个实现路线
-
-- 路线 A（推荐起步）：人工/半自动维护清单 JSON（先跑通链路）
-- 路线 B（后续增强）：脚本从主工程源码/类型自动生成清单（降低维护成本）
-
----
-
-## 4. 第 3 步：设计器要改造哪些内容接收插件传递的关键字列表
-
-4.1 设计器改造原则
-
-- 不修改 `packages/`，只在 `designer-demo/src/` 内做读取与合并逻辑。
-- 注入配置的读取时机与物料注入类似：webview 打开时注入全局变量，设计器读取后合并到 completion。
-
-4.2 设计器接收注入配置（建议新增能力）
-
-新增一个“读取注入配置”的入口（名字可为 `getCompletionConfig()`）：
-
-- 读取 `window.TINY_COMPLETION_CONFIG`（或类似命名）
-- 与本地 `completion-keywords.ts` 做合并：
-  - 去重（key/namespace 唯一）
-  - 分组/过滤（可在编辑器不同场景使用不同策略）
-  - 追加 snippets
-- 将结果喂给现有 completion provider 逻辑
-
-4.3 设计器 completion 合并逻辑（建议调整点）
-
-将注入配置提供给以下能力：
-
-- `getApiSuggestions()`：将注入 keywords 追加到建议列表（包含 doc/signature）
-- `getSnippetsSuggestions()`：将注入 snippets 追加到片段建议
-- 保留现有动态工具方法提示（例如 Bridge 创建的工具）逻辑不变
-
-4.4 提示与运行态的标注（建议）
-
-为了避免开发者误解“有提示=可运行”，建议在提示 detail/doc 中标注 runtimeAvailability：
-
-- `editorOnly`：提示存在但运行态不保证
-- `requiresBridge` / `requiresRuntimeInjection`：提示存在但依赖外部注入链路
-
----
-
-## 5. 与现有 completion 体系的关系
-
-现状：
-
-- `designer-demo/src/config/completion-keywords.ts` 存在本地关键字配置（`customKeywords`）。
-- `designer-demo/src/composable/completion.ts` 负责提供 Monaco completion（内置 API、动态工具、snippets）。
-
-目标：
-
-- 保留本地关键字作为“默认/兜底”
-- 在插件注入配置存在时进行合并与覆盖（或仅追加）
+- **已废弃表述**：「editorOnly 优先、与运行态弱耦合」「人工维护 keywords + 插件独占注入」「getCompletionConfig() 待新增」「把注入 keywords 塞进 getApiSuggestions」——均已被 **口径1（§9.1）+ `@/utils` 同源 + 二级 namespace 补全** 替代。
+- **`completion-keywords.ts`**：仍承担 **`customKeywords`（如 http、router）** 与 **解析 `TINY_COMPLETION_CONFIG.namespaces`**，不是第二套手工 utils 清单。
+- **若需「只提示部分工具」**：属于产品策略（白名单），要在生成脚本或 JSON 后处理中加规则，**不是**未完成的主线任务。
 
 ---
 
 ## 6. 进度记录（待办/已完成）
 
-（建议你按实际推进情况修改下面状态）
+**结论：`this.utils` 设计器补全 + 出码运行与 `@/utils` 对齐 — 主线已完成。**  
+下列未勾选项均为 **体验增强或非阻塞** 工作。
 
 任务清单：
 
-- [ ] 统计主工程 `utils/` 导出工具清单（产出字段见第 2 节）
-- [ ] 定义 `completion-utils.json` 的 schema（version、keywords、snippets 等）
-- [ ] 定义插件注入全局变量字段命名（如 `window.TINY_COMPLETION_CONFIG`）
-- [ ] 插件读取清单并注入设计器（只传数据，不做运行时强耦合）
-- [ ] 设计器读取注入配置并合并到 completion（关键字 + snippets）
-- [ ] 验证：在 Script JS 编辑器中触发 `this.` 与 `this.utils.` 提示
-- [ ] 验证：片段 snippet 插入是否正确（缩进/占位符/可重复性）
-- [ ] 验证：提示文档与参数签名是否准确
+- [x] 统计/生成主工程 `utils` 补全数据（以 `src/utils/index.ts` 为入口扫描，产出 `completion-utils.json`）
+- [x] 定义 `completion-utils.json` 的 schema（`version` + `namespaces.<ns>.members[]`，含 `name/detail/signature`）
+- [x] 约定注入全局变量 `window.TINY_COMPLETION_CONFIG`（由 fetch 或插件预注入）
+- [x] 设计器读取注入配置并合并到 completion（二级 `this.<namespace>.` + 动态 utils）
+- [x] 验证：Script / Page JS 编辑器中 `this.utils.` 二级提示与来源文案（Monaco `description`）
+- [x] 主工程运行时 `this.utils` 与 `@/utils` 对齐（`lowcode-utils` 生成 `utils.js` + `lowcode.js` default 读取）
+- [ ] 验证：片段 snippet 若后续扩展，插入缩进与占位符（当前主线为关键字/二级成员）
+- [ ] 可选：用 TS Compiler API 提升补全成员与运行态导出集合的完全一致率
 
 ---
 
 ## 7. 问题清单（记录疑问与经验）
 
-待记录的问题：
+已澄清或部分澄清：
 
-- 需要在设计器里支持哪些命名空间风格（`this.api.xxx`、`this.utils.xxx`、还是扁平 key）？
-- 对于强依赖运行态注入的工具，提示应该如何标注，是否需要降级策略？
-- snippets 是否要按“场景编辑器”区分（Script/生命周期/变量表达式）？
-- 如果主工程工具命名变更，如何通过版本号保证兼容与回滚？
+- **命名空间**：低码事件体统一使用 **`this.utils.xxx`**（与 `lowcodeWrap` 注入一致）；**`this.http`** 单独注入，不在 `utils.js` 内。
+- **提示与运行态**：采用 **口径1**（§9.1）；`this.utils` 与 `@/utils` 同源后，「能提示」与「能调用」在成员存在性上对齐；个别 API 在浏览器侧 `reject` 属主工程既有行为。
+- **主工程 `utils-*.json`**：可不再维护；真源为 **`src/utils/index.ts` + `@/utils` 聚合**。
+
+仍可按项目需要讨论：
+
+- snippets 是否按 Script / 表达式等场景拆分加载；
+- 版本号与回滚策略在 CI 中的门禁。
 
 ---
 
-## 8. 后续增强方向
+## 8. 后续增强方向（可选，不影响主线闭环）
 
-- 自动化生成清单：从主工程 TS AST/类型生成候选条目，再叠加白名单/重命名策略。
-- 分级加载：按需要在打开特定编辑器时加载对应 snippets/keywords，减少提示噪音。
-- 与物料协议联动：如果某些 runtimeScript 已存在，进一步区分 editorOnly 与 runtimeBacked。
+- **补全列表 = 运行态键全集**：用 TypeScript Compiler API 或构建产物导出表，替代当前启发式扫描（见 §6 待办）。
+- **签名与文档**：在 `members[].signature` / 文档字段中补充参数说明（扫描或手书维护）。
+- **Snippets**：try/catch、常用 `this.http` 模板等（见 §6 待办）；与 `getSnippetsSuggestions` 扩展挂钩。
+- **白名单 / 分级加载**：若提示过多，在生成阶段过滤 `namespaces.utils.members`，或按编辑器场景加载不同配置。
 
 ---
 
@@ -203,13 +110,73 @@
 - 设计器通过环境变量远程拉取该产物（与 `VITE_STYLE_BUNDLE_URLS` 类似）：
   - `VITE_COMPLETION_CONFIG_URL=<url>/completion-utils.json`
 
-### 9.5 后续批量提取 utils 的规则（必须遵守）
-- 可以用源码分析（`src/utils/**` 导出）做 signature/doc 提取与候选生成。
-- 但最终写入 `namespaces.<namespace>.members` 的集合，必须满足口径1：即“运行态实际会注入的成员交集”。
-- 对 native 依赖能力：允许 `reject` 行为存在；但不允许“提示了不存在的成员”。
+### 9.5 成员集合与口径1
+- **运行态 `this.utils`**：与 **`import * from '@/utils'`** 一致，故「实际可调用集合」由主工程 barrel 决定，**不要求**再手工维护一份「待提取关键字表」才能完成闭环。
+- **设计器补全列表**：由 `src/utils/index.ts` 扫描生成，可能 **少于** 运行态全部键（见 §10.2）；这不违反口径1（未提示的成员仍可在运行态存在），若需列表与键集合完全一致，属 **§6 / §8** 的可选增强（TS API）。
+- 对 native 依赖能力：允许 `reject`；不允许提示 **运行态不存在** 的 `this.utils` 成员（与手写 `undefined is not a function` 一致）。
 
 ---
 
-文档维护者：开发团队
-最后更新：2026-03-30
+## 10. 已落地成果与经验总结（2026-04）
+
+本节汇总当前已实现链路、文件位置与踩坑经验，便于新成员接手与排障。
+
+### 10.1 主工程：`lowcode-utils` 与运行时 `this.utils`
+
+- **独立目录**：主工程根下 `lowcode-utils/`，角色对齐 `lowcode-styles/`（单独构建、可版本化、可静态 serve）。
+- **构建命令**：`pnpm run build:lowcode-utils`；物料链路 `build:designer-materials` 末尾会执行同一脚本。
+- **产物目录**：默认 `dist/lowcode-utils/`，包含：
+  - `completion-utils.json`：供设计器 Monaco 二级补全；
+  - `utils.js`：供出码运行态 `import.meta.glob` 命中后注入 `this.utils`；
+  - `manifest.resolved.json`：本次构建路径快照（排查用）。
+- **`manifest.json`（`lowcode-utils/manifest.json`）**：
+  - `copyUtilJsTargets`：生成后将 `utils.js` 复制到的路径（相对仓库根），默认可为 `src/lowcode/common/extensions/utils.js`；
+  - `outputs.distDir`：产物目录；
+  - 可用环境变量 **`LOWCODE_UTILS_MANIFEST`** 指向另一份 manifest（多应用/多环境）。
+- **运行时契约（与手写一致）**：`utils.js` **不再**从 `utils-*.json` 拼 npm/内联函数，而是固定为：
+  - `import * as utils from '@/utils'`
+  - `export default utils`
+  因此 **`this.utils.xxx` 与手写页面 `import { xxx } from '@/utils'` 使用同一套导出**。`src/lowcode/common/extensions/utils-*.json` 若仅为历史演示，**可删除**；构建**不读取**它们。
+- **`lowcode.js` 注意点**：聚合模块需使用 **`utilsModule.default ?? utilsModule`** 读取 ESM 的 `default export`，否则 `this.utils` 可能不是 plain object。
+
+### 10.2 `completion-utils.json` 的生成规则（成员与 `detail` 文案）
+
+- **扫描入口**：`src/utils/index.ts`，按行解析 `export * from './…'`、`export { … } from '…'`、`export * from '包名'`。
+- **`members[].detail`（来源提示）**：与 index 上 **该条 export 的 `from` 展示名** 一致，例如：
+  - `./mrBox` → `mrBox`；
+  - `./formatDate` → `formatDate`；
+  - `@mr/shared-utils` → `@mr/shared-utils`；
+  - `lodash-es` → `lodash-es`。
+- **子目录再导出**：从 index 进入 `export * from './dialog'` 后，其下 `toast/alert/...` 等再导出链上的符号，**仍沿用** `dialog` 作为 `detail`（表示「从 index 看出去的第一段」）。
+- **同文件再导出**：支持 `export { mrBox };` 等形式，避免漏掉仅有花括号导出的符号。
+- **外部包 `export *`**：尝试读 `node_modules` 包入口 `types` 对应 `.d.ts` 做粗解析；**补全列表可能仍少于**真实 `import * from '@/utils'` 的全部键（复杂再导出、`.vue` 路径等）。**运行态**仍以整包 `@/utils` 为准，不受扫描完备性影响。
+- **与 `this.http` 的关系**：`http` 仍在 `lowcode.js` 单独注入；`completion-utils.json` 中保留 `namespaces.http.members`（如 get/post/put/delete）仅供补全，与 `utils` 分离。
+
+### 10.3 设计器：`VITE_COMPLETION_CONFIG_URL` 与 Monaco 展示
+
+- **拉取配置**：`designer-demo` 中 `src/composable/completion.ts` 在补全前 `await ensureCompletionUtilsConfigLoaded()`：若尚无 `window.TINY_COMPLETION_CONFIG`，则按 **`VITE_COMPLETION_CONFIG_URL`** `fetch` JSON 并写入全局（与物料解耦，和样式 bundle URL 思路一致）。
+- **相对路径 URL**：脚本会将以 `/` 开头的 URL 补全为 `TINY_DESIGNER_ORIGIN` / `VITE_ORIGIN` / `location.origin`，避免 webview / Extension Host 下相对路径错域。
+- **二级补全合并**：`this.utils.` 时合并 **`TINY_COMPLETION_CONFIG.namespaces.utils.members`** 与 **`appSchemaState.utils`（仅 name）**；同名以注入配置为先。
+- **Monaco 0.52+ 关键经验（来源提示不显示）**：
+  - 补全列表**右侧灰字**对应 **`CompletionItemLabel.description`**，需使用  
+    `label: { label: 成员名, description: 来源文案 }`。
+  - 仅设置顶层 **`detail`** 往往只作用于**选中项下方的详情区**，不足以填满列表右侧列，容易误以为「配置没生效」。
+- **兜底**：当某成员无 `detail`（例如仅来自 schema 动态列表）时，`utils` 命名空间下 **`description` 使用 `@/utils`**，其它命名空间可用 `Lowcode API`，避免右侧空白。
+
+### 10.4 Page JS 面板宽度（避免补全被裁切）
+
+- **文件**：`designer-demo/src/plugins/script/Main.vue` 中 **`.plugin-page-js-container`**。
+- **经验**：曾用 `500px !important` 三向锁死宽度，覆盖 `registry` 里 `engine.plugins.customScript` 的 `width: 800`，导致 Monaco 补全列表过窄、右侧说明被裁成「Low…」或看似空白。
+- **建议**：与 registry 默认对齐 **`width: 800px`**，设合理 **`min-width` / `max-width`**（如 `min(1200px, 55vw)`），并与 **`widthResizable: true`** 配合；**避免**对 `.suggest-widget` 使用 `min-width: 100%` 等易破坏内部布局的覆盖。
+
+### 10.5 联调检查清单
+
+1. 浏览器 **Network** 能成功请求 **`completion-utils.json`**（注意 Extension Host / webview 的 origin 与端口）。
+2. 设计器 **`this.utils.`** 列表右侧出现 **`detail` 对应文案**（如 `media`、`account`、`@mr/shared-utils`）。
+3. 主工程出码页 **`Object.keys(this.utils || {})`** 非空，且调用行为与手写引用 `@/utils` 一致。
+
+---
+
+文档维护者：开发团队  
+最后更新：2026-04-03（修订：精简 §1–§5、明确 utils 主线已闭环与可选增强）
 
