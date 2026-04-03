@@ -127,11 +127,11 @@
 
 **设计器侧处理（designer-demo）**
 
-| 环节 | 说明 |
-| ---- | ---- |
-| **同步规则** | `slotChildrenPropsSync.ts`：`syncSlotStringChildrenWithPropsChildren` 在 **`schema.children`（字符串）与 `props.children`（及误配的 `props.text`）之间做对齐**，与 MrTitle 同类问题一致。 |
-| **选中即生效** | `patchPropertiesGetProps.ts`：在应用 **`getProps` → `mergeProps` 之前** 调用上述同步（在 `main.ts` 的 `appCreated` 里安装补丁）。这样**第一次选中**即可在面板看到文案。 |
-| **保存/预览** | `useMaterial.ts` 中 `patchSchemaWithMaterialDefaults` 对整棵树调用同一同步，保证落盘与出码前节点上字段一致。 |
+| 环节           | 说明                                                                                                                                                                                      |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **同步规则**   | `slotChildrenPropsSync.ts`：`syncSlotStringChildrenWithPropsChildren` 在 **`schema.children`（字符串）与 `props.children`（及误配的 `props.text`）之间做对齐**，与 MrTitle 同类问题一致。 |
+| **选中即生效** | `patchPropertiesGetProps.ts`：在应用 **`getProps` → `mergeProps` 之前** 调用上述同步（在 `main.ts` 的 `appCreated` 里安装补丁）。这样**第一次选中**即可在面板看到文案。                   |
+| **保存/预览**  | `useMaterial.ts` 中 `patchSchemaWithMaterialDefaults` 对整棵树调用同一同步，保证落盘与出码前节点上字段一致。                                                                              |
 
 **结论**
 
@@ -158,7 +158,7 @@
 
 -   **整段拖拽**推荐 snippet（MrHeader 内已含 MrToolbar、MrBackButton、MrTitle 等）时，子节点 **MrBackButton** 的「Default Href」常为 **`javascript:void(0)`**，画布返回箭头与出码正常。
 -   **先拖 MrHeader，清空子节点，再逐个拖入** MrToolbar、MrBackButton、MrTitle 时，**单独拖入的 MrBackButton** 面板上 **Default Href 为空**；画布上可能缺少返回箭头，**出码后** `ion-back-button` 也可能因缺少有效 `default-href` 而不显示。
-    
+
 **补测结论**：在完成 `defaultHref` 补全与相关修补后，上述“清空后逐个拖入”流程已验证可用，推荐仍以该结构组装 Header。
 
 **原因**

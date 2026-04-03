@@ -257,5 +257,4 @@ export default {
 :deep(.monaco-editor .editorPlaceholder) {
     font-size: 12px !important;
 }
-
 </style>

@@ -10,7 +10,7 @@
  *
  */
 
-/* eslint-disable import/exports-last, import/order, max-lines, @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/no-inferrable-types, @typescript-eslint/prefer-optional-chain, no-param-reassign, @typescript-eslint/init-declarations, @typescript-eslint/no-confusing-void-expression, @typescript-eslint/no-shadow, @typescript-eslint/naming-convention, no-undef-init, no-else-return, @typescript-eslint/no-misused-promises, no-console, @typescript-eslint/prefer-destructuring */
+/* eslint-disable import/exports-last, import/order, max-lines, max-depth, @typescript-eslint/no-explicit-any, no-inline-comments, line-comment-position, @typescript-eslint/no-inferrable-types, @typescript-eslint/prefer-optional-chain, no-param-reassign, @typescript-eslint/init-declarations, @typescript-eslint/no-confusing-void-expression, @typescript-eslint/no-shadow, @typescript-eslint/naming-convention, no-undef-init, no-else-return, @typescript-eslint/no-misused-promises, no-console, @typescript-eslint/prefer-destructuring */
 import { reactive, toRaw, nextTick, shallowReactive } from 'vue';
 import {
     addScript as appendScript,
@@ -1187,7 +1187,9 @@ export const onMouseUp = () => {
 
                 let i = 1;
                 let stateKey = `mrSwitch${i}`;
-                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                while (
+                    Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                ) {
                     i += 1;
                     stateKey = `mrSwitch${i}`;
                 }
@@ -1222,7 +1224,9 @@ export const onMouseUp = () => {
 
                 let i = 1;
                 let stateKey = `mrToggle${i}`;
-                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                while (
+                    Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                ) {
                     i += 1;
                     stateKey = `mrToggle${i}`;
                 }
@@ -1257,7 +1261,9 @@ export const onMouseUp = () => {
 
                 let i = 1;
                 let stateKey = `mrForm${i}`;
-                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                while (
+                    Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                ) {
                     i += 1;
                     stateKey = `mrForm${i}`;
                 }
@@ -1265,10 +1271,14 @@ export const onMouseUp = () => {
                 const formState: Record<string, unknown> = {};
                 if (Array.isArray(insertData.children)) {
                     insertData.children.forEach((child: any, idx: number) => {
-                        if (child?.componentName !== 'MpInput' && child?.componentName !== 'MrField')
+                        if (
+                            child?.componentName !== 'MpInput' &&
+                            child?.componentName !== 'MrField'
+                        )
                             return;
                         const fieldName =
-                            typeof child?.props?.name === 'string' && child.props.name.trim()
+                            typeof child?.props?.name === 'string' &&
+                            child.props.name.trim()
                                 ? child.props.name.trim()
                                 : `field${idx + 1}`;
                         formState[fieldName] = child?.props?.modelValue ?? '';
@@ -1299,9 +1309,9 @@ export const onMouseUp = () => {
                             'function onDemoFormRecalculateSubmit(value) {\n' +
                             '  var key = this.state.demoFormTargetKey;\n' +
                             '  var form = key && this.state[key] ? this.state[key] : {};\n' +
-                            '  var fullName = String(form.fullName != null ? form.fullName : \'\').trim();\n' +
-                            '  var email = String(form.email != null ? form.email : \'\').trim();\n' +
-                            '  var amount = String(form.amount != null ? form.amount : \'\').trim();\n' +
+                            "  var fullName = String(form.fullName != null ? form.fullName : '').trim();\n" +
+                            "  var email = String(form.email != null ? form.email : '').trim();\n" +
+                            "  var amount = String(form.amount != null ? form.amount : '').trim();\n" +
                             '  var emailOk = email.length > 0 && /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n' +
                             '  this.state.formDemoSubmitEnabled = !!(fullName && emailOk && amount);\n' +
                             '}\n'
@@ -1337,7 +1347,9 @@ export const onMouseUp = () => {
 
                 let i = 1;
                 let stateKey = `mrCollapse${i}`;
-                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                while (
+                    Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                ) {
                     i += 1;
                     stateKey = `mrCollapse${i}`;
                 }
@@ -1348,8 +1360,18 @@ export const onMouseUp = () => {
                     ? insertData.props.modelValue
                     : ['0'];
                 stateObj[listStateKey] = [
-                    { id: '1', title: 'Item 1', value: 'Value 1', content: 'Content 1' },
-                    { id: '2', title: 'Item 2', value: 'Value 2', content: 'Content 2' }
+                    {
+                        id: '1',
+                        title: 'Item 1',
+                        value: 'Value 1',
+                        content: 'Content 1'
+                    },
+                    {
+                        id: '2',
+                        title: 'Item 2',
+                        value: 'Value 2',
+                        content: 'Content 2'
+                    }
                 ];
                 updateSchema({ state: stateObj });
 
@@ -1364,7 +1386,10 @@ export const onMouseUp = () => {
                 const firstChild = Array.isArray(insertData.children)
                     ? insertData.children[0]
                     : undefined;
-                if (firstChild && firstChild.componentName === 'MrCollapseItem') {
+                if (
+                    firstChild &&
+                    firstChild.componentName === 'MrCollapseItem'
+                ) {
                     firstChild.loop = {
                         type: 'JSExpression',
                         value: `this.state.${listStateKey}`
@@ -1387,7 +1412,10 @@ export const onMouseUp = () => {
                         type: 'JSExpression',
                         value: 'item.value'
                     };
-                    if (Array.isArray(firstChild.children) && firstChild.children[0]) {
+                    if (
+                        Array.isArray(firstChild.children) &&
+                        firstChild.children[0]
+                    ) {
                         const textNode = firstChild.children[0];
                         if (textNode.componentName === 'Text') {
                             textNode.props = textNode.props || {};
@@ -1416,13 +1444,17 @@ export const onMouseUp = () => {
 
                 let i = 1;
                 let stateKey = `mrRadioGroup${i}`;
-                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                while (
+                    Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                ) {
                     i += 1;
                     stateKey = `mrRadioGroup${i}`;
                 }
 
                 const firstRadioName = Array.isArray(insertData.children)
-                    ? insertData.children.find((child: any) => child?.componentName === 'MrRadio')?.props?.name
+                    ? insertData.children.find(
+                          (child: any) => child?.componentName === 'MrRadio'
+                      )?.props?.name
                     : undefined;
                 stateObj[stateKey] = firstRadioName ?? '';
                 updateSchema({ state: stateObj });
@@ -1451,7 +1483,9 @@ export const onMouseUp = () => {
 
                 let i = 1;
                 let stateKey = `mrCheckboxGroup${i}`;
-                while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                while (
+                    Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                ) {
                     i += 1;
                     stateKey = `mrCheckboxGroup${i}`;
                 }

@@ -5,17 +5,25 @@ type StyleBundleManifest = {
     tokens?: string[];
     overrides?: string[];
     themes?: Record<string, string>;
-    utilities?: { mode?: 'runtime' | 'prebuilt'; css?: string; runtimeScript?: string };
+    utilities?: {
+        mode?: 'runtime' | 'prebuilt';
+        css?: string;
+        runtimeScript?: string;
+    };
+};
+
+type ScriptDep = {
+    package?: string;
+    script?: string;
+    css?: string;
+    [k: string]: unknown;
 };
 
 type CanvasDeps = {
-    scripts?: Array<{
-        package?: string;
-        script?: string;
-        css?: string;
-        [k: string]: unknown;
-    }>;
+    scripts?: ScriptDep[];
     styles?: string[] | Set<string>;
+    /** 已由样式 bundle 增强过，避免 init_canvas_deps 循环 publish */
+    styleBundleAugmented?: boolean;
     [k: string]: unknown;
 };
 
@@ -68,7 +76,9 @@ function toAbsoluteStyleBundleUrl(url: string): string {
     // 这里优先使用插件/宿主注入的 HTTP origin。
     const httpOrigin = getDesignerHttpOrigin();
     if (httpOrigin) {
-        return url.startsWith('/') ? `${httpOrigin}${url}` : `${httpOrigin}/${url}`;
+        return url.startsWith('/')
+            ? `${httpOrigin}${url}`
+            : `${httpOrigin}/${url}`;
     }
 
     // 非 VSCode 环境：直接使用浏览器 origin（通常是 http://localhost:xxxx）
@@ -77,7 +87,10 @@ function toAbsoluteStyleBundleUrl(url: string): string {
 }
 
 function getStyleBundleUrls(): string[] {
-    const fromConfig = (getMergeMeta('engine.config') as any)?.styleBundles || [];
+    const engineCfg = getMergeMeta('engine.config') as
+        | { styleBundles?: unknown }
+        | undefined;
+    const fromConfig = engineCfg?.styleBundles ?? [];
     const configUrls = (Array.isArray(fromConfig) ? fromConfig : [fromConfig])
         .map((u: unknown) =>
             typeof u === 'string' ? u : (u as { url?: string })?.url
@@ -112,8 +125,11 @@ async function fetchStyleManifests(): Promise<
     Array<{ url: string; base: string; manifest: StyleBundleManifest }>
 > {
     const urls = getStyleBundleUrls();
-    const out: Array<{ url: string; base: string; manifest: StyleBundleManifest }> =
-        [];
+    const out: Array<{
+        url: string;
+        base: string;
+        manifest: StyleBundleManifest;
+    }> = [];
     for (const u of urls) {
         try {
             const absoluteUrl = toAbsoluteStyleBundleUrl(u);
@@ -141,23 +157,35 @@ function pickThemeCss(
 ): string[] {
     const themes = manifest.themes || {};
     if (!themes || typeof themes !== 'object') return [];
-    const key = theme && themes[theme] ? theme : themes['default-light'] ? 'default-light' : '';
+    const key =
+        theme && themes[theme]
+            ? theme
+            : themes['default-light']
+            ? 'default-light'
+            : '';
     const css = key ? themes[key] : '';
     return css ? [resolveUrl(css, base)] : [];
 }
 
 function manifestsToDeps(
-    manifests: Array<{ url: string; base: string; manifest: StyleBundleManifest }>,
+    manifests: Array<{
+        url: string;
+        base: string;
+        manifest: StyleBundleManifest;
+    }>,
     theme?: string
-): { styles: string[]; scripts: CanvasDeps['scripts'] } {
+): { styles: string[]; scripts: ScriptDep[] } {
     const styles: string[] = [];
-    const scripts: NonNullable<CanvasDeps['scripts']> = [];
+    const scripts: ScriptDep[] = [];
 
     for (const { base, manifest } of manifests) {
         const tokens = Array.isArray(manifest.tokens) ? manifest.tokens : [];
-        const overrides = Array.isArray(manifest.overrides) ? manifest.overrides : [];
+        const overrides = Array.isArray(manifest.overrides)
+            ? manifest.overrides
+            : [];
         for (const css of [...tokens, ...overrides]) {
-            if (typeof css === 'string' && css) styles.push(resolveUrl(css, base));
+            if (typeof css === 'string' && css)
+                styles.push(resolveUrl(css, base));
         }
         pickThemeCss(manifest, base, theme).forEach(s => styles.push(s));
 
@@ -166,7 +194,11 @@ function manifestsToDeps(
             if (typeof util.css === 'string' && util.css) {
                 styles.push(resolveUrl(util.css, base));
             }
-            if (util.mode === 'runtime' && typeof util.runtimeScript === 'string' && util.runtimeScript) {
+            if (
+                util.mode === 'runtime' &&
+                typeof util.runtimeScript === 'string' &&
+                util.runtimeScript
+            ) {
                 scripts.push({
                     package: '@local/unocss-runtime',
                     script: resolveUrl(util.runtimeScript, base)
@@ -186,10 +218,12 @@ export function setupStyleBundleDepsAugmenter(
     }) => void,
     publish: (opts: { topic: string; data: unknown }) => void
 ) {
-    let extra: { styles: string[]; scripts: CanvasDeps['scripts'] } | null = null;
+    let extra: { styles: string[]; scripts: ScriptDep[] } | null = null;
     let loading: Promise<void> | null = null;
     let lastPublishedSignature: string | null = null;
     let appliedToMaterialsDeps = false;
+
+    type ScriptDepItem = NonNullable<CanvasDeps['scripts']>[number];
 
     const applyExtraToMaterialsDeps = () => {
         if (!extra) return false;
@@ -205,16 +239,20 @@ export function setupStyleBundleDepsAugmenter(
         }
         deps.styles = stylesSet;
 
-        const scriptsArr = Array.isArray(deps.scripts) ? deps.scripts : [];
-        const extraScripts = Array.isArray(extra.scripts) ? extra.scripts : [];
+        const scriptsArr: ScriptDepItem[] = Array.isArray(deps.scripts)
+            ? deps.scripts
+            : [];
+        const extraScripts: ScriptDepItem[] = Array.isArray(extra.scripts)
+            ? extra.scripts
+            : [];
         for (const s of extraScripts) {
-            const key = (s as any)?.package || (s as any)?.script;
+            const key = s.package || s.script;
             if (!key) continue;
             const exists = scriptsArr.some(
-                (x: any) => (x?.package || x?.script) === key
+                x => (x?.package || x?.script) === key
             );
             if (!exists) {
-                scriptsArr.push(s as any);
+                scriptsArr.push(s);
                 changed = true;
             }
         }
@@ -255,10 +293,14 @@ export function setupStyleBundleDepsAugmenter(
         subscriber: 'designer-demo.style-bundle-deps-augmenter',
         callback: data => {
             const deps = (data || {}) as CanvasDeps;
-            if ((deps as any).__styleBundleAugmented) return;
+            if (deps.styleBundleAugmented) return;
             // 先异步确保加载；加载完成后会再次触发 publish（通过本次回调的重入）
             ensureLoaded().then(() => {
-                if (!extra || (extra.styles.length === 0 && !(extra.scripts || []).length)) return;
+                if (
+                    !extra ||
+                    (extra.styles.length === 0 && !(extra.scripts || []).length)
+                )
+                    return;
                 // 确保源数据已包含（即使画布丢弃了消息层字段，下一次 getCanvasDeps 也会带上）
                 try {
                     applyExtraToMaterialsDeps();
@@ -273,20 +315,28 @@ export function setupStyleBundleDepsAugmenter(
                     s => typeof s === 'string'
                 ) as string[];
                 const baseStyleSet = new Set(baseStyleList);
-                const missingStyles = extra.styles.filter(s => !baseStyleSet.has(s));
+                const missingStyles = extra.styles.filter(
+                    s => !baseStyleSet.has(s)
+                );
                 const mergedStyles =
                     missingStyles.length > 0
                         ? uniqStrings([...baseStyleList, ...missingStyles])
                         : baseStyleList;
 
-                const baseScripts = Array.isArray(deps.scripts) ? deps.scripts : [];
-                const extraScripts = Array.isArray(extra.scripts) ? extra.scripts : [];
+                const baseScripts = Array.isArray(deps.scripts)
+                    ? deps.scripts
+                    : [];
+                const extraScripts = Array.isArray(extra.scripts)
+                    ? extra.scripts
+                    : [];
                 const mergedScripts = [...baseScripts];
                 let addedScript = false;
                 for (const s of extraScripts) {
                     const key = s?.package || s?.script;
                     if (!key) continue;
-                    const exists = mergedScripts.some(x => (x.package || x.script) === key);
+                    const exists = mergedScripts.some(
+                        x => (x.package || x.script) === key
+                    );
                     if (!exists) {
                         mergedScripts.push(s);
                         addedScript = true;
@@ -300,7 +350,7 @@ export function setupStyleBundleDepsAugmenter(
                     ...deps,
                     scripts: mergedScripts,
                     styles: mergedStyles,
-                    __styleBundleAugmented: true
+                    styleBundleAugmented: true
                 };
                 const signature = JSON.stringify({
                     s: mergedStyles,
@@ -313,4 +363,3 @@ export function setupStyleBundleDepsAugmenter(
         }
     });
 }
-

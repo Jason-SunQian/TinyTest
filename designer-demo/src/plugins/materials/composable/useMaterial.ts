@@ -1434,27 +1434,38 @@ const patchSchemaWithMaterialDefaults = (
     // MrForm：给 MpInput 子项自动补 this.state.xxx.yyy 绑定，避免输入值在重渲染时丢失
     if (componentName === 'MrForm') {
         const MR_FORM_FIELD_EXPR = /^this\.state\.(mrForm\d+)\.(.+)$/;
-        const children = schema.children as Array<Record<string, unknown>> | undefined;
+        const children = schema.children as
+            | Array<Record<string, unknown>>
+            | undefined;
+
+        const getStateKeyFromChild = (
+            ch: Record<string, unknown>
+        ): string | null => {
+            const component = ch?.componentName;
+            if (component !== 'MpInput' && component !== 'MrField') return null;
+
+            const mv = (ch.props as Record<string, unknown> | undefined)
+                ?.modelValue as Record<string, unknown> | undefined;
+            if (!mv || typeof mv !== 'object') return null;
+            if (mv.type !== 'JSExpression') return null;
+
+            const { value } = mv as Record<string, unknown>;
+            if (typeof value !== 'string') return null;
+
+            const m = MR_FORM_FIELD_EXPR.exec(value.trim());
+            const [, candidate] = m ?? [];
+            return typeof candidate === 'string' && candidate
+                ? candidate
+                : null;
+        };
 
         let stateKey: string | null = null;
         if (Array.isArray(children)) {
             for (const ch of children) {
-                if (ch?.componentName !== 'MpInput' && ch?.componentName !== 'MrField')
-                    continue;
-                const mv = (ch.props as Record<string, unknown> | undefined)?.modelValue as
-                    | Record<string, unknown>
-                    | undefined;
-                if (
-                    mv &&
-                    typeof mv === 'object' &&
-                    mv.type === 'JSExpression' &&
-                    typeof mv.value === 'string'
-                ) {
-                    const m = mv.value.trim().match(MR_FORM_FIELD_EXPR);
-                    if (m) {
-                        stateKey = m[1];
-                        break;
-                    }
+                const candidate = getStateKeyFromChild(ch);
+                if (candidate) {
+                    stateKey = candidate;
+                    break;
                 }
             }
         }
@@ -1478,12 +1489,17 @@ const patchSchemaWithMaterialDefaults = (
         let touched = false;
         if (Array.isArray(children)) {
             children.forEach((child, idx) => {
-                if (child?.componentName !== 'MpInput' && child?.componentName !== 'MrField')
+                if (
+                    child?.componentName !== 'MpInput' &&
+                    child?.componentName !== 'MrField'
+                )
                     return;
-                const childProps = (child.props as Record<string, unknown>) || {};
+                const childProps =
+                    (child.props as Record<string, unknown>) || {};
                 if (!child.props) child.props = childProps;
                 const fieldName =
-                    typeof childProps.name === 'string' && childProps.name.trim()
+                    typeof childProps.name === 'string' &&
+                    childProps.name.trim()
                         ? childProps.name.trim()
                         : `field${idx + 1}`;
                 const mv = childProps.modelValue;
@@ -1502,8 +1518,13 @@ const patchSchemaWithMaterialDefaults = (
                         formState[fieldName] =
                             mv === undefined || mv === null ? '' : mv;
                     }
-                } else if (!(fieldName in formState)) {
-                    formState[fieldName] = '';
+                }
+                if (!(fieldName in formState)) {
+                    formState[fieldName] = isExpr
+                        ? ''
+                        : mv === undefined || mv === null
+                        ? ''
+                        : mv;
                 }
             });
         }
@@ -1512,7 +1533,10 @@ const patchSchemaWithMaterialDefaults = (
         }
         // @complete 演示：指回当前表单 state key，并提供提交开关/上次提交结果占位
         if (stateKey) {
-            if (rootState.demoFormTargetKey === undefined || rootState.demoFormTargetKey === '') {
+            if (
+                rootState.demoFormTargetKey === undefined ||
+                rootState.demoFormTargetKey === ''
+            ) {
                 rootState.demoFormTargetKey = stateKey;
             }
             if (rootState.formDemoSubmitEnabled === undefined) {

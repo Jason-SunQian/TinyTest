@@ -14,7 +14,10 @@ export const syncSlotStringChildrenWithPropsChildren = (
     options?: { setProp?: (name: string, value: unknown) => void }
 ): void => {
     const componentName = schema.componentName as string | undefined;
-    if (!componentName || !COMPONENTS_SLOT_TEXT_BINDS_TO_PROPS_CHILDREN.has(componentName)) {
+    if (
+        !componentName ||
+        !COMPONENTS_SLOT_TEXT_BINDS_TO_PROPS_CHILDREN.has(componentName)
+    ) {
         return;
     }
     const props = (schema.props as Record<string, unknown>) || {};

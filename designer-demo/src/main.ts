@@ -2,6 +2,7 @@
  * 迁移自 src/main.js，无类型改动，保持行为一致
  */
 import type { App } from 'vue';
+
 import { DEFAULT_LANGUAGE } from '@/config/languages';
 
 import { configurators } from './configurators';
@@ -72,20 +73,27 @@ async function startApp() {
                 );
                 const msg = useMessage();
                 setupCanvasDepsNormalizer(
-                    opts => { msg.subscribe(opts); },
-                    opts => { msg.publish(opts); }
+                    opts => {
+                        msg.subscribe(opts);
+                    },
+                    opts => {
+                        msg.publish(opts);
+                    }
                 );
                 // 订阅 init_canvas_deps，合并主工程公共样式（token/主题/UnoCSS utilities 等）
                 const { setupStyleBundleDepsAugmenter } = await import(
                     '@/composable/styleBundleDeps'
                 );
                 setupStyleBundleDepsAugmenter(
-                    opts => { msg.subscribe(opts); },
-                    opts => { msg.publish(opts); }
+                    opts => {
+                        msg.subscribe(opts);
+                    },
+                    opts => {
+                        msg.publish(opts);
+                    }
                 );
-                const { patchPropertiesGetPropsForSlotChildrenSync } = await import(
-                    '@/composable/patchPropertiesGetProps'
-                );
+                const { patchPropertiesGetPropsForSlotChildrenSync } =
+                    await import('@/composable/patchPropertiesGetProps');
                 patchPropertiesGetPropsForSlotChildrenSync();
             }
         }

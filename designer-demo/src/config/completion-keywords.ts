@@ -15,7 +15,7 @@
  * 扩展的关键字列表
  * 这些关键字会在代码提示中显示为 this.xxx 的形式
  */
-export const customKeywords = [
+const customKeywords = [
     // 项目特定的关键字
     // HTTP 请求工具，如 this.http.post(), this.http.get()
     'http',
@@ -26,7 +26,7 @@ export const customKeywords = [
 /**
  * completion-utils 配置中“二级成员”定义
  */
-export interface CompletionMemberDefinition {
+interface CompletionMemberDefinition {
     name: string;
     detail?: string;
     signature?: string;
@@ -50,25 +50,34 @@ type TinyCompletionConfigV2 = {
  * - v2：TINY_COMPLETION_CONFIG.namespaces[namespace].members
  * - v1：TINY_COMPLETION_CONFIG[namespace].members
  */
-export const getInjectedNamespaceMembers = (
+const getInjectedNamespaceMembers = (
     namespace: string
 ): CompletionMemberDefinition[] => {
     if (!namespace || typeof window === 'undefined') return [];
 
-    const cfg = (window as unknown as {
-        TINY_COMPLETION_CONFIG?: TinyCompletionConfigV2;
-    }).TINY_COMPLETION_CONFIG;
+    /* eslint-disable @typescript-eslint/naming-convention -- window 注入键名 */
+    const cfg = (
+        window as unknown as {
+            TINY_COMPLETION_CONFIG?: TinyCompletionConfigV2;
+        }
+    ).TINY_COMPLETION_CONFIG;
+    /* eslint-enable @typescript-eslint/naming-convention */
 
     if (!cfg || typeof cfg !== 'object') return [];
 
     const fromNamespaces = cfg.namespaces?.[namespace]?.members;
     if (Array.isArray(fromNamespaces) && fromNamespaces.length) {
-        return fromNamespaces.filter(m => typeof m?.name === 'string') as CompletionMemberDefinition[];
+        return fromNamespaces.filter(
+            m => typeof m?.name === 'string'
+        ) as CompletionMemberDefinition[];
     }
 
-    const fromLegacy = (cfg as any)?.[namespace]?.members;
+    const legacyNs = cfg[namespace] as { members?: unknown } | undefined;
+    const fromLegacy = legacyNs?.members;
     if (Array.isArray(fromLegacy) && fromLegacy.length) {
-        return fromLegacy.filter(m => typeof m?.name === 'string') as CompletionMemberDefinition[];
+        return fromLegacy.filter(
+            m => typeof m?.name === 'string'
+        ) as CompletionMemberDefinition[];
     }
 
     return [];
@@ -78,7 +87,7 @@ export const getInjectedNamespaceMembers = (
  * 获取所有关键字（包括原始关键字和自定义关键字）
  * 如果需要添加更多关键字，可以在这里扩展
  */
-export const getAllKeywords = () => {
+const getAllKeywords = () => {
     // 原始关键字（来自 packages/common/js/completion.js）
     const originalKeywords = [
         'state',
@@ -99,3 +108,6 @@ export const getAllKeywords = () => {
     // 合并原始关键字和自定义关键字，去重
     return [...new Set([...originalKeywords, ...customKeywords])];
 };
+
+export { customKeywords, getInjectedNamespaceMembers, getAllKeywords };
+export type { CompletionMemberDefinition };

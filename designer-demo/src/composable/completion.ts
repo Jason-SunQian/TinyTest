@@ -16,7 +16,11 @@ type CompletionUtilsConfig = {
     namespaces?: Record<
         string,
         {
-            members?: Array<{ name?: string; detail?: string; signature?: string }>;
+            members?: Array<{
+                name?: string;
+                detail?: string;
+                signature?: string;
+            }>;
         }
     >;
     [k: string]: unknown;
@@ -45,11 +49,14 @@ async function ensureCompletionUtilsConfigLoaded() {
         // 相对路径：尽量转成绝对路径，避免 VSCode webview origin 导致 fetch 失败
         let absoluteUrl = url;
         if (typeof url === 'string' && url.startsWith('/')) {
+            /* eslint-disable @typescript-eslint/naming-convention -- 全局变量/环境变量名保持大写下划线 */
             const win = window as Window & { TINY_DESIGNER_ORIGIN?: string };
+            type EnvWithOrigin = ImportMetaEnv & { VITE_ORIGIN?: string };
             const origin =
                 win.TINY_DESIGNER_ORIGIN ||
-                ((import.meta.env as any)?.VITE_ORIGIN as string) ||
+                (import.meta.env as EnvWithOrigin).VITE_ORIGIN ||
                 window.location.origin;
+            /* eslint-enable @typescript-eslint/naming-convention */
             absoluteUrl = `${origin.replace(/\/$/, '')}${url}`;
         }
 
@@ -281,8 +288,8 @@ const parseThisNamespaceMemberContext = (
     const m = before.match(/this\.([A-Za-z_$][\w$]*)\.(\w*)$/);
     if (!m) return null;
 
-    const namespace = m[1];
-    const prefix = m[2] || '';
+    const [, namespace, prefixGroup] = m;
+    const prefix = prefixGroup || '';
 
     return {
         namespace,
@@ -315,7 +322,10 @@ const getThisNamespaceMemberSuggestions = (
 
     const injectedMembers = getInjectedNamespaceMembers(ctx.namespace);
 
-    const byName = new Map<string, { name: string; detail?: string; signature?: string }>();
+    const byName = new Map<
+        string,
+        { name: string; detail?: string; signature?: string }
+    >();
     for (const m of injectedMembers || []) {
         if (m?.name) {
             byName.set(m.name, m as any);
@@ -333,9 +343,14 @@ const getThisNamespaceMemberSuggestions = (
 
     return {
         suggestions: members.map(m => {
-            const extra = [m.detail, m.signature].filter(Boolean).join(' ').trim();
+            const extra = [m.detail, m.signature]
+                .filter(Boolean)
+                .join(' ')
+                .trim();
             // Monaco 0.52+：列表项右侧灰字来自 CompletionItemLabel.description；顶层 detail 多在下方详情区
-            const description = extra || (ctx.namespace === 'utils' ? '@/utils' : 'Lowcode API');
+            const description =
+                extra ||
+                (ctx.namespace === 'utils' ? '@/utils' : 'Lowcode API');
             return {
                 label: { label: m.name, description },
                 kind: monaco.languages.CompletionItemKind.Method,
