@@ -202,10 +202,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 与 registry「engine.plugins.customScript」默认 width: 800 对齐；过窄会导致 Monaco 补全 detail 被裁成「Low…」 */
 .plugin-page-js-container {
-    width: 500px !important;
-    min-width: 500px !important;
-    max-width: 500px !important;
+    width: 800px !important;
+    min-width: 560px !important;
+    max-width: min(1200px, 55vw) !important;
     border-right: none;
     box-shadow: 6px 0px 3px 0px var(--te-plugin-js-panel-shadow-color);
     z-index: 999;
@@ -256,4 +257,5 @@ export default {
 :deep(.monaco-editor .editorPlaceholder) {
     font-size: 12px !important;
 }
+
 </style>

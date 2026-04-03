@@ -16,7 +16,7 @@ type CompletionUtilsConfig = {
     namespaces?: Record<
         string,
         {
-            members?: Array<{ name?: string }>;
+            members?: Array<{ name?: string; detail?: string; signature?: string }>;
         }
     >;
     [k: string]: unknown;
@@ -332,13 +332,18 @@ const getThisNamespaceMemberSuggestions = (
     );
 
     return {
-        suggestions: members.map(m => ({
-            label: m.name,
-            kind: monaco.languages.CompletionItemKind.Method,
-            insertText: m.name,
-            detail: [m.detail, m.signature].filter(Boolean).join(' '),
-            range: ctx.range
-        }))
+        suggestions: members.map(m => {
+            const extra = [m.detail, m.signature].filter(Boolean).join(' ').trim();
+            // Monaco 0.52+：列表项右侧灰字来自 CompletionItemLabel.description；顶层 detail 多在下方详情区
+            const description = extra || (ctx.namespace === 'utils' ? '@/utils' : 'Lowcode API');
+            return {
+                label: { label: m.name, description },
+                kind: monaco.languages.CompletionItemKind.Method,
+                insertText: m.name,
+                detail: extra || undefined,
+                range: ctx.range
+            };
+        })
     };
 };
 
