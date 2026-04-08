@@ -12,6 +12,8 @@ export const BASE_STYLE_CLASS_NAME = 'component-base-style';
  * Header 工具栏内子项同理：设计器拖入时若每层都带 margin，会破坏绝对定位与居中
  */
 export const COMPONENTS_SKIP_BASE_STYLE = [
+    'MpIcon',
+    'mp-icon',
     'MrSegmentButton',
     'mr-segment-button',
     'MrToolbar',

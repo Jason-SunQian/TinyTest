@@ -5,6 +5,7 @@ import { patchMrFormModelBinding } from './mrForm';
 import { patchMrRadioGroupModelBinding } from './mrRadioGroup';
 import { patchMrSwitchModelBinding } from './mrSwitch';
 import { patchMrToggleModelBinding } from './mrToggle';
+import { patchMpIconIconTagToChild } from './mpIcon';
 import { patchMpTagsModelBinding } from './mpTags';
 
 type ModelBindingPatcher = (
@@ -13,6 +14,7 @@ type ModelBindingPatcher = (
 ) => void;
 
 const PATCHERS: Record<string, ModelBindingPatcher> = {
+    MpIcon: patchMpIconIconTagToChild,
     MpTags: patchMpTagsModelBinding,
     MrSwitch: patchMrSwitchModelBinding,
     MrToggle: patchMrToggleModelBinding,
