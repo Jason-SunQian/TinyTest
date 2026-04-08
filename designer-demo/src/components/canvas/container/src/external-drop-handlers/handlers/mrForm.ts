@@ -1,6 +1,7 @@
 import type { Node } from '@/components/canvas/types';
+import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MrForm：子 MpInput/MrField 绑定到嵌套 state + 演示 methods */
 export function handleMrFormExternalDrop(
@@ -9,7 +10,7 @@ export function handleMrFormExternalDrop(
 ): void {
     const rootSchema = getSchema();
     const stateObj = getClonedPageState(getSchema);
-    const stateKey = allocateIndexedKey(stateObj, 'mrForm');
+    const stateKey = allocateIndexedStateKey(stateObj, 'mrForm');
 
     const formState: Record<string, unknown> = {};
     if (Array.isArray(insertData.children)) {

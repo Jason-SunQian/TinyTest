@@ -1,6 +1,7 @@
 import type { Node } from '@/components/canvas/types';
+import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MrSwitch：v-model 语义 + 自动创建 page state（否则画布点动回弹） */
 export function handleMrSwitchExternalDrop(
@@ -8,7 +9,7 @@ export function handleMrSwitchExternalDrop(
     { getSchema, updateSchema }: ExternalDropServices
 ): void {
     const stateObj = getClonedPageState(getSchema);
-    const stateKey = allocateIndexedKey(stateObj, 'mrSwitch');
+    const stateKey = allocateIndexedStateKey(stateObj, 'mrSwitch');
     stateObj[stateKey] =
         insertData.props?.modelValue === undefined
             ? false

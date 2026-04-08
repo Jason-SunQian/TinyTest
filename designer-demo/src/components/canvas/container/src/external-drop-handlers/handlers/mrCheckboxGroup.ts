@@ -1,6 +1,7 @@
 import type { Node } from '@/components/canvas/types';
+import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MrCheckboxGroup：v-model 绑定数组 state */
 export function handleMrCheckboxGroupExternalDrop(
@@ -8,7 +9,7 @@ export function handleMrCheckboxGroupExternalDrop(
     { getSchema, updateSchema }: ExternalDropServices
 ): void {
     const stateObj = getClonedPageState(getSchema);
-    const stateKey = allocateIndexedKey(stateObj, 'mrCheckboxGroup');
+    const stateKey = allocateIndexedStateKey(stateObj, 'mrCheckboxGroup');
 
     stateObj[stateKey] = [];
     updateSchema({ state: stateObj });

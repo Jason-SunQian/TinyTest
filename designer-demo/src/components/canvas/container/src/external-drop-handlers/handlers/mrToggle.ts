@@ -1,6 +1,7 @@
 import type { Node } from '@/components/canvas/types';
+import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MrToggle：同 MrSwitch */
 export function handleMrToggleExternalDrop(
@@ -8,7 +9,7 @@ export function handleMrToggleExternalDrop(
     { getSchema, updateSchema }: ExternalDropServices
 ): void {
     const stateObj = getClonedPageState(getSchema);
-    const stateKey = allocateIndexedKey(stateObj, 'mrToggle');
+    const stateKey = allocateIndexedStateKey(stateObj, 'mrToggle');
     stateObj[stateKey] =
         insertData.props?.modelValue === undefined
             ? false

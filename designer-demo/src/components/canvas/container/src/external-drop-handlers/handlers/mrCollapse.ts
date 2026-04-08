@@ -1,6 +1,6 @@
 import type { Node } from '@/components/canvas/types';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MrCollapse：v-model + 列表示例 state + 首个子项 loop */
 export function handleMrCollapseExternalDrop(

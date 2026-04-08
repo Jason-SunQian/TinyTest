@@ -1,3 +1,7 @@
+import {
+    allocateIndexedStateKey,
+    isModelValueJsExpression
+} from '@/composable/modelBindingShared';
 import { useCanvas } from '@opentiny/tiny-engine-meta-register';
 
 import type { SchemaNode } from './types';
@@ -29,23 +33,18 @@ function patchGenerateNodeMpTags(schema: SchemaNode): void {
                 : {};
 
         const mv = (schema.props as Record<string, unknown> | undefined)
-            ?.modelValue as Record<string, unknown> | undefined;
+            ?.modelValue;
         const mvExpr =
-            mv && mv.type === 'JSExpression' ? mv.value : undefined;
+            isModelValueJsExpression(mv)
+                ? (mv as Record<string, unknown>).value
+                : undefined;
         const m =
             typeof mvExpr === 'string'
                 ? /^this\.state\.(mpTags\d+)$/.exec(mvExpr.trim())
                 : null;
         let stateKey = m?.[1] || '';
         if (!stateKey) {
-            let i = 1;
-            stateKey = `mpTags${i}`;
-            while (
-                Object.prototype.hasOwnProperty.call(rootState, stateKey)
-            ) {
-                i += 1;
-                stateKey = `mpTags${i}`;
-            }
+            stateKey = allocateIndexedStateKey(rootState, 'mpTags');
             (schema.props as Record<string, unknown>).modelValue = {
                 type: 'JSExpression',
                 value: `this.state.${stateKey}`,

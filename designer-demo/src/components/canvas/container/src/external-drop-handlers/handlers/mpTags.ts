@@ -1,6 +1,7 @@
 import type { Node } from '@/components/canvas/types';
+import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MpTags：v-model + 拖拽即创建 state.mpTagsN（与 patch 兜底一致） */
 export function handleMpTagsExternalDrop(
@@ -20,7 +21,7 @@ export function handleMpTagsExternalDrop(
     }
 
     if (!stateKey) {
-        stateKey = allocateIndexedKey(stateObj, 'mpTags');
+        stateKey = allocateIndexedStateKey(stateObj, 'mpTags');
     }
 
     const defaultVal =

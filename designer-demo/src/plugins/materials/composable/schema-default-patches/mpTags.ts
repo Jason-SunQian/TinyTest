@@ -1,3 +1,8 @@
+import {
+    allocateIndexedStateKey,
+    isModelValueJsExpression
+} from '@/composable/modelBindingShared';
+
 import type { RootStateBag, SchemaNode } from './types';
 
 export function patchMpTagsModelBinding(
@@ -7,11 +12,7 @@ export function patchMpTagsModelBinding(
     const props = (schema.props as Record<string, unknown>) || {};
     if (!schema.props) schema.props = props;
     const mv = props.modelValue;
-    const isExpr =
-        mv &&
-        typeof mv === 'object' &&
-        (mv as Record<string, unknown>).type === 'JSExpression';
-    if (isExpr) {
+    if (isModelValueJsExpression(mv)) {
         const exprVal = (mv as Record<string, unknown>).value;
         if (typeof exprVal === 'string') {
             const m = /^this\.state\.(mpTags\d+)$/.exec(exprVal.trim());
@@ -25,13 +26,8 @@ export function patchMpTagsModelBinding(
             }
         }
     }
-    if (!isExpr) {
-        let i = 1;
-        let stateKey = `mpTags${i}`;
-        while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
-            i += 1;
-            stateKey = `mpTags${i}`;
-        }
+    if (!isModelValueJsExpression(mv)) {
+        const stateKey = allocateIndexedStateKey(rootState, 'mpTags');
         rootState[stateKey] = mv === undefined || mv === '' ? '1' : mv;
         props.modelValue = {
             type: 'JSExpression',

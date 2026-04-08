@@ -1,6 +1,7 @@
 import type { Node } from '@/components/canvas/types';
+import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
 import type { ExternalDropServices } from '../types';
-import { allocateIndexedKey, getClonedPageState } from '../utils';
+import { getClonedPageState } from '../utils';
 
 /** MrRadioGroup：v-model + 默认选中首项 name */
 export function handleMrRadioGroupExternalDrop(
@@ -8,7 +9,7 @@ export function handleMrRadioGroupExternalDrop(
     { getSchema, updateSchema }: ExternalDropServices
 ): void {
     const stateObj = getClonedPageState(getSchema);
-    const stateKey = allocateIndexedKey(stateObj, 'mrRadioGroup');
+    const stateKey = allocateIndexedStateKey(stateObj, 'mrRadioGroup');
 
     const firstRadioName = Array.isArray(insertData.children)
         ? insertData.children.find(

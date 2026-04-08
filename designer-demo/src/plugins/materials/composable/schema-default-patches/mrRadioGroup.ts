@@ -1,3 +1,8 @@
+import {
+    allocateIndexedStateKey,
+    isModelValueJsExpression
+} from '@/composable/modelBindingShared';
+
 import type { RootStateBag, SchemaNode } from './types';
 
 export function patchMrRadioGroupModelBinding(
@@ -7,17 +12,8 @@ export function patchMrRadioGroupModelBinding(
     const props = (schema.props as Record<string, unknown>) || {};
     if (!schema.props) schema.props = props;
     const mv = props.modelValue;
-    const isExpr =
-        mv &&
-        typeof mv === 'object' &&
-        (mv as Record<string, unknown>).type === 'JSExpression';
-    if (!isExpr) {
-        let i = 1;
-        let stateKey = `mrRadioGroup${i}`;
-        while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
-            i += 1;
-            stateKey = `mrRadioGroup${i}`;
-        }
+    if (!isModelValueJsExpression(mv)) {
+        const stateKey = allocateIndexedStateKey(rootState, 'mrRadioGroup');
         const children = schema.children as Array<SchemaNode> | undefined;
         const firstRadioNode = Array.isArray(children)
             ? children.find(c => c?.componentName === 'MrRadio')

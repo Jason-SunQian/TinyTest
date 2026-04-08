@@ -1,3 +1,5 @@
+import { allocateIndexedStateKey, isModelValueJsExpression } from '@/composable/modelBindingShared';
+
 import type { RootStateBag, SchemaNode } from './types';
 
 const MR_FORM_FIELD_EXPR = /^this\.state\.(mrForm\d+)\.(.+)$/;
@@ -13,9 +15,8 @@ export function patchMrFormModelBinding(
         if (component !== 'MpInput' && component !== 'MrField') return null;
 
         const mv = (ch.props as Record<string, unknown> | undefined)
-            ?.modelValue as Record<string, unknown> | undefined;
-        if (!mv || typeof mv !== 'object') return null;
-        if (mv.type !== 'JSExpression') return null;
+            ?.modelValue;
+        if (!isModelValueJsExpression(mv)) return null;
 
         const { value } = mv as Record<string, unknown>;
         if (typeof value !== 'string') return null;
@@ -36,13 +37,7 @@ export function patchMrFormModelBinding(
         }
     }
     if (!stateKey) {
-        let i = 1;
-        let k = `mrForm${i}`;
-        while (Object.prototype.hasOwnProperty.call(rootState, k)) {
-            i += 1;
-            k = `mrForm${i}`;
-        }
-        stateKey = k;
+        stateKey = allocateIndexedStateKey(rootState, 'mrForm');
     }
 
     const prevNest =
@@ -67,11 +62,7 @@ export function patchMrFormModelBinding(
                     ? childProps.name.trim()
                     : `field${idx + 1}`;
             const mv = childProps.modelValue;
-            const isExpr =
-                mv &&
-                typeof mv === 'object' &&
-                (mv as Record<string, unknown>).type === 'JSExpression';
-            if (!isExpr) {
+            if (!isModelValueJsExpression(mv)) {
                 touched = true;
                 childProps.modelValue = {
                     type: 'JSExpression',
@@ -84,7 +75,7 @@ export function patchMrFormModelBinding(
                 }
             }
             if (!(fieldName in formState)) {
-                formState[fieldName] = isExpr
+                formState[fieldName] = isModelValueJsExpression(mv)
                     ? ''
                     : mv === undefined || mv === null
                     ? ''
