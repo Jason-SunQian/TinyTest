@@ -15,6 +15,7 @@ type ModelBindingPatcher = (
 
 const PATCHERS: Record<string, ModelBindingPatcher> = {
     MpIcon: patchMpIconIconTagToChild,
+    'mp-icon': patchMpIconIconTagToChild,
     MpTags: patchMpTagsModelBinding,
     MrSwitch: patchMrSwitchModelBinding,
     MrToggle: patchMrToggleModelBinding,

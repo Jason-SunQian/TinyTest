@@ -15,10 +15,11 @@ import {
     checkIsVSCodeEnvironment
 } from './composable/useVSCodeBridge';
 import useNotifyI18n from './utils/useNotifyI18n';
+import { patchGenerateCodeServiceForMpIcon } from './composable/patchGenerateCodeService';
+import { patchCanvasGetSchemaForMpIcon } from './composable/patchCanvasGetSchema';
 
 async function startApp() {
     const registry = await import('../registry');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const engine: any = await import('@opentiny/tiny-engine');
     const { init, initHook, HOOK_NAME } = engine;
 
@@ -95,6 +96,10 @@ async function startApp() {
                 const { patchPropertiesGetPropsForSlotChildrenSync } =
                     await import('@/composable/patchPropertiesGetProps');
                 patchPropertiesGetPropsForSlotChildrenSync();
+
+                // 出码链路补丁：将 MpIcon 的 iconTag 转为 <i-*> 子节点，避免出码产生无效 iconTag 属性
+                patchGenerateCodeServiceForMpIcon();
+                patchCanvasGetSchemaForMpIcon();
             }
         }
     });
