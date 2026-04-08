@@ -1381,6 +1381,46 @@ const patchSchemaWithMaterialDefaults = (
         }
     }
 
+    // MpTags：modelValue 需具备 v-model 语义，否则出码会变成 modelValue="1" 这种常量字符串
+    if (componentName === 'MpTags') {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const isExpr =
+            mv &&
+            typeof mv === 'object' &&
+            (mv as Record<string, unknown>).type === 'JSExpression';
+        if (isExpr) {
+            const exprVal = (mv as Record<string, unknown>).value;
+            if (typeof exprVal === 'string') {
+                const m = /^this\.state\.(mpTags\d+)$/.exec(exprVal.trim());
+                const [, stateKey] = m ?? [];
+                if (
+                    typeof stateKey === 'string' &&
+                    stateKey &&
+                    !Object.prototype.hasOwnProperty.call(rootState, stateKey)
+                ) {
+                    // snippetSchema 可能已绑定 this.state.mpTags1，但页面根 state 尚未创建该字段
+                    rootState[stateKey] = '1';
+                }
+            }
+        }
+        if (!isExpr) {
+            let i = 1;
+            let stateKey = `mpTags${i}`;
+            while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
+                i += 1;
+                stateKey = `mpTags${i}`;
+            }
+            rootState[stateKey] = mv === undefined || mv === '' ? '1' : mv;
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
+        }
+    }
+
     // MrSwitch：若 modelValue 为常量（true/false），自动转为 this.state.xxx 的双向绑定，避免出码后“点不动/回弹”
     if (componentName === 'MrSwitch') {
         const props = (schema.props as Record<string, unknown>) || {};
@@ -1724,6 +1764,59 @@ const generateNode = ({ type, component }) => {
                 : ''
         }
     };
+
+    // MpTags：拖拽落盘时就创建 page state（对齐 MrRadioGroup 等组件的体验）
+    if (component === 'MpTags') {
+        try {
+            const pageSchema = useCanvas().getSchema?.() as
+                | { state?: Record<string, unknown> }
+                | undefined;
+            const rootState =
+                pageSchema?.state &&
+                typeof pageSchema.state === 'object' &&
+                !Array.isArray(pageSchema.state)
+                    ? pageSchema.state
+                    : (pageSchema ? ((pageSchema.state = {}) as Record<
+                          string,
+                          unknown
+                      >) : {});
+
+            // 若 snippetSchema 已绑定 this.state.mpTags1，但 state 未创建，这里补齐
+            const mv = (schema.props as Record<string, unknown>)?.modelValue as
+                | Record<string, unknown>
+                | undefined;
+            const mvExpr =
+                mv && mv.type === 'JSExpression' ? mv.value : undefined;
+            const m =
+                typeof mvExpr === 'string'
+                    ? /^this\.state\.(mpTags\d+)$/.exec(mvExpr.trim())
+                    : null;
+            let stateKey = m?.[1] || '';
+            if (!stateKey) {
+                let i = 1;
+                stateKey = `mpTags${i}`;
+                while (
+                    Object.prototype.hasOwnProperty.call(rootState, stateKey)
+                ) {
+                    i += 1;
+                    stateKey = `mpTags${i}`;
+                }
+                (schema.props as Record<string, unknown>).modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
+            }
+            if (
+                stateKey &&
+                !Object.prototype.hasOwnProperty.call(rootState, stateKey)
+            ) {
+                rootState[stateKey] = '1';
+            }
+        } catch {
+            // ignore
+        }
+    }
 
     if (type === 'block') {
         schema.componentType = 'Block';

@@ -1467,6 +1467,59 @@ export const onMouseUp = () => {
                 };
             }
 
+            // MpTags：默认需要 v-model 语义，并在拖拽落盘时创建 state（对齐 MrRadioGroup/MrSwitch 的体验）
+            if (insertData.componentName === 'MpTags') {
+                const rootSchema = getSchema();
+                const currentState =
+                    rootSchema && typeof rootSchema === 'object'
+                        ? (rootSchema as any).state
+                        : undefined;
+                const stateObj =
+                    currentState &&
+                    typeof currentState === 'object' &&
+                    !Array.isArray(currentState)
+                        ? { ...currentState }
+                        : {};
+
+                insertData.props = insertData.props || {};
+                const mv = insertData.props.modelValue;
+
+                // 优先复用 snippetSchema 里写死的 this.state.mpTagsN
+                let stateKey = '';
+                if (mv && typeof mv === 'object' && mv.type === 'JSExpression') {
+                    const expr = String((mv as any).value || '').trim();
+                    const m = /^this\.state\.(mpTags\d+)$/.exec(expr);
+                    if (m?.[1]) stateKey = m[1];
+                }
+
+                if (!stateKey) {
+                    let i = 1;
+                    stateKey = `mpTags${i}`;
+                    while (
+                        Object.prototype.hasOwnProperty.call(stateObj, stateKey)
+                    ) {
+                        i += 1;
+                        stateKey = `mpTags${i}`;
+                    }
+                }
+
+                // 默认值：优先用当前 props.modelValue（若为 string/number），否则回退 '1'
+                const defaultVal =
+                    typeof mv === 'string' || typeof mv === 'number'
+                        ? String(mv)
+                        : '1';
+                if (!Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+                    stateObj[stateKey] = defaultVal;
+                }
+                updateSchema({ state: stateObj });
+
+                insertData.props.modelValue = {
+                    type: 'JSExpression',
+                    value: `this.state.${stateKey}`,
+                    model: true
+                };
+            }
+
             // MrCheckboxGroup：默认需要 v-model 语义，否则运行态无法勾选/取消
             if (insertData.componentName === 'MrCheckboxGroup') {
                 const rootSchema = getSchema();
