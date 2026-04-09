@@ -30,14 +30,11 @@ import { utils } from '@opentiny/tiny-engine-utils';
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import Builtin from '@/components/canvas/render/src/builtin/builtin.json';
 import { getBlockFromMaterialStore } from '@/plugins/materials/composable/block-compile';
-import {
-    BASE_STYLE_CLASS_NAME,
-    COMPONENTS_SKIP_BASE_STYLE
-} from '@/plugins/materials/constants';
 import { applyExternalDropComponentPatch } from './external-drop-handlers';
 /* eslint-disable import/no-cycle */
 import { useMultiSelect } from './composables/useMultiSelect';
 import type { Node, RootNode } from '@/components/canvas/types';
+import { BASE_STYLE_CLASS_NAME } from '@/plugins/materials/constants';
 
 export interface DragOffset {
     offsetX: number;
@@ -1159,10 +1156,11 @@ export const onMouseUp = () => {
                 component: insertData.componentName
             });
             insertData.props = { ...withDefaults.props, ...insertData.props };
+            // 全局：移除 component-base-style，保证画布与出码不携带该 class
             if (
-                COMPONENTS_SKIP_BASE_STYLE.includes(insertData.componentName) &&
                 insertData.props &&
-                typeof insertData.props.className === 'string'
+                typeof insertData.props.className === 'string' &&
+                insertData.props.className.includes(BASE_STYLE_CLASS_NAME)
             ) {
                 const rest = insertData.props.className
                     .split(/\s+/)

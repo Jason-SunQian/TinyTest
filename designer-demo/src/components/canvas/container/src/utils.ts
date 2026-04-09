@@ -58,7 +58,7 @@ const translateStringToSchema = clipText => {
             props: {
                 style: 'display: inline-block;',
                 text: clipText,
-                className: 'component-base-style'
+                className: ''
             },
             children: []
         }

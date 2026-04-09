@@ -20,7 +20,8 @@ export default {
             'engine.plugins.customMaterials.block'
         ],
         basePropertyOptions,
-        useBaseStyle: true,
+        // 为避免画布排版与运行态不一致（误导开发），默认不对组件自动注入 component-base-style
+        useBaseStyle: false,
         blockBaseStyle: {
             className: 'block-base-style',
             style: 'margin: 16px;'

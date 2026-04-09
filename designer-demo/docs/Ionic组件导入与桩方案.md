@@ -69,7 +69,7 @@
 
 -   **现象**：后拖入的 MrSegmentButton 比 snippet 内默认按钮多出 `component-base-style`，带 `margin-top`，导致出码后对齐错位。
 -   **原因**：设计器对拖入组件默认加 `component-base-style` 做间距；MrSegmentButton 是 ion-segment 的 flex 子项，额外 margin 会破坏水平对齐。
--   **处理**：在 `designer-demo/src/plugins/materials/constants.ts` 中配置 `COMPONENTS_SKIP_BASE_STYLE`，useMaterial 与 container 据此排除/移除该类名，不修改 packages。
+-   **处理（更新）**：设计器已改为**全局不注入且在拖拽/出码前统一剥离 `component-base-style`**，不再需要维护 `COMPONENTS_SKIP_BASE_STYLE` 跳过列表。若仍出现对齐错位，应优先检查：① 桩的 flex 布局样式；② 子按钮 value 是否唯一（见 2.4）；③ 是否有组件自身样式引入了 margin。
 
 ### 2.6 MrLabel 文本属性（重要，经验总结）
 
@@ -216,6 +216,7 @@
 3. 画布选中态（蓝色边框）是设计器选中态，不是桩样式；取消选中后下划线应可见
 4. 出码异常时检查子按钮 value 是否重复
 5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
+5. （更新）当前默认不会注入 `component-base-style`，也会在拖拽/出码前剥离；若仍错位，请按上文「处理（更新）」排查桩样式与 value 唯一性。
 6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
 7. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.10 节
 8. 单独拖入的 MrBackButton 无返回箭头 / Default Href 为空：见 **§2.8**；确认设计器已加载 `patchPropertiesGetProps` 对 MrBackButton 的补全

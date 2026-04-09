@@ -3,61 +3,13 @@
  * 集中管理，便于维护与扩展
  */
 
-/** 设计器基础样式类名（与 options.componentBaseStyle.className 一致） */
+/**
+ * component-base-style 相关常量。
+ *
+ * 当前物料插件已关闭自动注入 base style（见 `plugins/materials/index.ts` 的 options.useBaseStyle）。
+ * 这里保留类名常量供历史 schema/剪贴板文本节点等场景使用。
+ */
 export const BASE_STYLE_CLASS_NAME = 'component-base-style';
 
-/**
- * 不应用 component-base-style 的组件列表
- * 这些组件作为布局子项（如 ion-segment 内按钮），margin 会破坏 flex 对齐
- * Header 工具栏内子项同理：设计器拖入时若每层都带 margin，会破坏绝对定位与居中
- */
-export const COMPONENTS_SKIP_BASE_STYLE = [
-    'MpIcon',
-    'mp-icon',
-    'MrSegmentButton',
-    'mr-segment-button',
-    'MrToolbar',
-    'mr-toolbar',
-    'MrBackButton',
-    'mr-back-button',
-    'MpBackButton',
-    'mp-back-button',
-    'MrTitle',
-    'mr-title',
-    'MrButtons',
-    'mr-buttons',
-    'MrFooter',
-    'mr-footer',
-    'MrSwitch',
-    'mr-switch',
-    'MrToggle',
-    'mr-toggle',
-    'MrCollapse',
-    'mr-collapse',
-    'MrCollapseItem',
-    'mr-collapse-item',
-    'MrItem',
-    'mr-item',
-    'MrItemSliding',
-    'mr-item-sliding',
-    'MrItemOptions',
-    'mr-item-options',
-    'MrItemOption',
-    'mr-item-option',
-    'MrAccordionGroup',
-    'mr-accordion-group',
-    'MrAccordion',
-    'mr-accordion',
-    'MrRadio',
-    'mr-radio',
-    'MrCheckbox',
-    'mr-checkbox',
-    'MrReorderGroup',
-    'mr-reorder-group',
-    'MrReorder',
-    'mr-reorder',
-    'MrCellGroup',
-    'mr-cell-group',
-    'MrCell',
-    'mr-cell'
-];
+// 兼容保留（避免历史 import 报错）；当前默认不再依赖该列表做跳过/清理逻辑
+export const COMPONENTS_SKIP_BASE_STYLE: string[] = [];

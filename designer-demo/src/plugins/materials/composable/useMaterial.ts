@@ -31,15 +31,12 @@ import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
 } from '@/utils/designerOrigin';
+import { BASE_STYLE_CLASS_NAME } from '../constants';
 import {
     getBundleUrls,
     getMaterialsBaseFromBundleUrls
 } from '@/composable/loadRuntimeFromBundles';
 
-import {
-    BASE_STYLE_CLASS_NAME,
-    COMPONENTS_SKIP_BASE_STYLE
-} from '../constants';
 import meta from '../meta';
 
 import {
@@ -1375,6 +1372,20 @@ const patchSchemaWithMaterialDefaults = (
     }
     // MrTitle / MrLabel / MrButton：slot 文案在 schema.children 字符串与 props.children（及误配的 props.text）间对齐
     syncSlotStringChildrenWithPropsChildren(schema);
+
+    // 全局：彻底移除 component-base-style，避免画布与出码产生额外间距误导
+    // 说明：不做“针对组件”的补丁，只做统一归一化规则
+    if (schema.props && typeof schema.props === 'object') {
+        const p = schema.props as Record<string, unknown>;
+        const cn = p.className;
+        if (typeof cn === 'string' && cn.includes(BASE_STYLE_CLASS_NAME)) {
+            const rest = cn
+                .split(/\s+/)
+                .filter(c => c && c !== BASE_STYLE_CLASS_NAME)
+                .join(' ');
+            p.className = rest || '';
+        }
+    }
     // MrBackButton：节点上显式写入 defaultHref，避免出码与「物料 defaultValue」相同而被省略
     if (componentName === 'MrBackButton') {
         const props = (schema.props as Record<string, unknown>) || {};
@@ -1386,26 +1397,7 @@ const patchSchemaWithMaterialDefaults = (
     }
 
     applyModelBindingSchemaPatch(componentName, schema, rootState);
-    // Header 工具栏链：与 generateNode 跳过列表一致，清理历史 schema 上误带的 component-base-style
-    if (
-        COMPONENTS_SKIP_BASE_STYLE.includes(componentName || '') &&
-        schema.props &&
-        typeof schema.props === 'object'
-    ) {
-        const p = schema.props as Record<string, unknown>;
-        const cn = p.className;
-        if (
-            typeof cn === 'string' &&
-            cn.split(/\s+/).includes(BASE_STYLE_CLASS_NAME)
-        ) {
-            const rest = cn
-                .split(/\s+/)
-                .filter(c => c && c !== BASE_STYLE_CLASS_NAME)
-                .join(' ');
-            p.className = rest || '';
-        }
-    }
-    // MrSegment 子按钮 value 唯一性修复 + 移除 component-base-style（见 constants.ts）
+    // MrSegment 子按钮 value 唯一性修复（见 constants.ts）
     if (componentName === 'MrSegment') {
         const children = schema.children as
             | Array<Record<string, unknown>>
@@ -1427,19 +1419,6 @@ const patchSchemaWithMaterialDefaults = (
                     if (hasDup) {
                         (child.props as Record<string, unknown>).value =
                             SEGMENT_BUTTON_VALUE_CANDIDATES[i] ?? `tab${i}`;
-                    }
-                    const cn = (child.props as Record<string, unknown>)
-                        .className;
-                    if (
-                        typeof cn === 'string' &&
-                        cn.split(/\s+/).includes(BASE_STYLE_CLASS_NAME)
-                    ) {
-                        const rest = cn
-                            .split(/\s+/)
-                            .filter(c => c && c !== BASE_STYLE_CLASS_NAME)
-                            .join(' ');
-                        (child.props as Record<string, unknown>).className =
-                            rest || '';
                     }
                 }
             });
@@ -1463,11 +1442,6 @@ const patchSchemaWithMaterialDefaults = (
 const generateNode = ({ type, component }) => {
     const snippet = getSnippet(component) || {};
     const material = getMaterial(component);
-    const materialUseBaseStyle = material.configure?.useBaseStyle;
-    const globalUseBaseStyle = getOptions(meta.id).useBaseStyle;
-    const skipBaseStyle = COMPONENTS_SKIP_BASE_STYLE.includes(component);
-    const useBaseStyle =
-        globalUseBaseStyle && materialUseBaseStyle !== false && !skipBaseStyle;
     const defaultPropsFromSchema = getDefaultPropsFromMaterialSchema(material);
     const schema = {
         componentName: component,
@@ -1475,8 +1449,13 @@ const generateNode = ({ type, component }) => {
         props: {
             ...defaultPropsFromSchema,
             ...snippet.props,
-            className: useBaseStyle
-                ? getOptions(meta.id).componentBaseStyle.className
+            // 为避免画布排版误导，默认不再注入 component-base-style（即使引擎/插件 options.useBaseStyle 为 true）
+            // 若物料 snippet 自己显式配置了 className，则以 snippet 为准
+            className: (snippet.props as Record<string, unknown> | undefined)
+                ?.className
+                ? String(
+                      (snippet.props as Record<string, unknown>).className || ''
+                  )
                 : ''
         }
     };
@@ -1485,8 +1464,10 @@ const generateNode = ({ type, component }) => {
 
     if (type === 'block') {
         schema.componentType = 'Block';
-        schema.props.className = getOptions(meta.id).useBaseStyle
-            ? getOptions(meta.id).blockBaseStyle.className
+        // 同上：默认不注入 block-base-style（避免区块拖拽产生额外外边距）
+        schema.props.className = (snippet.props as Record<string, unknown> | undefined)
+            ?.className
+            ? String((snippet.props as Record<string, unknown>).className || '')
             : '';
     }
 
