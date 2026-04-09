@@ -20,6 +20,8 @@ export const COMPONENTS_SKIP_BASE_STYLE = [
     'mr-toolbar',
     'MrBackButton',
     'mr-back-button',
+    'MpBackButton',
+    'mp-back-button',
     'MrTitle',
     'mr-title',
     'MrButtons',
