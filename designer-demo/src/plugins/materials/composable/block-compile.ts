@@ -149,16 +149,7 @@ export const getBlockFromMaterialStore = (
     const isMainProjectAsset = /^(mr-|mp-|mr-bank\.css)/.test(scriptFilename);
     const materialsBase =
         useMaterial().getBundleBaseUrlForComponent(name) ??
-        getMaterialsBaseFromBundleUrls() ??
-        (() => {
-            const envBase =
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                (import.meta.env as { VITE_MATERIALS_BASE_URL?: string })
-                    .VITE_MATERIALS_BASE_URL;
-            return typeof envBase === 'string' && envBase.trim()
-                ? envBase.trim().replace(/\/$/, '')
-                : null;
-        })();
+        getMaterialsBaseFromBundleUrls();
     if (isMainProjectAsset && !materialsBase) {
         /* eslint-disable no-console -- 诊断物料解析 */
         console.warn(
