@@ -16,6 +16,10 @@ declare module 'virtual:svg-icons-register';
 interface ImportMetaEnv {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     readonly VITE_USE_MOCK?: string;
+    /** 逗号分隔的物料 bundle.json URL；已并入 engine.config.js 的 material，与手写进 material 同源 */
+    readonly VITE_MATERIAL_BUNDLE_URLS?: string;
+    readonly VITE_STYLE_BUNDLE_URLS?: string;
+    readonly VITE_COMPLETION_CONFIG_URL?: string;
 }
 
 interface ImportMeta {
