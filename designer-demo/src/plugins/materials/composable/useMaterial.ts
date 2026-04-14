@@ -484,6 +484,7 @@ const addComponentSnippets = (
     return snippetsData;
 };
 
+
 // 业务物料依赖顺序：被依赖的包（如 mr-components）需先于依赖方（如 mp-card）加载，避免在 webview 中嵌套 import 失败
 const MATERIAL_LOAD_ORDER = ['@local/mr-components', '@local/mp-card'];
 
@@ -786,16 +787,6 @@ const updateCanvasDeps = async () => {
     deps = normalizeCanvasDeps(deps).normalized as ReturnType<
         typeof getCanvasDeps
     >;
-    /* eslint-disable no-console -- 诊断画布样式注入 */
-    if (console?.log && deps.styles?.length) {
-        console.log(
-            '[Materials] 画布样式已下发，共',
-            deps.styles.length,
-            '个:',
-            deps.styles.slice(0, 5).map((s: string) => (s || '').slice(-60))
-        );
-    }
-    /* eslint-enable no-console */
     useMessage().publish({
         topic: 'init_canvas_deps',
         data: deps
@@ -812,7 +803,7 @@ const parseMaterialsDependencies = (
     options?: { skipScriptPreload?: boolean; bundleBase?: string }
 ) => {
     const { packages, components } = materialBundle;
-    const skipPreload = options?.skipScriptPreload === true;
+    const _skipPreload = options?.skipScriptPreload === true;
     const bundleBase = options?.bundleBase || null;
 
     const { scripts: scriptsDeps, styles: stylesDeps } =
@@ -896,21 +887,22 @@ const parseMaterialsDependencies = (
     });
 
     const { scripts, styles } = generateThirdPartyDeps(components);
-    if (!skipPreload) {
-        scripts.forEach(item => {
-            const existingDep = scriptsDeps.find(
-                dep => dep.package === item.package
-            );
-            if (existingDep) {
-                existingDep.components = {
-                    ...existingDep.components,
-                    ...(item.components || {})
-                };
-            } else {
-                scriptsDeps.push(item);
-            }
-        });
-    }
+    // 无论是否远程 bundle，都必须下发 scriptsDeps（用于画布 iframe 预加载 + import map 映射）。
+    // 否则主工程物料脚本里出现 @local/mr-components 等 bare specifier 时，iframe 无 import map 会直接报
+    // “Failed to resolve module specifier”，最终表现为区块大片飘红。
+    //
+    // skipPreload 仅用于将来优化“远程 bundle 是否按需加载”策略；当前先保证功能正确。
+    scripts.forEach(item => {
+        const existingDep = scriptsDeps.find(dep => dep.package === item.package);
+        if (existingDep) {
+            existingDep.components = {
+                ...existingDep.components,
+                ...(item.components || {})
+            };
+        } else {
+            scriptsDeps.push(item);
+        }
+    });
 
     if (!styles) return;
     if (Array.isArray(styles)) {
@@ -931,29 +923,16 @@ const addComponents = (
     bundleBase?: string,
     fromRemoteBundle?: boolean
 ) => {
-    const { snippets, components } = materialBundle;
+    const snippets = Array.isArray(materialBundle?.snippets)
+        ? materialBundle.snippets
+        : [];
+    const components = Array.isArray(materialBundle?.components)
+        ? materialBundle.components
+        : [];
     parseMaterialsDependencies(materialBundle, {
         skipScriptPreload: fromRemoteBundle === true,
         bundleBase
     });
-
-    // 诊断：已进入 materialsDeps 的脚本（画布会据此预加载并注册到 TinyLowcodeComponent）
-    const { scripts: scriptsDeps } = useResource().appSchemaState.materialsDeps;
-    /* eslint-disable no-console -- 诊断 materialsDeps 更新 */
-    if (console?.log && scriptsDeps?.length) {
-        const compNames = scriptsDeps.flatMap(
-            (s: { components?: Record<string, unknown> }) =>
-                Object.keys(s.components || {})
-        );
-        const unique = compNames.filter(
-            (n: string, i: number, a: string[]) => a.indexOf(n) === i
-        );
-        console.log(
-            '[Materials] materialsDeps.scripts 已更新，将同步到画布预加载。组件名:',
-            unique
-        );
-    }
-    /* eslint-enable no-console */
 
     // 为组件添加英文翻译（如果不存在）
     components.forEach(component => {
@@ -1005,9 +984,63 @@ const normalizeMaterialAssetUrls = (
     const toAbsString = (u: string) =>
         toAbsoluteMaterialUrl(u, bundleBase) || u;
 
+    // 回填：packages 里声明的 script/css -> components.npm（常见：组件只写 npm.package，不写 npm.script）
+    const pkgAssetMap = new Map<
+        string,
+        { script?: string; css?: string | string[] }
+    >();
+    (materials.packages || []).forEach(pkg => {
+        if (!pkg || typeof pkg !== 'object') return;
+        const p = pkg as unknown as {
+            package?: string;
+            packageName?: string;
+            name?: string;
+            script?: string;
+            css?: string | string[];
+        };
+        const pkgKey = p.package || p.packageName || p.name;
+        if (!pkgKey) return;
+        pkgAssetMap.set(pkgKey, {
+            script: typeof p.script === 'string' ? toAbsString(p.script) : p.script,
+            css: Array.isArray(p.css)
+                ? p.css.map(c => (typeof c === 'string' ? toAbsString(c) : c))
+                : typeof p.css === 'string'
+                ? toAbsString(p.css)
+                : p.css
+        });
+    });
+
+    const patchNpm = <
+        T extends {
+            package?: string;
+            packageName?: string;
+            script?: string;
+            css?: any;
+        }
+    >(
+        npm: T | undefined
+    ): T | undefined => {
+        if (!npm || typeof npm !== 'object') return npm;
+        const pkg = npm.package || npm.packageName;
+        if (!pkg) return npm;
+        const assets = pkgAssetMap.get(pkg);
+        if (!assets) return npm;
+        return {
+            ...npm,
+            script:
+                typeof npm.script === 'string'
+                    ? toAbsString(npm.script)
+                    : npm.script || assets.script,
+            css:
+                typeof npm.css === 'string'
+                    ? toAbsString(npm.css)
+                    : npm.css || assets.css
+        };
+    };
+
     const components = (materials.components || []).map(component => {
         const npm = component.npm
-            ? {
+            ? patchNpm({
                   ...component.npm,
                   script: component.npm.script
                       ? toAbsString(component.npm.script)
@@ -1016,7 +1049,7 @@ const normalizeMaterialAssetUrls = (
                       typeof component.npm.css === 'string'
                           ? toAbsString(component.npm.css)
                           : component.npm.css
-              }
+              })
             : component.npm;
         const contentNpm = (
             component as {
@@ -1026,24 +1059,26 @@ const normalizeMaterialAssetUrls = (
             }
         ).content?.npm;
         const content =
-            contentNpm &&
-            (component as { content?: Record<string, unknown> }).content
-                ? {
-                      ...(component as { content?: Record<string, unknown> })
-                          .content,
-                      npm: {
-                          ...contentNpm,
-                          script:
-                              typeof contentNpm.script === 'string'
-                                  ? toAbsString(contentNpm.script)
-                                  : contentNpm.script,
-                          css:
-                              typeof contentNpm.css === 'string'
-                                  ? toAbsString(contentNpm.css)
-                                  : contentNpm.css
-                      }
-                  }
-                : (component as { content?: Record<string, unknown> }).content;
+            contentNpm && (component as any)?.content
+                ? (() => {
+                      const patched = patchNpm(contentNpm);
+                      // 注意：不改变 content 的结构类型，只在存在时回填/绝对化 npm 字段
+                      return {
+                          ...(component as any).content,
+                          npm: {
+                              ...(patched || contentNpm),
+                              script:
+                                  typeof contentNpm.script === 'string'
+                                      ? toAbsString(contentNpm.script)
+                                      : patched?.script,
+                              css:
+                                  typeof contentNpm.css === 'string'
+                                      ? toAbsString(contentNpm.css)
+                                      : patched?.css
+                          }
+                      };
+                  })()
+                : (component as any)?.content;
         return {
             ...component,
             npm,
@@ -1054,7 +1089,8 @@ const normalizeMaterialAssetUrls = (
     const packages = (materials.packages || []).map(pkg => ({
         ...pkg,
         script: pkg.script ? toAbsString(pkg.script) : pkg.script,
-        css: typeof pkg.css === 'string' ? toAbsString(pkg.css) : pkg.css
+        // 保持原类型：Package.css 在 types 里多为 string；这里只做 string 场景的绝对化
+        css: typeof pkg.css === 'string' ? toAbsString(pkg.css) : (pkg as any).css
     }));
 
     return {
@@ -1071,14 +1107,6 @@ const normalizeMaterialAssetUrls = (
  */
 const addMaterials = (materials: Material, bundleUrl?: string) => {
     if (bundleUrl) materialBundleLoadTimestamp = Date.now();
-    /* eslint-disable no-console -- 诊断远程 bundle 加载 */
-    if (bundleUrl && console?.log) {
-        console.log(
-            '[Materials] 远程 bundle，组件将按需加载（不预加载脚本）',
-            bundleUrl
-        );
-    }
-    /* eslint-enable no-console */
     const bundleBase =
         typeof bundleUrl === 'string'
             ? bundleUrl.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '')
@@ -1088,7 +1116,9 @@ const addMaterials = (materials: Material, bundleUrl?: string) => {
     addBlocks(normalized.blocks);
 };
 
-const getMaterial = (name?: string): Partial<Resource & BlockResource> => {
+const getMaterial = (
+    name?: string
+): Partial<Resource & BlockResource> | undefined => {
     if (name) {
         // 先读取组件缓存，再读取区块缓存
         return (
@@ -1096,10 +1126,10 @@ const getMaterial = (name?: string): Partial<Resource & BlockResource> => {
             resource.get(capitalize(camelize(name))) ||
             blockResource.get(name) ||
             blockResource.get(capitalize(camelize(name))) ||
-            {}
+            undefined
         );
     }
-    return {};
+    return undefined;
 };
 
 const setMaterial = (name: string, data: Resource) => {
@@ -1112,13 +1142,62 @@ const setMaterial = (name: string, data: Resource) => {
  */
 const getMaterialsRes = async () => {
     const bundleUrls = getBundleUrls();
+    const isVsCodeEnv =
+        typeof window !== 'undefined' &&
+        ((window as unknown as { vscode?: unknown; vscodeBridge?: unknown })
+            .vscode ||
+            (window as unknown as { vscode?: unknown; vscodeBridge?: unknown })
+                .vscodeBridge);
+
+    const fetchBundleJson = async (u: string) => {
+        const res = await fetch(u, { cache: 'no-store' });
+        const ct = res.headers.get('content-type') || '';
+        const raw = await res.text();
+        if (!res.ok) {
+            throw new Error(
+                `HTTP ${res.status}: ${res.statusText}; content-type=${ct}; body=${raw.slice(
+                    0,
+                    200
+                )}`
+            );
+        }
+        try {
+            return JSON.parse(raw) as unknown;
+        } catch (e) {
+            throw new Error(
+                `Invalid JSON; content-type=${ct}; body=${raw.slice(0, 200)}`
+            );
+        }
+    };
+
+    const shouldBypassHttpService = (u: string) =>
+        isVsCodeEnv &&
+        /^(https?:\/\/|vscode-webview:|vscode-resource:|data:)/.test(u);
+
     const materials = await Promise.allSettled(
-        bundleUrls.map((url: any) =>
-            typeof url === 'string'
-                ? getMetaApi(META_SERVICE.Http).get(url)
-                : url
-        )
+        bundleUrls.map((url: any) => {
+            if (typeof url !== 'string') return url;
+            // VSCode webview 环境下 HttpService 会被设置为走插件 adapter（proxyHttpRequest）。
+            // 对主工程静态资源（http(s) bundle.json）应直接 fetch，避免被插件代理失败而导致物料无法写入 store。
+            return shouldBypassHttpService(url)
+                ? fetchBundleJson(url)
+                : getMetaApi(META_SERVICE.Http).get(url);
+        })
     );
+    /* eslint-disable no-console -- 诊断远程 bundle 拉取/解析失败原因 */
+    if (console?.warn) {
+        materials.forEach((r, i) => {
+            const u = bundleUrls[i];
+            if (r.status === 'rejected') {
+                const reason =
+                    r.reason instanceof Error ? r.reason.message : String(r.reason);
+                console.warn('[Materials] bundle 拉取失败:', u, reason);
+            } else if (!r.value) {
+                console.warn('[Materials] bundle 返回空:', u);
+            }
+        });
+    }
+    /* eslint-enable no-console */
     return materials;
 };
 
@@ -1127,15 +1206,59 @@ const fetchMaterial = async () => {
     const materials = await getMaterialsRes();
     materials.forEach((response, index) => {
         if (response.status !== 'fulfilled' || !response.value) return;
-        const materialsPayload =
-            response.value.materials ||
-            (response.value as { data?: { materials?: Material } })?.data
-                ?.materials;
+        const pickMaterialsPayload = (v: any): Material | undefined => {
+            if (!v || typeof v !== 'object') return undefined;
+            // 兼容多种返回包裹：
+            // 1) { materials }
+            // 2) { data: { materials } }              (浏览器 axios 直接拿到 bundle.json，preResponse 返回 bundle.data)
+            // 3) { data: <bundle.json> }              (插件代理可能额外包一层 data)
+            // 4) { data: { data: <bundle.json> } }    (代理再包裹一层)
+            const candidate =
+                v.materials ||
+                v?.data?.materials ||
+                v?.data?.data?.materials ||
+                v?.data?.data?.data?.materials ||
+                v?.data ||
+                v?.data?.data;
+            // 关键：很多 bundle.json 顶层就是 Material（直接含 components/packages/blocks），不是 { materials: ... }
+            const isMaterialLike = (x: any) =>
+                x &&
+                typeof x === 'object' &&
+                (Array.isArray(x.components) ||
+                    Array.isArray(x.blocks) ||
+                    Array.isArray(x.packages));
+            if (isMaterialLike(v)) return v as Material;
+            if (isMaterialLike(candidate)) return candidate as Material;
+            return undefined;
+        };
+        const materialsPayload = pickMaterialsPayload(response.value);
         const bundleUrl =
             typeof bundleUrls[index] === 'string'
                 ? bundleUrls[index]
                 : undefined;
-        if (materialsPayload) addMaterials(materialsPayload, bundleUrl);
+        if (materialsPayload) {
+            try {
+                addMaterials(materialsPayload, bundleUrl);
+            } catch (e) {
+                // eslint-disable-next-line no-console
+                console.warn('[Materials] addMaterials 失败:', bundleUrl, e);
+            }
+        } else {
+            /* eslint-disable no-console -- 诊断 bundle 返回结构不符合预期 */
+            if (console?.warn) {
+                const keys =
+                    response.value && typeof response.value === 'object'
+                        ? Object.keys(response.value as any)
+                        : [];
+                console.warn(
+                    '[Materials] bundle 结构不符合预期，未找到 materials:',
+                    bundleUrl,
+                    'keys=',
+                    keys
+                );
+            }
+            /* eslint-enable no-console */
+        }
     });
     updateCanvasDeps();
 };
@@ -1244,7 +1367,10 @@ const initMaterial = ({
  * 从物料 schema 中提取默认 props（property + defaultValue），用于拖入画布时节点带默认值
  * 这样面板里配置的默认值（如 sceneType: 'D10100'）会在新节点上生效，且出码/预览能拿到该 prop
  */
-const getDefaultPropsFromMaterialSchema = (material: Partial<Resource>) => {
+const getDefaultPropsFromMaterialSchema = (
+    material?: Partial<Resource>
+) => {
+    if (!material) return {};
     const schema =
         material.schema ||
         (material as { content?: { schema?: { properties?: unknown[] } } })
@@ -1474,6 +1600,12 @@ const generateNode = ({ type, component }) => {
     return schema;
 };
 const refreshMaterial = async () => {
+    // 清理画布内 block import 缓存，否则旧的失败结果会一直复用，表现为“物料已进 store 但仍全红”
+    try {
+        updateBlockCompileCache();
+    } catch {
+        // ignore
+    }
     clearMaterials();
     initMaterial();
     await fetchMaterial();

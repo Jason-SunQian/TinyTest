@@ -32,6 +32,31 @@ const { capitalize, camelize } = utils;
 const blockVersionMap = new Map();
 const blockCompileCache = new Map();
 
+const isResolvedMaterialEntry = (mat: unknown): boolean => {
+    if (!mat || typeof mat !== 'object') return false;
+    const anyMat = mat as Record<string, unknown>;
+    // useMaterial.getMaterial 找不到时会返回 {}（truthy），这里必须显式排除，否则会误判“mat=有”
+    const keys = Object.keys(anyMat);
+    if (keys.length === 0) return false;
+    return (
+        typeof anyMat.type === 'string' ||
+        typeof anyMat.component === 'string' ||
+        typeof anyMat.item === 'string' ||
+        !!anyMat.npm ||
+        !!anyMat.schema ||
+        !!anyMat.content
+    );
+};
+
+const getNpmScriptFromMaterial = (mat: unknown): string | undefined => {
+    if (!isResolvedMaterialEntry(mat)) return undefined;
+    const anyMat = mat as {
+        npm?: { script?: string };
+        content?: { npm?: { script?: string } };
+    };
+    return anyMat.npm?.script || anyMat.content?.npm?.script;
+};
+
 // 获取所有区块分组下的所有区块
 const getAllGroupBlocks = async () => {
     const { fetchGroups, fetchGroupBlocksByIds } = getMetaApi(
@@ -115,13 +140,7 @@ export const getBlockFromMaterialStore = (
     let mat = null;
     for (const n of tryNames) {
         mat = useMaterial().getMaterial(n);
-        if (
-            mat &&
-            (mat.npm?.script ??
-                (mat as { content?: { npm?: { script?: string } } })?.content
-                    ?.npm?.script)
-        )
-            break;
+        if (getNpmScriptFromMaterial(mat)) break;
     }
     const npm =
         mat?.npm ??
@@ -131,13 +150,21 @@ export const getBlockFromMaterialStore = (
     if (!script) {
         /* eslint-disable no-console -- 诊断物料解析 */
         if (console?.warn && tryNames[0]) {
+            const matAny = mat as any;
+            const npmAny = npm as any;
             console.warn(
                 '[Materials] getBlockFromMaterialStore 未找到',
                 tryNames[0],
-                'mat=',
-                mat ? '有' : '无',
+                'matResolved=',
+                isResolvedMaterialEntry(mat) ? '是' : '否',
                 'script=',
-                script || '无'
+                script || '无',
+                'matKeys=',
+                matAny && typeof matAny === 'object' ? Object.keys(matAny) : [],
+                'npmKeys=',
+                npmAny && typeof npmAny === 'object' ? Object.keys(npmAny) : [],
+                'npm.script=',
+                npmAny?.script
             );
         }
         /* eslint-enable no-console */

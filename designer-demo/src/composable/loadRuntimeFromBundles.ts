@@ -17,13 +17,20 @@ function getBundleUrls(): string[] {
 
     /* eslint-disable @typescript-eslint/naming-convention -- 环境变量/全局变量名保持大写下划线 */
     type WindowWithBundleUrls = Window & {
-        TINY_MATERIAL_BUNDLE_URLS?: string[];
+        TINY_MATERIAL_BUNDLE_URLS?: string[] | string;
     };
-    const fromWindow = (typeof window !== 'undefined' &&
-        (window as WindowWithBundleUrls).TINY_MATERIAL_BUNDLE_URLS) as
-        | string[]
-        | undefined;
-    const windowUrls = Array.isArray(fromWindow) ? fromWindow : [];
+    const fromWindowRaw =
+        typeof window !== 'undefined'
+            ? (window as WindowWithBundleUrls).TINY_MATERIAL_BUNDLE_URLS
+            : undefined;
+    const windowUrls = Array.isArray(fromWindowRaw)
+        ? fromWindowRaw
+        : typeof fromWindowRaw === 'string'
+        ? fromWindowRaw
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+        : [];
 
     type EnvWithBundleUrls = ImportMetaEnv & {
         VITE_MATERIAL_BUNDLE_URLS?: string;
@@ -39,6 +46,22 @@ function getBundleUrls(): string[] {
                   .map(s => s.trim())
                   .filter(Boolean)
             : [];
+
+    /* eslint-disable no-console -- 排障：确认 bundleUrls 的来源（config/window/env） */
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const isVsCodeEnv = (window as any)?.vscode || (window as any)?.vscodeBridge;
+        if (typeof window !== 'undefined' && isVsCodeEnv && console?.log) {
+            console.log('[BundleUrls] 来源拆分:', {
+                fromConfig: configUrls,
+                fromWindow: windowUrls,
+                fromEnv: envUrls
+            });
+        }
+    } catch {
+        // ignore
+    }
+    /* eslint-enable no-console */
 
     const seen = new Set<string>();
     const result: string[] = [];

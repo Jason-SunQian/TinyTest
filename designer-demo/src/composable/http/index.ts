@@ -88,6 +88,15 @@ const isFixedMockRoute = (url: string, method: string): boolean => {
         return true;
     }
 
+    // 3. VSCode 环境下：material-center 接口固定走本地 mock，避免插件代理未配置导致无限报错 toast，
+    // 进而淹没真正的物料 import 失败原因（区块加载错误的根因通常在 import()）。
+    // designer-demo 已提供 mock/material-center.ts 覆盖这些路径。
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isVsCodeEnv = (window as any)?.vscode || (window as any)?.vscodeBridge;
+    if (isVsCodeEnv && url.startsWith('/material-center/')) {
+        return true;
+    }
+
     return false;
 };
 

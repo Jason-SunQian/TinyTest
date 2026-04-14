@@ -373,10 +373,11 @@ export default {
         const initComponents = () => {
             const groupName = panelState.materialGroup;
             if (groupName) {
-                return getComponentsByGroup(
+                const grouped = getComponentsByGroup(
                     componentsWithChildren.value,
                     groupName
                 );
+                return grouped.length ? grouped : componentsWithChildren.value;
             }
 
             return componentsWithChildren.value;

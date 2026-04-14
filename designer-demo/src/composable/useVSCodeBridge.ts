@@ -18,6 +18,12 @@ interface VSCodeToDesignerMessage {
     params?: any;
 }
 
+type AssetBundleUpdateParams = {
+    materialBundleUrls?: string[];
+    styleBundleUrls?: string[];
+    completionConfig?: Record<string, unknown>;
+};
+
 // 初始化配置类型
 interface InitData {
     language?: string;
@@ -195,6 +201,10 @@ const handleVSCodeMessage = (event: MessageEvent) => {
                     );
                     break;
 
+                case 'setAssetBundleUrls':
+                    applyAssetBundleUpdate(vscodeMessage.params);
+                    break;
+
                 default:
                     // eslint-disable-next-line no-console
                     console.warn(
@@ -268,6 +278,49 @@ const handleSetLanguage = async (language: string) => {
         // 如果等待超时或出错，仍然尝试切换
         switchLanguage(mappedLang);
     }
+};
+
+const normalizeUrlList = (value: unknown): string[] => {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+    const seen = new Set<string>();
+    const list: string[] = [];
+    value.forEach(item => {
+        if (typeof item !== 'string') return;
+        const trimmed = item.trim();
+        if (!trimmed || seen.has(trimmed)) return;
+        seen.add(trimmed);
+        list.push(trimmed);
+    });
+    return list;
+};
+
+const applyAssetBundleUpdate = (params?: AssetBundleUpdateParams) => {
+    if (typeof window === 'undefined' || !params) {
+        return;
+    }
+    const materialBundleUrls = normalizeUrlList(params.materialBundleUrls);
+    const styleBundleUrls = normalizeUrlList(params.styleBundleUrls);
+
+    if (materialBundleUrls.length > 0) {
+        (window as any).TINY_MATERIAL_BUNDLE_URLS = materialBundleUrls;
+    }
+    if (styleBundleUrls.length > 0) {
+        (window as any).TINY_STYLE_BUNDLE_URLS = styleBundleUrls;
+    }
+    if (
+        params.completionConfig &&
+        typeof params.completionConfig === 'object'
+    ) {
+        (window as any).TINY_COMPLETION_CONFIG = params.completionConfig;
+    }
+
+    window.dispatchEvent(
+        new CustomEvent('tiny:asset-bundles-updated', {
+            detail: { materialBundleUrls, styleBundleUrls }
+        })
+    );
 };
 
 /**
@@ -476,6 +529,12 @@ export const initVSCodeBridge = () => {
             }
         });
     });
+
+    (window as any).__TINY_UPDATE_ASSET_BUNDLES__ = (
+        params?: AssetBundleUpdateParams
+    ) => {
+        applyAssetBundleUpdate(params);
+    };
 };
 
 /**

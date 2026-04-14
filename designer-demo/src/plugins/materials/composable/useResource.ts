@@ -19,7 +19,6 @@ import {
     useBreadcrumb,
     useLayout,
     useBlock,
-    useMaterial,
     getMetaApi,
     META_APP,
     useMessage,
@@ -71,26 +70,12 @@ interface AppSchemaState {
 const normalizeUtilsItem = (item: any) => {
     // 过滤掉非对象类型的 item（如数组、null、undefined 等）
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-            '[useResource] normalizeUtilsItem - Invalid item type, skipping:',
-            item,
-            'type:',
-            typeof item,
-            'isArray:',
-            Array.isArray(item)
-        );
         // 返回 null，后续会被过滤掉
         return null;
     }
 
     // 确保 content 对象存在
     if (!item.content) {
-        // eslint-disable-next-line no-console
-        console.log(
-            '[useResource] normalizeUtilsItem - Item has no content, creating empty content:',
-            item
-        );
         item.content = {};
     }
 
@@ -106,11 +91,6 @@ const normalizeUtilsItem = (item: any) => {
                 exportName: item.content.exportName || undefined
             }
         };
-        // eslint-disable-next-line no-console
-        console.log(
-            '[useResource] normalizeUtilsItem - Normalized function item:',
-            normalizedItem
-        );
         return normalizedItem;
     }
 
@@ -142,22 +122,11 @@ watch(
             return;
         }
         isNormalizing = true;
-        // eslint-disable-next-line no-console
-        console.log(
-            '[useResource] watch utils - utils changed, normalizing:',
-            newUtils
-        );
         // 规范化每个 item
-        const normalizedUtils = newUtils.map((item, index) => {
+        const normalizedUtils = newUtils.map(item => {
             const normalized = normalizeUtilsItem(item);
             // 如果数据有变化，更新原数组中的该项
             if (JSON.stringify(normalized) !== JSON.stringify(item)) {
-                // eslint-disable-next-line no-console
-                console.log(
-                    '[useResource] watch utils - Item at index',
-                    index,
-                    'needs normalization'
-                );
                 // 直接修改原数组项，避免触发新的 watch
                 Object.assign(newUtils[index], normalized);
                 // 确保 content 对象被正确设置
@@ -168,11 +137,6 @@ watch(
             return normalized;
         });
         isNormalizing = false;
-        // eslint-disable-next-line no-console
-        console.log(
-            '[useResource] watch utils - normalization complete:',
-            normalizedUtils
-        );
     },
     { deep: true, immediate: true }
 );
@@ -309,19 +273,12 @@ const fetchAppState = async () => {
 
     appSchemaState.bridge = appData.bridge;
     // 规范化 utils 数据，确保所有数据都有正确的结构（避免 setUtils 报错）
-    // eslint-disable-next-line no-console
-    console.log('[useResource] fetchAppState - raw utils data:', appData.utils);
     // 规范化并过滤掉无效的 item（如数组、null 等）
     const normalizedUtils = (appData.utils || [])
         .map(normalizeUtilsItem)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((item: any) => item !== null && item !== undefined);
     appSchemaState.utils = normalizedUtils;
-    // eslint-disable-next-line no-console
-    console.log(
-        '[useResource] fetchAppState - normalized utils (after filtering):',
-        appSchemaState.utils
-    );
     appSchemaState.isDemo = appData?.meta?.isDemo || appData?.meta?.is_demo;
     appSchemaState.globalState =
         appData?.meta?.globalState || appData?.meta?.global_state;
@@ -344,8 +301,18 @@ const fetchAppState = async () => {
 };
 
 const fetchResource = async ({ isInit = true } = {}) => {
-    const { id, type } = getMetaApi(META_SERVICE.GlobalService).getBaseInfo();
-    useMessage().publish({ topic: 'app_id_changed', data: id });
+    // eslint-disable-next-line no-console
+    console.log('[useResource] fetchResource start', { isInit });
+    let id = '';
+    let type = '';
+    try {
+        const baseInfo = getMetaApi(META_SERVICE.GlobalService).getBaseInfo();
+        id = baseInfo?.id;
+        type = baseInfo?.type;
+        useMessage().publish({ topic: 'app_id_changed', data: id });
+    } catch (e) {
+        console.error('[useResource] getBaseInfo failed:', e); // eslint-disable-line
+    }
 
     let appData: Record<string, unknown> = {};
     try {
@@ -359,10 +326,16 @@ const fetchResource = async ({ isInit = true } = {}) => {
         );
     }
 
-    useMaterial().initMaterial({ isInit, appData });
+    const materialApi = getMetaApi('engine.service.material') as {
+        initMaterial: (opts?: { isInit?: boolean; appData?: Record<string, unknown> }) => void;
+        fetchMaterial: () => Promise<void>;
+    };
+    materialApi.initMaterial({ isInit, appData });
 
     try {
-        await useMaterial().fetchMaterial();
+        await materialApi.fetchMaterial();
+        // eslint-disable-next-line no-console
+        console.log('[useResource] fetchResource end', { isInit });
 
         if (isInit) {
             await initPageOrBlock();
@@ -370,7 +343,8 @@ const fetchResource = async ({ isInit = true } = {}) => {
 
         await useTranslate().initI18n({ host: id, hostType: type, init: true });
     } catch (error) {
-        console.log(error); // eslint-disable-line
+        // eslint-disable-next-line no-console
+        console.error('[useResource] fetchResource failed:', error);
     }
 };
 
