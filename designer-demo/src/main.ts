@@ -15,10 +15,14 @@ import {
     checkIsVSCodeEnvironment
 } from './composable/useVSCodeBridge';
 import useNotifyI18n from './utils/useNotifyI18n';
+import { setupLogFilter } from './utils/logFilter';
 import { patchGenerateCodeServiceForMpIcon } from './composable/patchGenerateCodeService';
 import { patchCanvasGetSchemaForMpIcon } from './composable/patchCanvasGetSchema';
+import { setupMaterialStartupLoader } from './composable/materialStartupLoader';
 
 async function startApp() {
+    // VSCode 环境默认过滤刷屏日志，保留排障关键日志（可用 localStorage.TINY_LOG='all' 关闭过滤）
+    setupLogFilter();
     const registry = await import('../registry');
     const engine: any = await import('@opentiny/tiny-engine');
     const { init, initHook, HOOK_NAME } = engine;
@@ -100,6 +104,7 @@ async function startApp() {
                 // 出码链路补丁：将 MpIcon 的 iconTag 转为 <i-*> 子节点，避免出码产生无效 iconTag 属性
                 patchGenerateCodeServiceForMpIcon();
                 patchCanvasGetSchemaForMpIcon();
+                setupMaterialStartupLoader();
             }
         }
     });
