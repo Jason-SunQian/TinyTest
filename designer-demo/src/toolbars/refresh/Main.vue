@@ -56,10 +56,35 @@ export default {
         const refreshResource = () => {
             // 清空区块缓存(不能清空组件缓存)，保证画布刷新后可以重新注册最新的区块资源
             useMaterial().clearBlockResources();
-            // 因为webcomponents无法重复注册，所以需要刷新内部iframe
-            useCanvas().canvasApi.value.getDocument().location.reload();
-            // 通知画布更新完成
-            publish({ topic: 'canvas_refreshed' });
+            const canvasDoc = useCanvas().canvasApi.value.getDocument();
+            const frameEl = canvasDoc.defaultView?.frameElement;
+            const isSrcdocCanvas =
+                canvasDoc.location?.href === 'about:srcdoc' ||
+                !!frameEl?.getAttribute('srcdoc');
+            // 保持原插件“刷新画布上下文”语义：src 模式沿用 reload，srcdoc 模式改为父层可控重建 iframe。
+            if (isSrcdocCanvas) {
+                publish({
+                    topic: 'canvas_refresh_request',
+                    data: { mode: 'srcdoc-remount', from: REFRESH_PLUGIN_ID }
+                });
+                return;
+            }
+            try {
+                // 因为 webcomponents 无法重复注册，所以需要刷新内部 iframe
+                canvasDoc.location.reload();
+                // 通知画布更新完成
+                publish({ topic: 'canvas_refreshed' });
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    '[RefreshToolbar] iframe reload failed, fallback to srcdoc remount request:',
+                    error
+                );
+                publish({
+                    topic: 'canvas_refresh_request',
+                    data: { mode: 'srcdoc-remount', from: REFRESH_PLUGIN_ID }
+                });
+            }
         };
 
         const refreshBlock = async () => {

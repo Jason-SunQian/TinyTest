@@ -40,6 +40,7 @@
             <template v-if="!loading">
                 <iframe
                     id="canvas"
+                    :key="iframeRenderKey"
                     ref="iframe"
                     :[srcAttrName]="canvasSrc || iframeSrcdoc"
                     style="border: none; width: 100%; height: 100%"
@@ -158,6 +159,7 @@ export default {
         const insertPanel = ref<HTMLElement | null>(null);
         const insertPosition = ref<boolean | Record<string, unknown>>(false);
         const loading = computed(() => useCanvas().isLoading());
+        const iframeRenderKey = ref(0);
         const showSettingModel = ref(false);
         const target = ref<EventTarget | null>(null);
         const srcAttrName = computed(() =>
@@ -736,11 +738,28 @@ export default {
                 }
             );
         };
+        const refreshSubscriber = 'canvas-container-refresh';
+        const handleCanvasRefreshRequest = (payload?: { mode?: string }) => {
+            const mode = payload?.mode;
+            if (mode !== 'srcdoc-remount') {
+                return;
+            }
+            // srcdoc 模式下避免直接 location.reload() 导致空白，改为父层重建 iframe。
+            iframeRenderKey.value += 1;
+            setTimeout(() => {
+                useMessage().publish({ topic: 'canvas_refreshed' });
+            }, 0);
+        };
 
         onMounted(() => {
             run(iframe);
             // 添加消息监听器
             window.addEventListener('message', handleImageProxyMessage);
+            useMessage().subscribe({
+                topic: 'canvas_refresh_request',
+                subscriber: refreshSubscriber,
+                callback: handleCanvasRefreshRequest
+            });
         });
         onUnmounted(() => {
             // 移除消息监听器
@@ -749,6 +768,10 @@ export default {
                 removeHotkeyEvent(iframe.value.contentDocument);
             }
             window.removeEventListener('message', updateI18n, false);
+            useMessage().unsubscribe({
+                topic: 'canvas_refresh_request',
+                subscriber: refreshSubscriber
+            });
         });
 
         document.addEventListener('beforeCanvasReady', beforeCanvasReady);
@@ -786,6 +809,7 @@ export default {
             insertPosition,
             insertContainer,
             loading,
+            iframeRenderKey,
             srcAttrName,
             iframeSrcdoc,
             isMultiDragging,
