@@ -14,7 +14,7 @@ export function patchMrRadioGroupModelBinding(
     const mv = props.modelValue;
     if (!isModelValueJsExpression(mv)) {
         const stateKey = allocateIndexedStateKey(rootState, 'mrRadioGroup');
-        const children = schema.children as Array<SchemaNode> | undefined;
+        const children = schema.children as SchemaNode[] | undefined;
         const firstRadioNode = Array.isArray(children)
             ? children.find(c => c?.componentName === 'MrRadio')
             : undefined;

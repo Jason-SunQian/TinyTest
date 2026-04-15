@@ -49,8 +49,11 @@ function getBundleUrls(): string[] {
 
     /* eslint-disable no-console -- 排障：确认 bundleUrls 的来源（config/window/env） */
     try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const isVsCodeEnv = (window as any)?.vscode || (window as any)?.vscodeBridge;
+        const win = window as Window & {
+            vscode?: unknown;
+            vscodeBridge?: unknown;
+        };
+        const isVsCodeEnv = !!(win.vscode || win.vscodeBridge);
         if (typeof window !== 'undefined' && isVsCodeEnv && console?.log) {
             console.log('[BundleUrls] 来源拆分:', {
                 fromConfig: configUrls,

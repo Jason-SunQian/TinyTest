@@ -7,7 +7,10 @@ function materialUrlsFromEnv() {
     try {
         const raw = import.meta.env.VITE_MATERIAL_BUNDLE_URLS;
         if (typeof raw !== 'string' || !raw.trim()) return [];
-        return raw.split(',').map(s => s.trim()).filter(Boolean);
+        return raw
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean);
     } catch {
         return [];
     }

@@ -1,5 +1,6 @@
 import type { Node } from '@/components/canvas/types';
 import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
+
 import type { ExternalDropServices } from '../types';
 import { getClonedPageState } from '../utils';
 
@@ -11,11 +12,14 @@ export function handleMrRadioGroupExternalDrop(
     const stateObj = getClonedPageState(getSchema);
     const stateKey = allocateIndexedStateKey(stateObj, 'mrRadioGroup');
 
-    const firstRadioName = Array.isArray(insertData.children)
-        ? insertData.children.find(
-              (child: any) => child?.componentName === 'MrRadio'
-          )?.props?.name
+    const firstRadio = Array.isArray(insertData.children)
+        ? (insertData.children.find(
+              (childRaw: unknown) =>
+                  (childRaw as { componentName?: string })?.componentName ===
+                  'MrRadio'
+          ) as { props?: { name?: unknown } } | undefined)
         : undefined;
+    const firstRadioName = firstRadio?.props?.name;
     stateObj[stateKey] = firstRadioName ?? '';
     updateSchema({ state: stateObj });
 

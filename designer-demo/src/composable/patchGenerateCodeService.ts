@@ -1,18 +1,32 @@
 import { getMetaApi } from '@opentiny/tiny-engine-meta-register';
 
-type AnyObj = Record<string, any>;
+type SchemaNode = {
+    componentName?: string;
+    props?: Record<string, unknown>;
+    children?: unknown;
+};
+type GenerateCodeServiceLike = {
+    generatePageCode?: (
+        schema: unknown,
+        componentsMap: unknown,
+        opts?: unknown
+    ) => unknown;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- 历史私有标记名，避免重复打补丁
+    __patchedMpIcon?: boolean;
+};
 
 function normalizeIconTag(v: unknown): string {
     const s = typeof v === 'string' ? v.trim() : '';
     return s.startsWith('i-') ? s : '';
 }
 
-function patchMpIconNode(node: AnyObj): void {
+function patchMpIconNode(node: SchemaNode): void {
     if (!node || typeof node !== 'object') return;
     const name = node.componentName;
     if (name !== 'MpIcon' && name !== 'mp-icon') return;
 
-    const props = (node.props && typeof node.props === 'object' ? node.props : {}) as AnyObj;
+    const props =
+        node.props && typeof node.props === 'object' ? node.props : {};
     node.props = props;
 
     // 物料里已移除 testId，但历史 schema 里可能还残留；统一清掉避免出码带无效属性
@@ -22,14 +36,15 @@ function patchMpIconNode(node: AnyObj): void {
     if (!iconTag) return;
 
     const iconChild = { componentName: iconTag, props: {} };
-    const children = node.children;
+    const { children } = node;
     if (!children) {
         node.children = [iconChild];
     } else if (Array.isArray(children)) {
-        const first = children[0];
+        const [first] = children;
         if (first && typeof first === 'object') {
-            first.componentName = iconTag;
-            if (!first.props) first.props = {};
+            const firstNode = first as SchemaNode;
+            firstNode.componentName = iconTag;
+            if (!firstNode.props) firstNode.props = {};
         } else {
             children.unshift(iconChild);
         }
@@ -41,20 +56,22 @@ function patchMpIconNode(node: AnyObj): void {
     delete props.iconTag;
 }
 
-function patchMpCellNode(node: AnyObj): void {
+function patchMpCellNode(node: SchemaNode): void {
     if (!node || typeof node !== 'object') return;
     const name = node.componentName;
     if (name !== 'MpCell' && name !== 'mp-cell') return;
-    const props = (node.props && typeof node.props === 'object' ? node.props : {}) as AnyObj;
+    const props =
+        node.props && typeof node.props === 'object' ? node.props : {};
     node.props = props;
     if ('testId' in props) delete props.testId;
 }
 
-function walkSchema(node: any): void {
+function walkSchema(node: unknown): void {
     if (!node || typeof node !== 'object') return;
-    patchMpIconNode(node as AnyObj);
-    patchMpCellNode(node as AnyObj);
-    const children = (node as AnyObj).children;
+    const schemaNode = node as SchemaNode;
+    patchMpIconNode(schemaNode);
+    patchMpCellNode(schemaNode);
+    const { children } = schemaNode;
     if (Array.isArray(children)) children.forEach(walkSchema);
 }
 
@@ -64,12 +81,18 @@ function walkSchema(node: any): void {
  * - 在 generatePageCode 前统一把 MpIcon.props.iconTag 转成 children 的 <i-*> 节点
  */
 export function patchGenerateCodeServiceForMpIcon(): void {
-    const svc = getMetaApi('engine.service.generateCode') as any;
+    const svc = getMetaApi(
+        'engine.service.generateCode'
+    ) as GenerateCodeServiceLike;
     if (!svc || typeof svc.generatePageCode !== 'function') return;
-    if ((svc as AnyObj).__patchedMpIcon === true) return;
+    if (svc.__patchedMpIcon === true) return;
 
     const orig = svc.generatePageCode.bind(svc);
-    svc.generatePageCode = (schema: any, componentsMap: any, opts?: any) => {
+    svc.generatePageCode = (
+        schema: unknown,
+        componentsMap: unknown,
+        opts?: unknown
+    ) => {
         try {
             walkSchema(schema);
         } catch {
@@ -77,6 +100,5 @@ export function patchGenerateCodeServiceForMpIcon(): void {
         }
         return orig(schema, componentsMap, opts);
     };
-    (svc as AnyObj).__patchedMpIcon = true;
+    svc.__patchedMpIcon = true;
 }
-

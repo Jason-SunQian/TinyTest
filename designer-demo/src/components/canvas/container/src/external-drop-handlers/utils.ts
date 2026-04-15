@@ -1,4 +1,6 @@
-export function getClonedPageState(getSchema: () => unknown): Record<string, unknown> {
+export function getClonedPageState(
+    getSchema: () => unknown
+): Record<string, unknown> {
     const rootSchema = getSchema();
     const currentState =
         rootSchema && typeof rootSchema === 'object'

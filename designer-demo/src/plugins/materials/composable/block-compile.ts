@@ -150,8 +150,8 @@ export const getBlockFromMaterialStore = (
     if (!script) {
         /* eslint-disable no-console -- 诊断物料解析 */
         if (console?.warn && tryNames[0]) {
-            const matAny = mat as any;
-            const npmAny = npm as any;
+            const matObj = mat as Record<string, unknown> | null;
+            const npmObj = npm as Record<string, unknown> | undefined;
             console.warn(
                 '[Materials] getBlockFromMaterialStore 未找到',
                 tryNames[0],
@@ -160,11 +160,11 @@ export const getBlockFromMaterialStore = (
                 'script=',
                 script || '无',
                 'matKeys=',
-                matAny && typeof matAny === 'object' ? Object.keys(matAny) : [],
+                matObj && typeof matObj === 'object' ? Object.keys(matObj) : [],
                 'npmKeys=',
-                npmAny && typeof npmAny === 'object' ? Object.keys(npmAny) : [],
+                npmObj && typeof npmObj === 'object' ? Object.keys(npmObj) : [],
                 'npm.script=',
-                npmAny?.script
+                npmObj?.script
             );
         }
         /* eslint-enable no-console */

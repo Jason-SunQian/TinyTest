@@ -123,8 +123,9 @@ watch(
         }
         isNormalizing = true;
         // 规范化每个 item
-        const normalizedUtils = newUtils.map(item => {
+        newUtils.forEach((item, index) => {
             const normalized = normalizeUtilsItem(item);
+            if (!normalized) return;
             // 如果数据有变化，更新原数组中的该项
             if (JSON.stringify(normalized) !== JSON.stringify(item)) {
                 // 直接修改原数组项，避免触发新的 watch
@@ -134,7 +135,6 @@ watch(
                     newUtils[index].content = normalized.content;
                 }
             }
-            return normalized;
         });
         isNormalizing = false;
     },
@@ -327,7 +327,10 @@ const fetchResource = async ({ isInit = true } = {}) => {
     }
 
     const materialApi = getMetaApi('engine.service.material') as {
-        initMaterial: (opts?: { isInit?: boolean; appData?: Record<string, unknown> }) => void;
+        initMaterial: (opts?: {
+            isInit?: boolean;
+            appData?: Record<string, unknown>;
+        }) => void;
         fetchMaterial: () => Promise<void>;
     };
     materialApi.initMaterial({ isInit, appData });

@@ -20,12 +20,24 @@ import { patchGenerateCodeServiceForMpIcon } from './composable/patchGenerateCod
 import { patchCanvasGetSchemaForMpIcon } from './composable/patchCanvasGetSchema';
 import { setupMaterialStartupLoader } from './composable/materialStartupLoader';
 
+type TinyEngineModule = {
+    init: (options: Record<string, unknown>) => void;
+    initHook: (
+        hookName: unknown,
+        handler: unknown,
+        options?: { useDefaultExport?: boolean }
+    ) => void;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    HOOK_NAME: { useNotify: unknown };
+};
+
 async function startApp() {
     // VSCode 环境默认过滤刷屏日志，保留排障关键日志（可用 localStorage.TINY_LOG='all' 关闭过滤）
     setupLogFilter();
     const registry = await import('../registry');
-    const engine: any = await import('@opentiny/tiny-engine');
-    const { init, initHook, HOOK_NAME } = engine;
+    const engine = (await import('@opentiny/tiny-engine')) as TinyEngineModule;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { init, initHook, HOOK_NAME: hookNameMap } = engine;
 
     init({
         // 合并多个注册表
@@ -40,7 +52,7 @@ async function startApp() {
                 // 确保国际化在应用创建前加载
                 loadDesignerI18n();
                 // 覆盖 useNotify hook，使用国际化版本
-                initHook(HOOK_NAME.useNotify, useNotifyI18n, {
+                initHook(hookNameMap.useNotify, useNotifyI18n, {
                     useDefaultExport: true
                 });
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）

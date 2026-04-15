@@ -14,6 +14,7 @@ type ModelBindingPatcher = (
 ) => void;
 
 const PATCHERS: Record<string, ModelBindingPatcher> = {
+    /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与 schema componentName 对齐 */
     MpIcon: patchMpIconIconTagToChild,
     'mp-icon': patchMpIconIconTagToChild,
     MpTags: patchMpTagsModelBinding,
@@ -24,6 +25,7 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
     MrRadioGroup: patchMrRadioGroupModelBinding,
     MrCheckboxGroup: patchMrCheckboxGroupModelBinding
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 /** 保存/预览前：把常量 modelValue 等改写为 this.state.xxx（与拖拽落盘 external-drop-handlers 配套） */
 export function applyModelBindingSchemaPatch(

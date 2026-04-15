@@ -1,7 +1,16 @@
 import type { Node } from '@/components/canvas/types';
 import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
+
 import type { ExternalDropServices } from '../types';
 import { getClonedPageState } from '../utils';
+
+type MethodMap = Record<
+    string,
+    {
+        type: 'JSFunction';
+        value: string;
+    }
+>;
 
 /** MrForm：子 MpInput/MrField 绑定到嵌套 state + 演示 methods */
 export function handleMrFormExternalDrop(
@@ -14,7 +23,11 @@ export function handleMrFormExternalDrop(
 
     const formState: Record<string, unknown> = {};
     if (Array.isArray(insertData.children)) {
-        insertData.children.forEach((child: any, idx: number) => {
+        insertData.children.forEach((childRaw: unknown, idx: number) => {
+            const child = childRaw as {
+                componentName?: string;
+                props?: Record<string, unknown>;
+            };
             if (
                 child?.componentName !== 'MpInput' &&
                 child?.componentName !== 'MrField'
@@ -39,15 +52,17 @@ export function handleMrFormExternalDrop(
     stateObj.formDemoSubmitEnabled = false;
     stateObj.formDemoLastSubmit = null;
 
+    const schemaObj =
+        rootSchema && typeof rootSchema === 'object'
+            ? (rootSchema as { methods?: unknown })
+            : null;
+    const currentMethods = schemaObj?.methods;
     const methodsPrev =
-        rootSchema &&
-        typeof rootSchema === 'object' &&
-        (rootSchema as any).methods &&
-        typeof (rootSchema as any).methods === 'object'
-            ? { ...(rootSchema as any).methods }
+        currentMethods && typeof currentMethods === 'object'
+            ? { ...(currentMethods as MethodMap) }
             : {};
-    if (!(methodsPrev as any).onDemoFormRecalculateSubmit) {
-        (methodsPrev as any).onDemoFormRecalculateSubmit = {
+    if (!methodsPrev.onDemoFormRecalculateSubmit) {
+        methodsPrev.onDemoFormRecalculateSubmit = {
             type: 'JSFunction',
             value:
                 'function onDemoFormRecalculateSubmit(value) {\n' +
@@ -61,8 +76,8 @@ export function handleMrFormExternalDrop(
                 '}\n'
         };
     }
-    if (!(methodsPrev as any).onDemoFormSubmit) {
-        (methodsPrev as any).onDemoFormSubmit = {
+    if (!methodsPrev.onDemoFormSubmit) {
+        methodsPrev.onDemoFormSubmit = {
             type: 'JSFunction',
             value:
                 'function onDemoFormSubmit(values) {\n' +

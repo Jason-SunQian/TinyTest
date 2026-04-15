@@ -2,13 +2,13 @@ type ConsoleMethod = (...args: unknown[]) => void;
 
 type LogFilterOptions = {
     /** 默认只放行这些关键字前缀/命中项 */
-    allow: Array<RegExp>;
+    allow: RegExp[];
     /** 每条“同样的首参字符串”最多放行次数，超过后静音（避免刷屏卡顿） */
     maxRepeats: number;
 };
 
 function toKey(args: unknown[]): string {
-    const a0 = args[0];
+    const [a0] = args;
     if (typeof a0 === 'string') return a0;
     if (a0 instanceof Error) return a0.message || a0.name;
     try {
@@ -18,9 +18,11 @@ function toKey(args: unknown[]): string {
     }
 }
 
-function shouldAllow(args: unknown[], allow: Array<RegExp>): boolean {
+function shouldAllow(args: unknown[], allow: RegExp[]): boolean {
     const joined = args
-        .map(a => (typeof a === 'string' ? a : a instanceof Error ? a.message : ''))
+        .map(a =>
+            typeof a === 'string' ? a : a instanceof Error ? a.message : ''
+        )
         .filter(Boolean)
         .join(' ');
     return allow.some(r => r.test(joined));
@@ -42,9 +44,8 @@ export function setupLogFilter() {
     })();
     if (mode === 'all') return;
 
-    const isVsCodeEnv =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any)?.vscode || (window as any)?.vscodeBridge;
+    const win = window as Window & { vscode?: unknown; vscodeBridge?: unknown };
+    const isVsCodeEnv = !!(win.vscode || win.vscodeBridge);
     if (!isVsCodeEnv) return;
 
     const opts: LogFilterOptions = {
@@ -116,7 +117,7 @@ export function setupLogFilter() {
 
     window.addEventListener('unhandledrejection', evt => {
         if (securityErrorReported) return;
-        const r: any = (evt as PromiseRejectionEvent).reason;
+        const r: unknown = (evt as PromiseRejectionEvent).reason;
         const msg =
             r instanceof Error ? r.message : typeof r === 'string' ? r : '';
         if (/SecurityError/i.test(msg) || /Blocked a frame/i.test(msg)) {
@@ -130,4 +131,3 @@ export function setupLogFilter() {
         }
     });
 }
-

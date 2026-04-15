@@ -1,4 +1,7 @@
-import { allocateIndexedStateKey, isModelValueJsExpression } from '@/composable/modelBindingShared';
+import {
+    allocateIndexedStateKey,
+    isModelValueJsExpression
+} from '@/composable/modelBindingShared';
 
 import type { RootStateBag, SchemaNode } from './types';
 
@@ -8,7 +11,7 @@ export function patchMrFormModelBinding(
     schema: SchemaNode,
     rootState: RootStateBag
 ): void {
-    const children = schema.children as Array<SchemaNode> | undefined;
+    const children = schema.children as SchemaNode[] | undefined;
 
     const getStateKeyFromChild = (ch: SchemaNode): string | null => {
         const component = ch?.componentName;

@@ -1,23 +1,15 @@
+import { useCanvas } from '@opentiny/tiny-engine-meta-register';
+
 import {
     allocateIndexedStateKey,
     isModelValueJsExpression
 } from '@/composable/modelBindingShared';
-import { useCanvas } from '@opentiny/tiny-engine-meta-register';
 
 import type { SchemaNode } from './types';
 
 /**
  * generateNode 阶段：在合并 snippet 后、返回节点前，补齐页面 state（如 MpTags 与 snippet 已绑 mpTags1）。
  */
-export function applyGenerateNodeModelPatches(
-    component: string,
-    schema: SchemaNode
-): void {
-    if (component === 'MpTags') {
-        patchGenerateNodeMpTags(schema);
-    }
-}
-
 function patchGenerateNodeMpTags(schema: SchemaNode): void {
     try {
         const pageSchema = useCanvas().getSchema?.() as
@@ -34,10 +26,9 @@ function patchGenerateNodeMpTags(schema: SchemaNode): void {
 
         const mv = (schema.props as Record<string, unknown> | undefined)
             ?.modelValue;
-        const mvExpr =
-            isModelValueJsExpression(mv)
-                ? (mv as Record<string, unknown>).value
-                : undefined;
+        const mvExpr = isModelValueJsExpression(mv)
+            ? (mv as Record<string, unknown>).value
+            : undefined;
         const m =
             typeof mvExpr === 'string'
                 ? /^this\.state\.(mpTags\d+)$/.exec(mvExpr.trim())
@@ -61,3 +52,14 @@ function patchGenerateNodeMpTags(schema: SchemaNode): void {
         /* 与原先 generateNode 一致：静默失败 */
     }
 }
+
+function applyGenerateNodeModelPatches(
+    component: string,
+    schema: SchemaNode
+): void {
+    if (component === 'MpTags') {
+        patchGenerateNodeMpTags(schema);
+    }
+}
+
+export { applyGenerateNodeModelPatches };

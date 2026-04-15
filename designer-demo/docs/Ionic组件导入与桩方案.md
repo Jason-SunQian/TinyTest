@@ -216,11 +216,11 @@
 3. 画布选中态（蓝色边框）是设计器选中态，不是桩样式；取消选中后下划线应可见
 4. 出码异常时检查子按钮 value 是否重复
 5. 子按钮对齐错位时检查 `constants.ts` 中 `COMPONENTS_SKIP_BASE_STYLE` 是否包含该组件
-5. （更新）当前默认不会注入 `component-base-style`，也会在拖拽/出码前剥离；若仍错位，请按上文「处理（更新）」排查桩样式与 value 唯一性。
-6. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
-7. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.10 节
-8. 单独拖入的 MrBackButton 无返回箭头 / Default Href 为空：见 **§2.8**；确认设计器已加载 `patchPropertiesGetProps` 对 MrBackButton 的补全
-9. `MrTitle` 放到 `MrContent` 内不显示：确认 `mr-title-stub` 不再在非 Header 场景绝对定位；本次已修复设计器画布里 `mr-content + MrTitle` 可正常渲染
+6. （更新）当前默认不会注入 `component-base-style`，也会在拖拽/出码前剥离；若仍错位，请按上文「处理（更新）」排查桩样式与 value 唯一性。
+7. MrLabel 运行时不显示：检查是否误用 `label` 属性；设计器已做 `props.label` → `children` 自动转换，出码应正确；manifest 建议改为 `children` + InputConfigurator
+8. 业务组件画布显示 i18n key：组件用 `$t` 时，做 canvas 桩并 `import { t as $t } from '../vue-i18n'`，在 FALLBACK 中补充 key；详见 2.10 节
+9. 单独拖入的 MrBackButton 无返回箭头 / Default Href 为空：见 **§2.8**；确认设计器已加载 `patchPropertiesGetProps` 对 MrBackButton 的补全
+10. `MrTitle` 放到 `MrContent` 内不显示：确认 `mr-title-stub` 不再在非 Header 场景绝对定位；本次已修复设计器画布里 `mr-content + MrTitle` 可正常渲染
 
 ---
 

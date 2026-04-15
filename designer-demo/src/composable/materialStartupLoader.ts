@@ -15,21 +15,36 @@ type ResourceApi = {
 
 type GetMetaApi = (id: string) => unknown;
 
-const pickMaterialsPayload = (v: any) => {
+const pickMaterialsPayload = (v: unknown) => {
     if (!v || typeof v !== 'object') return undefined;
+    const dataLevel1 = (v as { data?: unknown }).data;
+    const dataLevel2 =
+        dataLevel1 && typeof dataLevel1 === 'object'
+            ? (dataLevel1 as { data?: unknown }).data
+            : undefined;
+    const dataLevel3 =
+        dataLevel2 && typeof dataLevel2 === 'object'
+            ? (dataLevel2 as { data?: unknown }).data
+            : undefined;
     const candidate =
-        v.materials ||
-        v?.data?.materials ||
-        v?.data?.data?.materials ||
-        v?.data?.data?.data?.materials ||
-        v?.data ||
-        v?.data?.data;
-    const isMaterialLike = (x: any) =>
+        (v as { materials?: unknown }).materials ||
+        (dataLevel1 &&
+            typeof dataLevel1 === 'object' &&
+            (dataLevel1 as { materials?: unknown }).materials) ||
+        (dataLevel2 &&
+            typeof dataLevel2 === 'object' &&
+            (dataLevel2 as { materials?: unknown }).materials) ||
+        (dataLevel3 &&
+            typeof dataLevel3 === 'object' &&
+            (dataLevel3 as { materials?: unknown }).materials) ||
+        dataLevel1 ||
+        dataLevel2;
+    const isMaterialLike = (x: unknown) =>
         x &&
         typeof x === 'object' &&
-        (Array.isArray(x.components) ||
-            Array.isArray(x.blocks) ||
-            Array.isArray(x.packages));
+        (Array.isArray((x as { components?: unknown[] }).components) ||
+            Array.isArray((x as { blocks?: unknown[] }).blocks) ||
+            Array.isArray((x as { packages?: unknown[] }).packages));
     if (isMaterialLike(v)) return v;
     if (isMaterialLike(candidate)) return candidate;
     return undefined;
@@ -81,7 +96,9 @@ const ensureInitialMaterialsLoad = async () => {
                 await forceLoadFromBundleUrls(getMetaApi);
                 return;
             }
-            const materialApi = getMetaApi('engine.service.material') as MaterialApi;
+            const materialApi = getMetaApi(
+                'engine.service.material'
+            ) as MaterialApi;
             if (typeof materialApi?.refreshMaterial === 'function') {
                 await materialApi.refreshMaterial();
                 await forceLoadFromBundleUrls(getMetaApi);
@@ -118,7 +135,9 @@ const setupAssetBundleUpdateListener = () => {
             const { getMetaApi } = await import(
                 '@opentiny/tiny-engine-meta-register'
             );
-            const materialApi = getMetaApi('engine.service.material') as MaterialApi;
+            const materialApi = getMetaApi(
+                'engine.service.material'
+            ) as MaterialApi;
             if (typeof materialApi?.refreshMaterial === 'function') {
                 await materialApi.refreshMaterial();
             }
@@ -129,18 +148,17 @@ const setupAssetBundleUpdateListener = () => {
             isRefreshingFromAssetUpdate = false;
             if (hasPendingRefresh) {
                 hasPendingRefresh = false;
-                refreshMaterialsFromAssetUpdate().catch(() => {});
+                refreshMaterialsFromAssetUpdate().catch(() => undefined);
             }
         }
     };
 
     window.addEventListener('tiny:asset-bundles-updated', () => {
-        refreshMaterialsFromAssetUpdate().catch(() => {});
+        refreshMaterialsFromAssetUpdate().catch(() => undefined);
     });
 };
 
 export const setupMaterialStartupLoader = () => {
-    ensureInitialMaterialsLoad().catch(() => {});
+    ensureInitialMaterialsLoad().catch(() => undefined);
     setupAssetBundleUpdateListener();
 };
-

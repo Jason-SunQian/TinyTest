@@ -1,5 +1,6 @@
-import type { Node } from '@/components/canvas/types';
 import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
+import type { Node } from '@/components/canvas/types';
+
 import type { ExternalDropServices } from '../types';
 import { getClonedPageState } from '../utils';
 
@@ -14,10 +15,15 @@ export function handleMpTagsExternalDrop(
     const mv = insertData.props.modelValue;
 
     let stateKey = '';
-    if (mv && typeof mv === 'object' && (mv as { type?: string }).type === 'JSExpression') {
+    if (
+        mv &&
+        typeof mv === 'object' &&
+        (mv as { type?: string }).type === 'JSExpression'
+    ) {
         const expr = String((mv as { value?: string }).value || '').trim();
         const m = /^this\.state\.(mpTags\d+)$/.exec(expr);
-        if (m?.[1]) stateKey = m[1];
+        const [, matchedKey = ''] = m || [];
+        if (matchedKey) stateKey = matchedKey;
     }
 
     if (!stateKey) {

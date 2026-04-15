@@ -28,15 +28,15 @@ import {
 import { getMaterialContentsFromExtension } from '@/composable/useVSCodeBridge';
 import { normalizeCanvasDeps } from '@/composable/canvasDepsNormalizer';
 import {
-    getDesignerMaterialBaseUrl,
-    toAbsoluteMaterialUrl
-} from '@/utils/designerOrigin';
-import { BASE_STYLE_CLASS_NAME } from '../constants';
-import {
     getBundleUrls,
     getMaterialsBaseFromBundleUrls
 } from '@/composable/loadRuntimeFromBundles';
+import {
+    getDesignerMaterialBaseUrl,
+    toAbsoluteMaterialUrl
+} from '@/utils/designerOrigin';
 
+import { BASE_STYLE_CLASS_NAME } from '../constants';
 import meta from '../meta';
 
 import {
@@ -484,7 +484,6 @@ const addComponentSnippets = (
     return snippetsData;
 };
 
-
 // 业务物料依赖顺序：被依赖的包（如 mr-components）需先于依赖方（如 mp-card）加载，避免在 webview 中嵌套 import 失败
 const MATERIAL_LOAD_ORDER = ['@local/mr-components', '@local/mp-card'];
 
@@ -803,7 +802,6 @@ const parseMaterialsDependencies = (
     options?: { skipScriptPreload?: boolean; bundleBase?: string }
 ) => {
     const { packages, components } = materialBundle;
-    const _skipPreload = options?.skipScriptPreload === true;
     const bundleBase = options?.bundleBase || null;
 
     const { scripts: scriptsDeps, styles: stylesDeps } =
@@ -893,7 +891,9 @@ const parseMaterialsDependencies = (
     //
     // skipPreload 仅用于将来优化“远程 bundle 是否按需加载”策略；当前先保证功能正确。
     scripts.forEach(item => {
-        const existingDep = scriptsDeps.find(dep => dep.package === item.package);
+        const existingDep = scriptsDeps.find(
+            dep => dep.package === item.package
+        );
         if (existingDep) {
             existingDep.components = {
                 ...existingDep.components,
@@ -1001,7 +1001,8 @@ const normalizeMaterialAssetUrls = (
         const pkgKey = p.package || p.packageName || p.name;
         if (!pkgKey) return;
         pkgAssetMap.set(pkgKey, {
-            script: typeof p.script === 'string' ? toAbsString(p.script) : p.script,
+            script:
+                typeof p.script === 'string' ? toAbsString(p.script) : p.script,
             css: Array.isArray(p.css)
                 ? p.css.map(c => (typeof c === 'string' ? toAbsString(c) : c))
                 : typeof p.css === 'string'
@@ -1090,7 +1091,10 @@ const normalizeMaterialAssetUrls = (
         ...pkg,
         script: pkg.script ? toAbsString(pkg.script) : pkg.script,
         // 保持原类型：Package.css 在 types 里多为 string；这里只做 string 场景的绝对化
-        css: typeof pkg.css === 'string' ? toAbsString(pkg.css) : (pkg as any).css
+        css:
+            typeof pkg.css === 'string'
+                ? toAbsString(pkg.css)
+                : (pkg as any).css
     }));
 
     return {
@@ -1155,10 +1159,9 @@ const getMaterialsRes = async () => {
         const raw = await res.text();
         if (!res.ok) {
             throw new Error(
-                `HTTP ${res.status}: ${res.statusText}; content-type=${ct}; body=${raw.slice(
-                    0,
-                    200
-                )}`
+                `HTTP ${res.status}: ${
+                    res.statusText
+                }; content-type=${ct}; body=${raw.slice(0, 200)}`
             );
         }
         try {
@@ -1190,7 +1193,9 @@ const getMaterialsRes = async () => {
             const u = bundleUrls[i];
             if (r.status === 'rejected') {
                 const reason =
-                    r.reason instanceof Error ? r.reason.message : String(r.reason);
+                    r.reason instanceof Error
+                        ? r.reason.message
+                        : String(r.reason);
                 console.warn('[Materials] bundle 拉取失败:', u, reason);
             } else if (!r.value) {
                 console.warn('[Materials] bundle 返回空:', u);
@@ -1243,20 +1248,19 @@ const fetchMaterial = async () => {
                 // eslint-disable-next-line no-console
                 console.warn('[Materials] addMaterials 失败:', bundleUrl, e);
             }
-        } else {
+            // eslint-disable-next-line no-console
+        } else if (console?.warn) {
             /* eslint-disable no-console -- 诊断 bundle 返回结构不符合预期 */
-            if (console?.warn) {
-                const keys =
-                    response.value && typeof response.value === 'object'
-                        ? Object.keys(response.value as any)
-                        : [];
-                console.warn(
-                    '[Materials] bundle 结构不符合预期，未找到 materials:',
-                    bundleUrl,
-                    'keys=',
-                    keys
-                );
-            }
+            const keys =
+                response.value && typeof response.value === 'object'
+                    ? Object.keys(response.value as any)
+                    : [];
+            console.warn(
+                '[Materials] bundle 结构不符合预期，未找到 materials:',
+                bundleUrl,
+                'keys=',
+                keys
+            );
             /* eslint-enable no-console */
         }
     });
@@ -1367,9 +1371,7 @@ const initMaterial = ({
  * 从物料 schema 中提取默认 props（property + defaultValue），用于拖入画布时节点带默认值
  * 这样面板里配置的默认值（如 sceneType: 'D10100'）会在新节点上生效，且出码/预览能拿到该 prop
  */
-const getDefaultPropsFromMaterialSchema = (
-    material?: Partial<Resource>
-) => {
+const getDefaultPropsFromMaterialSchema = (material?: Partial<Resource>) => {
     if (!material) return {};
     const schema =
         material.schema ||
@@ -1591,8 +1593,9 @@ const generateNode = ({ type, component }) => {
     if (type === 'block') {
         schema.componentType = 'Block';
         // 同上：默认不注入 block-base-style（避免区块拖拽产生额外外边距）
-        schema.props.className = (snippet.props as Record<string, unknown> | undefined)
-            ?.className
+        schema.props.className = (
+            snippet.props as Record<string, unknown> | undefined
+        )?.className
             ? String((snippet.props as Record<string, unknown>).className || '')
             : '';
     }

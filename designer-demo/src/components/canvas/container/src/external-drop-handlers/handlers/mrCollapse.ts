@@ -1,4 +1,5 @@
 import type { Node } from '@/components/canvas/types';
+
 import type { ExternalDropServices } from '../types';
 import { getClonedPageState } from '../utils';
 
@@ -70,7 +71,7 @@ export function handleMrCollapseExternalDrop(
             value: 'item.value'
         };
         if (Array.isArray(firstChild.children) && firstChild.children[0]) {
-            const textNode = firstChild.children[0];
+            const [textNode] = firstChild.children;
             if (textNode.componentName === 'Text') {
                 textNode.props = textNode.props || {};
                 textNode.props.text = {

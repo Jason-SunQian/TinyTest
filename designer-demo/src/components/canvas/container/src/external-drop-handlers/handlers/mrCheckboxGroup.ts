@@ -1,5 +1,6 @@
 import type { Node } from '@/components/canvas/types';
 import { allocateIndexedStateKey } from '@/composable/modelBindingShared';
+
 import type { ExternalDropServices } from '../types';
 import { getClonedPageState } from '../utils';
 
