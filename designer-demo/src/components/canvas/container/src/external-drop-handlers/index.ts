@@ -7,6 +7,7 @@ import { handleMrFormExternalDrop } from './handlers/mrForm';
 import { handleMrRadioGroupExternalDrop } from './handlers/mrRadioGroup';
 import { handleMrSwitchExternalDrop } from './handlers/mrSwitch';
 import { handleMrToggleExternalDrop } from './handlers/mrToggle';
+import { handleMpCountryInputExternalDrop } from './handlers/mpCountryInput';
 import { handleMpTagsExternalDrop } from './handlers/mpTags';
 
 /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与物料 componentName 对齐 */
@@ -17,6 +18,7 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
     MrCollapse: handleMrCollapseExternalDrop,
     MrRadioGroup: handleMrRadioGroupExternalDrop,
     MrCheckboxGroup: handleMrCheckboxGroupExternalDrop,
+    MpCountryInput: handleMpCountryInputExternalDrop,
     MpTags: handleMpTagsExternalDrop
 };
 /* eslint-enable @typescript-eslint/naming-convention */

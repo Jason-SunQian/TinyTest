@@ -84,6 +84,16 @@ const forceLoadFromBundleUrls = async (getMetaApi: GetMetaApi) => {
 
 const ensureInitialMaterialsLoad = async () => {
     const { getMetaApi } = await import('@opentiny/tiny-engine-meta-register');
+    const isVsCodeEnv =
+        typeof window !== 'undefined' &&
+        ((window as Window & { vscode?: unknown; vscodeBridge?: unknown })
+            .vscode ||
+            (window as Window & { vscode?: unknown; vscodeBridge?: unknown })
+                .vscodeBridge);
+    const bundleUrls = getBundleUrls();
+    const hasHttpBundles = bundleUrls.some(
+        u => typeof u === 'string' && /^https?:\/\//.test(u)
+    );
     const maxAttempts = 12;
     const delayMs = 250;
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -91,7 +101,15 @@ const ensureInitialMaterialsLoad = async () => {
             const resourceApi = getMetaApi(
                 'engine.service.resource'
             ) as ResourceApi;
-            if (typeof resourceApi?.fetchResource === 'function') {
+            // VSCode + HTTP bundle（本地静态服务）场景下，跳过 fetchResource：
+            // fetchResource 会走 HttpService adapter -> proxyHttpRequest，容易对 http://localhost:3000/bundle.json 产生误报 404 toast。
+            // 此处直接走 forceLoadFromBundleUrls 的浏览器 fetch，更符合本地静态服务链路。
+            const shouldSkipFetchResource =
+                !!(isVsCodeEnv && hasHttpBundles);
+            if (
+                !shouldSkipFetchResource &&
+                typeof resourceApi?.fetchResource === 'function'
+            ) {
                 await resourceApi.fetchResource({ isInit: true });
                 await forceLoadFromBundleUrls(getMetaApi);
                 return;

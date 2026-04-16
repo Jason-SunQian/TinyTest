@@ -1146,13 +1146,6 @@ const setMaterial = (name: string, data: Resource) => {
  */
 const getMaterialsRes = async () => {
     const bundleUrls = getBundleUrls();
-    const isVsCodeEnv =
-        typeof window !== 'undefined' &&
-        ((window as unknown as { vscode?: unknown; vscodeBridge?: unknown })
-            .vscode ||
-            (window as unknown as { vscode?: unknown; vscodeBridge?: unknown })
-                .vscodeBridge);
-
     const fetchBundleJson = async (u: string) => {
         const res = await fetch(u, { cache: 'no-store' });
         const ct = res.headers.get('content-type') || '';
@@ -1174,7 +1167,6 @@ const getMaterialsRes = async () => {
     };
 
     const shouldBypassHttpService = (u: string) =>
-        isVsCodeEnv &&
         /^(https?:\/\/|vscode-webview:|vscode-resource:|data:)/.test(u);
 
     const materials = await Promise.allSettled(

@@ -270,6 +270,10 @@ const createVSCodeHttpAdapter = () => {
             }
 
             const method = config.method || 'get';
+            const normalizedMethod = method.toLowerCase();
+            const isAbsoluteHttpUrl =
+                requestUrl.startsWith('http://') ||
+                requestUrl.startsWith('https://');
 
             // 按优先级处理请求：
             // 1. 固定 Mock 接口 → 本地 mock
@@ -295,7 +299,32 @@ const createVSCodeHttpAdapter = () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let response: { data: any; locale?: string } = { data: null };
 
-            if (isFixedMock) {
+            // 对绝对 HTTP(S) GET（如本地静态服务 bundle.json）直接浏览器拉取，避免被误走 proxyHttpRequest 产生 404 toast。
+            if (isAbsoluteHttpUrl && normalizedMethod === 'get') {
+                const directRes = await fetch(requestUrl, { cache: 'no-store' });
+                const raw = await directRes.text();
+                let parsed: unknown = raw;
+                try {
+                    parsed = JSON.parse(raw);
+                } catch {
+                    // 非 JSON 响应保持原文
+                }
+                if (!directRes.ok) {
+                    const directError = {
+                        message: `HTTP ${directRes.status}: ${directRes.statusText}`,
+                        status: directRes.status,
+                        statusText: directRes.statusText,
+                        bodyPreview:
+                            typeof raw === 'string' ? raw.slice(0, 200) : ''
+                    };
+                    throw directError;
+                }
+                response = { data: parsed };
+                // eslint-disable-next-line no-console
+                console.log(
+                    `[HTTP Service] 直连返回: ${method.toUpperCase()} ${requestUrl}`
+                );
+            } else if (isFixedMock) {
                 const mockResult = await getMockData(
                     requestUrl,
                     method,
