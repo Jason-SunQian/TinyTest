@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention, no-inline-comments, line-comment-position, no-console, import/order */
-import { META_SERVICE, META_APP } from '@opentiny/tiny-engine-meta-register';
+import {
+    META_SERVICE,
+    META_APP
+} from '@opentiny/tiny-engine-meta-register';
 
 import engineConfig from './engine.config';
 import { HttpService } from './src/composable';
@@ -12,6 +15,7 @@ import CustomClean from './src/toolbars/clean/Main.vue';
 import CustomRefresh from './src/toolbars/refresh/Main.vue';
 import CustomMedia from './src/toolbars/media/Main.vue';
 import CustomPreview from './src/toolbars/preview/Main.vue';
+import CustomRedoUndo from './src/toolbars/redoundo/Main.vue';
 import CustomProps from './src/settings/props/Main.vue';
 import CustomOutlineTree from './src/plugins/tree/Main.vue';
 import CustomBlockManage from './src/plugins/block/Main.vue';
@@ -314,6 +318,19 @@ export default {
             },
             renderType: 'slot'
         }
+    },
+    [META_APP.RedoUndo]: {
+        id: 'engine.toolbars.redoundo.custom',
+        type: 'toolbars',
+        title: 'redoundo',
+        options: {
+            icon: {
+                undo: 'undo',
+                redo: 'redo'
+            },
+            renderType: 'slot'
+        },
+        entry: CustomRedoUndo
     },
     [META_APP.Props]: {
         id: 'engine.setting.props', // 使用官方 ID，确保 fixedPanels 能识别

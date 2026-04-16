@@ -19,6 +19,7 @@ import { setupLogFilter } from './utils/logFilter';
 import { patchGenerateCodeServiceForMpIcon } from './composable/patchGenerateCodeService';
 import { patchCanvasGetSchemaForMpIcon } from './composable/patchCanvasGetSchema';
 import { setupMaterialStartupLoader } from './composable/materialStartupLoader';
+import customUseHistory from './toolbars/redoundo/composable/useHistory';
 
 type TinyEngineModule = {
     init: (options: Record<string, unknown>) => void;
@@ -28,14 +29,14 @@ type TinyEngineModule = {
         options?: { useDefaultExport?: boolean }
     ) => void;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    HOOK_NAME: { useNotify: unknown };
+    HOOK_NAME: { useNotify: unknown; useHistory: unknown };
 };
 
 async function startApp() {
     // VSCode 环境默认过滤刷屏日志，保留排障关键日志（可用 localStorage.TINY_LOG='all' 关闭过滤）
     setupLogFilter();
     const registry = await import('../registry');
-    const engine = (await import('@opentiny/tiny-engine')) as TinyEngineModule;
+    const engine = (await import('@opentiny/tiny-engine')) as unknown as TinyEngineModule;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { init, initHook, HOOK_NAME: hookNameMap } = engine;
 
@@ -53,6 +54,10 @@ async function startApp() {
                 loadDesignerI18n();
                 // 覆盖 useNotify hook，使用国际化版本
                 initHook(hookNameMap.useNotify, useNotifyI18n, {
+                    useDefaultExport: true
+                });
+                // 强制替换 useHistory hook，避免 registry 深度合并导致 history 状态与方法错位
+                initHook(hookNameMap.useHistory, customUseHistory, {
                     useDefaultExport: true
                 });
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）

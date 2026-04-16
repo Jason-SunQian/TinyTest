@@ -52,6 +52,7 @@ export function setupLogFilter() {
         allow: [
             /^\[Materials\]/,
             /^\[useResource\]/,
+            /^\[RedoUndo\]/,
             /SecurityError/i,
             /Blocked a frame/i,
             /Failed to fetch dynamically imported module/i,
