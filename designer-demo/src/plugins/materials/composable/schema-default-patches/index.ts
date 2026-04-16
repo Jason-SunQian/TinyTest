@@ -7,6 +7,7 @@ import { patchMrSwitchModelBinding } from './mrSwitch';
 import { patchMrToggleModelBinding } from './mrToggle';
 import { patchMpIconIconTagToChild } from './mpIcon';
 import { patchMpBankInputModelBinding } from './mpBankInput';
+import { patchMpCityInputModelBinding } from './mpCityInput';
 import { patchMpCountryInputModelBinding } from './mpCountryInput';
 import { patchMpTagsModelBinding } from './mpTags';
 
@@ -20,6 +21,7 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
     MpIcon: patchMpIconIconTagToChild,
     'mp-icon': patchMpIconIconTagToChild,
     MpBankInput: patchMpBankInputModelBinding,
+    MpCityInput: patchMpCityInputModelBinding,
     MpCountryInput: patchMpCountryInputModelBinding,
     MpTags: patchMpTagsModelBinding,
     MrSwitch: patchMrSwitchModelBinding,
