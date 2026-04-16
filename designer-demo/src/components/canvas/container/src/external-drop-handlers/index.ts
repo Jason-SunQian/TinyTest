@@ -7,6 +7,7 @@ import { handleMrFormExternalDrop } from './handlers/mrForm';
 import { handleMrRadioGroupExternalDrop } from './handlers/mrRadioGroup';
 import { handleMrSwitchExternalDrop } from './handlers/mrSwitch';
 import { handleMrToggleExternalDrop } from './handlers/mrToggle';
+import { handleMpBankInputExternalDrop } from './handlers/mpBankInput';
 import { handleMpCountryInputExternalDrop } from './handlers/mpCountryInput';
 import { handleMpTagsExternalDrop } from './handlers/mpTags';
 
@@ -18,6 +19,7 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
     MrCollapse: handleMrCollapseExternalDrop,
     MrRadioGroup: handleMrRadioGroupExternalDrop,
     MrCheckboxGroup: handleMrCheckboxGroupExternalDrop,
+    MpBankInput: handleMpBankInputExternalDrop,
     MpCountryInput: handleMpCountryInputExternalDrop,
     MpTags: handleMpTagsExternalDrop
 };

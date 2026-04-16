@@ -6,6 +6,7 @@ import { patchMrRadioGroupModelBinding } from './mrRadioGroup';
 import { patchMrSwitchModelBinding } from './mrSwitch';
 import { patchMrToggleModelBinding } from './mrToggle';
 import { patchMpIconIconTagToChild } from './mpIcon';
+import { patchMpBankInputModelBinding } from './mpBankInput';
 import { patchMpCountryInputModelBinding } from './mpCountryInput';
 import { patchMpTagsModelBinding } from './mpTags';
 
@@ -18,6 +19,7 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
     /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与 schema componentName 对齐 */
     MpIcon: patchMpIconIconTagToChild,
     'mp-icon': patchMpIconIconTagToChild,
+    MpBankInput: patchMpBankInputModelBinding,
     MpCountryInput: patchMpCountryInputModelBinding,
     MpTags: patchMpTagsModelBinding,
     MrSwitch: patchMrSwitchModelBinding,
