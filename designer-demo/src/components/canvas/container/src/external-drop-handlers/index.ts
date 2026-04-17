@@ -11,6 +11,7 @@ import { handleMpBankInputExternalDrop } from './handlers/mpBankInput';
 import { handleMpCityInputExternalDrop } from './handlers/mpCityInput';
 import { handleMpCountryInputExternalDrop } from './handlers/mpCountryInput';
 import { handleMpDictInputExternalDrop } from './handlers/mpDictInput';
+import { handleMpTextareaExternalDrop } from './handlers/mpTextarea';
 import { handleMpTagsExternalDrop } from './handlers/mpTags';
 
 /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与物料 componentName 对齐 */
@@ -25,6 +26,7 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
     MpCityInput: handleMpCityInputExternalDrop,
     MpCountryInput: handleMpCountryInputExternalDrop,
     MpDictInput: handleMpDictInputExternalDrop,
+    MpTextarea: handleMpTextareaExternalDrop,
     MpTags: handleMpTagsExternalDrop
 };
 /* eslint-enable @typescript-eslint/naming-convention */
