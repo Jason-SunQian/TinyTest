@@ -11,6 +11,7 @@ import { handleMpBankInputExternalDrop } from './handlers/mpBankInput';
 import { handleMpCityInputExternalDrop } from './handlers/mpCityInput';
 import { handleMpCountryInputExternalDrop } from './handlers/mpCountryInput';
 import { handleMpDictInputExternalDrop } from './handlers/mpDictInput';
+import { handleMpMobileInputExternalDrop } from './handlers/mpMobileInput';
 import { handleMpTextareaExternalDrop } from './handlers/mpTextarea';
 import { handleMpTagsExternalDrop } from './handlers/mpTags';
 
@@ -26,6 +27,7 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
     MpCityInput: handleMpCityInputExternalDrop,
     MpCountryInput: handleMpCountryInputExternalDrop,
     MpDictInput: handleMpDictInputExternalDrop,
+    MpMobileInput: handleMpMobileInputExternalDrop,
     MpTextarea: handleMpTextareaExternalDrop,
     MpTags: handleMpTagsExternalDrop
 };

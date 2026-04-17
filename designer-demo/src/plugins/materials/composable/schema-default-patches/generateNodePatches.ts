@@ -273,12 +273,58 @@ function patchGenerateNodeMpTextarea(schema: SchemaNode): void {
     }
 }
 
+function patchGenerateNodeMpMobileInput(schema: SchemaNode): void {
+    try {
+        const pageSchema = useCanvas().getSchema?.() as
+            | { state?: Record<string, unknown> }
+            | undefined;
+        const rootState =
+            pageSchema?.state &&
+            typeof pageSchema.state === 'object' &&
+            !Array.isArray(pageSchema.state)
+                ? pageSchema.state
+                : pageSchema
+                ? ((pageSchema.state = {}) as Record<string, unknown>)
+                : {};
+
+        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        if (!schema.props) schema.props = props;
+        const mv = props.modelValue;
+        const mvExpr = isModelValueJsExpression(mv)
+            ? (mv as Record<string, unknown>).value
+            : undefined;
+        const m =
+            typeof mvExpr === 'string'
+                ? /^this\.state\.(mpMobileInput\d+)$/.exec(mvExpr.trim())
+                : null;
+        let stateKey = m?.[1] || '';
+        if (!stateKey) {
+            stateKey = allocateIndexedStateKey(rootState, 'mpMobileInput');
+            props.modelValue = {
+                type: 'JSExpression',
+                value: `this.state.${stateKey}`,
+                model: true
+            };
+        }
+        if (
+            stateKey &&
+            !Object.prototype.hasOwnProperty.call(rootState, stateKey)
+        ) {
+            rootState[stateKey] = '';
+        }
+    } catch {
+        /* 与原先 generateNode 一致：静默失败 */
+    }
+}
+
 function applyGenerateNodeModelPatches(
     component: string,
     schema: SchemaNode
 ): void {
     if (component === 'MpTags') {
         patchGenerateNodeMpTags(schema);
+    } else if (component === 'MpMobileInput') {
+        patchGenerateNodeMpMobileInput(schema);
     } else if (component === 'MpTextarea') {
         patchGenerateNodeMpTextarea(schema);
     } else if (component === 'MpDictInput') {
