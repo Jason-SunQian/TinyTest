@@ -11,6 +11,7 @@ import { patchMpCityInputModelBinding } from './mpCityInput';
 import { patchMpCountryInputModelBinding } from './mpCountryInput';
 import { patchMpDictInputModelBinding } from './mpDictInput';
 import { patchMpMobileInputModelBinding } from './mpMobileInput';
+import { patchMpMultiAmtModelBinding } from './mpMultiAmt';
 import { patchMpTextareaModelBinding } from './mpTextarea';
 import { patchMpTagsModelBinding } from './mpTags';
 
@@ -28,6 +29,7 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
     MpCountryInput: patchMpCountryInputModelBinding,
     MpDictInput: patchMpDictInputModelBinding,
     MpMobileInput: patchMpMobileInputModelBinding,
+    MpMultiAmt: patchMpMultiAmtModelBinding,
     MpTextarea: patchMpTextareaModelBinding,
     MpTags: patchMpTagsModelBinding,
     MrSwitch: patchMrSwitchModelBinding,

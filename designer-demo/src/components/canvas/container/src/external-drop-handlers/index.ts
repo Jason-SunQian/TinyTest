@@ -12,6 +12,7 @@ import { handleMpCityInputExternalDrop } from './handlers/mpCityInput';
 import { handleMpCountryInputExternalDrop } from './handlers/mpCountryInput';
 import { handleMpDictInputExternalDrop } from './handlers/mpDictInput';
 import { handleMpMobileInputExternalDrop } from './handlers/mpMobileInput';
+import { handleMpMultiAmtExternalDrop } from './handlers/mpMultiAmt';
 import { handleMpTextareaExternalDrop } from './handlers/mpTextarea';
 import { handleMpTagsExternalDrop } from './handlers/mpTags';
 
@@ -28,6 +29,7 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
     MpCountryInput: handleMpCountryInputExternalDrop,
     MpDictInput: handleMpDictInputExternalDrop,
     MpMobileInput: handleMpMobileInputExternalDrop,
+    MpMultiAmt: handleMpMultiAmtExternalDrop,
     MpTextarea: handleMpTextareaExternalDrop,
     MpTags: handleMpTagsExternalDrop
 };

@@ -1,5 +1,6 @@
 import { useCanvas } from '@opentiny/tiny-engine-meta-register';
 
+import { syncMpMultiAmtModelPropsAndState } from '@/composable/mpMultiAmtDesignerBinding';
 import {
     allocateIndexedStateKey,
     isModelValueJsExpression
@@ -317,12 +318,36 @@ function patchGenerateNodeMpMobileInput(schema: SchemaNode): void {
     }
 }
 
+function patchGenerateNodeMpMultiAmt(schema: SchemaNode): void {
+    try {
+        const pageSchema = useCanvas().getSchema?.() as
+            | { state?: Record<string, unknown> }
+            | undefined;
+        const rootState =
+            pageSchema?.state &&
+            typeof pageSchema.state === 'object' &&
+            !Array.isArray(pageSchema.state)
+                ? pageSchema.state
+                : pageSchema
+                ? ((pageSchema.state = {}) as Record<string, unknown>)
+                : {};
+
+        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        if (!schema.props) schema.props = props;
+        syncMpMultiAmtModelPropsAndState(props, rootState);
+    } catch {
+        /* 与原先 generateNode 一致：静默失败 */
+    }
+}
+
 function applyGenerateNodeModelPatches(
     component: string,
     schema: SchemaNode
 ): void {
     if (component === 'MpTags') {
         patchGenerateNodeMpTags(schema);
+    } else if (component === 'MpMultiAmt') {
+        patchGenerateNodeMpMultiAmt(schema);
     } else if (component === 'MpMobileInput') {
         patchGenerateNodeMpMobileInput(schema);
     } else if (component === 'MpTextarea') {
