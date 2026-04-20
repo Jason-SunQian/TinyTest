@@ -1,4 +1,4 @@
-import type { SchemaNode } from './types';
+import type { SchemaNode } from '@/plugins/materials/composable/schema-default-patches/types';
 
 function normalizeIconTag(v: unknown): string {
     const s = typeof v === 'string' ? v.trim() : '';

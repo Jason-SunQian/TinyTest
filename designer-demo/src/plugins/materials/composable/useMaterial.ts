@@ -61,7 +61,7 @@ import { syncSlotStringChildrenWithPropsChildren } from './slotChildrenPropsSync
 import {
     applyGenerateNodeModelPatches,
     applyModelBindingSchemaPatch
-} from './schema-default-patches';
+} from '@/plugins/materials/component-defaults/schema-patches';
 
 const { camelize, capitalize, deepClone } = utils;
 const { MATERIAL_TYPE } = constants;

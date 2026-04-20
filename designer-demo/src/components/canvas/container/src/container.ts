@@ -30,7 +30,7 @@ import { utils } from '@opentiny/tiny-engine-utils';
 import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import Builtin from '@/components/canvas/render/src/builtin/builtin.json';
 import { getBlockFromMaterialStore } from '@/plugins/materials/composable/block-compile';
-import { applyExternalDropComponentPatch } from './external-drop-handlers';
+import { applyExternalDropComponentPatch } from '@/plugins/materials/component-defaults/external-drop';
 /* eslint-disable import/no-cycle */
 import { useMultiSelect } from './composables/useMultiSelect';
 import type { Node, RootNode } from '@/components/canvas/types';

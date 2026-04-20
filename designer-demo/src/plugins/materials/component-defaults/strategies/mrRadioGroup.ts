@@ -3,18 +3,22 @@ import {
     isModelValueJsExpression
 } from '@/composable/modelBindingShared';
 
-import type { RootStateBag, SchemaNode } from './types';
+type SchemaNodeLike = {
+    componentName?: string;
+    props?: Record<string, unknown>;
+    children?: SchemaNodeLike[] | unknown;
+};
 
-export function patchMrRadioGroupModelBinding(
-    schema: SchemaNode,
-    rootState: RootStateBag
+export function syncMrRadioGroupModelValueAndState(
+    schema: SchemaNodeLike,
+    rootState: Record<string, unknown>
 ): void {
     const props = (schema.props as Record<string, unknown>) || {};
     if (!schema.props) schema.props = props;
     const mv = props.modelValue;
     if (!isModelValueJsExpression(mv)) {
         const stateKey = allocateIndexedStateKey(rootState, 'mrRadioGroup');
-        const children = schema.children as SchemaNode[] | undefined;
+        const children = schema.children as SchemaNodeLike[] | undefined;
         const firstRadioNode = Array.isArray(children)
             ? children.find(c => c?.componentName === 'MrRadio')
             : undefined;

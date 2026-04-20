@@ -3,20 +3,18 @@ import {
     isModelValueJsExpression
 } from '@/composable/modelBindingShared';
 
-import type { RootStateBag, SchemaNode } from './types';
+const RE_MOBILE_INPUT = /^this\.state\.(mpMobileInput\d+)$/;
 
-export function patchMpCountryInputModelBinding(
-    schema: SchemaNode,
-    rootState: RootStateBag
+export function syncMpMobileInputModelValueAndState(
+    props: Record<string, unknown>,
+    rootState: Record<string, unknown>
 ): void {
-    const props = (schema.props as Record<string, unknown>) || {};
-    if (!schema.props) schema.props = props;
     const mv = props.modelValue;
 
     if (isModelValueJsExpression(mv)) {
         const exprVal = (mv as Record<string, unknown>).value;
         if (typeof exprVal === 'string') {
-            const m = /^this\.state\.(mpCountryInput\d+)$/.exec(exprVal.trim());
+            const m = RE_MOBILE_INPUT.exec(exprVal.trim());
             const [, stateKey] = m ?? [];
             if (
                 typeof stateKey === 'string' &&
@@ -29,7 +27,7 @@ export function patchMpCountryInputModelBinding(
         return;
     }
 
-    const stateKey = allocateIndexedStateKey(rootState, 'mpCountryInput');
+    const stateKey = allocateIndexedStateKey(rootState, 'mpMobileInput');
     rootState[stateKey] = mv === undefined || mv === '' ? '' : mv;
     props.modelValue = {
         type: 'JSExpression',

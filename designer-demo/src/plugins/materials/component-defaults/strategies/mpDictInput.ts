@@ -3,20 +3,18 @@ import {
     isModelValueJsExpression
 } from '@/composable/modelBindingShared';
 
-import type { RootStateBag, SchemaNode } from './types';
+const RE_DICT_INPUT = /^this\.state\.(mpDictInput\d+)$/;
 
-export function patchMpBankInputModelBinding(
-    schema: SchemaNode,
-    rootState: RootStateBag
+export function syncMpDictInputModelValueAndState(
+    props: Record<string, unknown>,
+    rootState: Record<string, unknown>
 ): void {
-    const props = (schema.props as Record<string, unknown>) || {};
-    if (!schema.props) schema.props = props;
     const mv = props.modelValue;
 
     if (isModelValueJsExpression(mv)) {
         const exprVal = (mv as Record<string, unknown>).value;
         if (typeof exprVal === 'string') {
-            const m = /^this\.state\.(mpBankInput\d+)$/.exec(exprVal.trim());
+            const m = RE_DICT_INPUT.exec(exprVal.trim());
             const [, stateKey] = m ?? [];
             if (
                 typeof stateKey === 'string' &&
@@ -29,7 +27,7 @@ export function patchMpBankInputModelBinding(
         return;
     }
 
-    const stateKey = allocateIndexedStateKey(rootState, 'mpBankInput');
+    const stateKey = allocateIndexedStateKey(rootState, 'mpDictInput');
     rootState[stateKey] = mv === undefined || mv === '' ? '' : mv;
     props.modelValue = {
         type: 'JSExpression',

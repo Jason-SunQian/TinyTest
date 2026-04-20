@@ -1,43 +1,52 @@
-import type { Node } from '@/components/canvas/types';
+import {
+    allocateIndexedStateKey,
+    isModelValueJsExpression
+} from '@/composable/modelBindingShared';
 
-import type { ExternalDropServices } from '../types';
-import { getClonedPageState } from '../utils';
+type SchemaNodeLike = {
+    componentName?: string;
+    props?: Record<string, unknown>;
+    children?: SchemaNodeLike[] | unknown;
+    loop?: unknown;
+    loopArgs?: string[];
+};
 
-/** MrCollapse：v-model + 列表示例 state + 首个子项 loop */
-export function handleMrCollapseExternalDrop(
-    insertData: Node,
-    { getSchema, updateSchema }: ExternalDropServices
+export function syncMrCollapseModelValueAndState(
+    props: Record<string, unknown>,
+    rootState: Record<string, unknown>
 ): void {
-    const stateObj = getClonedPageState(getSchema);
+    const mv = props.modelValue;
+    if (!isModelValueJsExpression(mv)) {
+        const stateKey = allocateIndexedStateKey(rootState, 'mrCollapse');
+        rootState[stateKey] = Array.isArray(mv) ? mv : ['0'];
+        props.modelValue = {
+            type: 'JSExpression',
+            value: `this.state.${stateKey}`,
+            model: true
+        };
+    }
+}
 
+/** 仅供外部拖拽：保留历史 loop 示例注入行为 */
+export function applyMrCollapseExternalDropLoopDemo(
+    insertData: SchemaNodeLike,
+    rootState: Record<string, unknown>
+): void {
     let i = 1;
     let stateKey = `mrCollapse${i}`;
-    while (Object.prototype.hasOwnProperty.call(stateObj, stateKey)) {
+    while (Object.prototype.hasOwnProperty.call(rootState, stateKey)) {
         i += 1;
         stateKey = `mrCollapse${i}`;
     }
-
     const listStateKey = `mrCollapseItems${i}`;
-    stateObj[stateKey] = Array.isArray(insertData.props?.modelValue)
-        ? insertData.props.modelValue
-        : ['0'];
-    stateObj[listStateKey] = [
-        {
-            id: '1',
-            title: 'Item 1',
-            value: 'Value 1',
-            content: 'Content 1'
-        },
-        {
-            id: '2',
-            title: 'Item 2',
-            value: 'Value 2',
-            content: 'Content 2'
-        }
-    ];
-    updateSchema({ state: stateObj });
 
     insertData.props = insertData.props || {};
+    const mv = insertData.props.modelValue;
+    rootState[stateKey] = Array.isArray(mv) ? mv : ['0'];
+    rootState[listStateKey] = [
+        { id: '1', title: 'Item 1', value: 'Value 1', content: 'Content 1' },
+        { id: '2', title: 'Item 2', value: 'Value 2', content: 'Content 2' }
+    ];
     insertData.props.modelValue = {
         type: 'JSExpression',
         value: `this.state.${stateKey}`,

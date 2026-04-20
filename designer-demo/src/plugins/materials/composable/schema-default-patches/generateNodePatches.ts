@@ -1,6 +1,6 @@
 import { useCanvas } from '@opentiny/tiny-engine-meta-register';
 
-import { syncMpMultiAmtModelPropsAndState } from '@/composable/mpMultiAmtDesignerBinding';
+import { syncMpMultiAmtModelPropsAndState } from '@/plugins/materials/component-defaults/strategies/mpMultiAmt';
 import {
     allocateIndexedStateKey,
     isModelValueJsExpression
