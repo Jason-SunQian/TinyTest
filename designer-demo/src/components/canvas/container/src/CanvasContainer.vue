@@ -162,6 +162,7 @@ export default {
         const insertPosition = ref<boolean | Record<string, unknown>>(false);
         const loading = computed(() => useCanvas().isLoading());
         const iframeRenderKey = ref(0);
+        const utilitiesStyleObserver = ref<MutationObserver | null>(null);
         const showSettingModel = ref(false);
         const target = ref<EventTarget | null>(null);
         const srcAttrName = computed(() =>
@@ -467,6 +468,32 @@ export default {
             }
         };
 
+        const keepUtilitiesStyleLast = (doc: Document) => {
+            const moveUtilitiesToTail = () => {
+                const head = doc.head;
+                if (!head) return;
+                const links = Array.from(
+                    head.querySelectorAll<HTMLLinkElement>(
+                        'link[rel="stylesheet"][href*="utilities.css"]'
+                    )
+                );
+                if (!links.length) return;
+                const target = links[links.length - 1];
+                if (head.lastElementChild !== target) {
+                    head.appendChild(target);
+                }
+            };
+
+            moveUtilitiesToTail();
+            utilitiesStyleObserver.value?.disconnect();
+            utilitiesStyleObserver.value = new MutationObserver(() => {
+                moveUtilitiesToTail();
+            });
+            utilitiesStyleObserver.value.observe(doc.head, {
+                childList: true
+            });
+        };
+
         const handleCanvasEvent = handler => {
             const designMode = canvasApi.getDesignMode();
 
@@ -503,6 +530,8 @@ export default {
                     body { position: static !important; height: auto !important; max-height: none !important; min-height: 100% !important; }
                 `;
                 doc.head.appendChild(canvasScrollStyle);
+                // 运行时组件可能在挂载后动态追加样式；强制将 utilities.css 维持在最后，确保 mt-20px 等 utility 覆盖稳定
+                keepUtilitiesStyleLast(doc);
 
                 // 若浏览器把滚轮事件发给 iframe 内部，在 iframe 内也监听并手动滚动
                 const applyWheelScroll = (deltaY: number) => {
@@ -777,6 +806,8 @@ export default {
                 topic: 'canvas_refresh_request',
                 subscriber: refreshSubscriber
             });
+            utilitiesStyleObserver.value?.disconnect();
+            utilitiesStyleObserver.value = null;
         });
 
         document.addEventListener('beforeCanvasReady', beforeCanvasReady);

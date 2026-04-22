@@ -486,9 +486,34 @@ const addComponentSnippets = (
 
 // 业务物料依赖顺序：被依赖的包（如 mr-components）需先于依赖方（如 mp-card）加载，避免在 webview 中嵌套 import 失败
 const MATERIAL_LOAD_ORDER = ['@local/mr-components', '@local/mp-card'];
+/** 主工程物料包样式 fallback：当 bundle 来自远程 URL 且物料未声明 npm.css 时，强制追加 mr-bank.css */
+const MAIN_PROJECT_STYLE_FALLBACK = 'mr-bank.css';
 
 const getFilenameFromPath = (pathOrUrl: string) =>
     pathOrUrl.replace(/^.*\//, '');
+
+const getPureFilename = (pathOrUrl: string) =>
+    getFilenameFromPath(pathOrUrl).replace(/[?#].*$/, '');
+
+const getStyleLayerPriority = (styleUrl: string): number => {
+    const file = getPureFilename(styleUrl);
+    if (file === 'tokens.css') return 10;
+    if (file === MAIN_PROJECT_STYLE_FALLBACK) return 20;
+    if (file === 'utilities.css') return 30;
+    return 40;
+};
+
+const sortCanvasStylesByLayer = (styles: string[]): string[] => {
+    const withIndex = styles.map((value, index) => ({ value, index }));
+    withIndex.sort((a, b) => {
+        const pa = getStyleLayerPriority(a.value);
+        const pb = getStyleLayerPriority(b.value);
+        if (pa !== pb) return pa - pb;
+        // 同层保持原相对顺序，避免无关样式抖动
+        return a.index - b.index;
+    });
+    return withIndex.map(item => item.value);
+};
 
 /** 从当前物料依赖中收集需要请求的脚本/样式文件名（用于插件 data URL 或 URL 加载），新增业务组件无需改此处 */
 const getMaterialFilenamesFromDeps = (): string[] => {
@@ -529,9 +554,6 @@ const getMaterialCacheBustParam = (): string => {
     const t = materialBundleLoadTimestamp ?? Date.now();
     return `_t=${t}`;
 };
-
-/** 主工程物料包样式 fallback：当 bundle 来自远程 URL 且物料未声明 npm.css 时，强制追加 mr-bank.css */
-const MAIN_PROJECT_STYLE_FALLBACK = 'mr-bank.css';
 
 const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     const { scripts, styles } = useResource().appSchemaState.materialsDeps;
@@ -592,7 +614,12 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
         );
         if (!alreadyInStyles) styleFallbacks.push(fallbackUrl);
     });
-    const allStyles = [...styles, ...styleFallbacks];
+    // 样式分层顺序（确定性）：tokens -> mr-bank.css -> utilities -> others
+    // 目标：让 utilities（如 mt-20px）稳定覆盖组件基础样式（如 .van-button{margin:0}）
+    // 不依赖异步注入时序，避免同一个 class 偶发失效。
+    const allStyles = sortCanvasStylesByLayer([
+        ...new Set([...styles, ...styleFallbacks])
+    ]);
 
     scriptsList.sort((a, b) => {
         const i = MATERIAL_LOAD_ORDER.indexOf(a.package);
@@ -700,23 +727,11 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
                     : effectiveBase;
                 return {
                     ...item,
-                    script: absolutize(
-                        scriptUrl(item, item.script!, false, itemBase)
-                    ),
-                    ...(item.css && {
-                        css: absolutize(
-                            scriptUrl(item, item.css, true, itemBase)
-                        )
-                    })
+                    script: absolutize(scriptUrl(item, item.script!, false, itemBase))
                 };
             }),
             styles: [...allStyles].map(s => {
                 if (typeof s !== 'string') return s;
-                if (materialContents?.[getFilenameFromPath(s)])
-                    return toDataUrl(
-                        materialContents[getFilenameFromPath(s)],
-                        'text/css'
-                    );
                 // 主工程样式（如 mr-bank.css）使用远程 bundle 的 base，否则会误用 design 的 origin 导致 404
                 const [firstRemoteForStyle] =
                     remoteBundleBases.size > 0
@@ -740,16 +755,10 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
     return {
         scripts: scriptsList.map(item => ({
             ...item,
-            script: item.script ? absolutize(item.script) : item.script,
-            ...(item.css && { css: absolutize(item.css) })
+            script: item.script ? absolutize(item.script) : item.script
         })),
         styles: [...allStyles].map(s => {
             if (typeof s !== 'string') return s;
-            if (materialContents?.[getFilenameFromPath(s)])
-                return toDataUrl(
-                    materialContents[getFilenameFromPath(s)],
-                    'text/css'
-                );
             const baseForStyle =
                 getFilenameFromPath(s) === MAIN_PROJECT_STYLE_FALLBACK &&
                 firstRemoteBase
