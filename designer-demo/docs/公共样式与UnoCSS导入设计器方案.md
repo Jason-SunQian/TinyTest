@@ -405,17 +405,21 @@ dist/lowcode-styles/
 | 画布长时间加载、依赖重复下发                 | 仅在消息层补丁 `init_canvas_deps`，画布回传 deps 时丢失样式 → 反复判定「缺样式」 | 将 style bundle 的 **styles 写入 `materialsDeps` 源数据**，与 `getCanvasDeps` 同源，避免循环重载                                        |
 | 个别 class 不生效                            | UnoCSS 按需生成，设计器里新输入的类未必出现在主工程源码扫描结果中                | 维护 **`safelist.extra.txt`** 并重新生成 `utilities.css`                                                                                |
 | `!` 前缀类（如 `!bg-200`）设计器不生效       | 当前链路是 **prebuilt utilities.css**；若产物中没有该变体，设计器无法“动态补全” | 在主工程 `lowcode-styles/scripts/build.mjs` 中把需要的 utility 同步生成 `!` 变体，再执行 `pnpm run build:lowcode-styles` 并重新导入样式产物 |
+| `mt-20px` 在画布无效但预览生效               | 样式链路存在“重复/后置覆盖”：如 `mr-bank.css` 经多路径注入或后续动态样式落在 `utilities.css` 之后，导致 `.van-button { margin: 0 }` 反压 `mt-*` | **单一路径注入样式**（样式只走 `styles`，不再走 `scripts[].css`/`data:` 双路径）；并在设计器端固定分层顺序：`tokens.css → mr-bank.css → utilities.css → others`，必要时在画布就绪后维持 `utilities.css` 在 `<head>` 末尾 |
 
 ### 11.3 协议与产物取舍
 
 -   **样式交付方式为预构建**：`utilities.mode` 为 **`prebuilt`**，**不采用**画布内 UnoCSS runtime；与「主工程 build → 导入设计器」的流程一致，**非技术债**。
 -   **默认不产出 `overrides.css`**：组件级覆盖继续依赖物料 **`mr-bank.css`** 等；style bundle 聚焦 **tokens + utilities**。
+-   **样式注入遵循“单一路径 + 分层顺序”**：同一 CSS 不允许同时经 `styles` 与 `scripts[].css`（或 `data:`）重复注入；统一按 `tokens.css → mr-bank.css → utilities.css → others` 进入画布，避免同优先级规则覆盖漂移。
 -   **主题**：首版以 **默认主题 token**（`extract-design-tokens` → `:root`）与主工程一致即可；设计器内无画布主题切换时再扩展多主题。
 
 ### 11.4 建议的回归检查（发版前）
 
 -   [ ] Network：`styles.json` → `tokens.css`、`utilities.css` 均为 200，且来源为主工程静态服务。
 -   [ ] Class Name：`flex items-center text-h3 text-color-secondary` 与一组长尾类（如 `py-12px`、`bg-color-*`）画布可见。
+-   [ ] 覆盖顺序：画布内 `utilities.css` 位于 `mr-bank.css` 之后；`mt-20px` 等 spacing 类在画布与预览一致生效（不依赖 `!mt-20px`）。
+-   [ ] 注入路径：同一 CSS 文件仅通过一条路径进入画布（禁止 `styles` 与 `scripts[].css` 双注入同名样式）。
 -   [ ] `!` 变体：`!bg-200`、`!px-16px` 等重要级 class 在画布与预览均生效（依赖主工程 prebuilt 产物，非设计器动态生成）。
 -   [ ] CSS Editor：任意写一条 `var(--mr-color-primary-500)` 类规则，画布可见。
 -   [ ] 出码：上述 class 与自定义 CSS 能正确落盘。
@@ -423,4 +427,4 @@ dist/lowcode-styles/
 ---
 
 文档维护者：开发团队
-最后更新：2026-04-20（补充 `!` 前缀 class 的 prebuilt 产物策略与回归项）
+最后更新：2026-04-22（补充 spacing 类覆盖顺序、样式单一路径注入与回归项）
