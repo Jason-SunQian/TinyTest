@@ -404,6 +404,7 @@ dist/lowcode-styles/
 | `styles.json` 拉取报 CSP / `Failed to fetch` | Webview 内相对路径会落到 `vscode-webview://`，`fetch` 受 `connect-src` 限制      | 使用 **可访问的 http(s) 绝对 URL**；设计器侧用 **`TINY_DESIGNER_ORIGIN` 等** 将 `/mock/...` 或相对路径转为设计器真实 HTTP origin 再请求 |
 | 画布长时间加载、依赖重复下发                 | 仅在消息层补丁 `init_canvas_deps`，画布回传 deps 时丢失样式 → 反复判定「缺样式」 | 将 style bundle 的 **styles 写入 `materialsDeps` 源数据**，与 `getCanvasDeps` 同源，避免循环重载                                        |
 | 个别 class 不生效                            | UnoCSS 按需生成，设计器里新输入的类未必出现在主工程源码扫描结果中                | 维护 **`safelist.extra.txt`** 并重新生成 `utilities.css`                                                                                |
+| `!` 前缀类（如 `!bg-200`）设计器不生效       | 当前链路是 **prebuilt utilities.css**；若产物中没有该变体，设计器无法“动态补全” | 在主工程 `lowcode-styles/scripts/build.mjs` 中把需要的 utility 同步生成 `!` 变体，再执行 `pnpm run build:lowcode-styles` 并重新导入样式产物 |
 
 ### 11.3 协议与产物取舍
 
@@ -415,10 +416,11 @@ dist/lowcode-styles/
 
 -   [ ] Network：`styles.json` → `tokens.css`、`utilities.css` 均为 200，且来源为主工程静态服务。
 -   [ ] Class Name：`flex items-center text-h3 text-color-secondary` 与一组长尾类（如 `py-12px`、`bg-color-*`）画布可见。
+-   [ ] `!` 变体：`!bg-200`、`!px-16px` 等重要级 class 在画布与预览均生效（依赖主工程 prebuilt 产物，非设计器动态生成）。
 -   [ ] CSS Editor：任意写一条 `var(--mr-color-primary-500)` 类规则，画布可见。
 -   [ ] 出码：上述 class 与自定义 CSS 能正确落盘。
 
 ---
 
 文档维护者：开发团队
-最后更新：2026-04-02（补充静态发布版本化建议）
+最后更新：2026-04-20（补充 `!` 前缀 class 的 prebuilt 产物策略与回归项）
