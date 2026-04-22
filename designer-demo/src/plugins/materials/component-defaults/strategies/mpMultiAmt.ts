@@ -12,8 +12,9 @@ const RE_FORM_PAYER = /^this\.state\.(mpMultiAmtForm\d+)\.payerAmount$/;
 const RE_FORM_PAYEE = /^this\.state\.(mpMultiAmtForm\d+)\.payeeAmount$/;
 const RE_LEGACY_PAYEE = /^this\.state\.(mpMultiAmt\d+)$/;
 const RE_LIMIT_RULE = /^this\.state\.(mpMultiAmtLimitRule\d+)$/;
-const DEFAULT_PAYER_AMOUNT = '100.00';
-const DEFAULT_PAYEE_AMOUNT = '12,900';
+// 默认拖拽时保持空值，避免组件初始 immediate 校验直接显示错误文案
+const DEFAULT_PAYER_AMOUNT = '';
+const DEFAULT_PAYEE_AMOUNT = '';
 
 export function getMpMultiAmtJsExpressionValue(
     prop: unknown
