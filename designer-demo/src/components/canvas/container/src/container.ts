@@ -31,6 +31,7 @@ import { isVsCodeEnv } from '@opentiny/tiny-engine-common/js/environments';
 import Builtin from '@/components/canvas/render/src/builtin/builtin.json';
 import { getBlockFromMaterialStore } from '@/plugins/materials/composable/block-compile';
 import { applyExternalDropComponentPatch } from '@/plugins/materials/component-defaults/external-drop';
+import { getCanvasLowcodeLocale } from '@/services/i18nService';
 /* eslint-disable import/no-cycle */
 import { useMultiSelect } from './composables/useMultiSelect';
 import type { Node, RootNode } from '@/components/canvas/types';
@@ -91,6 +92,21 @@ export const canvasState = shallowReactive({
 });
 
 export const getRenderer = () => canvasState.renderer;
+
+/**
+ * 设置画布 iframe 内 lowcode 使用的 vue-i18n locale（应用词条 t('lowcode.xxx') 走此 locale）。
+ * 不依赖 BroadcastChannel：父子 iframe 各自 sessionStorage 会导致频道名不一致，官方同步方式可能失效。
+ */
+export const setCanvasVueI18nLocale = (locale: string) => {
+    try {
+        const i18n = getRenderer()?.getI18n?.();
+        if (i18n?.global?.locale) {
+            i18n.global.locale.value = locale;
+        }
+    } catch {
+        /* 画布未就绪或跨域 */
+    }
+};
 
 export const getController = () => canvasState.controller;
 
@@ -1449,6 +1465,7 @@ export const initCanvas = ({ renderer, iframe, emit, controller }: any) => {
         /* 跨域或 CSP 时忽略 */
     }
     setLocales(useTranslate().getData(), true);
+    setCanvasVueI18nLocale(getCanvasLowcodeLocale());
     if (isVsCodeEnv) {
         const parent = window.parent;
         const senterMessage = parent.postMessage;

@@ -29,7 +29,8 @@ const state = reactive<{ langs: Record<string, any> }>({
     langs: {}
 });
 
-const currentLanguage = ref('zh_CN');
+/** 英文优先：插件表格与 translate() 默认取 en_US，与 config DEFAULT_LANGUAGE 一致 */
+const currentLanguage = ref('en_US');
 const i18nResource = reactive<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     messages: Record<string, any>;
@@ -311,5 +312,5 @@ export default () => {
 };
 
 export type { I18nOptions };
-
 export type { I18nOptions };
+

@@ -10,6 +10,25 @@ import {
 import type { LanguageConfig } from '../config/languages';
 
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console, import/exports-last */
+
+const DESIGNER_LOCALE_STORAGE_KEY = 'tiny-engine-designer-locale';
+
+/**
+ * 画布上 lowcode 词条（t('lowcode.xxx')）应使用的 locale。
+ * 优先 localStorage（与 switchLanguage 一致）；未设置时用英文，避免画布仍停留在 TinyI18n 默认 zh_CN 而词条只有 en_US。
+ */
+export const getCanvasLowcodeLocale = (): string => {
+    try {
+        const saved = localStorage.getItem(DESIGNER_LOCALE_STORAGE_KEY);
+        if (saved && isLanguageSupported(saved)) {
+            return saved;
+        }
+    } catch {
+        /* ignore */
+    }
+    return DEFAULT_LANGUAGE;
+};
+
 let warned = false;
 const getI18nInstance = () => {
     const inst = (window as any).lowcodeI18n;
@@ -173,8 +192,17 @@ const switchLanguage = (locale: string) => {
         if (instance?.global?.locale) {
             const oldLocale = instance.global.locale.value;
             instance.global.locale.value = locale;
-            const STORAGE_KEY = 'tiny-engine-designer-locale';
-            localStorage.setItem(STORAGE_KEY, locale);
+            localStorage.setItem(DESIGNER_LOCALE_STORAGE_KEY, locale);
+            // 画布 iframe 内 vue-i18n 默认可能仍为 zh_CN；BroadcastChannel 在父子 iframe 各自 sessionStorage 下频道名可能不一致，故直接改 renderer 上的 i18n locale
+            void import('@/components/canvas/container/src/container')
+                .then(m => {
+                    if (typeof m.setCanvasVueI18nLocale === 'function') {
+                        m.setCanvasVueI18nLocale(locale);
+                    }
+                })
+                .catch(() => {
+                    /* 画布尚未加载 */
+                });
             // eslint-disable-next-line no-console
             console.log(
                 `[i18nService] switchLanguage: ${oldLocale} → ${locale}, current value:`,

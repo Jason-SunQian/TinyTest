@@ -85,6 +85,8 @@ import {
     useMaterial
 } from '@opentiny/tiny-engine-meta-register';
 import { NODE_UID, NODE_LOOP, DESIGN_MODE } from '@/components/canvas/common';
+import { getCanvasLowcodeLocale } from '@/services/i18nService';
+import { setCanvasVueI18nLocale } from './container';
 import { registerHotkeyEvent, removeHotkeyEvent } from './keyboard';
 import CanvasMenu, { closeMenu, openMenu } from './components/CanvasMenu.vue';
 import CanvasAction from './components/CanvasAction.vue';
@@ -486,6 +488,9 @@ export default {
                     iframe: iframe.value,
                     controller: props.controller
                 });
+
+                // 与国际化插件词条一致：画布 vue-i18n 默认常为 zh_CN，此处对齐为设计器当前语言（默认 en_US）
+                setCanvasVueI18nLocale(getCanvasLowcodeLocale());
 
                 const doc = iframe.value.contentDocument;
                 const win = iframe.value.contentWindow;
