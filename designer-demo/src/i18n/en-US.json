@@ -976,6 +976,7 @@
             "entryKeyPlaceholder": "Please enter entry key",
             "entryKeyRequired": "Entry key is required",
             "entryKeyExists": "Entry key already exists",
+            "entryKeyInvalidFormat": "Invalid key format: each segment must start with a letter (e.g. lowcode.a123)",
             "chineseText": "Chinese Content",
             "chineseTextPlaceholder": "Please enter Chinese content",
             "englishText": "English Content",

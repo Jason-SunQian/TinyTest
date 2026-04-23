@@ -979,6 +979,7 @@
             "entryKeyPlaceholder": "请输入词条key",
             "entryKeyRequired": "词条key必填",
             "entryKeyExists": "词条key已存在",
+            "entryKeyInvalidFormat": "词条key格式不合法：每段必须以字母开头（示例：lowcode.a123）",
             "chineseText": "中文内容",
             "chineseTextPlaceholder": "请输入中文内容",
             "englishText": "英文内容",

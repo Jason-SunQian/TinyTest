@@ -241,7 +241,7 @@ import {
     useLayout,
     getMergeMeta
 } from '@opentiny/tiny-engine-meta-register';
-import { utils, constants } from '@opentiny/tiny-engine-utils';
+import { constants } from '@opentiny/tiny-engine-utils';
 
 import { PluginPanel, SearchEmpty } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
@@ -365,7 +365,32 @@ export default {
         });
         // eslint-disable-next-line vue/require-typed-ref
         const editingRow = ref(null);
+        // key 规则：以点分段，每段必须字母开头（后续可跟字母/数字/_/-）
+        const I18N_KEY_SEGMENT_REGEX = /^[A-Za-z][A-Za-z0-9_-]*$/;
+        const isValidI18nKey = (key = '') =>
+            key
+                .split('.')
+                .every(segment => I18N_KEY_SEGMENT_REGEX.test(segment));
+        const I18N_KEY_LENGTH = 8;
+        const LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+        const ALPHANUM = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        const randomChar = (pool: string) =>
+            pool[Math.floor(Math.random() * pool.length)];
+        const generateI18nKeySegment = (length = I18N_KEY_LENGTH) => {
+            if (length <= 0) return 'a';
+            let result = randomChar(LETTERS);
+            for (let i = 1; i < length; i += 1) {
+                result += randomChar(ALPHANUM);
+            }
+            return result;
+        };
+        const generateI18nEntryKey = () =>
+            `lowcode.${generateI18nKeySegment(I18N_KEY_LENGTH)}`;
         const validateKey = (rule, value, callback) => {
+            if (!isValidI18nKey(value)) {
+                callback(new Error(t('designer.i18n.entryKeyInvalidFormat')));
+                return;
+            }
             // 新增模式，需要校验 key 不重复
             if (
                 !isEditMode.value &&
@@ -532,7 +557,7 @@ export default {
             isEditMode.value = Boolean(row.key);
             editingRow.value = row;
             if (!isEditMode.value) {
-                row.key = `lowcode.${utils.guid()}`;
+                row.key = generateI18nEntryKey();
                 langList.value.unshift(row);
             }
             i18nTable.value.setActiveRow(row).then(() => {

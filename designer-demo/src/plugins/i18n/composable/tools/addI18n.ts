@@ -8,11 +8,17 @@ import {
     createErrorResponse
 } from './commonSchema';
 
+const I18N_KEY_REGEX = /^[A-Za-z][A-Za-z0-9_-]*(\.[A-Za-z][A-Za-z0-9_-]*)*$/;
+
 // 定义为普通对象，用于传递给 inputSchema 字段
 const inputSchema = z.object({
     key: z
         .string()
-        .describe('The unique key for the i18n entry, e.g. lowcode.36223242'),
+        .regex(
+            I18N_KEY_REGEX,
+            'Invalid key format: each segment must start with a letter'
+        )
+        .describe('The unique key for the i18n entry, e.g. lowcode.a36223242'),
     // eslint-disable-next-line
     zh_CN: z.string().describe('The Chinese translation text'),
     // eslint-disable-next-line
