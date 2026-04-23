@@ -522,12 +522,21 @@ export default {
                 const doc = iframe.value.contentDocument;
                 const win = iframe.value.contentWindow;
 
-                // 覆盖 Ionic structure.css 对 body 的 overflow: hidden / position: fixed，使画布可滚动
+                // 覆盖 Ionic structure.css 对 body 的 overflow: hidden / position: fixed，使画布可滚动；
+                // 并增加仅设计态的左右内边距，模拟主工程出码后 mp-page 的默认边距（不写进 schema，避免出码后双倍 padding）
                 const canvasScrollStyle = doc.createElement('style');
                 canvasScrollStyle.id = 'designer-canvas-scroll-override';
                 canvasScrollStyle.textContent = `
                     html, body { overflow: auto !important; overflow-x: hidden !important; }
-                    body { position: static !important; height: auto !important; max-height: none !important; min-height: 100% !important; }
+                    body {
+                        position: static !important;
+                        height: auto !important;
+                        max-height: none !important;
+                        min-height: 100% !important;
+                        padding-left: var(--mp-horizontal-padding, 16px) !important;
+                        padding-right: var(--mp-horizontal-padding, 16px) !important;
+                        box-sizing: border-box !important;
+                    }
                 `;
                 doc.head.appendChild(canvasScrollStyle);
                 // 运行时组件可能在挂载后动态追加样式；强制将 utilities.css 维持在最后，确保 mt-20px 等 utility 覆盖稳定
