@@ -131,22 +131,10 @@ export function syncMpMultiAmtModelPropsAndState(
         model: { prop: 'payeeVal' }
     };
 
-    let ruleKey = parseMpMultiAmtLimitRuleKey(limitExpr);
-    const limitCustom =
-        limitExpr && !isManagedMpMultiAmtLimitRuleExpression(limitExpr);
-
-    if (!limitCustom) {
-        if (!ruleKey) {
-            ruleKey = allocateIndexedStateKey(rootState, 'mpMultiAmtLimitRule');
-            ensureMpMultiAmtLimitRuleState(rootState, ruleKey);
-            props.limitRule = {
-                type: 'JSExpression',
-                value: `this.state.${ruleKey}`
-            };
-        } else {
-            ensureMpMultiAmtLimitRuleState(rootState, ruleKey);
-        }
-    }
+    // 不再为 limitRule 自动创建默认 state（例如 mpMultiAmtLimitRule1）。
+    // 该规则应由页面业务逻辑显式提供，避免出码出现来源不明的初始化配置。
+    // 若用户已手动绑定 props.limitRule，这里保持原值不改写。
+    void limitExpr;
 
     return true;
 }
