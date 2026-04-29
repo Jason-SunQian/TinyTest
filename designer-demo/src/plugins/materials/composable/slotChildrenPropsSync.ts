@@ -28,6 +28,41 @@ export const syncSlotStringChildrenWithPropsChildren = (
         if (setProp) setProp('children', value);
         else props.children = value;
     };
+    const isJsExpression = (value: unknown): boolean =>
+        Boolean(
+            value &&
+                typeof value === 'object' &&
+                (value as Record<string, unknown>).type === 'JSExpression'
+        );
+
+    // 优先保证表达式绑定不被纯文本覆盖（如 MrLabel 重新选中后丢失 Bound 展示）
+    if (isJsExpression(ch)) {
+        if (props.children !== ch) {
+            if (setProp) setProp('children', ch);
+            else props.children = ch;
+        }
+        if (
+            (componentName === 'MrLabel' || componentName === 'MrButton') &&
+            (props.text === undefined || props.text === '')
+        ) {
+            if (setProp) setProp('text', ch);
+            else props.text = ch;
+        }
+        return;
+    }
+
+    if (isJsExpression(props.children)) {
+        if (
+            ch === undefined ||
+            ch === null ||
+            ch === '' ||
+            (typeof ch === 'string' && ch.trim() === '')
+        ) {
+            schema.children = props.children;
+        }
+        return;
+    }
+
     if (typeof ch === 'string' && ch.trim() !== '') {
         // 只要节点 children 有值，就以它为准回写 props.children，避免面板回显被旧默认值覆盖
         if (props.children !== ch) applyChildren(ch);
