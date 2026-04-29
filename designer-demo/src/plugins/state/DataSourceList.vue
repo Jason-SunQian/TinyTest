@@ -54,7 +54,10 @@ import { computed } from 'vue';
 import { useModal, useResource } from '@opentiny/tiny-engine-meta-register';
 import { findExpressionInAppSchema } from '@opentiny/tiny-engine-common/js/ast';
 import { constants } from '@opentiny/tiny-engine-utils';
-import { SvgButton, SearchEmpty } from '@opentiny/tiny-engine-common';
+import { SvgButton } from '@opentiny/tiny-engine-common';
+
+import { SearchEmpty } from '@/components/i18n-wrappers';
+import { useDesignerI18n } from '@/services/i18nService';
 
 import { STATE, OPTION_TYPE } from './js/constants';
 
@@ -90,6 +93,7 @@ export default {
     emits: ['openPanel', 'remove', 'removeStore'],
     // eslint-disable-next-line vue/component-api-style
     setup(props, { emit }) {
+        const { t } = useDesignerI18n();
         const filteredKey = computed(() =>
             props.modelValue.filter(key => key.includes(props.query))
         );
@@ -100,8 +104,8 @@ export default {
 
         const removeConfirm = key => {
             useModal().confirm({
-                title: '提示',
-                message: `您确定要删除 ${key} 吗？`,
+                title: t('designer.state.deleteTip'),
+                message: t('designer.state.confirmDelete', { key }),
                 exec: () => emit('remove', key)
             });
         };
@@ -119,17 +123,19 @@ export default {
             );
 
             if (expresstionPages.length > 0) {
-                const messageText = `不允许删除，因为检查到 ${expression} 在以下页面中被引用：\n${expresstionPages
+                const messageText = `${t('designer.state.cannotDelete', {
+                    expression
+                })}\n${expresstionPages
                     .map(pagaName => pagaName)
                     .join('\n')}`;
                 useModal().message({
-                    title: '提示',
+                    title: t('designer.state.deleteTip'),
                     message: messageText
                 });
             } else {
                 useModal().confirm({
-                    title: '提示',
-                    message: `您确定要删除 ${key} 吗？`,
+                    title: t('designer.state.deleteTip'),
+                    message: t('designer.state.confirmDelete', { key }),
                     exec: () => emit('removeStore', key)
                 });
             }
