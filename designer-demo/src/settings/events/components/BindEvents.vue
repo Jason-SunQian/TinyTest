@@ -230,37 +230,21 @@ export default {
             const keys = Object.keys(props);
             state.bindActions = {};
 
-            // 先遍历 props 中所有已绑定的事件，确保即使 renderEventList 中没有定义也能显示
-            keys.forEach(eventName => {
-                const event = props[eventName];
+            // 与官方语义保持一致：仅展示“事件元数据中已定义且在 props 中已绑定”的项
+            Object.entries(renderEventList.value).forEach(
+                ([eventName, componentEvent]) => {
+                    if (!keys.includes(eventName)) {
+                        return;
+                    }
 
-                // 只处理类型为 JSExpression 的事件（已绑定的事件）
-                if (event && event.type === 'JSExpression') {
-                    // 从 renderEventList 中获取事件元数据，如果没有则使用默认值
-                    const componentEvent = renderEventList.value[eventName] || {
-                        label: {
-                            // eslint-disable-next-line camelcase
-                            zh_CN: eventName,
-                            // eslint-disable-next-line camelcase
-                            en_US: eventName
-                        },
-                        description: {
-                            // eslint-disable-next-line camelcase
-                            zh_CN: `${eventName} 事件`,
-                            // eslint-disable-next-line camelcase
-                            en_US: `${eventName} event`
-                        },
-                        type: 'event',
-                        functionInfo: {
-                            params: [],
-                            returns: {}
-                        },
-                        defaultValue: ''
-                    };
-
+                    const event = props[eventName];
+                    if (!event || typeof event !== 'object') {
+                        return;
+                    }
                     const { value, params } = event;
                     const eventArgs =
-                        (!params &&
+                        (typeof value === 'string' &&
+                            !params &&
                             value.match(/\((.+)\)$/)?.[1]?.split(',')) ||
                         params;
                     const action = {
@@ -270,7 +254,10 @@ export default {
                         params: eventArgs
                     };
 
-                    if (action.event.type === 'JSExpression') {
+                    if (
+                        action.event.type === 'JSExpression' &&
+                        typeof action.event.value === 'string'
+                    ) {
                         action.ref = action.event.value
                             .replace('this.', '')
                             .replace(/\(.*\)$/, '');
@@ -301,7 +288,7 @@ export default {
 
                     state.bindActions[eventName] = action;
                 }
-            });
+            );
         };
 
         // 使用 computed 监听 getCurrentSchema 的变化，类似 Props 面板的做法
