@@ -14,12 +14,6 @@ export const syncSlotStringChildrenWithPropsChildren = (
     options?: { setProp?: (name: string, value: unknown) => void }
 ): void => {
     const componentName = schema.componentName as string | undefined;
-    if (
-        !componentName ||
-        !COMPONENTS_SLOT_TEXT_BINDS_TO_PROPS_CHILDREN.has(componentName)
-    ) {
-        return;
-    }
     const props = (schema.props as Record<string, unknown>) || {};
     if (!schema.props) schema.props = props;
     const ch = schema.children;
@@ -34,6 +28,19 @@ export const syncSlotStringChildrenWithPropsChildren = (
                 typeof value === 'object' &&
                 (value as Record<string, unknown>).type === 'JSExpression'
         );
+
+    const isTextLikeValue = (value: unknown): boolean =>
+        typeof value === 'string' || isJsExpression(value);
+
+    // 兼容未来新增的 slot-text 组件：
+    // 除了白名单组件外，只要节点存在 children/text 的“文本或表达式”形态，就走统一同步。
+    const shouldSync =
+        Boolean(componentName) &&
+        (COMPONENTS_SLOT_TEXT_BINDS_TO_PROPS_CHILDREN.has(componentName) ||
+            isTextLikeValue(ch) ||
+            isTextLikeValue(props.children) ||
+            isTextLikeValue(props.text));
+    if (!shouldSync) return;
 
     // 优先保证表达式绑定不被纯文本覆盖（如 MrLabel 重新选中后丢失 Bound 展示）
     if (isJsExpression(ch)) {

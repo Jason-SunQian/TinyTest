@@ -160,7 +160,7 @@ export default {
     // eslint-disable-next-line vue/component-api-style
     setup() {
         const { t } = useDesignerI18n();
-        const { pageState } = useCanvas();
+        const { pageState, getCurrentSchema, canvasApi } = useCanvas();
         const condition = ref(false);
         const isBind = computed(
             () => condition.value?.type === PROP_DATA_TYPE.JSEXPRESSION
@@ -170,10 +170,7 @@ export default {
             DEFAULT_LOOP_NAME.INDEX;
 
         const state = reactive({
-            loopData: {
-                type: PROP_DATA_TYPE.JSEXPRESSION,
-                value: '[]'
-            },
+            loopData: null,
             loopItem: 'item',
             loopIndex: 'index',
             isLoop: computed(
@@ -183,16 +180,52 @@ export default {
             shouldUpdate: false
         });
 
-        watch(
-            () => [pageState?.currentSchema, state.shouldUpdate],
-            ([value]) => {
-                condition.value =
-                    value?.condition === undefined ? true : value?.condition;
-                state.loopData = value?.loop;
-                state.loopItem = value?.loopArgs?.[0] || '';
-                state.loopIndex = value?.loopArgs?.[1] || '';
-                state.loopKey = value?.props?.key?.value || '';
+        const getActiveSchema = () => {
+            let schema = getCurrentSchema?.();
+
+            if (
+                !schema ||
+                (Array.isArray(schema) && schema.length === 0)
+            ) {
+                schema = pageState?.currentSchema;
             }
+
+            if (!schema && canvasApi?.value) {
+                try {
+                    const current = canvasApi.value.getCurrent?.();
+                    if (current?.schema) {
+                        schema = current.schema;
+                    }
+                } catch (error) {
+                    // ignore
+                }
+            }
+
+            if (Array.isArray(schema) && schema.length > 0) {
+                return schema[0];
+            }
+
+            return schema || null;
+        };
+
+        const getActiveSchemaId = () => {
+            const schema = getActiveSchema();
+            return schema?.id || null;
+        };
+
+        watch(
+            () => [getActiveSchemaId(), state.shouldUpdate],
+            () => {
+                const schema = getActiveSchema();
+
+                condition.value =
+                    schema?.condition === undefined ? true : schema?.condition;
+                state.loopData = schema?.loop || null;
+                state.loopItem = schema?.loopArgs?.[0] || '';
+                state.loopIndex = schema?.loopArgs?.[1] || '';
+                state.loopKey = schema?.props?.key?.value || '';
+            },
+            { immediate: true }
         );
 
         const setLoopKey = (value = '') => {
