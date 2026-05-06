@@ -34,7 +34,21 @@
                         >
                             <li class="component-item">
                                 <div class="component-item-component">
+                                    <img
+                                        v-if="
+                                            isMaterialIconUrl(
+                                                getMaterialIconName(child)
+                                            )
+                                        "
+                                        :src="getMaterialIconName(child)"
+                                        :alt="getComponentName(child)"
+                                        class="component-item-icon-image"
+                                        @error="
+                                            handleMaterialIconError($event, child)
+                                        "
+                                    />
                                     <svg-icon
+                                        v-else
                                         :name="getMaterialIconName(child)"
                                     />
                                 </div>
@@ -71,6 +85,7 @@ import { iconSearch } from '@opentiny/vue-icon';
 import { useMaterial, useCanvas } from '@opentiny/tiny-engine-meta-register';
 
 import { useDesignerI18n } from '@/services/i18nService';
+import { getMaterialsBaseFromBundleUrls } from '@/composable/loadRuntimeFromBundles';
 
 export default {
     components: {
@@ -91,8 +106,13 @@ export default {
     setup() {
         const COMPONENT_PANEL_COLUMNS = '1fr 1fr 1fr';
         const SHORTCUT_PANEL_COLUMNS = '1fr 1fr 1fr 1fr 1fr 1fr';
-        const { generateNode, materialState, getComponentsByGroup } =
+        const { generateNode, materialState, getComponentsByGroup, getMaterial } =
             useMaterial();
+        const getBundleBaseUrlForComponent = (
+            useMaterial() as {
+                getBundleBaseUrlForComponent?: (name: string) => string | null;
+            }
+        ).getBundleBaseUrlForComponent;
         const gridTemplateColumns = ref(COMPONENT_PANEL_COLUMNS);
 
         // 获取国际化 t 函数和语言
@@ -324,9 +344,138 @@ export default {
             return child.name;
         };
 
-        /** 物料面板图标：有 icon 用 schema 的 icon（小写），否则用默认图标，新增业务组件可在 schema 中配 icon 或依赖默认 */
-        const getMaterialIconName = (child: { icon?: string }) =>
-            child?.icon?.trim()?.toLowerCase() || 'component-default';
+        const isMaterialIconUrl = (icon?: string) => {
+            const value = icon?.trim();
+            if (!value) return false;
+            return (
+                value.startsWith('http://') ||
+                value.startsWith('https://') ||
+                value.startsWith('data:') ||
+                value.startsWith('/') ||
+                value.startsWith('./') ||
+                value.startsWith('../') ||
+                value.includes('/') ||
+                /\.(svg|png|jpe?g|webp|gif|ico)$/i.test(value)
+            );
+        };
+
+        const getBundleBaseFromMaterial = (componentKey: string): string => {
+            const mappedBase = getBundleBaseUrlForComponent?.(componentKey) || '';
+            if (mappedBase) return mappedBase;
+            const sharedBase = getMaterialsBaseFromBundleUrls();
+            if (sharedBase) return sharedBase;
+            const material = getMaterial(componentKey) as
+                | { script?: string }
+                | undefined;
+            const script = material?.script?.trim() || '';
+            if (script.startsWith('http://') || script.startsWith('https://')) {
+                return script.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '');
+            }
+            const fromWindow =
+                typeof window !== 'undefined'
+                    ? (
+                          (window as Window & {
+                              TINY_MATERIAL_BUNDLE_URLS?: string | string[];
+                          }).TINY_MATERIAL_BUNDLE_URLS || ''
+                      )
+                    : '';
+            const fromEnv =
+                (
+                    (import.meta.env as ImportMetaEnv & {
+                        VITE_MATERIAL_BUNDLE_URLS?: string;
+                    }).VITE_MATERIAL_BUNDLE_URLS || ''
+                ).trim();
+            const rawSource =
+                Array.isArray(fromWindow) && fromWindow.length
+                    ? fromWindow.join(',')
+                    : String(fromWindow || fromEnv);
+            const firstHttpUrl = rawSource
+                .split(',')
+                .map(item => item.trim())
+                .find(
+                    item =>
+                        item.startsWith('http://') ||
+                        item.startsWith('https://')
+                );
+            if (firstHttpUrl) {
+                return firstHttpUrl
+                    .replace(/\/[#?].*$/, '')
+                    .replace(/\/[^/]*$/, '');
+            }
+            // 兜底：从已经成功加载的物料依赖（scripts/styles）反推 bundle base，
+            // 与 mr-bank.css 的加载链路保持一致，避免 icon 仍走 webview 相对路径。
+            const depsScripts =
+                materialState?.componentsDepsMap?.scripts || ([] as any[]);
+            const depsStyles = Array.from(
+                materialState?.componentsDepsMap?.styles || []
+            ) as string[];
+            const firstHttpFromDeps = [
+                ...depsScripts.map(item => item?.script).filter(Boolean),
+                ...depsStyles
+            ].find(
+                (item: string) =>
+                    item.startsWith('http://') || item.startsWith('https://')
+            );
+            return firstHttpFromDeps
+                ? firstHttpFromDeps
+                      .replace(/\/[#?].*$/, '')
+                      .replace(/\/[^/]*$/, '')
+                : '';
+        };
+
+        const resolveRelativeMaterialIconUrl = (
+            icon: string,
+            componentKey: string
+        ) => {
+            if (
+                icon.startsWith('http://') ||
+                icon.startsWith('https://') ||
+                icon.startsWith('data:') ||
+                icon.startsWith('vscode-webview:')
+            ) {
+                return icon;
+            }
+            const base = getBundleBaseFromMaterial(componentKey);
+            if (!base) return icon;
+            return `${base.replace(/\/$/, '')}/${icon.replace(/^\//, '')}`;
+        };
+
+        /** 物料面板图标：支持 icon name 与 icon URL（方案A） */
+        const getMaterialIconName = (child: {
+            icon?: string;
+            snippetName?: string;
+            component?: string;
+            __iconLoadFailed?: boolean;
+        }) => {
+            if (child?.__iconLoadFailed) return 'component-default';
+            let rawIcon = child?.icon?.trim();
+            const componentKey = child?.snippetName || child?.component || '';
+            if (!rawIcon || rawIcon === 'component-default') {
+                const material = getMaterial(componentKey) as
+                    | { icon?: string }
+                    | undefined;
+                rawIcon = material?.icon?.trim() || rawIcon;
+            }
+            if (!rawIcon) return 'component-default';
+            if (isMaterialIconUrl(rawIcon)) {
+                return resolveRelativeMaterialIconUrl(rawIcon, componentKey);
+            }
+            return rawIcon.toLowerCase();
+        };
+
+        const handleMaterialIconError = (
+            event: Event,
+            child: {
+                __iconLoadFailed?: boolean;
+            }
+        ) => {
+            child.__iconLoadFailed = true;
+            const target = event.target as HTMLImageElement | null;
+            if (target) {
+                target.onerror = null;
+                target.src = '';
+            }
+        };
 
         const fetchComponents = (components: Component[], name: string) => {
             if (!name) {
@@ -458,7 +607,9 @@ export default {
             // 暴露 getComponentLabel 函数给模板使用
             getComponentLabel,
             getComponentName,
-            getMaterialIconName
+            getMaterialIconName,
+            isMaterialIconUrl,
+            handleMaterialIconError
         };
     }
 };
@@ -507,6 +658,13 @@ export default {
                     vertical-align: middle;
                     color: var(--te-materials-component-list-item-icon-color);
                     overflow: hidden;
+                }
+
+                .component-item-icon-image {
+                    width: 40px;
+                    height: 40px;
+                    object-fit: contain;
+                    vertical-align: middle;
                 }
             }
 

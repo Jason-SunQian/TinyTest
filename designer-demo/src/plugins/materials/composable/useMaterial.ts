@@ -469,10 +469,22 @@ const addComponentSnippets = (
         });
 
         if (snippetsMap.has(snippetGroup.group)) {
-            // 确保翻译已应用到 children 后再 push
-            snippetsMap
-                .get(snippetGroup.group)!
-                .children.push(...snippetGroup.children);
+            // 同名组件（snippetName/component）用后加载的数据覆盖先加载的数据，
+            // 以便远程主工程 bundle 正确覆盖内置 mock（含 icon/script 等字段）
+            const target = snippetsMap.get(snippetGroup.group)!;
+            snippetGroup.children.forEach(nextChild => {
+                const nextKey = nextChild.snippetName || nextChild.component;
+                const idx = target.children.findIndex(existing => {
+                    const existingKey =
+                        existing.snippetName || existing.component;
+                    return existingKey && existingKey === nextKey;
+                });
+                if (idx >= 0) {
+                    target.children.splice(idx, 1, nextChild);
+                } else {
+                    target.children.push(nextChild);
+                }
+            });
         } else {
             // 先应用翻译，再克隆
             const snippetGroupClone = deepClone(snippetGroup);
@@ -952,6 +964,28 @@ const addComponents = (
     components.forEach(c => {
         registerComponentToResource(c, bundleBase);
     });
+
+    // snippets 若未配置 icon，则回填 components 中对应组件的 icon（支持主工程随 bundle 下发图标）
+    const componentIconMap = new Map<string, string>();
+    components.forEach(component => {
+        if (
+            typeof component?.component === 'string' &&
+            typeof component?.icon === 'string' &&
+            component.icon.trim()
+        ) {
+            componentIconMap.set(component.component, component.icon);
+        }
+    });
+    snippets.forEach(group => {
+        group?.children?.forEach(child => {
+            if (child?.icon && String(child.icon).trim()) return;
+            const key = child?.snippetName || child?.component;
+            if (typeof key === 'string' && componentIconMap.has(key)) {
+                child.icon = componentIconMap.get(key) as string;
+            }
+        });
+    });
+
     // 添加组件snippets
     addComponentSnippets(snippets, materialState.components);
 };
@@ -992,6 +1026,19 @@ const normalizeMaterialAssetUrls = (
     if (!bundleBase) return materials;
     const toAbsString = (u: string) =>
         toAbsoluteMaterialUrl(u, bundleBase) || u;
+    const isLikelyAssetUrl = (value?: string) => {
+        const icon = value?.trim();
+        if (!icon) return false;
+        return (
+            icon.startsWith('http://') ||
+            icon.startsWith('https://') ||
+            icon.startsWith('data:') ||
+            icon.startsWith('/') ||
+            icon.startsWith('./') ||
+            icon.startsWith('../') ||
+            /\.(svg|png|jpe?g|webp|gif|ico)$/i.test(icon)
+        );
+    };
 
     // 回填：packages 里声明的 script/css -> components.npm（常见：组件只写 npm.package，不写 npm.script）
     const pkgAssetMap = new Map<
@@ -1049,6 +1096,10 @@ const normalizeMaterialAssetUrls = (
     };
 
     const components = (materials.components || []).map(component => {
+        const normalizedIcon =
+            typeof component.icon === 'string' && isLikelyAssetUrl(component.icon)
+                ? toAbsString(component.icon)
+                : component.icon;
         const npm = component.npm
             ? patchNpm({
                   ...component.npm,
@@ -1091,6 +1142,7 @@ const normalizeMaterialAssetUrls = (
                 : (component as any)?.content;
         return {
             ...component,
+            icon: normalizedIcon,
             npm,
             ...(content ? { content } : {})
         };
@@ -1106,9 +1158,21 @@ const normalizeMaterialAssetUrls = (
                 : (pkg as any).css
     }));
 
+    const snippets = (materials.snippets || []).map(group => ({
+        ...group,
+        children: (group.children || []).map(child => ({
+            ...child,
+            icon:
+                typeof child.icon === 'string' && isLikelyAssetUrl(child.icon)
+                    ? toAbsString(child.icon)
+                    : child.icon
+        }))
+    }));
+
     return {
         ...materials,
         components,
+        snippets,
         packages
     };
 };
@@ -1120,11 +1184,32 @@ const normalizeMaterialAssetUrls = (
  */
 const addMaterials = (materials: Material, bundleUrl?: string) => {
     if (bundleUrl) materialBundleLoadTimestamp = Date.now();
-    const bundleBase =
+    const bundleBaseFromUrl =
         typeof bundleUrl === 'string'
             ? bundleUrl.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '')
             : undefined;
-    const normalized = normalizeMaterialAssetUrls(materials, bundleBase);
+    const remoteMaterialBase = getMaterialsBaseFromBundleUrls() || undefined;
+    const isHttpMaterialBase =
+        !!bundleBaseFromUrl &&
+        (bundleBaseFromUrl.startsWith('http://') ||
+            bundleBaseFromUrl.startsWith('https://'));
+    const hasExplicitBundleUrl = typeof bundleUrl === 'string';
+    // 内置 /mock 等「非 HTTP」bundle 的 base 不能用来解析 icons/*.svg，否则会落到 webview 相对路径 403。
+    // 仅当本次确实在加载某个 bundle（如 /mock/bundle.json）且其 base 非 HTTP 时，才用远程 HTTP base 做资源归一化；
+    // 未传 bundleUrl 的内置物料初始化不得套用远程 base，避免误改写内置脚本地址。
+    const bundleBaseForNormalize =
+        isHttpMaterialBase && bundleBaseFromUrl
+            ? bundleBaseFromUrl
+            : hasExplicitBundleUrl &&
+              bundleBaseFromUrl &&
+              !isHttpMaterialBase
+            ? remoteMaterialBase || bundleBaseFromUrl
+            : bundleBaseFromUrl || undefined;
+    const bundleBase = bundleBaseFromUrl || undefined;
+    const normalized = normalizeMaterialAssetUrls(
+        materials,
+        bundleBaseForNormalize
+    );
     addComponents(normalized, bundleBase, !!bundleUrl);
     addBlocks(normalized.blocks);
 };
