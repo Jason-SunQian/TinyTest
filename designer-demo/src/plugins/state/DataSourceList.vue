@@ -125,9 +125,7 @@ export default {
             if (expresstionPages.length > 0) {
                 const messageText = `${t('designer.state.cannotDelete', {
                     expression
-                })}\n${expresstionPages
-                    .map(pagaName => pagaName)
-                    .join('\n')}`;
+                })}\n${expresstionPages.map(pagaName => pagaName).join('\n')}`;
                 useModal().message({
                     title: t('designer.state.deleteTip'),
                     message: messageText

@@ -44,9 +44,12 @@
                                         :alt="getComponentName(child)"
                                         class="component-item-icon-image"
                                         @error="
-                                            handleMaterialIconError($event, child)
+                                            handleMaterialIconError(
+                                                $event,
+                                                child
+                                            )
                                         "
-                                    />
+                                    >
                                     <svg-icon
                                         v-else
                                         :name="getMaterialIconName(child)"
@@ -106,13 +109,22 @@ export default {
     setup() {
         const COMPONENT_PANEL_COLUMNS = '1fr 1fr 1fr';
         const SHORTCUT_PANEL_COLUMNS = '1fr 1fr 1fr 1fr 1fr 1fr';
-        const { generateNode, materialState, getComponentsByGroup, getMaterial } =
-            useMaterial();
-        const getBundleBaseUrlForComponent = (
-            useMaterial() as {
-                getBundleBaseUrlForComponent?: (name: string) => string | null;
-            }
-        ).getBundleBaseUrlForComponent;
+        const materialApi = useMaterial() as {
+            generateNode: ReturnType<typeof useMaterial>['generateNode'];
+            materialState: ReturnType<typeof useMaterial>['materialState'];
+            getComponentsByGroup: ReturnType<
+                typeof useMaterial
+            >['getComponentsByGroup'];
+            getMaterial: ReturnType<typeof useMaterial>['getMaterial'];
+            getBundleBaseUrlForComponent?: (name: string) => string | null;
+        };
+        const {
+            generateNode,
+            materialState,
+            getComponentsByGroup,
+            getMaterial,
+            getBundleBaseUrlForComponent
+        } = materialApi;
         const gridTemplateColumns = ref(COMPONENT_PANEL_COLUMNS);
 
         // 获取国际化 t 函数和语言
@@ -359,68 +371,21 @@ export default {
             );
         };
 
-        const getBundleBaseFromMaterial = (componentKey: string): string => {
-            const mappedBase = getBundleBaseUrlForComponent?.(componentKey) || '';
-            if (mappedBase) return mappedBase;
-            const sharedBase = getMaterialsBaseFromBundleUrls();
-            if (sharedBase) return sharedBase;
-            const material = getMaterial(componentKey) as
-                | { script?: string }
-                | undefined;
-            const script = material?.script?.trim() || '';
-            if (script.startsWith('http://') || script.startsWith('https://')) {
-                return script.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '');
+        /**
+         * 物料面板图标相对路径的兜底基座（与 useMaterial.addMaterials 中
+         * getMaterialsBaseFromBundleUrls 同源）。入库后 icon 多为绝对 URL，此处仅处理少数仍为相对路径的情况。
+         */
+        const getMaterialIconHttpBase = (componentKey: string): string => {
+            const fromMap =
+                getBundleBaseUrlForComponent?.(componentKey)?.trim();
+            if (
+                fromMap &&
+                (fromMap.startsWith('http://') ||
+                    fromMap.startsWith('https://'))
+            ) {
+                return fromMap.replace(/\/$/, '');
             }
-            const fromWindow =
-                typeof window !== 'undefined'
-                    ? (
-                          (window as Window & {
-                              TINY_MATERIAL_BUNDLE_URLS?: string | string[];
-                          }).TINY_MATERIAL_BUNDLE_URLS || ''
-                      )
-                    : '';
-            const fromEnv =
-                (
-                    (import.meta.env as ImportMetaEnv & {
-                        VITE_MATERIAL_BUNDLE_URLS?: string;
-                    }).VITE_MATERIAL_BUNDLE_URLS || ''
-                ).trim();
-            const rawSource =
-                Array.isArray(fromWindow) && fromWindow.length
-                    ? fromWindow.join(',')
-                    : String(fromWindow || fromEnv);
-            const firstHttpUrl = rawSource
-                .split(',')
-                .map(item => item.trim())
-                .find(
-                    item =>
-                        item.startsWith('http://') ||
-                        item.startsWith('https://')
-                );
-            if (firstHttpUrl) {
-                return firstHttpUrl
-                    .replace(/\/[#?].*$/, '')
-                    .replace(/\/[^/]*$/, '');
-            }
-            // 兜底：从已经成功加载的物料依赖（scripts/styles）反推 bundle base，
-            // 与 mr-bank.css 的加载链路保持一致，避免 icon 仍走 webview 相对路径。
-            const depsScripts =
-                materialState?.componentsDepsMap?.scripts || ([] as any[]);
-            const depsStyles = Array.from(
-                materialState?.componentsDepsMap?.styles || []
-            ) as string[];
-            const firstHttpFromDeps = [
-                ...depsScripts.map(item => item?.script).filter(Boolean),
-                ...depsStyles
-            ].find(
-                (item: string) =>
-                    item.startsWith('http://') || item.startsWith('https://')
-            );
-            return firstHttpFromDeps
-                ? firstHttpFromDeps
-                      .replace(/\/[#?].*$/, '')
-                      .replace(/\/[^/]*$/, '')
-                : '';
+            return getMaterialsBaseFromBundleUrls()?.replace(/\/$/, '') || '';
         };
 
         const resolveRelativeMaterialIconUrl = (
@@ -435,7 +400,7 @@ export default {
             ) {
                 return icon;
             }
-            const base = getBundleBaseFromMaterial(componentKey);
+            const base = getMaterialIconHttpBase(componentKey);
             if (!base) return icon;
             return `${base.replace(/\/$/, '')}/${icon.replace(/^\//, '')}`;
         };
@@ -445,6 +410,7 @@ export default {
             icon?: string;
             snippetName?: string;
             component?: string;
+            // eslint-disable-next-line @typescript-eslint/naming-convention -- 运行时标记，避免与物料字段冲突
             __iconLoadFailed?: boolean;
         }) => {
             if (child?.__iconLoadFailed) return 'component-default';
@@ -466,6 +432,7 @@ export default {
         const handleMaterialIconError = (
             event: Event,
             child: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention -- 与 getMaterialIconName 一致
                 __iconLoadFailed?: boolean;
             }
         ) => {

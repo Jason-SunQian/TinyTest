@@ -185,18 +185,17 @@ export default {
         const getActiveSchema = () => {
             let schema = getCurrentSchema?.();
 
-            if (
-                !schema ||
-                (Array.isArray(schema) && schema.length === 0)
-            ) {
+            if (!schema || (Array.isArray(schema) && schema.length === 0)) {
                 schema = pageState?.currentSchema;
             }
 
             if (!schema && canvasApi?.value) {
                 try {
-                    const current = canvasApi.value.getCurrent?.();
+                    const { getCurrent } = canvasApi.value;
+                    const current = getCurrent?.();
                     if (current?.schema) {
-                        schema = current.schema;
+                        const { schema: activeSchema } = current;
+                        schema = activeSchema;
                     }
                 } catch (error) {
                     // ignore

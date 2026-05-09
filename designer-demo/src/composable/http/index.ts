@@ -301,7 +301,9 @@ const createVSCodeHttpAdapter = () => {
 
             // 对绝对 HTTP(S) GET（如本地静态服务 bundle.json）直接浏览器拉取，避免被误走 proxyHttpRequest 产生 404 toast。
             if (isAbsoluteHttpUrl && normalizedMethod === 'get') {
-                const directRes = await fetch(requestUrl, { cache: 'no-store' });
+                const directRes = await fetch(requestUrl, {
+                    cache: 'no-store'
+                });
                 const raw = await directRes.text();
                 let parsed: unknown = raw;
                 try {
@@ -310,14 +312,17 @@ const createVSCodeHttpAdapter = () => {
                     // 非 JSON 响应保持原文
                 }
                 if (!directRes.ok) {
-                    const directError = {
-                        message: `HTTP ${directRes.status}: ${directRes.statusText}`,
-                        status: directRes.status,
-                        statusText: directRes.statusText,
-                        bodyPreview:
-                            typeof raw === 'string' ? raw.slice(0, 200) : ''
+                    const msg = `HTTP ${directRes.status}: ${directRes.statusText}`;
+                    const err = new Error(msg) as Error & {
+                        status: number;
+                        statusText: string;
+                        bodyPreview: string;
                     };
-                    throw directError;
+                    err.status = directRes.status;
+                    err.statusText = directRes.statusText;
+                    err.bodyPreview =
+                        typeof raw === 'string' ? raw.slice(0, 200) : '';
+                    throw err;
                 }
                 response = { data: parsed };
                 // eslint-disable-next-line no-console

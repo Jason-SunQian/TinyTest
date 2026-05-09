@@ -36,7 +36,9 @@ async function startApp() {
     // VSCode 环境默认过滤刷屏日志，保留排障关键日志（可用 localStorage.TINY_LOG='all' 关闭过滤）
     setupLogFilter();
     const registry = await import('../registry');
-    const engine = (await import('@opentiny/tiny-engine')) as unknown as TinyEngineModule;
+    const engine = (await import(
+        '@opentiny/tiny-engine'
+    )) as unknown as TinyEngineModule;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { init, initHook, HOOK_NAME: hookNameMap } = engine;
 

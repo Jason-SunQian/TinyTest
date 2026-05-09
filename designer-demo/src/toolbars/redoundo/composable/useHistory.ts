@@ -3,10 +3,8 @@ import { reactive, isProxy, toRaw } from 'vue';
 import { useCanvas } from '@opentiny/tiny-engine-meta-register';
 
 const schema2String = (schema: unknown): string => {
-    if (isProxy(schema)) {
-        schema = toRaw(schema);
-    }
-    return JSON.stringify(schema);
+    const rawSchema = isProxy(schema) ? toRaw(schema) : schema;
+    return JSON.stringify(rawSchema);
 };
 
 const string2Schema = (value: string): Record<string, unknown> => {
@@ -32,12 +30,11 @@ const refreshNavState = () => {
 
 const push = (schema: unknown) => {
     const nextSnapshot = schema2String(schema);
-    let length = list.length;
 
-    if (historyState.index < length - 1) {
+    if (historyState.index < list.length - 1) {
         list.splice(historyState.index + 1);
-        length = list.length;
     }
+    const { length } = list;
 
     if (length >= maxLength) {
         list.splice(0, length - maxLength + 1);
@@ -62,8 +59,7 @@ const go = (addend: number, valid?: boolean) => {
 
     historyState.index = nextIndex;
     const canvas = useCanvas();
-    const pageState = (canvas as { pageState?: Record<string, unknown> })
-        .pageState;
+    const { pageState } = canvas as { pageState?: Record<string, unknown> };
     const pageSchema = string2Schema(list[historyState.index]);
 
     canvas.resetCanvasState({
@@ -114,7 +110,7 @@ const addHistory = (schema?: unknown) => {
 const useCustomHistory = () => {
     refreshNavState();
     return {
-        __source: 'custom-redoundo-history',
+        historyServiceSource: 'custom-redoundo-history',
         historyState,
         back,
         forward,

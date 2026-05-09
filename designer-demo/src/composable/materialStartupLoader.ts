@@ -104,8 +104,7 @@ const ensureInitialMaterialsLoad = async () => {
             // VSCode + HTTP bundle（本地静态服务）场景下，跳过 fetchResource：
             // fetchResource 会走 HttpService adapter -> proxyHttpRequest，容易对 http://localhost:3000/bundle.json 产生误报 404 toast。
             // 此处直接走 forceLoadFromBundleUrls 的浏览器 fetch，更符合本地静态服务链路。
-            const shouldSkipFetchResource =
-                !!(isVsCodeEnv && hasHttpBundles);
+            const shouldSkipFetchResource = !!(isVsCodeEnv && hasHttpBundles);
             if (
                 !shouldSkipFetchResource &&
                 typeof resourceApi?.fetchResource === 'function'

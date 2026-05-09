@@ -194,7 +194,8 @@ const switchLanguage = (locale: string) => {
             instance.global.locale.value = locale;
             localStorage.setItem(DESIGNER_LOCALE_STORAGE_KEY, locale);
             // 画布 iframe 内 vue-i18n 默认可能仍为 zh_CN；BroadcastChannel 在父子 iframe 各自 sessionStorage 下频道名可能不一致，故直接改 renderer 上的 i18n locale
-            void import('@/components/canvas/container/src/container')
+            // eslint-disable-next-line import/no-cycle -- 动态 import，避免与 container 静态依赖环
+            import('@/components/canvas/container/src/container')
                 .then(m => {
                     if (typeof m.setCanvasVueI18nLocale === 'function') {
                         m.setCanvasVueI18nLocale(locale);

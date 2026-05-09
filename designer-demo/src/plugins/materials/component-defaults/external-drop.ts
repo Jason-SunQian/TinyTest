@@ -1,15 +1,12 @@
 import type { Node } from '@/components/canvas/types';
-
 import type {
     ExternalDropHandler,
     ExternalDropServices
 } from '@/components/canvas/container/src/external-drop-handlers/types';
 import { getClonedPageState } from '@/components/canvas/container/src/external-drop-handlers/utils';
+
 import { syncMrCheckboxGroupModelValueAndState } from './strategies/mrCheckboxGroup';
-import {
-    applyMrCollapseExternalDropLoopDemo,
-    syncMrCollapseModelValueAndState
-} from './strategies/mrCollapse';
+import { applyMrCollapseExternalDropLoopDemo } from './strategies/mrCollapse';
 import { buildMrFormExternalDropPatch } from './strategies/mrForm';
 import { syncMrRadioGroupModelValueAndState } from './strategies/mrRadioGroup';
 import { syncMrSwitchModelValueAndState } from './strategies/mrSwitch';

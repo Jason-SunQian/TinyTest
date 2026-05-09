@@ -245,7 +245,7 @@ export default {
                     const eventArgs =
                         (typeof value === 'string' &&
                             !params &&
-                            value.match(/\((.+)\)$/)?.[1]?.split(',')) ||
+                            (/\((.+)\)$/.exec(value))?.[1]?.split(',')) ||
                         params;
                     const action = {
                         eventName,

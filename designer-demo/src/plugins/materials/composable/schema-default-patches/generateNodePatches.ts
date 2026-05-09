@@ -68,7 +68,8 @@ function patchGenerateNodeMpCountryInput(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         const mv = props.modelValue;
         const mvExpr = isModelValueJsExpression(mv)
@@ -112,7 +113,8 @@ function patchGenerateNodeMpBankInput(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         const mv = props.modelValue;
         const mvExpr = isModelValueJsExpression(mv)
@@ -156,7 +158,8 @@ function patchGenerateNodeMpCityInput(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         const mv = props.modelValue;
         const mvExpr = isModelValueJsExpression(mv)
@@ -200,7 +203,8 @@ function patchGenerateNodeMpDictInput(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         const mv = props.modelValue;
         const mvExpr = isModelValueJsExpression(mv)
@@ -244,7 +248,8 @@ function patchGenerateNodeMpTextarea(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         const mv = props.modelValue;
         const mvExpr = isModelValueJsExpression(mv)
@@ -288,7 +293,8 @@ function patchGenerateNodeMpMobileInput(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         const mv = props.modelValue;
         const mvExpr = isModelValueJsExpression(mv)
@@ -332,7 +338,8 @@ function patchGenerateNodeMpMultiAmt(schema: SchemaNode): void {
                 ? ((pageSchema.state = {}) as Record<string, unknown>)
                 : {};
 
-        const props = (schema.props as Record<string, unknown> | undefined) || {};
+        const props =
+            (schema.props as Record<string, unknown> | undefined) || {};
         if (!schema.props) schema.props = props;
         syncMpMultiAmtModelPropsAndState(props, rootState);
     } catch {

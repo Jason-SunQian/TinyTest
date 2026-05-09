@@ -35,6 +35,10 @@ import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
 } from '@/utils/designerOrigin';
+import {
+    applyGenerateNodeModelPatches,
+    applyModelBindingSchemaPatch
+} from '@/plugins/materials/component-defaults/schema-patches';
 
 import { BASE_STYLE_CLASS_NAME } from '../constants';
 import meta from '../meta';
@@ -58,10 +62,6 @@ import type {
     Snippet
 } from './types';
 import { syncSlotStringChildrenWithPropsChildren } from './slotChildrenPropsSync';
-import {
-    applyGenerateNodeModelPatches,
-    applyModelBindingSchemaPatch
-} from '@/plugins/materials/component-defaults/schema-patches';
 
 const { camelize, capitalize, deepClone } = utils;
 const { MATERIAL_TYPE } = constants;
@@ -739,7 +739,9 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
                     : effectiveBase;
                 return {
                     ...item,
-                    script: absolutize(scriptUrl(item, item.script!, false, itemBase))
+                    script: absolutize(
+                        scriptUrl(item, item.script!, false, itemBase)
+                    )
                 };
             }),
             styles: [...allStyles].map(s => {
@@ -1097,7 +1099,8 @@ const normalizeMaterialAssetUrls = (
 
     const components = (materials.components || []).map(component => {
         const normalizedIcon =
-            typeof component.icon === 'string' && isLikelyAssetUrl(component.icon)
+            typeof component.icon === 'string' &&
+            isLikelyAssetUrl(component.icon)
                 ? toAbsString(component.icon)
                 : component.icon;
         const npm = component.npm
@@ -1200,9 +1203,7 @@ const addMaterials = (materials: Material, bundleUrl?: string) => {
     const bundleBaseForNormalize =
         isHttpMaterialBase && bundleBaseFromUrl
             ? bundleBaseFromUrl
-            : hasExplicitBundleUrl &&
-              bundleBaseFromUrl &&
-              !isHttpMaterialBase
+            : hasExplicitBundleUrl && bundleBaseFromUrl && !isHttpMaterialBase
             ? remoteMaterialBase || bundleBaseFromUrl
             : bundleBaseFromUrl || undefined;
     const bundleBase = bundleBaseFromUrl || undefined;

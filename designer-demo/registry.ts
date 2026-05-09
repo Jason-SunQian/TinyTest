@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention, no-inline-comments, line-comment-position, no-console, import/order */
-import {
-    META_SERVICE,
-    META_APP
-} from '@opentiny/tiny-engine-meta-register';
+import { META_SERVICE, META_APP } from '@opentiny/tiny-engine-meta-register';
 
 import engineConfig from './engine.config';
 import { HttpService } from './src/composable';

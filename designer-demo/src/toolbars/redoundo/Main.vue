@@ -24,9 +24,9 @@
                                 'undo',
                                 { disabled: !historyState.back }
                             ]"
-                            @click="back"
+                            @click="onBack"
                         >
-                            <svg-icon :name="options.icon.undo"></svg-icon>
+                            <svg-icon :name="options.icon.undo" />
                         </span>
                     </template>
                 </tiny-popover>
@@ -52,9 +52,9 @@
                                 'redo',
                                 !historyState.forward ? 'disabled' : ''
                             ]"
-                            @click="forward"
+                            @click="onForward"
                         >
-                            <svg-icon :name="options.icon.redo"></svg-icon>
+                            <svg-icon :name="options.icon.redo" />
                         </span>
                     </template>
                 </tiny-popover>
@@ -63,81 +63,88 @@
     </toolbar-base>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 /* metaService: engine.toolbars.redoundo.custom.Main */
-import { onMounted } from 'vue';
-import { Popover } from '@opentiny/vue';
+import { onMounted, toRef } from 'vue';
+import { Popover as TinyPopover } from '@opentiny/vue';
 import { ToolbarBase } from '@opentiny/tiny-engine-common';
 import { useHistory } from '@opentiny/tiny-engine-meta-register';
+
 import { useDesignerI18n } from '@/services/i18nService';
 
-export default {
-    components: {
-        TinyPopover: Popover,
-        ToolbarBase
-    },
-    props: {
-        options: {
-            type: Object,
-            default: () => ({})
-        }
-    },
-    setup() {
-        const historyApi = useHistory();
-        const { t } = useDesignerI18n();
+interface RedoundoToolbarOptions {
+    icon: {
+        undo: string;
+        redo: string;
+    };
+}
 
-        const writeTrace = (event: string, extra?: Record<string, unknown>) => {
-            if (typeof window === 'undefined') return;
-            const win = window as Window & {
-                __TINY_REDOUNDO_TRACE__?: Array<Record<string, unknown>>;
-                __TINY_REDOUNDO_LAST__?: Record<string, unknown>;
-            };
-            const row = {
-                ts: Date.now(),
-                event,
-                ...extra
-            };
-            win.__TINY_REDOUNDO_TRACE__ = win.__TINY_REDOUNDO_TRACE__ || [];
-            win.__TINY_REDOUNDO_TRACE__.push(row);
-            win.__TINY_REDOUNDO_LAST__ = row;
-        };
-
-        const back = () => {
-            writeTrace('toolbar-back-click', {
-                backEnabled: Boolean(historyApi?.historyState?.back)
-            });
-            historyApi?.back?.();
-        };
-
-        const forward = () => {
-            writeTrace('toolbar-forward-click', {
-                forwardEnabled: Boolean(historyApi?.historyState?.forward)
-            });
-            historyApi?.forward?.();
-        };
-
-        onMounted(() => {
-            writeTrace('toolbar-mounted', {
-                serviceSource:
-                    (historyApi as { __source?: string } | undefined)?.__source ||
-                    'unknown',
-                serviceKeys: Object.keys(
-                    (historyApi as Record<string, unknown>) || {}
-                )
-            });
-        });
-
-        return {
-            ...historyApi,
-            back,
-            forward,
-            t
-        };
+const props = withDefaults(
+    defineProps<{
+        options?: RedoundoToolbarOptions;
+    }>(),
+    {
+        options: () => ({
+            icon: { undo: '', redo: '' }
+        })
     }
+);
+
+defineOptions({
+    name: 'toolbar-redoundo-main'
+});
+
+const options = toRef(props, 'options');
+
+const historyApi = useHistory();
+const { historyState, back, forward } = historyApi;
+const { t } = useDesignerI18n();
+
+const TRACE_KEY = '__TINY_REDOUNDO_TRACE__';
+const LAST_KEY = '__TINY_REDOUNDO_LAST__';
+
+const writeTrace = (event: string, extra?: Record<string, unknown>) => {
+    if (typeof window === 'undefined') return;
+    const win = window as Window & Record<string, unknown>;
+    const row: Record<string, unknown> = {
+        ts: Date.now(),
+        event,
+        ...extra
+    };
+    const trace =
+        (win[TRACE_KEY] as Array<Record<string, unknown>> | undefined) || [];
+    trace.push(row);
+    win[TRACE_KEY] = trace;
+    win[LAST_KEY] = row;
 };
+
+const onBack = () => {
+    writeTrace('toolbar-back-click', {
+        backEnabled: Boolean(historyState.back)
+    });
+    back();
+};
+
+const onForward = () => {
+    writeTrace('toolbar-forward-click', {
+        forwardEnabled: Boolean(historyState.forward)
+    });
+    forward();
+};
+
+onMounted(() => {
+    const apiRecord = historyApi as Record<string, unknown>;
+    const { historyServiceSource } = historyApi as {
+        historyServiceSource?: string;
+    };
+    writeTrace('toolbar-mounted', {
+        serviceSource: historyServiceSource ?? 'unknown',
+        serviceKeys: Object.keys(apiRecord)
+    });
+});
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .redo-undo-wrap {
     display: flex;
 

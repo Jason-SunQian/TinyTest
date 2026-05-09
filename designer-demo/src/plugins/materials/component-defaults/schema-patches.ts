@@ -2,6 +2,7 @@ import type {
     RootStateBag,
     SchemaNode
 } from '@/plugins/materials/composable/schema-default-patches/types';
+
 import { patchMpIconIconTagToChild } from './strategies/mpIcon';
 import { syncMpBankInputModelValueAndState } from './strategies/mpBankInput';
 import { syncMpCityInputModelValueAndState } from './strategies/mpCityInput';
@@ -78,7 +79,10 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         syncMrToggleModelValueAndState(props, rootState);
     },
     MrForm: (schema, rootState) => {
-        syncMrFormModelValueAndState(schema as Record<string, unknown>, rootState);
+        syncMrFormModelValueAndState(
+            schema as Record<string, unknown>,
+            rootState
+        );
     },
     MrCollapse: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};

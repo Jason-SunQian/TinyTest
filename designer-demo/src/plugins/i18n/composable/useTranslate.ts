@@ -313,4 +313,3 @@ export default () => {
 
 export type { I18nOptions };
 export type { I18nOptions };
-

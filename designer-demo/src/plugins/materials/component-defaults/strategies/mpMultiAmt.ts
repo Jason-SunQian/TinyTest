@@ -41,8 +41,10 @@ export function shouldSkipMpMultiAmtAutoBind(
     payerExpr: string | undefined,
     payeeExpr: string | undefined
 ): boolean {
-    if (payeeExpr && !isManagedMpMultiAmtPayeeExpression(payeeExpr)) return true;
-    if (payerExpr && !isManagedMpMultiAmtPayerExpression(payerExpr)) return true;
+    if (payeeExpr && !isManagedMpMultiAmtPayeeExpression(payeeExpr))
+        return true;
+    if (payerExpr && !isManagedMpMultiAmtPayerExpression(payerExpr))
+        return true;
     return false;
 }
 
@@ -60,7 +62,8 @@ export function parseMpMultiAmtLimitRuleKey(
     limitExpr: string | undefined
 ): string | null {
     if (!limitExpr) return null;
-    return limitExpr.match(RE_LIMIT_RULE)?.[1] ?? null;
+    const m = RE_LIMIT_RULE.exec(limitExpr);
+    return m?.[1] ?? null;
 }
 
 export function defaultMpMultiAmtLimitRule(): Record<string, unknown> {
@@ -109,7 +112,8 @@ export function syncMpMultiAmtModelPropsAndState(
 ): boolean {
     const payerExpr = getMpMultiAmtJsExpressionValue(props.payerVal);
     const payeeExpr = getMpMultiAmtJsExpressionValue(props.payeeVal);
-    const limitExpr = getMpMultiAmtJsExpressionValue(props.limitRule);
+    // limitRule：曾根据表达式自动建 state，现已取消；仍读取一次便于断点观察绑定形态
+    getMpMultiAmtJsExpressionValue(props.limitRule);
 
     if (shouldSkipMpMultiAmtAutoBind(payerExpr, payeeExpr)) {
         return false;
@@ -134,7 +138,6 @@ export function syncMpMultiAmtModelPropsAndState(
     // 不再为 limitRule 自动创建默认 state（例如 mpMultiAmtLimitRule1）。
     // 该规则应由页面业务逻辑显式提供，避免出码出现来源不明的初始化配置。
     // 若用户已手动绑定 props.limitRule，这里保持原值不改写。
-    void limitExpr;
 
     return true;
 }

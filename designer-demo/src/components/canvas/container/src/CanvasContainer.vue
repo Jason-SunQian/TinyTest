@@ -86,7 +86,6 @@ import {
 } from '@opentiny/tiny-engine-meta-register';
 import { NODE_UID, NODE_LOOP, DESIGN_MODE } from '@/components/canvas/common';
 import { getCanvasLowcodeLocale } from '@/services/i18nService';
-import { setCanvasVueI18nLocale } from './container';
 import { registerHotkeyEvent, removeHotkeyEvent } from './keyboard';
 import CanvasMenu, { closeMenu, openMenu } from './components/CanvasMenu.vue';
 import CanvasAction from './components/CanvasAction.vue';
@@ -121,7 +120,8 @@ import {
     clearLineState,
     querySelectById,
     getCurrent,
-    canvasApi
+    canvasApi,
+    setCanvasVueI18nLocale
 } from './container';
 
 export default {
@@ -470,7 +470,7 @@ export default {
 
         const keepUtilitiesStyleLast = (doc: Document) => {
             const moveUtilitiesToTail = () => {
-                const head = doc.head;
+                const { head } = doc;
                 if (!head) return;
                 const links = Array.from(
                     head.querySelectorAll<HTMLLinkElement>(
@@ -478,9 +478,9 @@ export default {
                     )
                 );
                 if (!links.length) return;
-                const target = links[links.length - 1];
-                if (head.lastElementChild !== target) {
-                    head.appendChild(target);
+                const lastUtilitiesLink = links.at(-1);
+                if (head.lastElementChild !== lastUtilitiesLink) {
+                    head.appendChild(lastUtilitiesLink);
                 }
             };
 
