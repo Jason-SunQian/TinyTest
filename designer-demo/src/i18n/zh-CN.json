@@ -986,6 +986,8 @@
             "englishTextPlaceholder": "请输入英文内容",
             "saveSuccess": "保存成功",
             "saveFailed": "保存失败",
+            "copySuccess": "复制成功",
+            "copyFailed": "复制失败",
             "deleteSuccess": "删除成功",
             "deleteFailed": "删除失败",
             "uploadSuccess": "上传成功",

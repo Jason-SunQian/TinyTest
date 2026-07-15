@@ -983,6 +983,8 @@
             "englishTextPlaceholder": "Please enter English content",
             "saveSuccess": "Save successful",
             "saveFailed": "Save failed",
+            "copySuccess": "Copy successful",
+            "copyFailed": "Copy failed",
             "deleteSuccess": "Delete successful",
             "deleteFailed": "Delete failed",
             "uploadSuccess": "Upload successful",

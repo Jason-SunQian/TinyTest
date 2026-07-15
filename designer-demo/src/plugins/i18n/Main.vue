@@ -569,9 +569,9 @@ export default {
             copyRowIndex.value = rowIndex;
             try {
                 await toClipboard(row.key);
-                copyTipContent.value = t('designer.i18n.saveSuccess');
+                copyTipContent.value = t('designer.i18n.copySuccess');
             } catch (e) {
-                copyTipContent.value = t('designer.i18n.saveFailed');
+                copyTipContent.value = t('designer.i18n.copyFailed');
                 // eslint-disable-next-line no-console
                 console.error('Clipboard operation failed:', e);
             } finally {
