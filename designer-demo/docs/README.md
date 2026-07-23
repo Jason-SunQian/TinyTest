@@ -54,6 +54,14 @@
 
     -   设计器如何从主工程导入物料资产包、协议要点、痛点与改造方向、文档链接
 
+-   **[物料导入进度跟踪](./物料导入进度跟踪.md)**
+
+    -   原 **mobilebanking** 主工程 `mr-*` / `mp-*` 导入与联调进度
+
+-   **[物料导入进度跟踪-OAB](./物料导入进度跟踪-OAB.md)** ⭐ OAB 主工程
+
+    -   **OAB** 源码组件使用 vs `lowcode-materials` 缺口；低代码开发 OAB 业务时的导入优先级（P0 页面壳 / P1 表单等）
+
 -   **[插件与设计器物料导入对接与排障](./插件与设计器物料导入对接与排障.md)** ⭐ 新增
 
     -   插件 AM 导入 + 静态服务 + 设计器加载的对接链路、成功判定、调试与排障流程
@@ -67,7 +75,8 @@
     -   不用画布桩、纯 re-export 显示 Ionic 组件的可行性；Shadow DOM 与 CSS 变量；建议验证步骤
 
 -   **[组件导入注意事项](./组件导入注意事项.md)** ⭐ 导入/画布桩必读
-    -   原子/业务组件导入规则、画布桩约定、**MpMultiAmt / MpTextAmt** 等迁移踩坑与验收清单
+    -   原子/业务组件导入规则、画布桩约定、**MpMultiAmt / MpTextAmt / MpSingleAmt** 等迁移踩坑与验收清单
+    -   表单桩：**先读运行态 padding 清零与否**，再定横向/垂直 inset；OMR 跟 `mp-text-amt` 的 `1em`
 
 -   **[Ionic 组件导入与桩方案](./Ionic组件导入与桩方案.md)**
     -   画布桩、MrLabel/MrButton 的 `children` 与 manifest；**2.6.1**（属性面板 Text 为空）、**2.8**（单独拖入 MrBackButton 时 Default Href 为空）的设计器侧说明与修复要点
@@ -121,6 +130,7 @@
 -   **AM 导入后如何判断成功并排障？** → [插件与设计器物料导入对接与排障](./插件与设计器物料导入对接与排障.md)
 -   **设计器改造时能否修改 packages？** → [设计器与 packages 边界约定](./设计器与packages边界约定.md)（**不能**，packages 仅作参考）
 -   **画布 Class Name 不生效 / 组件无法选中？** → [组件导入注意事项](./组件导入注意事项.md)（**MpTextAmt** 第 F 节：勿写死 color、`v-bind="attrs"`）
+-   **金额输入画布相对 Text 缩进 / label 偏小 / OMR 过大？** → [组件导入注意事项](./组件导入注意事项.md)（**MpSingleAmt** 第 F2 节）
 -   **如何添加代码提示关键字？** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md#三如何添加新关键字)
 -   **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
 -   **如何迁移插件？** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)

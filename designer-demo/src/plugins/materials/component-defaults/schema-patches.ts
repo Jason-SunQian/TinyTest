@@ -10,8 +10,14 @@ import { syncMpCountryInputModelValueAndState } from './strategies/mpCountryInpu
 import { syncMpDictInputModelValueAndState } from './strategies/mpDictInput';
 import { syncMpMobileInputModelValueAndState } from './strategies/mpMobileInput';
 import { syncMpMultiAmtModelPropsAndState } from './strategies/mpMultiAmt';
+import { syncMpSingleAmtModelPropsAndState } from './strategies/mpSingleAmt';
 import { syncMpTagsModelValueAndState } from './strategies/mpTags';
 import { syncMpTextareaModelValueAndState } from './strategies/mpTextarea';
+import { syncMpPopupShowAndState } from './strategies/mpPopup';
+import { syncMpDialogShowAndState } from './strategies/mpDialog';
+import { syncMpDatePopupModelPropsAndState } from './strategies/mpDatePopup';
+import { syncMpLinkedAccountInputModelValueAndState } from './strategies/mpLinkedAccountInput';
+import { syncMpPinInputSimpleUidAndState } from './strategies/mpPinInputSimple';
 import { syncMrCheckboxGroupModelValueAndState } from './strategies/mrCheckboxGroup';
 import { syncMrCollapseModelValueAndState } from './strategies/mrCollapse';
 import { syncMrFormModelValueAndState } from './strategies/mrForm';
@@ -58,6 +64,11 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         if (!schema.props) schema.props = props;
         syncMpMultiAmtModelPropsAndState(props, rootState);
     },
+    MpSingleAmt: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpSingleAmtModelPropsAndState(props, rootState);
+    },
     MpTextarea: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};
         if (!schema.props) schema.props = props;
@@ -67,6 +78,31 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         const props = (schema.props as Record<string, unknown>) || {};
         if (!schema.props) schema.props = props;
         syncMpTagsModelValueAndState(props, rootState);
+    },
+    MpPopup: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpPopupShowAndState(props, rootState);
+    },
+    MpDialog: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpDialogShowAndState(props, rootState);
+    },
+    MpDatePopup: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpDatePopupModelPropsAndState(props, rootState);
+    },
+    MpLinkedAccountInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpLinkedAccountInputModelValueAndState(props, rootState);
+    },
+    MpPinInputSimple: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpPinInputSimpleUidAndState(props, rootState);
     },
     MrSwitch: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};

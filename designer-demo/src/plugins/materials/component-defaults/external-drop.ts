@@ -17,8 +17,14 @@ import { syncMpCountryInputModelValueAndState } from './strategies/mpCountryInpu
 import { syncMpDictInputModelValueAndState } from './strategies/mpDictInput';
 import { syncMpMobileInputModelValueAndState } from './strategies/mpMobileInput';
 import { syncMpMultiAmtModelPropsAndState } from './strategies/mpMultiAmt';
+import { syncMpSingleAmtModelPropsAndState } from './strategies/mpSingleAmt';
 import { syncMpTagsModelValueAndState } from './strategies/mpTags';
 import { syncMpTextareaModelValueAndState } from './strategies/mpTextarea';
+import { syncMpPopupShowAndState } from './strategies/mpPopup';
+import { syncMpDialogShowAndState } from './strategies/mpDialog';
+import { syncMpDatePopupModelPropsAndState } from './strategies/mpDatePopup';
+import { syncMpLinkedAccountInputModelValueAndState } from './strategies/mpLinkedAccountInput';
+import { syncMpPinInputSimpleUidAndState } from './strategies/mpPinInputSimple';
 
 /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与物料 componentName 对齐 */
 const HANDLERS: Record<string, ExternalDropHandler> = {
@@ -118,6 +124,15 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
             updateSchema({ state: stateObj });
         }
     },
+    MpSingleAmt: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        const applied = syncMpSingleAmtModelPropsAndState(props, stateObj);
+        if (applied) {
+            updateSchema({ state: stateObj });
+        }
+    },
     MpTextarea: (insertData, { getSchema, updateSchema }) => {
         insertData.props = insertData.props || {};
         const props = insertData.props as Record<string, unknown>;
@@ -130,6 +145,43 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
         const props = insertData.props as Record<string, unknown>;
         const stateObj = getClonedPageState(getSchema);
         syncMpTagsModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpPopup: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpPopupShowAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpDialog: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpDialogShowAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpDatePopup: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        const applied = syncMpDatePopupModelPropsAndState(props, stateObj);
+        if (applied) {
+            updateSchema({ state: stateObj });
+        }
+    },
+    MpLinkedAccountInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpLinkedAccountInputModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpPinInputSimple: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpPinInputSimpleUidAndState(props, stateObj);
         updateSchema({ state: stateObj });
     }
 };
