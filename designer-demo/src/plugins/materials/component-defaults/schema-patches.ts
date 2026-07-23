@@ -18,6 +18,13 @@ import { syncMpDialogShowAndState } from './strategies/mpDialog';
 import { syncMpDatePopupModelPropsAndState } from './strategies/mpDatePopup';
 import { syncMpLinkedAccountInputModelValueAndState } from './strategies/mpLinkedAccountInput';
 import { syncMpPinInputSimpleUidAndState } from './strategies/mpPinInputSimple';
+import { syncMpPinInputUidAndState } from './strategies/mpPinInput';
+import { syncMpCodeInputModelValueAndState } from './strategies/mpCodeInput';
+import { syncMpBranchInputModelValueAndState } from './strategies/mpBranchInput';
+import { syncMpUploaderModelPropsAndState } from './strategies/mpUploader';
+import { syncMpMultiUploaderModelValueAndState } from './strategies/mpMultiUploader';
+import { syncMpAccountCardsModelPropsAndState } from './strategies/mpAccountCards';
+import { syncMpCcyInputModelValueAndState } from './strategies/mpCcyInput';
 import { syncMrCheckboxGroupModelValueAndState } from './strategies/mrCheckboxGroup';
 import { syncMrCollapseModelValueAndState } from './strategies/mrCollapse';
 import { syncMrFormModelValueAndState } from './strategies/mrForm';
@@ -103,6 +110,41 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         const props = (schema.props as Record<string, unknown>) || {};
         if (!schema.props) schema.props = props;
         syncMpPinInputSimpleUidAndState(props, rootState);
+    },
+    MpPinInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpPinInputUidAndState(props, rootState);
+    },
+    MpCodeInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpCodeInputModelValueAndState(props, rootState);
+    },
+    MpBranchInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpBranchInputModelValueAndState(props, rootState);
+    },
+    MpUploader: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpUploaderModelPropsAndState(props, rootState);
+    },
+    MpMultiUploader: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpMultiUploaderModelValueAndState(props, rootState);
+    },
+    MpAccountCards: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpAccountCardsModelPropsAndState(props, rootState);
+    },
+    MpCcyInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpCcyInputModelValueAndState(props, rootState);
     },
     MrSwitch: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};

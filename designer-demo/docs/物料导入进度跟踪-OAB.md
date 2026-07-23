@@ -25,15 +25,15 @@
 | **合计** | 125 | 70 | 72 | 55 | — |
 
 ¹ `mr-image` / `mr-img`、`mr-progress` / `mr-progress-bar` 等别名按「已导入」计。  
-² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput`（均已联调可用）、`MpPinInputSimple`（已导入待测）。
+² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput`（均已联调可用）。
 
 与 [mobilebanking 跟踪文档](./物料导入进度跟踪.md) 对比（该文档待导入业务约 9～11 个）：
 
 | 差异 | 说明 |
 | ---- | ---- |
 | OAB 业务待导入更多 | 约 **39** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、金额子件、上传、账户卡等） |
-| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`（均已联调可用）；`mp-pin-input-simple`（已导入待测） |
-| 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-uploader`、`mp-list-skeleton`、`mp-trans-summary`、`mp-summary-popup`、`mp-refresher-content` 等 |
+| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`（均已联调可用） |
+| 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-list-skeleton`、`mp-trans-summary`、`mp-summary-popup`、`mp-refresher-content` 等 |
 
 ---
 
@@ -123,7 +123,14 @@
 | **mp-single-amt** | 38 | Single Amt | **已联调可用**（2026-07-23）。画布 `mp-single-amt-designer.vue`（展示态）；双 `defineModel` → `state.mpSingleAmtFormN.{amount,ccy}`；画布样式对齐运行态：无额外横向 inset、吃 `van-cell-vertical-padding`、label 用 MrField 15px token、OMR 按 `mp-text-amt` `1em`/`h2`。详见《组件导入注意事项》**MpSingleAmt 迁移经验**。 |
 | **mp-date-popup** | 23 | Date Popup | **已联调可用**（2026-07-23）。画布 `mp-date-popup-designer.vue`（始终展开 + 滚轮占位）；三绑定 `visible/date/endDate`；预览打开需 `visible=true`；`date`/`endDate` 须为 `Date` 或 `null`（禁止 `""`）。 |
 | **mp-linked-account-input** | 13 | Linked Account Input | **已联调可用**（2026-07-23）。画布 `mp-linked-account-input-designer.vue`；无横向 inset；底部分割线在 cell padding 之后；箭头 `icon-fourth`；`v-model` → `state.mpLinkedAccountInputN`（对象 `{}`）。 |
-| **mp-pin-input-simple** | 18 | Pin Input Simple | **已导入待测**（2026-07-23）。画布 `mp-pin-input-simple-designer.vue`（input / grid + 按住窥视眼睛）；`v-model:uid` → `state.mpPinInputSimpleUidN`（字符串 `''`，非 PIN 明文）；必填 `inputmode`（`0`/`1`）。 |
+| **mp-pin-input-simple** | 18 | Pin Input Simple | **已联调可用**（2026-07-23）。画布 `mp-pin-input-simple-designer.vue`（input / grid + 按住窥视眼睛）；`v-model:uid` → `state.mpPinInputSimpleUidN`（字符串 `''`，非 PIN 明文）；必填 `inputmode`（`0`/`1`）。 |
+| **mp-code-input** | 11 | Code Input | **已联调可用**（2026-07-23）。画布 `mp-code-input-designer.vue`（方格 + 光标）；`v-model` → `state.mpCodeInputN`（`''`，snippet 勿写死演示码）；`length` / `mask` / `error`。 |
+| **mp-pin-input** | 8 | Pin Input | **已联调可用**（2026-07-23）。画布 `mp-pin-input-designer.vue`（input 掩码点 / grid `max-w-50px`，无眼睛）；`v-model:uid` → `state.mpPinInputUidN`；依赖原生安全键盘；与 `MpPinInputSimple` 区分。 |
+| **mp-branch-input** | 6 | Branch Input | **已联调可用**（2026-07-23）。画布 `mp-branch-input-designer.vue`；对齐 `mp-input`（无横向 inset、分割线在 cell padding 后、箭头 `icon-fourth`）；`v-model` → `state.mpBranchInputN`（分行号字符串）。 |
+| **mp-uploader** | 8 | Uploader | **已联调可用**（2026-07-23）。画布 `mp-uploader-designer.vue`（上传区 bg-200 / h-134px）；双绑定 `fileId`/`name` → `state.mpUploaderFormN`；snippet 勿写死演示 id。 |
+| **mp-multi-uploader** | 12 | Multi Uploader | **已联调可用**（2026-07-23）。画布 `mp-multi-uploader-designer.vue`（68px 缩略图 + 60x60 添加格）；`v-model` → `state.mpMultiUploaderN`（`[]`）；snippet 勿写死演示文件。 |
+| **mp-account-cards** | 11 | Account Cards | **已联调可用**（2026-07-23）。画布 `mp-account-cards-designer.vue`（静态卡 + peek，无 paymentStore / Swiper）；三绑定 `v-model` / `v-model:ccy` / `v-model:balance` → `state.mpAccountCardsFormN.{account,ccy,balance}`（`account:{}`，`ccy/balance:''`）；snippet 勿写死演示账户；`sceneType` 必填。 |
+| **mp-ccy-input** | 4 | Ccy Input | **已联调可用**（2026-07-23）。画布 `mp-ccy-input-designer.vue`（对齐 mp-input：无横向 inset、分割线在 cell padding 后、箭头 icon-fourth）；`v-model` → `state.mpCcyInputN`（`''`）；画布点击轮换 OMR/USD/EUR；snippet 勿写死演示币种。 |
 
 ### 4.2 待导入（按低代码开发优先级）
 
@@ -146,11 +153,11 @@
 | ~~**mp-single-amt**~~ | 38 | Single Amt | **已联调可用**，见 4.1.2 |
 | ~~**mp-date-popup**~~ | 23 | Date Popup | **已联调可用**，见 4.1.2 |
 | ~~**mp-linked-account-input**~~ | 13 | Linked Account Input | **已联调可用**，见 4.1.2 |
-| ~~**mp-pin-input-simple**~~ | 18 | Pin Input Simple | **已导入待测**，见 4.1.2 |
-| **mp-pin-input** | 8 | Pin Input | PIN |
-| **mp-code-input** | 11 | Code Input | 验证码 |
-| **mp-branch-input** | 6 | Branch Input | 分行 |
-| **mp-ccy-input** | 4 | Ccy Input | 币种 |
+| ~~**mp-pin-input-simple**~~ | 18 | Pin Input Simple | **已联调可用**，见 4.1.2 |
+| ~~**mp-pin-input**~~ | 8 | Pin Input | **已联调可用**，见 4.1.2 |
+| ~~**mp-code-input**~~ | 11 | Code Input | **已联调可用**，见 4.1.2 |
+| ~~**mp-branch-input**~~ | 6 | Branch Input | **已联调可用**，见 4.1.2 |
+| ~~**mp-ccy-input**~~ | 4 | Ccy Input | **已联调可用**，见 4.1.2 |
 | **mp-dict-multiple-input** | 6 | Dict Multiple Input | 多选字典 |
 | **mp-country-multiple-input** | 5 | Country Multiple Input | 多选国家 |
 
@@ -158,14 +165,14 @@
 
 | 组件 | 约使用次数 | 设计器名称建议 | 说明 |
 | ---- | ---------- | -------------- | ---- |
-| **mp-multi-uploader** | 12 | Multi Uploader | 多文件上传 |
-| **mp-uploader** | 8 | Uploader | 单/通用上传 |
+| ~~**mp-multi-uploader**~~ | 12 | Multi Uploader | **已联调可用**，见 4.1.2 |
+| ~~**mp-uploader**~~ | 8 | Uploader | **已联调可用**，见 4.1.2 |
 | **mp-document-upload** | 3 | Document Upload | 证件类上传 |
 | **mp-trans-summary** | 4 | Trans Summary | 交易摘要块 |
 | **mp-summary-popup** | 2 | Summary Popup | 摘要弹层 |
 | **mp-list-skeleton** | 4 | List Skeleton | 列表骨架 |
 | **mp-refresher-content** | 3 | Refresher Content | 与 `mr-refresher` 配套 |
-| **mp-account-cards** | 11 | Account Cards | 账户卡片组 |
+| ~~**mp-account-cards**~~ | 11 | Account Cards | **已联调可用**，见 4.1.2 |
 | **mp-linked-account-cards** | 3 | Linked Account Cards | 关联账户卡 |
 | **mp-account-picker** | 3 | Account Picker | 账户选择 |
 | **mp-account-item** | 1 | Account Item | 账户条目 |
@@ -199,9 +206,9 @@
 
 1. **立刻优先**：~~`mp-page` / `mp-container` / `mp-popup` / `mp-dialog`（均已联调可用）~~；按需再补 `mp-popup-container`  
    - P0 页面骨架与弹层壳已齐，可继续推进 P1 表单件。
-2. **金额与账户页（含继续做 donations / transfer 类）**：~~`mp-single-amt` / `mp-date-popup` / `mp-linked-account-input`（已联调可用）~~、~~`mp-pin-input-simple`（已导入待测）~~、各类 `*-input`（P1）  
-   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-account-input`、`mp-donation-pay-account-swiper`。
-3. **资料/工单类**：`mp-uploader` / `mp-multi-uploader`、`mp-list-skeleton`、`mp-trans-summary`。
+2. **金额与账户页（含继续做 donations / transfer 类）**：~~`mp-single-amt` / `mp-date-popup` / `mp-linked-account-input` / `mp-pin-input-simple` / `mp-code-input` / `mp-pin-input` / `mp-branch-input`（已联调可用）~~、各类 `*-input`（P1）  
+   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
+3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、`mp-list-skeleton`、`mp-trans-summary`。
 4. **原子侧**：OAB 缺口主要是低频 `mr-*`；优先补 `mr-spinner` 即可，其余按真实低代码页面需要再开。
 5. **不要优先导入**：`mr-page` / `mr-app` / `mr-router-outlet`、`mp-date-picker-legacy`、极低频领域页组件。
 
@@ -277,3 +284,33 @@ _补充（2026-07-23）：**mp-linked-account-input 已导入待测**——`mp-l
 _补充（2026-07-23）：**mp-linked-account-input 已联调可用**——画布/出码比对通过（横线在 cell 底 padding 后、箭头 `icon-fourth` 蓝）；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-pin-input-simple` 等。_
 
 _补充（2026-07-23）：**mp-pin-input-simple 已导入待测**——`mp-pin-input-simple-designer` + entry + manifest；产物 **78** 个组件；画布支持 `input`/`grid` 与按住窥视眼睛；拖拽 `v-model:uid` → `this.state.mpPinInputSimpleUidN`（`''`，非 PIN 明文）；必填 `inputmode`（`0`/`1`）。与安全键盘版 `mp-pin-input` 区分。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-pin-input-simple 已联调可用**——功能与画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-code-input` 等。_
+
+_补充（2026-07-23）：**mp-code-input 已导入待测**——`mp-code-input-designer` + entry + manifest；产物 **79** 个组件；方格对齐运行态（`max-w-70px` / `rounded-8px` / `border-200`）；`v-model` → `this.state.mpCodeInputN`（`''`）；画布点击可逐位演示（预览用真实输入）；snippet **勿写死**演示码。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-code-input 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-pin-input` 等。_
+
+_补充（2026-07-23）：**mp-pin-input 已导入待测**——`mp-pin-input-designer` + entry + manifest；产物 **80** 个组件；安全键盘版（无眼睛、grid `max-w-50px`）；`v-model:uid` → `this.state.mpPinInputUidN`；与 `MpPinInputSimple` 状态键分离。画布点击仅演示掩码点数；真机/预览依赖 `mrBox.secureKeyboard`。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-pin-input 已联调可用**——功能与画布样式比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-branch-input` 等。_
+
+_补充（2026-07-23）：**mp-branch-input 已导入待测**——`mp-branch-input-designer` + entry + manifest；产物 **81** 个组件；对齐 `mp-input`（无横向 inset、分割线在 cell padding 后、箭头 `icon-fourth`）；`v-model` → `this.state.mpBranchInputN`（分行号）；画布点击轮换演示分行；运行态打开 `showBranchPicker`。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-branch-input 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P2：`mp-uploader` 等。_
+
+_补充（2026-07-23）：**mp-uploader 已导入待测**——`mp-uploader-designer` + entry + manifest；产物 **82** 个组件；上传区对齐运行态（`bg-200` / `rounded-8px` / `h-134px`）；双绑定 `v-model` / `v-model:name` → `this.state.mpUploaderFormN.{fileId,name}`；snippet **勿写死**演示 fileId；画布点击可切换空/已填演示态。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-uploader 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P2：`mp-multi-uploader` 等。_
+
+_补充（2026-07-23）：**mp-multi-uploader 已导入待测**——`mp-multi-uploader-designer` + entry + manifest；产物 **83** 个组件；缩略图网格对齐运行态（68px + 60x60 添加格）；`v-model` → `this.state.mpMultiUploaderN`（`[]`）；画布可点加/删演示；snippet **勿写死**演示文件。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-multi-uploader 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P2：`mp-account-cards` 等。_
+
+_补充（2026-07-23）：**mp-account-cards 已导入待测**——`mp-account-cards-designer` + entry + manifest；产物 **84** 个组件；静态卡 + peek（无 paymentStore / Swiper）；三绑定 `v-model` / `v-model:ccy` / `v-model:balance` → `this.state.mpAccountCardsFormN.{account,ccy,balance}`（`account:{}`，`ccy/balance:''`）；snippet **勿写死**演示账户；`sceneType` 必填。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-account-cards 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-ccy-input` 等。_
+
+_补充（2026-07-23）：**mp-ccy-input 已导入待测**——`mp-ccy-input-designer` + entry + manifest；产物 **85** 个组件；对齐 `mp-input`（无横向 inset、分割线在 cell padding 后、箭头 `icon-fourth`）；`v-model` → `this.state.mpCcyInputN`（`''`）；画布点击轮换 OMR/USD/EUR；snippet **勿写死**演示币种。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-23）：**mp-ccy-input 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-dict-multiple-input` / `mp-country-multiple-input` 等。_

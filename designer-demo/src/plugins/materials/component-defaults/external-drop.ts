@@ -25,6 +25,13 @@ import { syncMpDialogShowAndState } from './strategies/mpDialog';
 import { syncMpDatePopupModelPropsAndState } from './strategies/mpDatePopup';
 import { syncMpLinkedAccountInputModelValueAndState } from './strategies/mpLinkedAccountInput';
 import { syncMpPinInputSimpleUidAndState } from './strategies/mpPinInputSimple';
+import { syncMpPinInputUidAndState } from './strategies/mpPinInput';
+import { syncMpCodeInputModelValueAndState } from './strategies/mpCodeInput';
+import { syncMpBranchInputModelValueAndState } from './strategies/mpBranchInput';
+import { syncMpUploaderModelPropsAndState } from './strategies/mpUploader';
+import { syncMpMultiUploaderModelValueAndState } from './strategies/mpMultiUploader';
+import { syncMpAccountCardsModelPropsAndState } from './strategies/mpAccountCards';
+import { syncMpCcyInputModelValueAndState } from './strategies/mpCcyInput';
 
 /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与物料 componentName 对齐 */
 const HANDLERS: Record<string, ExternalDropHandler> = {
@@ -182,6 +189,59 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
         const props = insertData.props as Record<string, unknown>;
         const stateObj = getClonedPageState(getSchema);
         syncMpPinInputSimpleUidAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpPinInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpPinInputUidAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpCodeInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpCodeInputModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpBranchInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpBranchInputModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpUploader: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        const applied = syncMpUploaderModelPropsAndState(props, stateObj);
+        if (applied) {
+            updateSchema({ state: stateObj });
+        }
+    },
+    MpMultiUploader: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpMultiUploaderModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpAccountCards: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        const applied = syncMpAccountCardsModelPropsAndState(props, stateObj);
+        if (applied) {
+            updateSchema({ state: stateObj });
+        }
+    },
+    MpCcyInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpCcyInputModelValueAndState(props, stateObj);
         updateSchema({ state: stateObj });
     }
 };

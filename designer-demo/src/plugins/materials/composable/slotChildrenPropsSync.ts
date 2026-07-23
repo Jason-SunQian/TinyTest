@@ -49,7 +49,7 @@ export const syncSlotStringChildrenWithPropsChildren = (
             else props.children = ch;
         }
         if (
-            (componentName === 'MrLabel' || componentName === 'MrButton') &&
+            componentName === 'MrLabel' &&
             (props.text === undefined || props.text === '')
         ) {
             if (setProp) setProp('text', ch);
@@ -73,8 +73,9 @@ export const syncSlotStringChildrenWithPropsChildren = (
     if (typeof ch === 'string' && ch.trim() !== '') {
         // 只要节点 children 有值，就以它为准回写 props.children，避免面板回显被旧默认值覆盖
         if (props.children !== ch) applyChildren(ch);
+        // MrButton: do NOT mirror label into props.text — Vant `text` is boolean (text-style button).
         if (
-            (componentName === 'MrLabel' || componentName === 'MrButton') &&
+            componentName === 'MrLabel' &&
             (props.text === undefined || props.text === '')
         ) {
             if (setProp) setProp('text', ch);
@@ -90,7 +91,7 @@ export const syncSlotStringChildrenWithPropsChildren = (
     ) {
         schema.children = props.children;
     } else if (
-        (componentName === 'MrLabel' || componentName === 'MrButton') &&
+        componentName === 'MrLabel' &&
         typeof props.text === 'string' &&
         props.text !== '' &&
         (ch === undefined ||
