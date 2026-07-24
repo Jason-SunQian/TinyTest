@@ -1,6 +1,10 @@
 /**
- * 用于控制是否强制占用画布，隐藏"请先锁定"提示。
+ * 用于控制是否强制占用画布，并抑制 npm DesignCanvas「请先锁定」弹窗。
  * 设置为 false 即可恢复官方锁定提示逻辑。
+ *
+ * 实现：
+ * 1) pageStatus / getEnsuredCanvasStatus 强制 Occupy（pageStatusGuard flush:sync）
+ * 2) initHook(useModal) 吞掉锁定相关 confirm（兜底竞态）
  */
 export const ENABLE_PAGE_LOCK_GUARD = true;
 

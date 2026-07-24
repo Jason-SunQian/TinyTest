@@ -9,9 +9,14 @@ const { PAGE_STATUS } = constants;
 // eslint-disable-next-line @typescript-eslint/init-declarations
 let scope: ReturnType<typeof effectScope> | undefined;
 
+/**
+ * When lock toolbar is hidden, any non-Occupy / non-Guest status is forced to Occupy.
+ * Includes Lock (FALLBACK occupier id ≠ userInfo.id used to leave Lock and open tip).
+ */
 const shouldForceOccupy = (state?: string) =>
-    state &&
-    ![PAGE_STATUS.Occupy, PAGE_STATUS.Lock, PAGE_STATUS.Guest].includes(state);
+    Boolean(state) &&
+    state !== PAGE_STATUS.Occupy &&
+    state !== PAGE_STATUS.Guest;
 
 export const startPageStatusGuard = () => {
     if (!ENABLE_PAGE_LOCK_GUARD) {
@@ -26,9 +31,6 @@ export const startPageStatusGuard = () => {
         watch(
             () => useLayout().layoutState.pageStatus,
             pageStatus => {
-                // eslint-disable-next-line no-console
-                console.info('[designer-demo] pageStatus update', pageStatus);
-
                 if (!pageStatus) {
                     useLayout().layoutState.pageStatus =
                         getEnsuredCanvasStatus();
@@ -37,11 +39,12 @@ export const startPageStatusGuard = () => {
 
                 if (shouldForceOccupy(pageStatus.state)) {
                     useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(
-                        ensureOccupier(pageStatus.data)
+                        ensureOccupier(pageStatus.data),
                     );
                 }
             },
-            { immediate: true, deep: true }
+            // sync: rewrite Release/Lock before DesignCanvas watcher opens modal when possible
+            { immediate: true, deep: true, flush: 'sync' },
         );
     });
 };

@@ -20,6 +20,7 @@ import { patchGenerateCodeServiceForMpIcon } from './composable/patchGenerateCod
 import { patchCanvasGetSchemaForMpIcon } from './composable/patchCanvasGetSchema';
 import { setupMaterialStartupLoader } from './composable/materialStartupLoader';
 import customUseHistory from './toolbars/redoundo/composable/useHistory';
+import { createPageLockAwareModal } from './composable/createPageLockAwareModal';
 
 type TinyEngineModule = {
     init: (options: Record<string, unknown>) => void;
@@ -29,7 +30,7 @@ type TinyEngineModule = {
         options?: { useDefaultExport?: boolean }
     ) => void;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    HOOK_NAME: { useNotify: unknown; useHistory: unknown };
+    HOOK_NAME: { useNotify: unknown; useHistory: unknown; useModal: unknown };
 };
 
 async function startApp() {
@@ -62,6 +63,8 @@ async function startApp() {
                 initHook(hookNameMap.useHistory, customUseHistory, {
                     useDefaultExport: true
                 });
+                // 覆盖 useModal：吞掉 npm DesignCanvas 的「请先锁定」弹窗（锁定工具栏已隐藏）
+                initHook(hookNameMap.useModal, createPageLockAwareModal());
                 // 初始化 VSCode 通信（如果是在 VSCode 环境中）
                 initVSCodeBridge();
             },

@@ -755,8 +755,9 @@ export default [
             logRequest('/app-center/api/apps/canvas/lock', 'get', query);
             return {
                 data: {
-                    locked: false,
-                    message: '画布未锁定'
+                    // Lock toolbar hidden: pretend canvas is already locked by current user
+                    locked: true,
+                    message: 'Canvas occupied'
                 }
             };
         }
