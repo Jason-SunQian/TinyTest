@@ -32,6 +32,9 @@ import { syncMpUploaderModelPropsAndState } from './strategies/mpUploader';
 import { syncMpMultiUploaderModelValueAndState } from './strategies/mpMultiUploader';
 import { syncMpAccountCardsModelPropsAndState } from './strategies/mpAccountCards';
 import { syncMpCcyInputModelValueAndState } from './strategies/mpCcyInput';
+import { syncMpDictMultipleInputModelValueAndState } from './strategies/mpDictMultipleInput';
+import { syncMpCountryMultipleInputModelValueAndState } from './strategies/mpCountryMultipleInput';
+import { syncMpTransSummaryTransactionInfoAndState } from './strategies/mpTransSummary';
 
 /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与物料 componentName 对齐 */
 const HANDLERS: Record<string, ExternalDropHandler> = {
@@ -242,6 +245,27 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
         const props = insertData.props as Record<string, unknown>;
         const stateObj = getClonedPageState(getSchema);
         syncMpCcyInputModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpDictMultipleInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpDictMultipleInputModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpCountryMultipleInput: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpCountryMultipleInputModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
+    MpTransSummary: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpTransSummaryTransactionInfoAndState(props, stateObj);
         updateSchema({ state: stateObj });
     }
 };

@@ -25,6 +25,9 @@ import { syncMpUploaderModelPropsAndState } from './strategies/mpUploader';
 import { syncMpMultiUploaderModelValueAndState } from './strategies/mpMultiUploader';
 import { syncMpAccountCardsModelPropsAndState } from './strategies/mpAccountCards';
 import { syncMpCcyInputModelValueAndState } from './strategies/mpCcyInput';
+import { syncMpDictMultipleInputModelValueAndState } from './strategies/mpDictMultipleInput';
+import { syncMpCountryMultipleInputModelValueAndState } from './strategies/mpCountryMultipleInput';
+import { syncMpTransSummaryTransactionInfoAndState } from './strategies/mpTransSummary';
 import { syncMrCheckboxGroupModelValueAndState } from './strategies/mrCheckboxGroup';
 import { syncMrCollapseModelValueAndState } from './strategies/mrCollapse';
 import { syncMrFormModelValueAndState } from './strategies/mrForm';
@@ -145,6 +148,21 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         const props = (schema.props as Record<string, unknown>) || {};
         if (!schema.props) schema.props = props;
         syncMpCcyInputModelValueAndState(props, rootState);
+    },
+    MpDictMultipleInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpDictMultipleInputModelValueAndState(props, rootState);
+    },
+    MpCountryMultipleInput: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpCountryMultipleInputModelValueAndState(props, rootState);
+    },
+    MpTransSummary: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpTransSummaryTransactionInfoAndState(props, rootState);
     },
     MrSwitch: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};

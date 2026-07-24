@@ -21,19 +21,19 @@
 | 分类 | OAB 源码使用（去重标签） | 已导入且被使用 | 已导入（manifest） | 待导入（源码有用） | 建议废弃/不导入 |
 | ---- | ------------------------ | -------------- | ------------------ | ------------------ | ---------------- |
 | **原子组件 (mr-)** | 55¹ | 39 | 39（manifest 含附属 content） | 16 | 见 2.4 |
-| **业务组件 (mp-)** | 70 | 31 | 33² | 39 | 1（legacy） |
-| **合计** | 125 | 70 | 72 | 55 | — |
+| **业务组件 (mp-)** | 70 | 33 | 35² | 37 | 1（legacy） |
+| **合计** | 125 | 72 | 74 | 53 | — |
 
 ¹ `mr-image` / `mr-img`、`mr-progress` / `mr-progress-bar` 等别名按「已导入」计。  
-² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput`（均已联调可用）。
+² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput` / `MpDictMultipleInput` / `MpTransSummary`（均已联调可用）；另有 `MpCountryMultipleInput`（已导入待测）。
 
 与 [mobilebanking 跟踪文档](./物料导入进度跟踪.md) 对比（该文档待导入业务约 9～11 个）：
 
 | 差异 | 说明 |
 | ---- | ---- |
-| OAB 业务待导入更多 | 约 **39** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、金额子件、上传、账户卡等） |
-| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`（均已联调可用） |
-| 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-list-skeleton`、`mp-trans-summary`、`mp-summary-popup`、`mp-refresher-content` 等 |
+| OAB 业务待导入更多 | 约 **37** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、金额子件、上传、账户卡等） |
+| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-trans-summary`（均已联调可用）；`mp-country-multiple-input`（已导入待测） |
+| 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-list-skeleton`、`mp-summary-popup`、`mp-refresher-content` 等 |
 
 ---
 
@@ -131,6 +131,9 @@
 | **mp-multi-uploader** | 12 | Multi Uploader | **已联调可用**（2026-07-23）。画布 `mp-multi-uploader-designer.vue`（68px 缩略图 + 60x60 添加格）；`v-model` → `state.mpMultiUploaderN`（`[]`）；snippet 勿写死演示文件。 |
 | **mp-account-cards** | 11 | Account Cards | **已联调可用**（2026-07-23）。画布 `mp-account-cards-designer.vue`（静态卡 + peek，无 paymentStore / Swiper）；三绑定 `v-model` / `v-model:ccy` / `v-model:balance` → `state.mpAccountCardsFormN.{account,ccy,balance}`（`account:{}`，`ccy/balance:''`）；snippet 勿写死演示账户；`sceneType` 必填。 |
 | **mp-ccy-input** | 4 | Ccy Input | **已联调可用**（2026-07-23）。画布 `mp-ccy-input-designer.vue`（对齐 mp-input：无横向 inset、分割线在 cell padding 后、箭头 icon-fourth）；`v-model` → `state.mpCcyInputN`（`''`）；画布点击轮换 OMR/USD/EUR；snippet 勿写死演示币种。 |
+| **mp-dict-multiple-input** | 6 | Dict Multiple Input | **已联调可用**（2026-07-24）。画布 `mp-dict-multiple-input-designer.vue`（对齐 mp-input）；`v-model` → `state.mpDictMultipleInputN`（`[]`）；画布点击累加演示选项至 maxSelection 后清空；snippet 勿写死演示 keys；`dictName` 业务必填。 |
+| **mp-country-multiple-input** | 5 | Country Multiple Input | **已导入待测**（2026-07-24）。画布 `mp-country-multiple-input-designer.vue`（对齐 mp-input）；`v-model` → `state.mpCountryMultipleInputN`（`[]`）；画布点击累加演示国家至 maxSelection 后清空；snippet 勿写死演示国家码；可选 `channelCode`。 |
+| **mp-trans-summary** | 4 | Trans Summary | **已联调可用**（2026-07-24）。画布 `mp-trans-summary-designer.vue`；必填 `transactionInfo` → `state.mpTransSummaryN`（`{}`）；列表场景用高级 loop + Bound `item`；点击传参须事件 **额外参数** `["item"]`。详见《组件导入注意事项》**循环列表点击传参**。 |
 
 ### 4.2 待导入（按低代码开发优先级）
 
@@ -158,8 +161,8 @@
 | ~~**mp-code-input**~~ | 11 | Code Input | **已联调可用**，见 4.1.2 |
 | ~~**mp-branch-input**~~ | 6 | Branch Input | **已联调可用**，见 4.1.2 |
 | ~~**mp-ccy-input**~~ | 4 | Ccy Input | **已联调可用**，见 4.1.2 |
-| **mp-dict-multiple-input** | 6 | Dict Multiple Input | 多选字典 |
-| **mp-country-multiple-input** | 5 | Country Multiple Input | 多选国家 |
+| ~~**mp-dict-multiple-input**~~ | 6 | Dict Multiple Input | **已联调可用**，见 4.1.2 |
+| ~~**mp-country-multiple-input**~~ | 5 | Country Multiple Input | **已导入待测**，见 4.1.2 |
 
 #### P2 — 上传 / 摘要 / 列表反馈
 
@@ -168,7 +171,7 @@
 | ~~**mp-multi-uploader**~~ | 12 | Multi Uploader | **已联调可用**，见 4.1.2 |
 | ~~**mp-uploader**~~ | 8 | Uploader | **已联调可用**，见 4.1.2 |
 | **mp-document-upload** | 3 | Document Upload | 证件类上传 |
-| **mp-trans-summary** | 4 | Trans Summary | 交易摘要块 |
+| ~~**mp-trans-summary**~~ | 4 | Trans Summary | **已联调可用**，见 4.1.2 |
 | **mp-summary-popup** | 2 | Summary Popup | 摘要弹层 |
 | **mp-list-skeleton** | 4 | List Skeleton | 列表骨架 |
 | **mp-refresher-content** | 3 | Refresher Content | 与 `mr-refresher` 配套 |
@@ -207,8 +210,8 @@
 1. **立刻优先**：~~`mp-page` / `mp-container` / `mp-popup` / `mp-dialog`（均已联调可用）~~；按需再补 `mp-popup-container`  
    - P0 页面骨架与弹层壳已齐，可继续推进 P1 表单件。
 2. **金额与账户页（含继续做 donations / transfer 类）**：~~`mp-single-amt` / `mp-date-popup` / `mp-linked-account-input` / `mp-pin-input-simple` / `mp-code-input` / `mp-pin-input` / `mp-branch-input`（已联调可用）~~、各类 `*-input`（P1）  
-   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
-3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、`mp-list-skeleton`、`mp-trans-summary`。
+   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-country-multiple-input`、`mp-trans-summary`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
+3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、~~`mp-trans-summary`（已联调可用）~~、`mp-list-skeleton`。
 4. **原子侧**：OAB 缺口主要是低频 `mr-*`；优先补 `mr-spinner` 即可，其余按真实低代码页面需要再开。
 5. **不要优先导入**：`mr-page` / `mr-app` / `mr-router-outlet`、`mp-date-picker-legacy`、极低频领域页组件。
 
@@ -314,3 +317,13 @@ _补充（2026-07-23）：**mp-account-cards 已联调可用**——画布/出�
 _补充（2026-07-23）：**mp-ccy-input 已导入待测**——`mp-ccy-input-designer` + entry + manifest；产物 **85** 个组件；对齐 `mp-input`（无横向 inset、分割线在 cell padding 后、箭头 `icon-fourth`）；`v-model` → `this.state.mpCcyInputN`（`''`）；画布点击轮换 OMR/USD/EUR；snippet **勿写死**演示币种。策略变更需 Reload Extension Host。_
 
 _补充（2026-07-23）：**mp-ccy-input 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-dict-multiple-input` / `mp-country-multiple-input` 等。_
+
+_补充（2026-07-24）：**mp-dict-multiple-input 已导入待测**——`mp-dict-multiple-input-designer` + entry + manifest；产物 **86** 个组件；对齐 `mp-input`；`v-model` → `this.state.mpDictMultipleInputN`（`[]`）；画布点击累加演示选项至 `maxSelection` 后清空；snippet **勿写死**演示 keys；`dictName` 业务必填。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-24）：**mp-dict-multiple-input 已联调可用**——画布/出码比对通过；由「已导入待测」记入「已联调可用」。下一步 P1：`mp-country-multiple-input` 等。_
+
+_补充（2026-07-24）：**mp-country-multiple-input 已导入待测**——`mp-country-multiple-input-designer` + entry + manifest；产物 **87** 个组件；对齐 `mp-input`；`v-model` → `this.state.mpCountryMultipleInputN`（`[]`）；画布点击累加演示国家至 `maxSelection` 后清空；snippet **勿写死**演示国家码；可选 `channelCode`。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-24）：**mp-trans-summary 已导入待测**——`mp-trans-summary-designer` + entry + manifest；产物 **88** 个组件；列表行摘要（avatar + 标题/日期 + mp-text-amt）；必填 `transactionInfo` → `this.state.mpTransSummaryN`（`{}`）；snippet **勿写死**演示交易；`layout` default/card；有 `detailRows` 可点击展开。策略变更需 Reload Extension Host。_
+
+_补充（2026-07-24）：**mp-trans-summary 已联调可用**——loop 列表 + `transactionInfo` Bound `item` + 事件额外参数 `["item"]` 验证通过（对照 donations-list `onDonate`）；由「已导入待测」记入「已联调可用」。经验写入《组件导入注意事项》**循环列表点击传参**。_
