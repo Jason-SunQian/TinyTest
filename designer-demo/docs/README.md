@@ -28,6 +28,11 @@
 
     -   插件迁移的步骤和注意事项
 
+-   **[迁移插件功能失效排查指南](./迁移插件功能失效排查指南.md)** ⭐ 排障必读
+
+    -   迁完后按钮「没反应」：官方 `META_APP.*` vs 自定义 `custom*` ID 不一致
+    -   Locate Code / `activePlugin` / `getMetaApi` 排查步骤与自检清单
+
 -   **[单页面插件文档](./SINGLE_PAGE_PLUGIN.md)**
 
     -   单页面插件的使用说明

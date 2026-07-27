@@ -105,15 +105,18 @@ const { t } = useDesignerI18n()
 - i18n 弹警告：使用 `useDesignerI18n().t`，并在 `loadDesignerI18n()` 合并词条
 - 保存失败（mock 环境）：核对接口路由（如 `/app-center/api/pages/update/:id`）与参数结构
 - 事件联动：通过 `useMessage().publish/subscribe` 触发/监听（如 `page-saved`）
+- **迁完后某按钮「没反应」**：多半是 `activePlugin` / `getMetaApi` 仍指向官方 `META_APP.*`，而 `registry` 已换成 `engine.plugins.custom*`。系统排查见 **[迁移插件功能失效排查指南](./迁移插件功能失效排查指南.md)**（含 Locate Code 案例与 ID 映射表）
 
 ---
 
 ### 迁移清单（Checklist）
 - [ ] 入口组件与逻辑就位（`Main.vue`、`js/index.ts`）
-- [ ] Registry 覆盖官方入口
+- [ ] Registry 覆盖官方入口（`[META_APP.X]: false` + 自定义 id，或直接替换 entry）
+- [ ] **全仓替换**对该插件的 `getMetaApi(META_APP.X)` / `activePlugin(PLUGIN_NAME.X)` / `fixed-name`（改用自定义 id 或 `src/constants/plugin-ids.ts`）
 - [ ] i18n 词条补齐并合并
 - [ ] TS 声明补齐（如需）
 - [ ] 保存/刷新/提示验证通过
+- [ ] 跨插件联动验证（如 Events → Script Locate Code）
 - [ ] 控制台无阻断性报错
 
 ---
