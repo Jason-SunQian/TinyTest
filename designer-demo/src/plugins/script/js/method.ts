@@ -197,7 +197,7 @@ const close = emit => callback => {
 
 const setEditorSelection = () => {
     if (!state.editorSelection || !monaco.value) {
-        return;
+        return false;
     }
 
     const editor = monaco.value.getEditor();
@@ -216,6 +216,8 @@ const setEditorSelection = () => {
         },
         0
     );
+
+    return true;
 };
 
 const highlightMethodFn = name => {
@@ -223,9 +225,8 @@ const highlightMethodFn = name => {
         return;
     }
 
-    // 重新生成 scriptAst 以确保它包含最新的方法
+    // Regenerate scriptAst so it includes the latest methods
     try {
-        // 这会更新 scriptAst
         getScriptString();
     } catch (error) {
         // eslint-disable-next-line no-console
@@ -233,12 +234,7 @@ const highlightMethodFn = name => {
         return;
     }
 
-    // 确保 scriptAst 和 body 存在且是数组
-    if (!scriptAst?.program?.body) {
-        return;
-    }
-
-    if (!Array.isArray(scriptAst.program.body)) {
+    if (!scriptAst?.program?.body || !Array.isArray(scriptAst.program.body)) {
         return;
     }
 
@@ -246,7 +242,6 @@ const highlightMethodFn = name => {
         declaration => name === declaration?.id?.name
     );
 
-    // filter 总是返回数组，但为了安全还是检查一下
     if (!Array.isArray(declarations) || declarations.length === 0) {
         return;
     }
@@ -262,9 +257,22 @@ const highlightMethodFn = name => {
         };
     }
 
-    if (state.editorSelection) {
-        setEditorSelection();
+    if (!state.editorSelection) {
+        return;
     }
+
+    // Panel may just have opened; retry until Monaco is mounted
+    const applySelection = (retries = 20) => {
+        if (setEditorSelection()) {
+            return;
+        }
+        if (retries <= 0) {
+            return;
+        }
+        setTimeout(() => applySelection(retries - 1), 50);
+    };
+
+    nextTick(() => applySelection());
 };
 
 export default ({ emit }) => {

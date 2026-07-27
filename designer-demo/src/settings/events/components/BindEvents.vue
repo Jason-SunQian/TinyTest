@@ -125,16 +125,17 @@ import {
     useBlock,
     useMaterial,
     getMetaApi,
-    META_APP,
     useMessage
 } from '@opentiny/tiny-engine-meta-register';
 import { BlockLinkEvent, SvgButton } from '@opentiny/tiny-engine-common';
 import { iconChevronDown } from '@opentiny/vue-icon';
 
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import BindEventsDialog, { open as openDialog } from './BindEventsDialog.vue';
 import AddEventsDialog from './AddEventsDialog.vue';
+
 
 export default {
     components: {
@@ -151,17 +152,17 @@ export default {
     inheritAttrs: false,
     // eslint-disable-next-line vue/component-api-style
     setup() {
-        const { PLUGIN_NAME, activePlugin } = useLayout();
+        const { activePlugin } = useLayout();
         const { pageState, getCurrentSchema, canvasApi } = useCanvas();
         const { getBlockEvents, getCurrentBlock, removeEventLink } = useBlock();
         const { getMaterial } = useMaterial();
         const { confirm } = useModal();
         const { t, locale } = useDesignerI18n();
         const localeKey = computed(() => locale.value || 'zh_CN');
-        const { highlightMethod } = getMetaApi(META_APP.Page);
         const { commonEvents = {} } = getMergeMeta(
             'engine.setting.event'
         ).options;
+
 
         // 事件名称
         // 事件绑定的处理方法对象
@@ -443,14 +444,19 @@ export default {
             });
         };
 
+        // Official META_APP.Page is disabled; open custom Script plugin and highlight method
         const openCodePanel = action => {
-            if (action) {
-                activePlugin(PLUGIN_NAME.Page).then(() => {
-                    if (highlightMethod) {
-                        highlightMethod(action.ref);
-                    }
-                });
+            if (!action?.ref) {
+                return;
             }
+
+            activePlugin(SCRIPT_PLUGIN_ID).then(() => {
+                nextTick(() => {
+                    const { highlightMethod } =
+                        getMetaApi(SCRIPT_PLUGIN_ID) || {};
+                    highlightMethod?.(action.ref);
+                });
+            });
         };
 
         const handleToggleAddEventDialog = visible => {

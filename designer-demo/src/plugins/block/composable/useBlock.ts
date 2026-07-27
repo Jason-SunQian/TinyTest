@@ -36,6 +36,7 @@ import {
     META_SERVICE
 } from '@opentiny/tiny-engine-meta-register';
 
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { ensureOccupier, getEnsuredCanvasStatus } from '@/utils/pageStatus';
 
 import type {
@@ -656,7 +657,7 @@ const appendEventEmit = ({
         return;
     }
 
-    const getMethods = getMetaApi(META_APP.Page)?.getMethods;
+    const getMethods = getMetaApi(SCRIPT_PLUGIN_ID)?.getMethods;
 
     if (getMethods && typeof getMethods === 'function') {
         const method = getMethods()?.[functionName];

@@ -263,6 +263,8 @@ import { getCommentByKey } from '@opentiny/tiny-engine-common/js/comment';
 import { generate, parse, traverse } from '@opentiny/tiny-engine-common/js/ast';
 import { DEFAULT_LOOP_NAME } from '@opentiny/tiny-engine-common/js/constants';
 import { constants } from '@opentiny/tiny-engine-utils';
+
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import {
     Alert,
     Button,
@@ -782,7 +784,7 @@ export default {
 
             if (item.id === 'function') {
                 state.bindPrefix = CONSTANTS.THIS;
-                const { getMethods } = getMetaApi(META_APP.Page);
+                const { getMethods } = getMetaApi(SCRIPT_PLUGIN_ID) || {};
                 state.variables = { ...getMethods?.() };
             } else if (item.id === 'bridge' || item.id === 'utils') {
                 state.bindPrefix = `${CONSTANTS.THIS}${item.id}.`;

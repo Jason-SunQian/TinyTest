@@ -54,7 +54,6 @@ import {
     useLayout,
     getOptions,
     getMetaApi,
-    META_APP,
     useNotify,
     useMessage
 } from '@opentiny/tiny-engine-meta-register';
@@ -62,6 +61,7 @@ import { Button, DialogBox, TinyAlert } from '@opentiny/vue';
 import { nextTick, provide, reactive, ref, toRaw } from 'vue';
 import MagicString from 'magic-string';
 
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { useDesignerI18n } from '@/services/i18nService';
 
 const META_ID = 'engine.setting.event';
@@ -103,13 +103,11 @@ export default {
         } = getMergeMeta(META_ID).components;
         const { t } = useDesignerI18n();
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { PLUGIN_NAME, activePlugin } = useLayout();
+        const { activePlugin } = useLayout();
         const { pageState, canvasApi, setCurrentSchema, getCurrentSchema } =
             useCanvas();
-        const { getMethods, saveMethod } = getMetaApi(META_APP.Page);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { highlightMethod } = getMetaApi(META_APP.Page);
+        const { getMethods, saveMethod } =
+            getMetaApi(SCRIPT_PLUGIN_ID) || {};
         const { publish } = useMessage();
 
         const state = reactive({
@@ -337,39 +335,21 @@ export default {
         };
 
         const activePagePlugin = () => {
-            // eslint-disable-next-line no-console
-            console.log('[BindEventsDialog] activePagePlugin called');
-            // 直接跳过 highlightMethod，避免错误
-            // highlightMethod 只是用于高亮显示，不影响事件绑定功能
-            return;
-
-            // 以下代码暂时注释，等 highlightMethod 问题解决后再启用
-            /*
-            activePlugin(PLUGIN_NAME.Page).then(() => {
-                console.log('[BindEventsDialog] activePlugin resolved');
-                // 确认js面板渲染完成之后再对目标函数进行高亮处理
-                nextTick(() => {
-                    console.log('[BindEventsDialog] nextTick callback, highlightMethod:', highlightMethod, 'name:', state.bindMethodInfo?.name);
-                    if (highlightMethod && state.bindMethodInfo?.name) {
-                        try {
-                            console.log('[BindEventsDialog] Calling highlightMethod with name:', state.bindMethodInfo.name);
-                            highlightMethod(state.bindMethodInfo.name);
-                            console.log('[BindEventsDialog] highlightMethod completed successfully');
-                        } catch (error) {
-                            console.error('[BindEventsDialog] Error in highlightMethod:', error);
-                            console.error('[BindEventsDialog] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-                            // highlightMethod 失败不影响事件绑定，只记录警告
+            // Official META_APP.Page is disabled; open custom Script and highlight
+            activePlugin(SCRIPT_PLUGIN_ID)
+                .then(() => {
+                    nextTick(() => {
+                        const { highlightMethod } =
+                            getMetaApi(SCRIPT_PLUGIN_ID) || {};
+                        const methodName = state.bindMethodInfo?.name;
+                        if (highlightMethod && methodName) {
+                            highlightMethod(methodName);
                         }
-                    } else {
-                        console.warn('[BindEventsDialog] highlightMethod or name not available:', { highlightMethod, name: state.bindMethodInfo?.name });
-                    }
+                    });
+                })
+                .catch(() => {
+                    // Opening script panel failed; event binding already saved
                 });
-            }).catch((error) => {
-                console.error('[BindEventsDialog] Error in activePagePlugin:', error);
-                console.error('[BindEventsDialog] activePagePlugin error stack:', error instanceof Error ? error.stack : 'No stack trace');
-                // activePlugin 失败不影响事件绑定，只记录警告
-            });
-            */
         };
 
         const confirm = async () => {
@@ -474,12 +454,12 @@ export default {
             if (!saveMethod) {
                 // eslint-disable-next-line no-console
                 console.error(
-                    '[BindEventsDialog] saveMethod is not available from getMetaApi(META_APP.Page)'
+                    '[BindEventsDialog] saveMethod is not available from getMetaApi(SCRIPT_PLUGIN_ID)'
                 );
                 useNotify()({
                     type: 'error',
                     title: '保存失败',
-                    message: '保存方法不可用，请检查 Page 插件是否正确加载'
+                    message: '保存方法不可用，请检查 Script 插件是否正确加载'
                 });
                 return;
             }

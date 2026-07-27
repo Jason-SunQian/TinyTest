@@ -66,8 +66,10 @@
 <script>
 /* metaService: engine.setting.event.BindEventsDialogContent */
 import { VueMonaco } from '@opentiny/tiny-engine-common';
-import { getMetaApi, META_APP } from '@opentiny/tiny-engine-meta-register';
+import { getMetaApi } from '@opentiny/tiny-engine-meta-register';
 import { Input, Checkbox } from '@opentiny/vue';
+
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { inject } from 'vue';
 
 import { useDesignerI18n } from '@/services/i18nService';
@@ -92,7 +94,8 @@ export default {
     },
     // eslint-disable-next-line
     setup() {
-        const { getMethodNameList } = getMetaApi(META_APP.Page);
+        const { getMethodNameList } =
+            getMetaApi(SCRIPT_PLUGIN_ID) || {};
         const { t } = useDesignerI18n();
 
         const context = inject('context');
