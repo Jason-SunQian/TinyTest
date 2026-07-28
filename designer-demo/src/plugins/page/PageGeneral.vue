@@ -130,7 +130,6 @@ import { Form, FormItem, Input, Select, Radio } from '@opentiny/vue';
 import { iconFile } from '@opentiny/vue-icon';
 import { usePage } from '@opentiny/tiny-engine-meta-register';
 import {
-    REGEXP_PAGE_NAME,
     REGEXP_FOLDER_NAME,
     REGEXP_ROUTE
 } from '@opentiny/tiny-engine-common/js/verification';
@@ -265,17 +264,17 @@ export default {
             return route;
         });
 
-        // 新建页面/更新页面校验规则
+        // name: display title — route-like chars + spaces, no PascalCase
         const pageRules = {
             name: [
-                { required: true, message: t('designer.page.enterPageId') },
+                { required: true, message: t('designer.page.enterPageName') },
                 {
-                    pattern: REGEXP_PAGE_NAME,
+                    pattern: new RegExp('^[A-Za-z][\\w\\- ]*$'),
                     message: t('designer.page.pageNameRule')
                 },
                 {
                     min: 3,
-                    max: 25,
+                    max: 50,
                     message: t('designer.page.nameLengthRule')
                 }
             ],

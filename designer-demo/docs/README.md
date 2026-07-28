@@ -32,6 +32,7 @@
 
     -   迁完后按钮「没反应」：官方 `META_APP.*` vs 自定义 `custom*` ID 不一致
     -   Locate Code / `activePlugin` / `getMetaApi` 排查步骤与自检清单
+    -   **画布一直转圈（三色点）**：语法错误（块注释里的 `*/`）、Vite/物料/initData 排查方向
 
 -   **[单页面插件文档](./SINGLE_PAGE_PLUGIN.md)**
 
