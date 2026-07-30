@@ -113,6 +113,7 @@ const { t } = useDesignerI18n()
 - [ ] 入口组件与逻辑就位（`Main.vue`、`js/index.ts`）
 - [ ] Registry 覆盖官方入口（`[META_APP.X]: false` + 自定义 id，或直接替换 entry）
 - [ ] **全仓替换**对该插件的 `getMetaApi(META_APP.X)` / `activePlugin(PLUGIN_NAME.X)` / `fixed-name`（改用自定义 id 或 `src/constants/plugin-ids.ts`）
+- [ ] **拷贝/编写插件根目录 `meta.js`**（含正确 `id`）。文件里若有 `/* metaService: ... */` 而目录向上找不到 `meta.js`，Vite 会刷屏 `找不到对应的meta.js`（一般不影响运行，但应补齐）
 - [ ] i18n 词条补齐并合并
 - [ ] TS 声明补齐（如需）
 - [ ] 保存/刷新/提示验证通过
