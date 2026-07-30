@@ -365,7 +365,7 @@
                                     {
                                         "property": "text",
                                         "type": "string",
-                                        "defaultValue": "TinyEngine 前端可视化设计器，为设计器开发者提供定制服务，在线构建出自己专属的设计器。",
+                                        "defaultValue": "TinyEngine is a visual front-end designer that helps you customize and build your own designer online.",
                                         "label": {
                                             "text": {
                                                 "zh_CN": "文本内容",
@@ -611,7 +611,7 @@
                                 "componentName": "Text",
                                 "props": {
                                     "style": "display: inline-block;",
-                                    "text": "TinyEngine 前端可视化设计器，为设计器开发者提供定制服务，在线构建出自己专属的设计器。"
+                                    "text": "TinyEngine is a visual front-end designer that helps you customize and build your own designer online."
                                 }
                             }
                         },
@@ -695,7 +695,7 @@
                                     {
                                         "componentName": "Text",
                                         "props": {
-                                            "text": "路由文本"
+                                            "text": "Router text"
                                         }
                                     }
                                 ]
@@ -731,7 +731,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "首页"
+                                                    "text": "Home"
                                                 }
                                             }
                                         ]
@@ -753,7 +753,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "介绍"
+                                                    "text": "Intro"
                                                 }
                                             }
                                         ]
@@ -775,7 +775,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "文档"
+                                                    "text": "Docs"
                                                 }
                                             }
                                         ]
@@ -813,7 +813,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "首页"
+                                                    "text": "Home"
                                                 }
                                             }
                                         ]
@@ -835,7 +835,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "介绍"
+                                                    "text": "Intro"
                                                 }
                                             }
                                         ]
@@ -857,7 +857,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "文档"
+                                                    "text": "Docs"
                                                 }
                                             }
                                         ]
@@ -879,7 +879,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "文档"
+                                                    "text": "Docs"
                                                 }
                                             }
                                         ]
@@ -901,7 +901,7 @@
                                             {
                                                 "componentName": "Text",
                                                 "props": {
-                                                    "text": "文档"
+                                                    "text": "Docs"
                                                 }
                                             }
                                         ]
