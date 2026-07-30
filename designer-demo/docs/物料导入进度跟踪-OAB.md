@@ -25,14 +25,14 @@
 | **合计** | 125 | 74 | 76 | 51 | — |
 
 ¹ `mr-image` / `mr-img`、`mr-progress` / `mr-progress-bar` 等别名按「已导入」计。  
-² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput` / `MpDictMultipleInput` / `MpTransSummary` / `MpListSkeleton` / `MpCkeditor`（均已联调可用）；另有 `MpCountryMultipleInput`（已导入待测）。
+² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput` / `MpDictMultipleInput` / `MpTransSummary` / `MpListSkeleton` / `MpCkeditor` / `MpDocumentUpload`（均已联调可用）；另有 `MpCountryMultipleInput`（已导入待测）。
 
 与 [mobilebanking 跟踪文档](./物料导入进度跟踪.md) 对比（该文档待导入业务约 9～11 个）：
 
 | 差异 | 说明 |
 | ---- | ---- |
 | OAB 业务待导入更多 | 约 **35** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、上传、账户卡等） |
-| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`（均已联调可用）；`mp-country-multiple-input`（已导入待测） |
+| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-document-upload`（均已联调可用）；`mp-country-multiple-input`（已导入待测） |
 | 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-summary-popup`、`mp-refresher-content` 等 |
 
 ---
@@ -136,6 +136,7 @@
 | **mp-trans-summary** | 4 | Trans Summary | **已联调可用**（2026-07-24）。画布 `mp-trans-summary-designer.vue`；必填 `transactionInfo` → `state.mpTransSummaryN`（`{}`）；列表场景用高级 loop + Bound `item`；点击传参须事件 **额外参数** `["item"]`。详见《组件导入注意事项》**循环列表点击传参**。 |
 | **mp-list-skeleton** | 4 | List Skeleton | **已联调可用**（2026-07-27）。画布 `mp-list-skeleton-designer.vue`（CSS 骨架条，无 mp-cell）；纯展示无 v-model；`itemNumber`/`descNumber`/`isCard`/`iconRound`/`iconWidth`/`iconHeight`/`title`；插槽 `end`；画布行数 clamp 1～12。 |
 | **mp-ckeditor** | 8 | Ckeditor | **已联调可用**（2026-07-27）。画布 `mp-ckeditor-designer.vue`（轻量桩，不引 ckeditor5/DOMPurify）；纯展示 prop `html`；剥标签后通用实体解码（含 `&nbsp;` 等）；snippet 勿写死长 HTML。 |
+| **mp-document-upload** | 3 | Document Upload | **已联调可用**（2026-07-30）。画布 `mp-document-upload-designer.vue`（title+desc+虚线拍摄区，无原生 SDK）；props：`title`/`desc`/`src`/`captureType`/`testId`；事件 `onSuccess`/`onFail`；无 v-model；相机图标须 extract 主工程 `camera.svg`（同 `i-mr-camera`）+ `icon-secondary`，禁止手写简化 SVG；`src` 通常 Bound `$fileUrl(fileId)`。详见《组件导入注意事项》**MpDocumentUpload**。 |
 
 ### 4.2 待导入（按低代码开发优先级）
 
@@ -172,7 +173,7 @@
 | ---- | ---------- | -------------- | ---- |
 | ~~**mp-multi-uploader**~~ | 12 | Multi Uploader | **已联调可用**，见 4.1.2 |
 | ~~**mp-uploader**~~ | 8 | Uploader | **已联调可用**，见 4.1.2 |
-| **mp-document-upload** | 3 | Document Upload | 证件类上传 |
+| ~~**mp-document-upload**~~ | 3 | Document Upload | **已联调可用**，见 4.1.2 |
 | ~~**mp-trans-summary**~~ | 4 | Trans Summary | **已联调可用**，见 4.1.2 |
 | **mp-summary-popup** | 2 | Summary Popup | 摘要弹层 |
 | ~~**mp-list-skeleton**~~ | 4 | List Skeleton | **已联调可用**，见 4.1.2 |
@@ -214,8 +215,8 @@
 1. **立刻优先**：~~`mp-page` / `mp-container` / `mp-popup` / `mp-dialog`（均已联调可用）~~；按需再补 `mp-popup-container`  
    - P0 页面骨架与弹层壳已齐，可继续推进 P1 表单件。
 2. **金额与账户页（含继续做 donations / transfer 类）**：~~`mp-single-amt` / `mp-date-popup` / `mp-linked-account-input` / `mp-pin-input-simple` / `mp-code-input` / `mp-pin-input` / `mp-branch-input`（已联调可用）~~、各类 `*-input`（P1）  
-   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-country-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
-3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、~~`mp-trans-summary`（已联调可用）~~、~~`mp-list-skeleton`（已联调可用）~~。  
+   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-country-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-uploader`、`mp-multi-uploader`、`mp-document-upload`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
+3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、~~`mp-document-upload`（已联调可用）~~、~~`mp-trans-summary`（已联调可用）~~、~~`mp-list-skeleton`（已联调可用）~~。  
 4. **原子侧**：OAB 缺口主要是低频 `mr-*`；优先补 `mr-spinner` 即可，其余按真实低代码页面需要再开。  
 5. **不要优先导入**：`mr-page` / `mr-app` / `mr-router-outlet`、`mp-date-picker-legacy`、**`mp-skeleton`（无源码）**、极低频领域页组件。
 
@@ -341,3 +342,7 @@ _补充（2026-07-27）：**mp-skeleton 不导入**——全仓无 `mp-skeleton.
 _补充（2026-07-27）：**mp-ckeditor 已导入待测**——`mp-ckeditor-designer` + entry + manifest；产物 **90** 个组件；只读富文本展示；画布桩不引入 ckeditor5/DOMPurify（对齐 MpPdf 重依赖规避）；prop `html`；snippet **勿写死**长 HTML。_
 
 _补充（2026-07-27）：**mp-ckeditor 已联调可用**——画布/出码比对通过（含 `&nbsp;` 等多实体解码预览）；由「已导入待测」记入「已联调可用」。经验见《组件导入注意事项》**MpCkeditor**。_
+
+_补充（2026-07-30）：**mp-document-upload 已导入待测**——`mp-document-upload-designer` + entry + manifest；产物 **91** 个组件；证件拍摄卡布局（无原生 `mrBox.captureDocument`）；props `title`/`desc`/`src`/`captureType`/`testId`；事件 `onSuccess(fileId)`/`onFail`；无 v-model；画布点击可切换空/演示预览（不写 schema）。Reload Extension Host 后验收。_
+
+_补充（2026-07-30）：**mp-document-upload 已联调可用**——画布/出码比对通过；相机图标改为 extract 主工程 `camera.svg`（带加号）+ `icon-secondary` 后与运行态一致；由「已导入待测」记入「已联调可用」。经验见《组件导入注意事项》**MpDocumentUpload**。下一步 P2：`mp-summary-popup` 等。_
