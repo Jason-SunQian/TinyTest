@@ -11,27 +11,32 @@
  */
 
 /* metaService: engine.plugins.state.js-common */
+import { t } from '@/services/i18nService';
+
 /**
- * 校验monaco编辑器必填与是否有语法错误
- * @param {Object} editor 编辑器实例
- * @param {String} name 编辑器对应的表单字段名
- * @param {Object} options: { required: boolean }  required是否必填
- * @return result.success:boolean true（通过）/false（不通过）, result.message:string
+ * Validate monaco editor required + syntax markers.
+ * @param {Object} editor editor instance
+ * @param {String} name form field label for messages
+ * @param {Object} options { required?: boolean, language?: string }
+ * @return {{ success: boolean, message?: string }}
  */
 export const validateMonacoEditorData = (
     editor,
     name,
-    { required, language = 'json' } = {}
+    { required, language = 'json' } = {},
 ) => {
     if (!editor?.getEditor || !editor.getValue) {
-        return { success: false, message: `系统异常，请刷新后重试。` };
+        return {
+            success: false,
+            message: t('designer.state.validateSystemError'),
+        };
     }
 
     const content = editor.getValue();
     if (required && !content) {
         return {
             success: false,
-            message: `${name}未填写，请按照提示填写后重试。`
+            message: t('designer.state.validateRequired', { name }),
         };
     }
 
@@ -43,15 +48,20 @@ export const validateMonacoEditorData = (
         .filter(({ resource: { _formatted } }) => _formatted === uri);
     const messages = markers.map(
         ({ startLineNumber, startColumn, message }) =>
-            `错误: line: ${startLineNumber} column: ${startColumn} ${message}`
+            t('designer.state.validateErrorLine', {
+                line: startLineNumber,
+                column: startColumn,
+                message,
+            }),
     );
 
     if (messages.length) {
         return {
             success: false,
-            message: `${name}存在以下错误，请先点击右上角格式化按钮自动修复或手动修改后重试：${messages.join(
-                '\n'
-            )}`
+            message: t('designer.state.validateSyntaxError', {
+                name,
+                messages: messages.join('\n'),
+            }),
         };
     }
 

@@ -52,6 +52,11 @@
                 "latest": "最新",
                 "preview": "预览",
                 "restore": "还原"
+            },
+            "monacoEditor": {
+                "format": "格式化",
+                "fullscreen": "全屏",
+                "exitFullscreen": "退出全屏"
             }
         }
     }

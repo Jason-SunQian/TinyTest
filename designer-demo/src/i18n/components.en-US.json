@@ -52,6 +52,11 @@
                 "latest": "Latest",
                 "preview": "Preview",
                 "restore": "Restore"
+            },
+            "monacoEditor": {
+                "format": "Format",
+                "fullscreen": "Fullscreen",
+                "exitFullscreen": "Exit Fullscreen"
             }
         }
     }

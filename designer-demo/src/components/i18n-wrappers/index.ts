@@ -25,6 +25,7 @@ export { default as VariableConfigurator } from './VariableConfigurator/index.vu
 export { default as HtmlAttributesConfigurator } from './HtmlAttributesConfigurator/index.vue';
 export { default as BindI18n } from './BindI18n/index.vue';
 export { default as I18nInput } from './I18nInput/index.vue';
+export { default as MonacoEditor } from './MonacoEditor/index.vue';
 // export { default as PluginSetting } from './PluginSetting/index.vue'
 // export { default as PluginBlockList } from './PluginBlockList/index.vue'
 // export { default as MetaListItems } from './MetaListItems/index.vue'

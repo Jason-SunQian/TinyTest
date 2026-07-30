@@ -995,7 +995,9 @@
             "invalidFileFormat": "文件格式不正确",
             "fileTooLarge": "文件过大",
             "networkError": "网络错误",
-            "unknownError": "未知错误"
+            "unknownError": "未知错误",
+            "insertEntry": "插入词条",
+            "insertI18nTooltip": "插入国际化词条"
         },
         "state": {
             "title": "状态管理",
@@ -1047,6 +1049,7 @@
             "arrayExample": "数组:[\"1\",\"2\"]",
             "nullExample": "空值:null",
             "jsonObjectNote": "注意：必须是一个JSON对象 {}",
+            "appStateExample": "{\n  \"app\": \"TinyEngine\",\n  \"version\": \"2.0.0\",\n  \"isAdmin\": true,\n  \"userInfo\": {\n    \"name\": \"张三\",\n    \"age\": 18,\n    \"gender\": \"男\"\n  }\n}",
             "name": "名称",
             "description": "描述",
             "requestUrl": "请求地址",
@@ -1065,6 +1068,11 @@
             "storeContentRequired": "状态内容不能为空",
             "storeMustBeObject": "状态必须是一个JSON对象",
             "storeFormatError": "状态格式不正确，请输入有效的JSON对象",
+            "initialData": "初始数据",
+            "validateSystemError": "系统异常，请刷新后重试。",
+            "validateRequired": "{name}未填写，请按照提示填写后重试。",
+            "validateSyntaxError": "{name}存在以下错误，请先点击右上角格式化按钮自动修复或手动修改后重试：\n{messages}",
+            "validateErrorLine": "错误: line: {line} column: {column} {message}",
             "i18nManagement": "国际化管理",
             "createEntry": "新建词条",
             "insertEntry": "插入词条",

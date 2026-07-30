@@ -48,7 +48,10 @@
                 placement="top"
                 :open-delay="OPEN_DELAY.Default"
             >
-                <svg-icon name="internationalization" @click="openPopover" />
+                <public-icon
+                    name="internationalization"
+                    @click="openPopover"
+                />
             </tiny-tooltip>
         </template>
     </tiny-popover>
@@ -59,7 +62,7 @@
 import { reactive, ref, computed } from 'vue';
 import { Button, Popover, Tooltip } from '@opentiny/vue';
 import { iconClose } from '@opentiny/vue-icon';
-import { BindI18n } from '@opentiny/tiny-engine-common';
+import { BindI18n, PublicIcon } from '@opentiny/tiny-engine-common';
 import { useTranslate } from '@opentiny/tiny-engine-meta-register';
 import { constants } from '@opentiny/tiny-engine-utils';
 
@@ -78,7 +81,9 @@ export default {
         // eslint-disable-next-line @typescript-eslint/naming-convention, new-cap
         IconClose: iconClose(),
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        BindI18n
+        BindI18n,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PublicIcon
     },
     props: {},
     emits: ['confirm'],

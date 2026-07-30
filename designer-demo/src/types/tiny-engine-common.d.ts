@@ -3,6 +3,8 @@ declare module '@opentiny/tiny-engine-common' {
     import type { Component } from 'vue';
 
     export const VueMonaco: Component;
+    export const MonacoEditor: Component;
+    export const PublicIcon: Component;
     export const ToolbarBase: Component;
     export const I18nInjectionKey: symbol;
     export const SvgButton: Component;

@@ -12,16 +12,7 @@
     </div>
     <div v-else class="tips app-tips">
         <div class="tip-note">{{ t('designer.state.jsonObjectNote') }}</div>
-        <pre><code>{
-  "app": "TinyEngine",
-  "version": "2.0.0",
-  "isAdmin": true,
-  "userInfo": {
-    "name": "张三",
-    "age": 18,
-    "gender": "男"
-  }
-}</code></pre>
+        <pre><code>{{ t('designer.state.appStateExample') }}</code></pre>
     </div>
 </template>
 

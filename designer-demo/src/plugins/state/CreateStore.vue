@@ -13,7 +13,7 @@
         <tiny-form-item label="stores" prop="name" class="stores">
             <tiny-input
                 v-model="state.storeData.name"
-                placeholder="只能包含数字字母及下划线"
+                :placeholder="t('designer.state.storeNamePlaceholder')"
             />
         </tiny-form-item>
         <tiny-collapse v-model="state.activeName">
@@ -100,13 +100,15 @@ import {
     Collapse as TinyCollapse,
     CollapseItem as TinyCollapseItem
 } from '@opentiny/vue';
-import { MonacoEditor } from '@opentiny/tiny-engine-common';
+import { MonacoEditor } from '@/components/i18n-wrappers';
 import {
     string2Ast,
     ast2String,
     insertName
 } from '@opentiny/tiny-engine-common/js/ast';
 import { verifyJsVarName } from '@opentiny/tiny-engine-common/js/verification';
+
+import { useDesignerI18n } from '@/services/i18nService';
 
 import StateTips from './StateTips.vue';
 import StateFullscreenHead from './StateFullscreenHead.vue';
@@ -150,6 +152,7 @@ export default {
     },
     emits: ['close', 'nameInput'],
     setup(props, { emit }) {
+        const { t } = useDesignerI18n();
         const STATE = 'state';
         const GETTERS = 'getters';
         const ACTIONS = 'actions';
@@ -186,19 +189,18 @@ export default {
             let errorMessage = '';
             const isSameState = Object.keys(props.dataSource).includes(name);
             if (!name) {
-                errorMessage = '输入内容不能为空';
+                errorMessage = t('designer.state.storeNameRequired');
             }
 
             if (!verifyJsVarName(name)) {
-                errorMessage =
-                    ' store 属性名称只能以字母或下划线开头且仅包含数字字母及下划线';
+                errorMessage = t('designer.state.storeNameInvalid');
             }
 
             if (
                 isSameState &&
                 (props.flag !== 'update' || name !== props.updateKey)
             ) {
-                errorMessage = '已存在同名 store 属性';
+                errorMessage = t('designer.state.storeNameExists');
             }
 
             if (errorMessage) {
@@ -221,7 +223,7 @@ export default {
                 .replace(/\s/g, '');
 
             if (!stateValue?.trim()) {
-                callback(new Error('状态内容不能为空'));
+                callback(new Error(t('designer.state.storeContentRequired')));
                 return;
             }
 
@@ -234,13 +236,13 @@ export default {
                     Array.isArray(parsed) ||
                     parsed === null
                 ) {
-                    callback(new Error('状态必须是一个JSON对象'));
+                    callback(new Error(t('designer.state.storeMustBeObject')));
                     return;
                 }
 
                 callback();
             } catch (error) {
-                callback(new Error('状态格式不正确，请输入有效的JSON对象'));
+                callback(new Error(t('designer.state.storeFormatError')));
             }
         };
 
@@ -363,7 +365,8 @@ export default {
             cancel,
             validateForm,
             storeDataForm,
-            clearValidateForm
+            clearValidateForm,
+            t
         };
     }
 };
@@ -383,6 +386,7 @@ export default {
     :deep(.toolbar) {
         position: absolute;
         z-index: 99;
+        top: 6px;
         right: 12px;
     }
     .stores {

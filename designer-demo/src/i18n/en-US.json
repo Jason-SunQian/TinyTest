@@ -992,7 +992,9 @@
             "invalidFileFormat": "Invalid file format",
             "fileTooLarge": "File too large",
             "networkError": "Network error",
-            "unknownError": "Unknown error"
+            "unknownError": "Unknown error",
+            "insertEntry": "Insert Entry",
+            "insertI18nTooltip": "Insert internationalization entry"
         },
         "state": {
             "title": "State Management",
@@ -1031,6 +1033,7 @@
             "arrayExample": "Array:[\"1\",\"2\"]",
             "nullExample": "Null:null",
             "jsonObjectNote": "Note: Must be a JSON object {}",
+            "appStateExample": "{\n  \"app\": \"TinyEngine\",\n  \"version\": \"2.0.0\",\n  \"isAdmin\": true,\n  \"userInfo\": {\n    \"name\": \"John\",\n    \"age\": 18,\n    \"gender\": \"Male\"\n  }\n}",
             "name": "Name",
             "description": "Description",
             "requestUrl": "Request URL",
@@ -1053,6 +1056,11 @@
             "storeContentRequired": "State content cannot be empty",
             "storeMustBeObject": "State must be a JSON object",
             "storeFormatError": "State format is incorrect, please enter a valid JSON object",
+            "initialData": "Initial data",
+            "validateSystemError": "System error, please refresh and try again.",
+            "validateRequired": "{name} is required. Please fill it in and try again.",
+            "validateSyntaxError": "{name} has the following errors. Click Format in the top-right to auto-fix, or edit manually and try again:\n{messages}",
+            "validateErrorLine": "Error: line: {line} column: {column} {message}",
             "i18nManagement": "Internationalization Management",
             "createEntry": "Create Entry",
             "insertEntry": "Insert Entry",

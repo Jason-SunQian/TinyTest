@@ -132,7 +132,7 @@ import {
     Collapse as TinyCollapse,
     CollapseItem as TinyCollapseItem
 } from '@opentiny/vue';
-import { MonacoEditor } from '@opentiny/tiny-engine-common';
+import { MonacoEditor } from '@/components/i18n-wrappers';
 import { verifyJsVarName } from '@opentiny/tiny-engine-common/js/verification';
 import * as Monaco from 'monaco-editor';
 
@@ -311,7 +311,10 @@ export default {
             if (state.variableType === LANG_TYPES.JS) {
                 return { success: true };
             }
-            return validateMonacoEditorData(variableEditor.value, '初始数据');
+            return validateMonacoEditorData(
+                variableEditor.value,
+                t('designer.state.initialData'),
+            );
         };
 
         const getDefaultValue = () => {
@@ -542,6 +545,7 @@ export default {
     :deep(.toolbar) {
         position: absolute;
         z-index: 99;
+        top: 6px;
         right: 12px;
     }
     .var {
