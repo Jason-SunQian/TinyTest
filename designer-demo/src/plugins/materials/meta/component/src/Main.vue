@@ -32,34 +32,41 @@
                             "
                             @click="componentClick"
                         >
-                            <li class="component-item">
-                                <div class="component-item-component">
-                                    <img
-                                        v-if="
-                                            isMaterialIconUrl(
-                                                getMaterialIconName(child)
-                                            )
-                                        "
-                                        :src="getMaterialIconName(child)"
-                                        :alt="getComponentName(child)"
-                                        class="component-item-icon-image"
-                                        @error="
-                                            handleMaterialIconError(
-                                                $event,
-                                                child
-                                            )
-                                        "
-                                    >
-                                    <svg-icon
-                                        v-else
-                                        :name="getMaterialIconName(child)"
-                                    />
-                                </div>
-                                <span
-                                    class="component-item-name"
-                                    :title="getComponentName(child)"
-                                    >{{ getComponentName(child) }}</span>
-                            </li>
+                            <tiny-tooltip
+                                class="component-item-tooltip"
+                                effect="light"
+                                placement="bottom"
+                                :open-delay="100"
+                                :content="getComponentName(child)"
+                            >
+                                <li class="component-item">
+                                    <div class="component-item-component">
+                                        <img
+                                            v-if="
+                                                isMaterialIconUrl(
+                                                    getMaterialIconName(child)
+                                                )
+                                            "
+                                            :src="getMaterialIconName(child)"
+                                            :alt="getComponentName(child)"
+                                            class="component-item-icon-image"
+                                            @error="
+                                                handleMaterialIconError(
+                                                    $event,
+                                                    child
+                                                )
+                                            "
+                                        >
+                                        <svg-icon
+                                            v-else
+                                            :name="getMaterialIconName(child)"
+                                        />
+                                    </div>
+                                    <span class="component-item-name">{{
+                                        getComponentName(child)
+                                    }}</span>
+                                </li>
+                            </tiny-tooltip>
                         </canvas-drag-item>
                     </template>
                 </ul>
@@ -81,7 +88,7 @@ import {
     watchEffect,
     computed
 } from 'vue';
-import { Collapse, CollapseItem, Search } from '@opentiny/vue';
+import { Collapse, CollapseItem, Search, Tooltip } from '@opentiny/vue';
 import { SearchEmpty, CanvasDragItem } from '@opentiny/tiny-engine-common';
 import { I18nInjectionKey } from '@opentiny/tiny-engine-common/js/i18n';
 import { iconSearch } from '@opentiny/vue-icon';
@@ -100,6 +107,8 @@ export default {
         TinyCollapse: Collapse,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyCollapseItem: CollapseItem,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        TinyTooltip: Tooltip,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         CanvasDragItem,
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -600,6 +609,12 @@ export default {
         display: grid;
         width: 100%;
         color: var(--te-materials-component-list-text-color);
+
+        /* Keep grid cell full-width; TinyTooltip default span would shrink layout */
+        :deep(.component-item-tooltip) {
+            display: block;
+            width: 100%;
+        }
 
         .component-item {
             padding: var(--te-common-vertical-form-label-spacing) 0
