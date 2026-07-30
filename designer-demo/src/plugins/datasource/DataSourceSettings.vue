@@ -216,11 +216,11 @@ export default {
     .tiny-tabs {
         height: 100%;
     }
+
     :deep(.tiny-tabs) {
         display: flex;
         flex-direction: column;
 
-        /* Use full panel width so EN labels (Remote Config / Fields / Static Data) fit */
         .tiny-tabs__header .tiny-tabs__nav {
             width: 100%;
             max-width: 100%;
@@ -228,13 +228,10 @@ export default {
             margin-bottom: 16px;
             background-color: var(--te-datasource-settings-tabs-bg-color);
         }
-        .tiny-tabs__nav-scroll {
-            .tiny-tabs__active-bar {
-                height: 3px;
-                background-color: var(
-                    --te-datasource-settings-tabs-item-color-active
-                );
-            }
+
+        .tiny-tabs__nav-scroll .tiny-tabs__active-bar {
+            height: 3px;
+            background-color: var(--te-datasource-settings-tabs-item-color-active);
         }
 
         .tiny-tabs__content {
@@ -242,36 +239,35 @@ export default {
             overflow-y: auto;
             padding: 0;
             margin: 0;
+
             &::-webkit-scrollbar-track,
             &::-webkit-scrollbar-track-piece,
-            &::-webkit-scrollbar-corner {
+            &::-webkit-scrollbar-corner,
+            &::-webkit-scrollbar-thumb,
+            &::-webkit-scrollbar-thumb:hover {
                 background-color: transparent;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background-color: transparent;
-
-                &:hover {
-                    background-color: transparent;
-                }
             }
         }
+
         .tiny-tabs__nav.is-show-active-bar .tiny-tabs__item {
             margin-right: 4px;
         }
+
         .tiny-tabs__item {
             flex: 1 1 0;
             width: auto;
             min-width: 0;
             padding: 0 6px;
-            background-color: var(--te-datasource-settings-bg-color);
-            color: var(--te-datasource-settings-text-color);
             margin-right: 4px;
             font-size: 12px;
             line-height: 1.3;
+            background-color: var(--te-datasource-settings-bg-color);
+            color: var(--te-datasource-settings-text-color);
+
             &:hover {
                 color: var(--te-datasource-settings-text-color-hover);
             }
+
             &.is-active {
                 color: var(--te-datasource-settings-text-color-active);
                 font-weight: var(--te-base-font-weight-4);
@@ -281,7 +277,6 @@ export default {
             .tiny-tabs__item__title {
                 padding-bottom: 6px;
                 font-size: 12px;
-                /* Prefer showing full label; avoid aggressive ellipsis on EN */
                 overflow: visible;
                 text-overflow: clip;
                 white-space: nowrap;
@@ -290,33 +285,13 @@ export default {
 
         .tiny-tabs__nav-wrap-not-separator::after {
             z-index: 2;
-            background-color: var(
-                --te-datasource-settings-tabs-border-color
-            ) !important;
             margin-bottom: 16px;
+            background-color: var(--te-datasource-settings-tabs-border-color) !important;
         }
     }
 
     :deep(.tiny-collapse-item__content) {
-        padding: 0 8px 12px 12px; // 这里的bottom为4px + 内部行元素与底部的距离为8px = 12px
-    }
-}
-
-.active {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    animation: glow 800ms ease-out infinite alternate;
-    transition: opacity 1s linear;
-}
-
-@keyframes glow {
-    0% {
-        box-shadow: inset 0px 0px 4px var(--ti-lowcode-canvas-handle-hover-bg);
-    }
-    100% {
-        box-shadow: inset 0px 0px 14px var(--ti-lowcode-canvas-handle-hover-bg);
+        padding: 0 8px 12px 12px;
     }
 }
 </style>
