@@ -806,7 +806,7 @@
             "dataSourceNameRequired": "Required",
             "dataSourceNameRule": "Data source name must be at least 2 characters, only letters, numbers, underscores allowed, must start with letter",
             "remoteConfig": "Remote Config",
-            "dataSourceFields": "Data Source Fields",
+            "dataSourceFields": "Fields",
             "staticData": "Static Data",
             "staticDataManagement": "Static Data Management",
             "addStaticData": "Add Static Data",

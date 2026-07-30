@@ -219,8 +219,12 @@ export default {
     :deep(.tiny-tabs) {
         display: flex;
         flex-direction: column;
+
+        /* Use full panel width so EN labels (Remote Config / Fields / Static Data) fit */
         .tiny-tabs__header .tiny-tabs__nav {
-            width: 280px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
             margin-bottom: 16px;
             background-color: var(--te-datasource-settings-tabs-bg-color);
         }
@@ -253,14 +257,18 @@ export default {
             }
         }
         .tiny-tabs__nav.is-show-active-bar .tiny-tabs__item {
-            margin-right: 8px;
+            margin-right: 4px;
         }
         .tiny-tabs__item {
-            flex: 1;
+            flex: 1 1 0;
+            width: auto;
+            min-width: 0;
+            padding: 0 6px;
             background-color: var(--te-datasource-settings-bg-color);
             color: var(--te-datasource-settings-text-color);
-            margin-right: 5px;
-            width: 50px;
+            margin-right: 4px;
+            font-size: 12px;
+            line-height: 1.3;
             &:hover {
                 color: var(--te-datasource-settings-text-color-hover);
             }
@@ -272,6 +280,11 @@ export default {
 
             .tiny-tabs__item__title {
                 padding-bottom: 6px;
+                font-size: 12px;
+                /* Prefer showing full label; avoid aggressive ellipsis on EN */
+                overflow: visible;
+                text-overflow: clip;
+                white-space: nowrap;
             }
         }
 
