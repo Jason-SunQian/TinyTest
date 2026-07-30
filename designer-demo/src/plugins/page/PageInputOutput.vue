@@ -121,39 +121,53 @@ export default {
 <style lang="scss" scoped>
 .input-or-output {
     color: var(--te-page-manage-input-or-output-text-color);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
     .life-cycle-alert {
         color: var(--te-page-manage-life-cycle-alert-text-color);
         height: 28px;
         padding: 6px;
         border: 0;
         font-size: 11px;
-        margin-bottom: 12px;
+        margin-bottom: 4px;
         :deep(.tiny-alert__close) {
             top: 7px;
         }
     }
 
+    /* Tip under each button: no fixed height (EN wraps), keep small gap from button */
     .input-output-tips,
     .input-output-div {
         color: var(--te-page-manage-life-cycle-alert-text-color);
-        margin-top: 4px;
-        height: 16px;
-        line-height: 16px;
+        margin: 0;
+        padding: 0;
+        height: auto;
+        min-height: 0;
+        line-height: 1.4;
+        font-size: 12px;
     }
-    .input-output-tips {
-        margin-bottom: 12px;
-    }
+
     .selectHome {
-        margin-top: 12px;
+        margin-top: 4px;
     }
+
     .edit-btn-icon {
         color: var(--te-page-manage-icon-color);
         margin-right: 6px;
     }
+
     :deep(.edit-btn) {
         flex: none;
         display: flex;
         align-items: center;
+    }
+
+    /* MetaCodeEditor button + following tip as a visual group */
+    :deep(.meta-code-editor),
+    :deep(.tiny-meta-code-editor) {
+        margin: 0;
     }
 }
 </style>
