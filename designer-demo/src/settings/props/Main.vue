@@ -37,8 +37,7 @@ import {
 } from 'vue';
 import {
     BlockDescription,
-    BlockLinkField,
-    PluginPanel
+    BlockLinkField
 } from '@opentiny/tiny-engine-common';
 import {
     useCanvas,
@@ -48,7 +47,7 @@ import {
     useMaterial
 } from '@opentiny/tiny-engine-meta-register';
 
-import { ConfigRender } from '@/components/i18n-wrappers';
+import { ConfigRender, PluginPanel } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import Empty from './components/Empty.vue';

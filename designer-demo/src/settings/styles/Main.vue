@@ -140,7 +140,7 @@ import {
     useProperties,
     getConfigurator
 } from '@opentiny/tiny-engine-meta-register';
-import { PluginPanel } from '@opentiny/tiny-engine-common';
+import { PluginPanel } from '@/components/i18n-wrappers';
 
 import { useDesignerI18n } from '@/services/i18nService';
 
