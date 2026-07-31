@@ -1,8 +1,6 @@
 <!--
-  i18n wrapper for @opentiny/tiny-engine-common MonacoEditor.
-  Official component hardcodes Format / Fullscreen tooltips in Chinese.
-  Hide built-in buttons and re-render them with designer i18n.
-  Keep Format / Fullscreen DOM identical (TinyTooltip > PublicIcon) for alignment.
+    i18n wrapper for @opentiny/tiny-engine-common MonacoEditor.
+    Official hardcodes Format/Fullscreen tips in Chinese; re-render with designer i18n.
 -->
 <template>
     <origin-monaco-editor
@@ -51,10 +49,10 @@
     </origin-monaco-editor>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 /* metaService: engine.plugins.state.MonacoEditorI18n */
 import { computed, ref } from 'vue';
-import { Tooltip } from '@opentiny/vue';
+import { Tooltip as TinyTooltip } from '@opentiny/vue';
 import {
     MonacoEditor as OriginMonacoEditor,
     PublicIcon
@@ -63,135 +61,82 @@ import { constants } from '@opentiny/tiny-engine-utils';
 
 import { useDesignerI18n } from '@/services/i18nService';
 
+const props = withDefaults(
+    defineProps<{
+        value?: string;
+        options?: Record<string, unknown>;
+        showFormatBtn?: boolean;
+        showFullScreenBtn?: boolean;
+    }>(),
+    {
+        value: '',
+        options: () => ({}),
+        showFormatBtn: false,
+        showFullScreenBtn: true
+    },
+);
+
+const emit = defineEmits<{
+    editorDidMount: [editor: unknown];
+    change: [value: unknown];
+    fullscreenChange: [value: boolean];
+    shortcutSave: [payload: unknown];
+}>();
+
+defineOptions({ name: 'monaco-editor-i18n', inheritAttrs: false });
+
 const { OPEN_DELAY } = constants;
+const { t } = useDesignerI18n();
+// eslint-disable-next-line vue/require-typed-ref, @typescript-eslint/no-explicit-any
+const editorRef = ref<any>(null);
+const isFullscreen = ref(false);
 
-export default {
-    name: 'MonacoEditorI18n',
-    components: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        OriginMonacoEditor,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        PublicIcon,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        TinyTooltip: Tooltip
-    },
-    inheritAttrs: false,
-    props: {
-        value: {
-            type: String,
-            default: ''
-        },
-        options: {
-            type: Object,
-            default: () => ({})
-        },
-        showFormatBtn: {
-            type: Boolean,
-            default: false
-        },
-        showFullScreenBtn: {
-            type: Boolean,
-            default: true
-        }
-    },
-    emits: ['editorDidMount', 'change', 'fullscreenChange', 'shortcutSave'],
-    // eslint-disable-next-line vue/component-api-style
-    setup(props, { emit, expose }) {
-        const { t } = useDesignerI18n();
-        // eslint-disable-next-line vue/require-typed-ref
-        const editorRef = ref(null);
-        const isFullscreen = ref(false);
+interface EditorApi {
+    getEditor?: () => unknown;
+    getValue?: () => unknown;
+    formatCode?: () => void;
+    switchFullScreen?: (v: boolean) => void;
+    editor?: unknown;
+}
 
-        const showFormatIcon = computed(
-            () =>
-                props.showFormatBtn &&
-                (props.options as { language?: string })?.language === 'json',
-        );
-
-        const fullscreenIcon = computed(() =>
-            isFullscreen.value ? 'cancel-full-screen' : 'full-screen',
-        );
-
-        const fullscreenTooltip = computed(() =>
-            isFullscreen.value
-                ? t('designer.components.monacoEditor.exitFullscreen')
-                : t('designer.components.monacoEditor.fullscreen'),
-        );
-
-        const getInner = () =>
-            editorRef.value as {
-                getEditor?: () => unknown;
-                getValue?: () => unknown;
-                formatCode?: () => void;
-                switchFullScreen?: (v: boolean) => void;
-                editor?: unknown;
-            } | null;
-
-        const formatCode = () => {
-            getInner()?.formatCode?.();
-        };
-
-        const toggleFullscreen = () => {
-            getInner()?.switchFullScreen?.(!isFullscreen.value);
-        };
-
-        const onFullscreenChange = (value: boolean) => {
-            isFullscreen.value = value;
-            emit('fullscreenChange', value);
-        };
-
-        const onEditorDidMount = (editor: unknown) => {
-            emit('editorDidMount', editor);
-        };
-
-        const onChange = (value: unknown) => {
-            emit('change', value);
-        };
-
-        const onShortcutSave = (payload: unknown) => {
-            emit('shortcutSave', payload);
-        };
-
-        const publicApi = {
-            getEditor: () => getInner()?.getEditor?.(),
-            getValue: () => getInner()?.getValue?.(),
-            formatCode: () => getInner()?.formatCode?.(),
-            switchFullScreen: (value: boolean) =>
-                getInner()?.switchFullScreen?.(value)
-        };
-        Object.defineProperty(publicApi, 'editor', {
-            enumerable: true,
-            get() {
-                return getInner()?.editor;
-            }
-        });
-        expose(publicApi);
-
-        return {
-            t,
-            editorRef,
-            isFullscreen,
-            showFormatIcon,
-            fullscreenIcon,
-            fullscreenTooltip,
-            formatCode,
-            toggleFullscreen,
-            onFullscreenChange,
-            onEditorDidMount,
-            onChange,
-            onShortcutSave,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            OPEN_DELAY
-        };
-    }
+const getInner = (): EditorApi | null => editorRef.value as EditorApi | null;
+const showFormatIcon = computed(
+    () => props.showFormatBtn && props.options?.language === 'json',
+);
+const fullscreenIcon = computed(() =>
+    isFullscreen.value ? 'cancel-full-screen' : 'full-screen',
+);
+const fullscreenTooltip = computed(() =>
+    isFullscreen.value
+        ? t('designer.components.monacoEditor.exitFullscreen')
+        : t('designer.components.monacoEditor.fullscreen'),
+);
+const formatCode = () => getInner()?.formatCode?.();
+const toggleFullscreen = () =>
+    getInner()?.switchFullScreen?.(!isFullscreen.value);
+const onFullscreenChange = (value: boolean) => {
+    isFullscreen.value = value;
+    emit('fullscreenChange', value);
 };
+const onEditorDidMount = (editor: unknown) => { emit('editorDidMount', editor); };
+const onChange = (value: unknown) => { emit('change', value); };
+const onShortcutSave = (payload: unknown) => { emit('shortcutSave', payload); };
+
+const publicApi: EditorApi & { switchFullScreen: (v: boolean) => void } = {
+    getEditor: () => getInner()?.getEditor?.(),
+    getValue: () => getInner()?.getValue?.(),
+    formatCode: () => getInner()?.formatCode?.(),
+    switchFullScreen: (value: boolean) => getInner()?.switchFullScreen?.(value)
+};
+Object.defineProperty(publicApi, 'editor', {
+    enumerable: true,
+    get: () => getInner()?.editor
+});
+defineExpose(publicApi);
 </script>
 
-<style scoped>
-/**
- * State plugin overlays .toolbar with position:absolute; without top it hugs
- * the editor edge when only fullscreen is shown. Keep inset + vertical align.
- */
+<style lang="scss" scoped>
+/* Absolute toolbar needs inset; keep icon row vertically aligned */
 .monaco-editor-i18n:deep(.editor-container),
 :deep(.editor-container) {
     position: relative;
@@ -209,7 +154,6 @@ export default {
     gap: 8px;
 }
 
-/* Popover (i18n) / tooltip / icon share the same flex cross-axis */
 :deep(#icon-buttons > *) {
     display: inline-flex;
     align-items: center;
