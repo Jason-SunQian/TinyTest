@@ -181,6 +181,11 @@ const urlRoutes: UrlRoute[] = [
         method: 'post',
         command: 'i18nUpdate'
     },
+    {
+        pattern: /^\/app-center\/api\/i18n\/entries\/bulk\/delete$/,
+        method: 'post',
+        command: 'i18nBulkDelete'
+    },
     // extension 接口
     {
         pattern: /^\/app-center\/api\/apps\/extension\/list$/,

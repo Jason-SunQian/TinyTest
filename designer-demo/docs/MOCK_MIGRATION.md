@@ -69,7 +69,7 @@
 | `/app-center/api/apps/canvas/lock` | GET      | 画布锁定状态      | 返回固定数据 { locked: false }                | 不要 |                                                         | ✔️             |
 | `/app-center/api/schema2code`      | POST     | 代码生成          | 可暂不实现或返回固定数据                      | 不要 |                                                         | ✔️             |
 | `/app-center/api/preview/metadata` | GET      | 预览元数据        | 返回固定数据                                  | 不要 |                                                         | ✔️             |
-| `/app-center/api/i18n/entries/*`   | GET/POST | i18n 相关         | 从 app-schema.json 的 i18n 读取/更新          | 需要 | i18nCreate/i18nUpdate                                   | ✔️<br/>✔️      |
+| `/app-center/api/i18n/entries/*`   | GET/POST | i18n 相关         | 从 app-schema.json 的 i18n 读取/更新          | 需要 | i18nCreate/i18nUpdate/i18nBulkDelete                     | ✔️<br/>✔️<br/>✔️ |
 | `/app-center/api/apps/extension/*` | GET/POST | Bridge/Utils 相关 | 从 app-schema.json 的 bridge、utils 读取/更新 | 需要 | extensionCreate/<br/>extensionUpdate/<br/>extensionList | ✔️<br/>✔️<br/> |
 
 ## 四、数据格式要求
@@ -339,6 +339,11 @@ const urlRoutes: UrlRoute[] = [
         pattern: /^\/app-center\/api\/i18n\/entries\/update$/,
         method: 'post',
         command: 'i18nUpdate'
+    },
+    {
+        pattern: /^\/app-center\/api\/i18n\/entries\/bulk\/delete$/,
+        method: 'post',
+        command: 'i18nBulkDelete'
     },
     // extension 接口
     {

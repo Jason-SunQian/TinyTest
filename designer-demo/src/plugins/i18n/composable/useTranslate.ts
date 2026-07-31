@@ -63,9 +63,28 @@ const removeI18n = (key = []) => {
     const langs = getLangs();
     key.forEach(element => {
         delete langs[element];
+        // Keep in-memory locale messages in sync with table
+        Object.keys(i18nResource.messages || {}).forEach(lang => {
+            if (i18nResource.messages[lang]) {
+                delete i18nResource.messages[lang][element];
+            }
+        });
+        i18nResource.locales?.forEach?.(localeItem => {
+            const lang = localeItem?.lang;
+            if (lang && i18nResource[lang]) {
+                delete i18nResource[lang][element];
+            }
+        });
     });
 
-    getMetaApi(META_SERVICE.Http).post(`${i18nApi}/bulk/delete`, {
+    try {
+        useCanvas().canvasApi.value?.setLocales?.(i18nResource.messages);
+    } catch {
+        // ignore canvas locale sync failures
+    }
+
+    // Persist: VSCode maps this URL to i18nBulkDelete (workspace i18n files)
+    return getMetaApi(META_SERVICE.Http).post(`${i18nApi}/bulk/delete`, {
         ...globalParams,
         // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
         key_in: key
