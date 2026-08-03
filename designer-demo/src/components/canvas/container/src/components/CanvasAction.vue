@@ -349,7 +349,17 @@ export default {
         };
 
         const hide = () => {
-            getRenderer().setCondition(getCurrent().schema?.id, false);
+            const id = getCurrent().schema?.id;
+            if (!id) {
+                return;
+            }
+            // Keep outline-tree eye state in sync with canvas hide
+            const { pageState } = useCanvas();
+            pageState.nodesStatus = {
+                ...pageState.nodesStatus,
+                [id]: false
+            };
+            getRenderer().setCondition(id, false);
             updateRect();
         };
 

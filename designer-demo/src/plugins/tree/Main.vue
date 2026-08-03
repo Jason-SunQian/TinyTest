@@ -32,20 +32,28 @@
                                 'row-label',
                                 {
                                     'node-isblock':
-                                        row.rawData.componentType === 'Block'
+                                        row.rawData.componentType === 'Block',
+                                    'node-ishidden': !isNodeVisible(row.id)
                                 }
                             ]"
                             >{{ row.label }}</span>
                         <template v-if="row.id !== 'body'">
+                            <!--
+                              Hidden nodes use eye-invisible (always visible via CSS)
+                              so users can spot / restore them without hovering.
+                            -->
                             <svg-icon
+                                :key="`eye-${row.id}-${isNodeVisible(row.id)}`"
                                 :name="
-                                    eyeOpen(row.id) ? 'eye' : 'eye-invisible'
+                                    isNodeVisible(row.id)
+                                        ? 'eye'
+                                        : 'eye-invisible'
                                 "
-                                @mouseup="showNode(row.rawData)"
+                                @click.stop="toggleNodeVisibility(row.rawData)"
                             />
                             <svg-icon
                                 name="delete"
-                                @mouseup="delNode(row.rawData)"
+                                @click.stop="delNode(row.rawData)"
                             />
                         </template>
                     </div>
@@ -260,18 +268,41 @@ export default {
             }
         );
 
-        const eyeOpen = id => {
-            return pageState.nodesStatus[id] !== false;
-        };
+        // CanvasAction hide (and other writers) mutate nodesStatus without schemaChange
+        watch(
+            () => pageState.nodesStatus,
+            () => {
+                updateTreeData();
+            },
+            { deep: true }
+        );
 
-        const showNode = data => {
-            data.show = !data.show;
-            pageState.nodesStatus[data.id] = data.show;
+        /**
+         * Visibility is stored in pageState.nodesStatus.
+         * Missing key / true => visible; false => hidden on canvas.
+         */
+        const isNodeVisible = id => pageState.nodesStatus[id] !== false;
+
+        const toggleNodeVisibility = data => {
+            if (!data?.id || data.id === 'body') {
+                return;
+            }
+
+            const nextVisible = !isNodeVisible(data.id);
+            // Replace object so dependents (tree slot / svg-icon) always re-render
+            pageState.nodesStatus = {
+                ...pageState.nodesStatus,
+                [data.id]: nextVisible
+            };
+            data.show = nextVisible;
+            data.showEye = !nextVisible;
+
+            // Refresh tree derived flags (show / showEye) for every node
+            updateTreeData();
 
             const { getRenderer, clearSelect } = useCanvas().canvasApi.value;
-
-            getRenderer().setCondition(data.id, data.show);
-            clearSelect();
+            getRenderer()?.setCondition?.(data.id, nextVisible);
+            clearSelect?.();
         };
 
         const delNode = data => {
@@ -386,9 +417,9 @@ export default {
             panelFixed,
             selectedIds,
             panelRef,
-            eyeOpen,
+            isNodeVisible,
             delNode,
-            showNode,
+            toggleNodeVisibility,
             state,
             // eslint-disable-next-line @typescript-eslint/naming-convention
             PLUGIN_NAME,
@@ -426,14 +457,22 @@ export default {
             color: var(--te-common-icon-hover);
         }
     }
+    /* Open eye + delete: only on row hover */
     svg.icon-eye,
     svg.icon-delete {
         visibility: hidden;
     }
+    /*
+      Closed eye must stay visible (no hover) so hidden nodes are discoverable.
+      Class comes from svg-icon name "eye-invisible" → .icon-eye-invisible
+    */
+    svg.icon-eye-invisible {
+        visibility: visible;
+    }
     .tree-row:hover {
         svg.icon-eye,
         svg.icon-delete {
-            visibility: unset;
+            visibility: visible;
         }
     }
     .row-content {
@@ -445,6 +484,9 @@ export default {
     }
     .node-isblock {
         color: var(--te-tree-block-text-color);
+    }
+    .node-ishidden {
+        opacity: 0.5;
     }
 }
 </style>
