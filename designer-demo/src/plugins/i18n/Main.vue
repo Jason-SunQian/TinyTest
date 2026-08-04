@@ -53,6 +53,7 @@
                     size="small"
                     :auto-upload="false"
                     :show-file-list="false"
+                    accept=".json,.zip,application/json,application/zip"
                     action="/"
                     @change="handleChange"
                 >
@@ -583,32 +584,86 @@ export default {
 
         const handleAvatarSuccess = () => {
             getI18nData().then(res => {
-                const zhData = res?.messages?.zh_CN || {};
-                const enData = res?.messages?.en_US || {};
-                const allI18nKey = [
-                    ...Object.keys(zhData),
-                    ...Object.keys(enData)
-                ];
-                const arr = [...new Set(allI18nKey)];
-
-                arr.forEach(item => {
-                    if (item) {
-                        useTranslate().ensureI18n(
-                            {
-                                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
-                                en_US: enData[item] || '',
-                                key: item,
-                                type: 'i18n',
-                                // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
-                                zh_CN: zhData[item] || ''
-                            },
-                            false
-                        );
-                    }
-                });
+                applyImportedMessages(res?.messages || res);
             });
         };
+
+        const applyImportedMessages = (messages?: {
+            zh_CN?: Record<string, string>;
+            en_US?: Record<string, string>;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            [lang: string]: any;
+        }) => {
+            if (!messages || typeof messages !== 'object') {
+                return;
+            }
+            const zhData = messages.zh_CN || {};
+            const enData = messages.en_US || {};
+            const allI18nKey = [
+                ...Object.keys(zhData),
+                ...Object.keys(enData)
+            ];
+
+            // Keep canvas locale bag in sync
+            if (!i18nResource.messages) {
+                i18nResource.messages = {};
+            }
+            if (!i18nResource.messages.zh_CN) {
+                i18nResource.messages.zh_CN = {};
+            }
+            if (!i18nResource.messages.en_US) {
+                i18nResource.messages.en_US = {};
+            }
+
+            [...new Set(allI18nKey)].forEach(item => {
+                if (!item) {
+                    return;
+                }
+                const zh = zhData[item] || '';
+                const en = enData[item] || '';
+                i18nResource.messages.zh_CN[item] = zh;
+                i18nResource.messages.en_US[item] = en;
+                useTranslate().ensureI18n(
+                    {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                        en_US: en,
+                        key: item,
+                        type: 'i18n',
+                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
+                        zh_CN: zh
+                    },
+                    false
+                );
+            });
+
+            // Force table refresh (watch may miss same-tick reactive batching)
+            nextTick(() => {
+                langList.value = fullLangList.value.filter(item => {
+                    const reg = new RegExp(searchKey.value, 'i');
+                    return (
+                        reg.test(item?.zh_CN) ||
+                        reg.test(item?.en_US) ||
+                        reg.test(item?.key)
+                    );
+                });
+                sortTypeChanges(currentSearchType.value);
+            });
+        };
+
         const handleChange = data => {
+            const fileName = String(data?.name || '');
+            const lowerName = fileName.toLowerCase();
+            const isZip = lowerName.endsWith('.zip');
+            const isJson = lowerName.endsWith('.json');
+            if (!isZip && !isJson) {
+                useModal().message({
+                    status: 'error',
+                    message:
+                        'Please upload i18n-template-for-batch-import.zip, or zh_cn.json / en_us.json'
+                });
+                return;
+            }
+
             const appId = getMetaApi(META_SERVICE.GlobalService).getBaseInfo()
                 .id;
             const action = `/app-center/api/apps/${appId}/i18n/entries/update`;
@@ -636,20 +691,53 @@ export default {
                 });
             });
             const formdata = new FormData();
-            // 1中文 2英文
+            // Official FormData field: "1"=zh_CN, "2"=en_US.
+            // Prefer filename (zh_cn / en_us); ZIP ignores field and reads both files inside.
             let key = '1';
-            if (data.name.indexOf('en') > -1) {
+            if (isZip) {
+                key = 'zip';
+            } else if (
+                lowerName.includes('en_us') ||
+                lowerName.includes('en-us') ||
+                /(^|[._-])en([._-]|$)/.test(lowerName)
+            ) {
+                key = '2';
+            } else if (
+                lowerName.includes('zh_cn') ||
+                lowerName.includes('zh-cn') ||
+                /(^|[._-])zh([._-]|$)/.test(lowerName)
+            ) {
+                key = '1';
+            } else if (lowerName.includes('en')) {
+                // legacy official heuristic (avoid matching "i18n" alone — already handled via isZip)
                 key = '2';
             }
             formdata.set(key, data.raw);
 
             getMetaApi(META_SERVICE.Http)
                 .post(action, formdata)
-                .then(() => {
-                    handleAvatarSuccess();
+                .then(res => {
+                    // preResponse returns res.data.data → { locales, messages }
+                    const payload = res?.messages ? res : res?.data || res;
+                    if (payload?.messages) {
+                        applyImportedMessages(payload.messages);
+                    } else {
+                        handleAvatarSuccess();
+                    }
+                })
+                .catch(err => {
+                    const msg =
+                        err?.data?.error ||
+                        err?.error ||
+                        err?.message ||
+                        'i18n batch import failed';
+                    useModal().message({
+                        status: 'error',
+                        message: String(msg)
+                    });
                 })
                 .finally(() => {
-                    loadingInstance.close();
+                    loadingInstance?.close?.();
                     isLoading.value = false;
                 });
         };

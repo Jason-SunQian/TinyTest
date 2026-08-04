@@ -172,6 +172,11 @@ const urlRoutes: UrlRoute[] = [
     },
     // i18n 接口
     {
+        pattern: /^\/app-center\/api\/i18n\/entries$/,
+        method: 'get',
+        command: 'i18nList'
+    },
+    {
         pattern: /^\/app-center\/api\/i18n\/entries\/create$/,
         method: 'post',
         command: 'i18nCreate'
@@ -180,6 +185,12 @@ const urlRoutes: UrlRoute[] = [
         pattern: /^\/app-center\/api\/i18n\/entries\/update$/,
         method: 'post',
         command: 'i18nUpdate'
+    },
+    // Official batch upload: POST /app-center/api/apps/:id/i18n/entries/update (FormData / zip|json)
+    {
+        pattern: /^\/app-center\/api\/apps\/[^/]+\/i18n\/entries\/update$/,
+        method: 'post',
+        command: 'i18nBatchImport'
     },
     {
         pattern: /^\/app-center\/api\/i18n\/entries\/bulk\/delete$/,
@@ -226,6 +237,52 @@ const findCommandForUrl = (url: string, method: string): string | null => {
 let vscodeHttpAdapter:
     | ((config: InternalAxiosRequestConfig) => Promise<unknown>)
     | null = null;
+
+/**
+ * FormData cannot cross the VSCode webview bridge as-is.
+ * Serialize file fields to base64 so the extension can import i18n JSON/ZIP.
+ */
+const serializeDataForVSCodeBridge = async (
+    data: unknown
+): Promise<unknown> => {
+    if (typeof FormData === 'undefined' || !(data instanceof FormData)) {
+        return data;
+    }
+
+    const files: Record<
+        string,
+        { name: string; contentBase64: string; mime?: string }
+    > = {};
+    const fields: Record<string, string> = {};
+
+    const entries = Array.from(data.entries());
+    for (const [key, value] of entries) {
+        if (typeof value === 'string') {
+            fields[key] = value;
+            continue;
+        }
+        const blob = value as Blob & { name?: string };
+        const buffer = await blob.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunk = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunk) {
+            binary += String.fromCharCode(
+                ...bytes.subarray(i, Math.min(i + chunk, bytes.length))
+            );
+        }
+        files[key] = {
+            name: typeof blob.name === 'string' ? blob.name : 'blob',
+            contentBase64: btoa(binary),
+            mime: blob.type || undefined
+        };
+    }
+
+    return {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        __multipart: { fields, files }
+    };
+};
 
 // 初始化VSCode HTTP adapter
 const createVSCodeHttpAdapter = () => {
@@ -365,7 +422,7 @@ const createVSCodeHttpAdapter = () => {
                     url: requestUrl,
                     method,
                     params: config.params,
-                    data: config.data,
+                    data: await serializeDataForVSCodeBridge(config.data),
                     headers: config.headers
                 };
 
@@ -387,7 +444,7 @@ const createVSCodeHttpAdapter = () => {
                     url: requestUrl,
                     method,
                     params: config.params,
-                    data: config.data,
+                    data: await serializeDataForVSCodeBridge(config.data),
                     headers: config.headers,
                     // 如果是图片请求，指定 responseType
                     responseType:
