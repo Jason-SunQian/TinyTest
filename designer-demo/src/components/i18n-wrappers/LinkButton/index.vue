@@ -6,16 +6,10 @@
                 <div class="tip-content">
                     {{ tips }}
                 </div>
-                <a
-                    v-if="href"
-                    class="tip-jump"
-                    :href="href"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <svg-icon name="jump" />
-                    {{ t('designer.common.viewDetails') }}
-                </a>
+                <!--
+                  Hide "View Details": links go to opentiny.design help-center,
+                  but target=_blank is often blocked / no-op in VS Code webview.
+                -->
             </template>
             <svg-icon name="plugin-icon-plugin-help" />
         </tiny-tooltip>
@@ -25,14 +19,13 @@
 <script lang="ts">
 import { TinyTooltip } from '@opentiny/vue';
 
-import { useDesignerI18n } from '@/services/i18nService';
-
 export default {
     components: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         TinyTooltip
     },
     props: {
+        // Kept for call-site compatibility (PluginPanel / styles still pass docsUrl)
         href: {
             type: String,
             default: ''
@@ -41,11 +34,6 @@ export default {
             type: String,
             default: '帮助'
         }
-    },
-    // eslint-disable-next-line vue/component-api-style
-    setup() {
-        const { t } = useDesignerI18n();
-        return { t };
     }
 };
 </script>
@@ -73,10 +61,6 @@ export default {
 }
 .tip-content {
     width: 220px;
-    margin-bottom: 6px;
     color: var(--te-component-common-text-color-secondary);
-}
-.tip-jump {
-    color: var(--te-component-common-text-color-link);
 }
 </style>
