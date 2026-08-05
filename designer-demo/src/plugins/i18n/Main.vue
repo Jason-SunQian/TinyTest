@@ -582,17 +582,12 @@ export default {
             }
         };
 
-        const handleAvatarSuccess = () => {
-            getI18nData().then(res => {
-                applyImportedMessages(res?.messages || res);
-            });
-        };
-
+        /* Locale bag keys are TinyEngine shape (zh_CN / en_US), not camelCase. */
+        /* eslint-disable camelcase, @typescript-eslint/naming-convention */
         const applyImportedMessages = (messages?: {
             zh_CN?: Record<string, string>;
             en_US?: Record<string, string>;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            [lang: string]: any;
+            [lang: string]: Record<string, string> | undefined;
         }) => {
             if (!messages || typeof messages !== 'object') {
                 return;
@@ -625,11 +620,9 @@ export default {
                 i18nResource.messages.en_US[item] = en;
                 useTranslate().ensureI18n(
                     {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                         en_US: en,
                         key: item,
                         type: 'i18n',
-                        // eslint-disable-next-line @typescript-eslint/naming-convention, camelcase
                         zh_CN: zh
                     },
                     false
@@ -647,6 +640,13 @@ export default {
                     );
                 });
                 sortTypeChanges(currentSearchType.value);
+            });
+        };
+        /* eslint-enable camelcase, @typescript-eslint/naming-convention */
+
+        const handleAvatarSuccess = () => {
+            getI18nData().then(res => {
+                applyImportedMessages(res?.messages || res);
             });
         };
 
