@@ -33,6 +33,7 @@
 | AM 导入 / 物料 URL / Network | [物料导入快速参考](./物料导入快速参考.md)、[插件与设计器物料导入对接与排障](./插件与设计器物料导入对接与排障.md) |
 | 设计器能否改 TinyEngine 官方 packages | [设计器与 packages 边界约定](./设计器与packages边界约定.md)（**不能**改官方只读 packages；业务改造落在 **designer 工程** `src/`） |
 | Class Name / Uno `!` 前缀 | [公共样式与 UnoCSS 导入设计器方案](./公共样式与UnoCSS导入设计器方案.md) |
+| **待解决问题**（入口替换 / 返回） | **本文 [§11](#11-待解决问题)** |
 
 ---
 
@@ -311,3 +312,68 @@ OAB: pnpm build:designer-materials
 | 2026-06-02 | 初版：OAB 接入路由 / i18n / 物料构建 / 排障（原文件名「主工程低代码集成指南」） |
 | 2026-07-24 | 重命名为 **主工程低代码集成指南-OAB**；补充仓库地图、策略同步、问题决策表与精简开发要求；链到进度与注意事项作为细节单源 |
 | 2026-07-24 | 文档口径更正：设计器权威工程为 **`lowcode-kit/packages/designer`**；`designer-demo` 仅作临时开发源，须同步回 designer |
+| 2026-08-05 | 新增 **§11 待解决问题**：低代码页替换主工程入口、多入口返回 history 上一页；记录现象 / 根因判断 / 已尝试与约束 |
+
+---
+
+## 11. 待解决问题
+
+> **状态**：未解决（2026-08-05）  
+> **场景**：用低代码出码页逐步替换主工程业务页（以 donations 为例），并保证导航体验与普通模块一致。  
+> **约束**：优先少动 / 慎动主工程公共导航组件；未经验证通过的大范围公共改动应回滚，避免「改得多、效果没达成」。
+
+### 11.1 目的（要达成什么）
+
+1. **页面替换**：低代码开发的页面能替换主工程原模块页（例：donations 列表）。  
+2. **入口配置一致**：与普通模块一样，通过 **service id**（如侧拉菜单 `1901`）+ `services` 里的 `name`（`RouteName.xxx` / `DependencyRouteName.xxx`）跳转即可；调用方写 `$router.push({ name })` 或菜单 / 宫格按 service 跳转，**不必**为低代码单独写一套入口逻辑。  
+3. **多入口返回正确**：入口可能来自侧拉菜单、首页头像、宫格、其它业务页等；点返回应回到 **history 上一页**，而不是固定回首页 Tab。  
+4. **长期形态**：低代码页在「配置方式 / 跳转 / 返回」上尽量与普通模块无感，而不是依赖 `query.from=backToHome` 等特例。
+
+### 11.2 问题（当前卡在哪）
+
+| 项 | 说明 |
+|----|------|
+| 复现 | 从首页头像（或同类从 Tab 根）`push` 进入 `#/lowcode/lowcode-donations-list`，点页头返回 |
+| 现象 A | 默认 `mp-back-button`：从 Tab 进二级页时，mount 时 Ionic `canGoBack` 常为 `false`，返回键无有效逻辑或按钮不按预期工作 |
+| 现象 B | 用 `router.back()` / history fallback：浏览器地址已变为 `#/main/tabs/home`，**画面仍停在 Donations 列表**（Vue history 与 Ionic 视图栈不同步） |
+| 配置侧 | 低代码路由名目前多为 `lowcode.lowcode.*`（生成 `module` + `name`），与业务 `RouteName.donationsList` 尚未对齐；**配置对齐**与**返回可用**是两件事，都未闭环 |
+
+相关代码锚点（排查用，非定论）：
+
+- 返回键：`OAB/src/components/base/mp-back-button.vue`（mount 读 `canGoBack`；支持 `query.from=backToHome` / `native`）  
+- 路由栈：`OAB/src/composables/base/useMpRouter.ts`（`navigateToRoot` 会 `ionRouter.navigate` + 卸载 view stack）  
+- Tab outlet：`OAB/src/shared/main/components/sc-main-tabs.vue`（离开 `/main/tabs/*` 时 `mr-router-outlet` 的 `key` 变化，易导致栈重建）  
+- 菜单入口：`sc-menu-content` → `createMenuList({ id: '1901' })` → `getService` → `push({ name })`；**当前菜单不透传 `service.query`**  
+- 宫格：`home-grid` 的 `handleServiceClick` 会带 `query`  
+- 低代码路由注册：`OAB/src/router/lowcode.ts`（`name = lowcode.${module}.${route.name}`）
+
+### 11.3 痛点
+
+1. **`backToHome` 不符合产品要求**：返回被写成回首页 Tab，多入口时错误（应从侧拉进则回侧拉前的页，从业务页进则回业务页）。  
+2. **不能只改低代码业务页就「像普通模块」**：返回失效根因更贴近 **Ionic + Tab outlet + `mp-back-button` 读栈时机**，普通模块从 Tab 根推进来也可能同类；低代码只是暴露了问题。  
+3. **改公共返回 / 公共路由风险高**：曾尝试在 `mp-back-button`、`useMpRouter` 做 history / Ionic 双栈同步；出现「URL 变了、页面不变」，且公共面过大，**已回滚，不接受未验证通过的大改公共代码**。  
+4. **配置与返回纠缠**：希望只配 `RouteName` / service id，但返回未解决时容易误用 `query` 特例，把「入口替换」和「返回策略」绑死，后续难维护。
+
+### 11.4 已尝试（结论：未采纳）
+
+| 尝试 | 结果 |
+|------|------|
+| 入口带 `query: { from: 'backToHome' }` | 能回，但**永远回首页**，不符合多入口 history 要求 |
+| 改 `mp-back-button`：点击再判 `canGoBack` + `router.back()` | 地址变了，**Ionic 页未卸**，画面卡住 |
+| 再扩 `useMpRouter.historyAwareBack`（`ionRouter.navigate` + 清 view stack） | 仍未稳定达成效果；公共改动面大，**已还原** |
+
+### 11.5 后续排查方向（仅记录，未实施）
+
+以下为可选方向，**实施前需小步验证、优先最小改动**，通过后再考虑是否动公共层：
+
+1. **配置对齐（与返回解耦）**：`1901` 仍指向 `RouteName.donationsList`；原路由 `redirect` / 换 component 到低代码页，或生成时对齐业务 `module`/`name`。先解决「像普通模块配置」。  
+2. **返回**：区分「显示返回键」与「执行返回」；任何方案必须同时满足 **URL 与可见 ion-page 一致**，且回到 **history 上一页**。  
+3. **慎改清单**：`mp-back-button`、`useMpRouter`、`sc-main-tabs` outlet `key`——改前要有明确复现用例（侧拉 / 头像 / 业务页互跳）与回滚方案。  
+4. **不推荐**：在低代码每个出码页手写返回特例作为长期方案（与「和普通模块一致」冲突）。
+
+### 11.6 验收标准（解决后勾选）
+
+- [ ] 侧拉 Donations（`1901`）进入低代码列表，返回回到进入前页面（通常为首页），**画面与 URL 一致**  
+- [ ] 其它业务页 `push` 进入同一列表，返回回到该业务页，而非强制首页  
+- [ ] 入口只需 service / `RouteName`（或等价 DependencyRouteName），**无需**为返回塞 `backToHome`  
+- [ ] 公共层改动范围可审、可回滚；有回归用例覆盖 Tab 内外跳转  
