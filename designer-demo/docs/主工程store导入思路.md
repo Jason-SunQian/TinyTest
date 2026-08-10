@@ -4,7 +4,7 @@
 >
 > 约束：设计器与物料解耦；设计器侧**不新增** store 运行态实现，只消费主工程产物与既有 `completion` 机制。Page JS / schema **只改 json**，出码生成 `.vue`，勿手改 `views/*.vue`。
 >
-> **关联文档**：[主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md)（同一套 `completion-utils.json` + `TINY_COMPLETION_CONFIG` 机制）、[主工程低代码集成指南-OAB](./主工程低代码集成指南-OAB.md)。
+> **关联文档**：[主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md)、[主工程低代码资源操作手册](./主工程低代码资源操作手册.md)、[主工程低代码集成指南-OAB](./主工程低代码集成指南-OAB.md)。
 >
 > **落地与排障请以 [§10 已落地成果与经验总结](#10-已落地成果与经验总结2026-08) 为准。**  
 > **口径见 [§9](#9-当前落地结论与实现摘要)**。
@@ -13,14 +13,15 @@
 
 ## 0. 背景与目标
 
-1. 低代码 Page JS 除 **`this.utils`** 外，还需要读写主工程 **Pinia store**（如 donations 流程中的 `local`、`transaction`）。
-2. **当前状态（第一期）**：
-   - 运行态：**`this.stores.transaction` / `this.stores.local`** 已挂载，与 `@/stores` 同源；
-   - 设计态：**`this.stores.`** 二级补全已写入 `completion-utils.json` 的 `namespaces.stores`；
-   - donations 模块已用 **`this.stores.local`** 验证通过。
+1. 低代码 Page JS 除 **`this.utils`** 外，还需要读写主工程 **Pinia store**（如 donations 的 `local` / `transaction`，PIN 页的 `secure` / `encrypt`）。
+2. **当前状态（已闭环）**：
+   - 运行态：`this.stores.<短名>` 由 `manifest.storeWhitelist` → `stores.js` → `lowcode.js` 挂载，与 `@/stores` 同源；
+   - 设计态：`this.stores.` 二级补全来自同一白名单写入的 `completion-utils.json`（插件注入 `TINY_COMPLETION_CONFIG`）；
+   - **`src/stores` 下公共 store 已全部进白名单（16 个）**，分批联调验证通过（含 `encrypt` / `secure`）。
 3. **命名约定**：
-   - Page JS 使用 **短名**（`transaction`、`local`），**不再**使用 `this.stores['common.transaction']` 等 Pinia `$id` 字符串键；
-   - 交易结果页：直接 **`this.stores.transaction.setTransResult(...)` + `openResultPage()`**，不再经 `this.utils.openTransResult(..., store)` 中转（该 util 已移除）。
+   - Page JS 使用 **短名**（`transaction`、`local`、`secure`…），**不再**使用 `this.stores['common.transaction']` 等 Pinia `$id` 字符串键；
+   - 交易结果页：直接 **`this.stores.transaction.setTransResult(...)` + `openResultPage()`**，不再经 `this.utils.openTransResult(..., store)` 中转（该 util 已移除）；
+   - PIN / 加密：走 **`this.stores.secure`** / **`this.stores.encrypt`**；Page JS **勿打印明文 PIN**。
 
 ---
 
@@ -86,18 +87,18 @@ this.utils.openTransResult(payload, transStore)
 
 ## 6. 进度记录（待办/已完成）
 
-**结论：`this.stores` 第一期（transaction + local）— 主线已完成。**
+**结论：公共 `src/stores` → `this.stores` 主线已闭环（16 短名，含 PIN 相关）。**
 
--   [x] 运行态：`stores.js` 白名单短名 `transaction` / `local`（`lowcode.js` glob 加载）
+-   [x] 运行态：`stores.js` + `lowcode.js` glob 加载
 -   [x] 补全：`manifest.storeWhitelist` → `namespaces.stores`
 -   [x] 构建：`pnpm run build:lowcode-utils` 写入 `completion-utils.json` + `stores.js`
--   [x] 设计器：`this.stores.` 二级提示（复用 utils 同一套 completion 管道）
--   [x] donations：`this.stores.local` 联调验证
--   [x] donations-confirm：schema 改为 `this.stores.transaction.setTransResult` + `openResultPage`
--   [x] 移除 `openTransResult` util（不再作为低代码推荐路径）
--   [x] **白名单单源**：`manifest.json` → `storeWhitelist`（补全 + 运行态 `stores.js`）
--   [ ] 可选：`this.stores.transaction.` 三级方法补全（`setTransResult` / `openResultPage` 等）
--   [ ] 可选：从 `@/stores` 扫描方法表做三级补全（类似 utils barrel，成本更高）
+-   [x] 设计器：`this.stores.` 二级提示（插件注入工作区 JSON）
+-   [x] 白名单单源：`manifest.json` → 补全 + 运行态
+-   [x] donations：`local` / `transaction` 联调
+-   [x] 分批扩白名单并验证：`user` `dict` `payment` → `app` `constant` `account` → `dir` `theme` `limit` → `banner` `agreement` `introduce` → `encrypt` `secure`
+-   [x] 移除 `openTransResult` util
+-   [ ] 可选：`this.stores.transaction.` 三级方法补全
+-   [ ] 可选：公共 **composables** 暴露（另议；见 §8）
 
 ---
 
@@ -156,6 +157,14 @@ this.utils.openTransResult(payload, transStore)
 | `app` | `useAppStore` | `common.app` |
 | `constant` | `useConstantStore` | `common.constant` |
 | `account` | `useAccountStore` | `common.account` |
+| `dir` | `useDirStore` | `dir` |
+| `theme` | `useThemeStore` | `common.theme` |
+| `limit` | `useLimitStore` | `common.limit` |
+| `banner` | `useBannerStore` | `common.banner` |
+| `agreement` | `useAgreementStore` | `common.agreement` |
+| `introduce` | `useIntroduceStore` | `common.introduce` |
+| `encrypt` | `useEncryptStore` | `common.encrypt` |
+| `secure` | `useSecureStore` | `common.secure` |
 
 ### 9.3 `completion-utils.json` 中 stores 结构
 
