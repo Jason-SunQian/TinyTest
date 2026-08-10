@@ -33,6 +33,8 @@
 | AM 导入 / 物料 URL / Network | [物料导入快速参考](./物料导入快速参考.md)、[插件与设计器物料导入对接与排障](./插件与设计器物料导入对接与排障.md) |
 | 设计器能否改 TinyEngine 官方 packages | [设计器与 packages 边界约定](./设计器与packages边界约定.md)（**不能**改官方只读 packages；业务改造落在 **designer 工程** `src/`） |
 | Class Name / Uno `!` 前缀 | [公共样式与 UnoCSS 导入设计器方案](./公共样式与UnoCSS导入设计器方案.md) |
+| Page JS 用主工程 utils 补全 | [主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md) |
+| Page JS 用主工程 store | [主工程 store 导入思路](./主工程store导入思路.md) |
 | 低代码替换业务页入口 / 返回 | **本文 [§11](#11-问题记录低代码页替换入口与返回已解决)**（已解决） |
 
 ---
@@ -337,6 +339,8 @@ OAB: pnpm build:designer-materials
 | [设计器与 packages 边界约定](./设计器与packages边界约定.md) | TinyEngine 官方 packages 只读；业务改 designer 工程 `src/` |
 | [公共样式与 UnoCSS 导入设计器方案](./公共样式与UnoCSS导入设计器方案.md) | Class Name、`!` 前缀 |
 | [主工程 Runtime 产出说明](./主工程Runtime产出说明.md) | `runtime.js` |
+| [主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md) | `this.utils` 补全与运行态 |
+| [主工程 store 导入思路](./主工程store导入思路.md) | `this.stores` 白名单、补全与维护 |
 | [Ionic 组件导入与桩方案](./Ionic组件导入与桩方案.md) | Ionic 桩与 slot 文本 |
 | [VSCode 集成](./VSCode-Integration.md) | 插件通信 |
 | [I18N 包装器指南](./I18N_WRAPPER_GUIDE.md) | 出码 `t('lowcode.xxx')` |
