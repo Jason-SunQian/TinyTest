@@ -27,6 +27,7 @@
 
 | 你想… | 打开 |
 |-------|------|
+| **发资源 / 搞不清跑哪个命令** | **[主工程低代码资源操作手册](./主工程低代码资源操作手册.md)** ⭐ |
 | 接新主工程 / 查路由 i18n 白屏 | **本文** §3～§4、§8 |
 | 导入某个 `mp-*` / `mr-*` | [物料导入进度跟踪-OAB](./物料导入进度跟踪-OAB.md) + [组件导入注意事项](./组件导入注意事项.md) |
 | 画布样式/选中框/金额对齐踩坑 | [组件导入注意事项](./组件导入注意事项.md)（强规则 + 各组件经验） |
@@ -148,17 +149,30 @@ OAB: pnpm build:designer-materials
 
 ### 4.3 推荐 scripts
 
+三类产物职责分离（**不要**再把 utils/styles 混进 materials 目录）：
+
+| 命令 | 产出 | 日常 |
+|------|------|------|
+| `build:designer-materials` | `dist/lowcode-materials/`（仅组件物料） | **最常用** |
+| `build:lowcode-styles` | `src/lowcode/style/`（插件注入样式） | 改 Uno/token 时 |
+| `build:lowcode-utils` | `src/lowcode/utils/` + extensions（补全 + 运行态 utils/stores） | 改 utils 导出 / store 白名单时 |
+| `lowcode` | 上面三个依次执行 | 全量刷新 |
+| `lowcode:release` | 物料构建 + versionize | 打物料发布包 |
+
 ```json
 {
-  "lowcode": "pnpm run build:designer-materials && pnpm run build:lowcode-styles",
-  "lowcode:release": "pnpm run build:designer-materials && pnpm run build:lowcode-styles && pnpm run versionize:lowcode-materials",
-  "build:designer-materials": "node lowcode-materials/scripts/extract-design-tokens.cjs && node lowcode-materials/scripts/extract-canvas-assets.cjs && node lowcode-materials/scripts/extract-base-overrides.cjs && vite build --config vite.lowcode-materials.config.ts && vite build --config vite.runtime.config.ts && node lowcode-materials/scripts/generate-bundle.cjs && node lowcode-utils/scripts/build.mjs",
+  "lowcode": "pnpm run build:designer-materials && pnpm run build:lowcode-styles && pnpm run build:lowcode-utils",
+  "lowcode:release": "pnpm run build:designer-materials && pnpm run versionize:lowcode-materials",
+  "build:designer-materials": "…extract* && vite materials && vite runtime && generate-bundle.cjs",
   "build:lowcode-styles": "node --experimental-strip-types lowcode-styles/scripts/build.mjs",
   "build:lowcode-utils": "node lowcode-utils/scripts/build.mjs"
 }
 ```
 
-联调前：**必跑** `pnpm run build:designer-materials`（成功标志：`dist/lowcode-materials/bundle.json` 组件数与 manifest 一致）。
+`extract:*` / `generate:canvas-stub` 为**按需**维护命令，已内嵌进 materials 构建时不必单独跑。
+
+联调物料前：**必跑** `pnpm run build:designer-materials`（成功标志：`dist/lowcode-materials/bundle.json` 组件数与 manifest 一致）。  
+补全 / store 白名单变更后另跑 `build:lowcode-utils`，并 **Reload Extension Host**（插件读工作区 JSON）。
 
 ### 4.4 联调顺序（最短路径）
 
@@ -292,7 +306,9 @@ OAB: pnpm build:designer-materials
 
 - [ ] `pnpm run build:designer-materials` 成功  
 - [ ] `bundle.json` 组件数 ≈ manifest  
-- [ ] 存在 `runtime.js`；`completion-utils.json` 已更新  
+- [ ] 存在 `runtime.js`  
+- [ ] （若改过 utils/store）`pnpm run build:lowcode-utils`；工作区有最新 `src/lowcode/utils/completion-utils.json`  
+- [ ] （若改过样式）`pnpm run build:lowcode-styles`；工作区有最新 `src/lowcode/style/styles.json`  
 
 ### 设计器
 

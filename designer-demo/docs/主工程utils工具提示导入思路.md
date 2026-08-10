@@ -108,12 +108,15 @@
 -   members 的获取优先来自注入配置 `window.TINY_COMPLETION_CONFIG.namespaces[namespace].members`。
 -   设计器仍保留与运行态动态工具列表的合并能力（确保 Bridge/动态注入不丢失）。
 
-### 9.4 产物生成与远程动态加入
+### 9.4 产物生成与设计器装载
 
--   主工程在物料构建链路中生成 `completion-utils.json`，并放入与物料同目录：
-    -   `dist/lowcode-materials/completion-utils.json`
--   设计器通过环境变量远程拉取该产物（与 `VITE_STYLE_BUNDLE_URLS` 类似）：
-    -   `VITE_COMPLETION_CONFIG_URL=<url>/completion-utils.json`
+-   主工程执行 **`pnpm run build:lowcode-utils`**，产出：
+    -   `src/lowcode/utils/completion-utils.json`
+    -   `src/lowcode/utils/utils.js`（并复制到 `common/extensions/utils.js`）
+    -   `src/lowcode/utils/stores.js`（并复制到 `common/extensions/stores.js`）
+-   **不再**把 `completion-utils.json` 混入 `dist/lowcode-materials/`（物料目录只负责组件 bundle）。
+-   **设计器主路径（VS Code 插件）**：读取工作区上述 JSON，注入 `window.TINY_COMPLETION_CONFIG`；env 中 `VITE_COMPLETION_CONFIG_URL` 可注释。
+-   **备选（无插件）**：自行静态服务 JSON，并配置 `VITE_COMPLETION_CONFIG_URL`。
 
 ### 9.5 成员集合与口径 1
 
@@ -129,14 +132,15 @@
 
 ### 10.1 主工程：`lowcode-utils` 与运行时 `this.utils`
 
--   **独立目录**：主工程根下 `lowcode-utils/`，角色对齐 `lowcode-styles/`（单独构建、可版本化、可静态 serve）。
--   **构建命令**：`pnpm run build:lowcode-utils`；物料链路 `build:designer-materials` 末尾会执行同一脚本。
--   **产物目录**：默认 `dist/lowcode-utils/`，包含：
-    -   `completion-utils.json`：供设计器 Monaco 二级补全；
-    -   `utils.js`：供出码运行态 `import.meta.glob` 命中后注入 `this.utils`；
+-   **独立目录**：主工程根下 `lowcode-utils/`，角色对齐 `lowcode-styles/`（单独构建；插件从工作区注入）。
+-   **构建命令**：`pnpm run build:lowcode-utils`（**不再**挂在 `build:designer-materials` 末尾；全量可用 `pnpm run lowcode`）。
+-   **产物目录**：默认 `src/lowcode/utils/`，包含：
+    -   `completion-utils.json`：供设计器 Monaco 二级补全（插件注入）；
+    -   `utils.js` / `stores.js`：供出码运行态 `import.meta.glob` 命中；
     -   `manifest.resolved.json`：本次构建路径快照（排查用）。
 -   **`manifest.json`（`lowcode-utils/manifest.json`）**：
-    -   `copyUtilJsTargets`：生成后将 `utils.js` 复制到的路径（相对仓库根），默认可为 `src/lowcode/common/extensions/utils.js`；
+    -   `copyUtilJsTargets` / `copyStoreJsTargets`：生成后复制到的路径（相对仓库根）；
+    -   `storeWhitelist`：`this.stores` 短名白名单；
     -   `outputs.distDir`：产物目录；
     -   可用环境变量 **`LOWCODE_UTILS_MANIFEST`** 指向另一份 manifest（多应用/多环境）。
 -   **运行时契约（与手写一致）**：`utils.js` **不再**从 `utils-*.json` 拼 npm/内联函数，而是固定为：

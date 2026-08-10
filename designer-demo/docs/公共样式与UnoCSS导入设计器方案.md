@@ -163,7 +163,8 @@ dist/lowcode-styles/
 
 -   **短期（当前）**：继续使用本地 `serve` 联调主工程产物，并通过 URL 注入给设计器验证。
     -   示例：`npx serve dist/lowcode-materials -p 3000 --cors`
-    -   设计器配置：`VITE_STYLE_BUNDLE_URLS=http://localhost:3000/styles.json` 或插件注入 `window.TINY_STYLE_BUNDLE_URLS`
+    -   设计器配置：`VITE_STYLE_BUNDLE_URLS=…`（**无插件时的备选**）或插件注入 `window.TINY_STYLE_BUNDLE_URLS`
+    -   **当前主路径**：VS Code 插件读取工作区 `src/lowcode/style/styles.json` 注入；`styles` **不再**放入 `dist/lowcode-materials`，故历史联调地址 `http://localhost:3000/styles.json`（与物料同目录）**已不适用**。
 -   **中期（待定）**：与 VSCode 插件开发者对齐 ASSETMANAGER 能力后，再决定最终分发方案：
     -   **静态发布**：版本化目录托管（URL 直接访问 `styles.json/tokens.css/utilities.css`）
     -   **npm 私服分发**：发布为 npm 包，由插件安装后本地 serve，再注入 URL
@@ -358,18 +359,15 @@ dist/lowcode-styles/
 
 输出目录：
 
--   **`dist/lowcode-styles/`**：规范产物目录（`styles.json`、`tokens.css`、`utilities.css`）。
--   若存在 **`dist/lowcode-materials/`**，脚本会把上述文件 **同步复制一份到该目录**，便于与现有「单目录静态服务」共用（例如与 `bundle.json` 同端口访问）。
+-   **`src/lowcode/style/`**：当前产物目录（`styles.json`、`tokens.css`、`utilities.css`），由 VS Code 插件从工作区注入。
+-   **不再**同步到 `dist/lowcode-materials/`（物料目录只负责组件 bundle）。
 
 ### 10.2 本地验证步骤（你来执行）
 
 1. 在主工程根目录执行：`pnpm run build:lowcode-styles`
-2. 用静态服务托管 **`dist/lowcode-materials`**（或同时托管包含 `styles.json` 的目录），确认浏览器能打开：
-    - `http://<host>:<port>/styles.json` → 200 JSON
-    - `http://<host>:<port>/tokens.css` → 200
-    - `http://<host>:<port>/utilities.css` → 200
-3. 在设计器插件环境配置 **`VITE_STYLE_BUNDLE_URLS=http://localhost:3000/styles.json`**（或插件注入 `window.TINY_STYLE_BUNDLE_URLS` 指向同一 URL）。
-4. 打开设计器 DevTools → **Network**，确认拉取的是 **`styles.json`** 且后续 CSS 来自 `localhost:3000`。
+2. 确认工作区存在：`src/lowcode/style/styles.json`、`tokens.css`、`utilities.css`
+3. **插件路径**：Extension Host 打开 OAB 根 → Reload → 设计器应注入 `TINY_STYLE_BUNDLE_URLS`（env 中 `VITE_STYLE_BUNDLE_URLS` 可注释）。
+4. **无插件备选**：静态服务 `src/lowcode/style/`，再配 `VITE_STYLE_BUNDLE_URLS=http://localhost:<port>/styles.json`（**不要**再假设与物料 `:3000` 同目录）。
 5. 在组件 **Class Name** 输入：`flex items-center text-h3 text-color-secondary`，画布与出码应与主工程一致。
 
 ### 10.3 补充类名覆盖
@@ -395,7 +393,8 @@ dist/lowcode-styles/
     - **CSS Editor（自定义 CSS）**：可在规则中书写 **`color: var(--mr-color-primary-500);`** 等 **主题变量**，说明 `tokens.css` 中的 `--mr-color-*` 已在画布 iframe 内生效，设计器侧可像主工程一样引用 token。
 
 3. **主工程产物链路**
-    - 静态服务与物料同目录时（如 `http://localhost:3000/styles.json`），设计器通过 **`VITE_STYLE_BUNDLE_URLS` 或 `window.TINY_STYLE_BUNDLE_URLS`** 拉取 `styles.json`，再加载其引用的 `tokens.css`、`utilities.css`，无需再依赖设计器内 `public/mock` 兜底。
+    - **当前主路径**：插件读取工作区 `src/lowcode/style/styles.json` 并注入，再加载其引用的 `tokens.css`、`utilities.css`。
+    - 历史「与物料同目录 `localhost:3000/styles.json`」联调方式已废弃（styles 不再进 materials dist）。
 
 ### 11.2 实施过程中值得记录的点
 

@@ -40,7 +40,7 @@
 
 | 交付物 | 产出位置 | 作用 |
 |--------|----------|------|
-| `completion-utils.json` | OAB `src/lowcode/utils/`（可同步 `dist/lowcode-materials/`） | 设计器 Monaco：`namespaces.stores.members` |
+| `completion-utils.json` | OAB `src/lowcode/utils/` | 设计器 Monaco：`namespaces.stores.members`（插件工作区注入） |
 | `stores.js` | OAB `src/lowcode/utils/` → 复制到 `common/extensions/stores.js` | 运行态 `LOWCODE_STORE_FACTORIES` |
 | `lowcode.js` | OAB `src/lowcode/common/config/lowcode.js` | glob 加载 `stores.js`，`collectStores()` 实例化 |
 
@@ -186,12 +186,11 @@ pnpm run build:lowcode-utils
 产出 / 更新：
 
 -   `src/lowcode/utils/completion-utils.json`（含 `namespaces.stores`）；
--   `src/lowcode/utils/stores.js` → 复制到 `src/lowcode/common/extensions/stores.js`；
--   若存在 `dist/lowcode-materials/`，会同步 completion JSON。
+-   `src/lowcode/utils/stores.js` → 复制到 `src/lowcode/common/extensions/stores.js`。
 
 Build 会校验：缺字段、重复 `key`、`useStore` 在 `src/stores` 中不存在 → **失败退出**。
 
-修改白名单后：执行上述 build，再重启 **`pnpm dev`** / Reload 设计器（`VITE_COMPLETION_CONFIG_URL`）。
+修改白名单后：执行上述 build，再重启 **`pnpm dev`** / Reload 设计器（插件重读工作区 `completion-utils.json`）。
 
 ---
 
