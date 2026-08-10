@@ -30,10 +30,10 @@
 
 | 维度 | `this.utils` | `this.stores` |
 |------|--------------|---------------|
-| 真源 | `src/utils/index.ts` → `@/utils` | `src/stores/*` → `useXxxStore` |
-| 运行态挂载 | `utils.js` + `lowcodeWrap` | `lowcode.js` → `collectStores()` |
-| 补全数据来源 | 扫描 `utils/index.ts` 生成 `namespaces.utils` | **手写白名单** → `namespaces.stores` |
-| 构建命令 | `pnpm run build:lowcode-utils` | **同一命令**（共用 `completion-utils.json`） |
+| 真源 | `src/utils/index.ts` → `@/utils` | **`lowcode-utils/manifest.json` → `storeWhitelist`** |
+| 运行态挂载 | `utils.js` + `lowcodeWrap` | **`stores.js`**（工厂表）+ `lowcode.js` → `collectStores()` |
+| 补全数据来源 | 扫描 `utils/index.ts` → `namespaces.utils` | **同一 manifest 白名单** → `namespaces.stores` |
+| 构建命令 | `pnpm run build:lowcode-utils` | **同一命令**（共用 `completion-utils.json` + 生成 `stores.js`） |
 | Page JS 形态 | `this.utils.xxx()` | `this.stores.xxx.method()`（**实例**，非 `useXxxStore()` 工厂） |
 
 ### 1.2 交付物与职责
@@ -41,21 +41,23 @@
 | 交付物 | 产出位置 | 作用 |
 |--------|----------|------|
 | `completion-utils.json` | OAB `src/lowcode/utils/`（可同步 `dist/lowcode-materials/`） | 设计器 Monaco：`namespaces.stores.members` |
-| `lowcode.js` 内 `LOWCODE_STORE_FACTORIES` | OAB `src/lowcode/common/config/lowcode.js` | 运行态 `this.stores` 白名单与实例化 |
+| `stores.js` | OAB `src/lowcode/utils/` → 复制到 `common/extensions/stores.js` | 运行态 `LOWCODE_STORE_FACTORIES` |
+| `lowcode.js` | OAB `src/lowcode/common/config/lowcode.js` | glob 加载 `stores.js`，`collectStores()` 实例化 |
 
-**说明**：store **没有**单独的 `stores.js` barrel；运行态逻辑集中在 `lowcode.js`，补全与 utils 共用 **`lowcode-utils`** 构建链路。
+**说明**：store 与 utils 同属 **`lowcode-utils`** 构建链路；白名单**只维护** `manifest.json` 的 `storeWhitelist`。
 
 ### 1.3 信息流（实际实现）
 
 **运行态**
 
-1. 主工程启动 / 出码页加载时，`lowcode()` 返回 `{ lowcodeWrap, stores }`；
-2. 出码页：`wrap({ stores })`，Page JS 内 `this.stores` 指向 **已初始化的 Pinia 实例**；
-3. `LOWCODE_STORE_FACTORIES` 中注册的 `useXxxStore()` 与手写 `import { useXxxStore } from '@/stores'` **同源**。
+1. `pnpm run build:lowcode-utils` 根据 `storeWhitelist` 生成并复制 **`extensions/stores.js`**；
+2. 主工程启动 / 出码页加载时，`lowcode()` 返回 `{ lowcodeWrap, stores }`；
+3. 出码页：`wrap({ stores })`，Page JS 内 `this.stores` 指向 **已初始化的 Pinia 实例**；
+4. `LOWCODE_STORE_FACTORIES` 中注册的 `useXxxStore()` 与手写 `import { useXxxStore } from '@/stores'` **同源**。
 
 **设计态**
 
-1. OAB 执行 **`pnpm run build:lowcode-utils`** → 更新 `completion-utils.json`（含 `namespaces.stores`）；
+1. OAB 执行 **`pnpm run build:lowcode-utils`** → 更新 `completion-utils.json`（含 `namespaces.stores`，来自同一 `storeWhitelist`）；
 2. 设计器 **`VITE_COMPLETION_CONFIG_URL`** 指向该 JSON（或 Extension Host 预注入 `window.TINY_COMPLETION_CONFIG`）；
 3. **`packages/designer/src/composable/completion.ts`** + **`completion-keywords.ts`**：光标在 `this.stores.` 时读取 `namespaces.stores.members` 做二级补全。
 
@@ -86,16 +88,16 @@ this.utils.openTransResult(payload, transStore)
 
 **结论：`this.stores` 第一期（transaction + local）— 主线已完成。**
 
--   [x] 运行态：`lowcode.js` 白名单短名 `transaction` / `local`
--   [x] 补全：`completion-config.mjs` → `namespaces.stores`
--   [x] 构建：`pnpm run build:lowcode-utils` 写入 `completion-utils.json`
+-   [x] 运行态：`stores.js` 白名单短名 `transaction` / `local`（`lowcode.js` glob 加载）
+-   [x] 补全：`manifest.storeWhitelist` → `namespaces.stores`
+-   [x] 构建：`pnpm run build:lowcode-utils` 写入 `completion-utils.json` + `stores.js`
 -   [x] 设计器：`this.stores.` 二级提示（复用 utils 同一套 completion 管道）
 -   [x] donations：`this.stores.local` 联调验证
 -   [x] donations-confirm：schema 改为 `this.stores.transaction.setTransResult` + `openResultPage`
 -   [x] 移除 `openTransResult` util（不再作为低代码推荐路径）
+-   [x] **白名单单源**：`manifest.json` → `storeWhitelist`（补全 + 运行态 `stores.js`）
 -   [ ] 可选：`this.stores.transaction.` 三级方法补全（`setTransResult` / `openResultPage` 等）
--   [ ] 可选：白名单单源 manifest，避免 `lowcode.js` 与 `completion-config.mjs` 两处手写
--   [ ] 可选：从 `@/stores/index.ts` 扫描生成补全（类似 utils barrel）
+-   [ ] 可选：从 `@/stores` 扫描方法表做三级补全（类似 utils barrel，成本更高）
 
 ---
 
@@ -118,9 +120,10 @@ this.utils.openTransResult(payload, transStore)
 ## 8. 后续增强方向（可选）
 
 -   **三级补全**：`this.stores.transaction.` → `setTransResult` / `openResultPage`（需扫描 store 导出或维护方法表）。
--   **白名单单源**：`lowcode-utils/manifest.json` 增加 `storeWhitelist`，build 时生成 completion + 可选 codegen 注释。
--   **自动扫描**：TS Compiler API 读 `defineStore` 的 `$id` 与 return 方法（成本高，第一期未做）。
+-   **自动扫描方法表**：TS Compiler API 读 `defineStore` 的 return 方法（成本高，第一期未做）。
 -   **composables**：另文档规划；与 store 类似但需区分「能否在 Page JS 事件里安全调用」。
+
+> **白名单单源（档 B）已落地**：`manifest.storeWhitelist` → `completion-utils.json` + `stores.js`（含生成物文件头注释）。出码 `.vue` 内额外注释未做（价值低）。
 
 ---
 
@@ -132,19 +135,24 @@ this.utils.openTransResult(payload, transStore)
 -   不允许「能补全但运行态没有」→ 避免 `undefined is not a function`；
 -   允许「运行态有但未补全」（未进白名单或未 rebuild JSON）——仅影响提示，不影响调用（若开发者手写键名）。
 
-### 9.2 白名单在哪里改（两处，必须同步）
+### 9.2 白名单在哪里改（单源）
 
 | 用途 | 文件（OAB 主工程） | 说明 |
 |------|---------------------|------|
-| **运行态** | `src/lowcode/common/config/lowcode.js` | `LOWCODE_STORE_FACTORIES`：`短名 → useXxxStore` |
-| **设计态补全** | `lowcode-utils/scripts/lib/completion-config.mjs` | `storeMembers`：`name` / `detail` / `signature` |
+| **唯一配置** | `lowcode-utils/manifest.json` → **`storeWhitelist`** | `key` / `useStore` / `module` / `piniaId` |
+| **运行态产物** | `src/lowcode/common/extensions/stores.js`（生成，勿手改） | `LOWCODE_STORE_FACTORIES` |
+| **补全产物** | `src/lowcode/utils/completion-utils.json`（生成，勿手改） | `namespaces.stores.members` |
+| **加载** | `src/lowcode/common/config/lowcode.js` | `import.meta.glob(.../stores.js)` + `collectStores()` |
 
-**第一期白名单**
+**第一期白名单**（与 manifest 一致）
 
 | 短名 `this.stores.*` | 工厂函数 | Pinia `$id`（signature 说明用） |
 |----------------------|----------|----------------------------------|
 | `transaction` | `useTransactionStore` | `common.transaction` |
 | `local` | `useLocalStore` | `common.local` |
+| `user` | `useUserStore` | `common.user` |
+| `dict` | `useDictStore` | `dict` |
+| `payment` | `usePaymentStore` | `common.payment` |
 
 ### 9.3 `completion-utils.json` 中 stores 结构
 
@@ -163,9 +171,9 @@ this.utils.openTransResult(payload, transStore)
 }
 ```
 
--   **`name`**：Page JS 使用的短名；
--   **`detail`**：Monaco 列表右侧来源文案；
--   **`signature`**：Pinia `$id` 对照，便于开发者识别。
+-   **`name`**：Page JS 使用的短名（= `storeWhitelist[].key`）；
+-   **`detail`**：Monaco 列表右侧来源文案（= `module`）；
+-   **`signature`**：Pinia `$id` 对照（= `piniaId`）。
 
 ### 9.4 如何编译 / 刷新
 
@@ -178,11 +186,12 @@ pnpm run build:lowcode-utils
 产出 / 更新：
 
 -   `src/lowcode/utils/completion-utils.json`（含 `namespaces.stores`）；
--   若存在 `dist/lowcode-materials/`，会同步该 JSON。
+-   `src/lowcode/utils/stores.js` → 复制到 `src/lowcode/common/extensions/stores.js`；
+-   若存在 `dist/lowcode-materials/`，会同步 completion JSON。
 
-**运行态**修改 `lowcode.js` 后：重启 **`pnpm dev`** / 重新预览即可，**无需**单独 build store 文件。
+Build 会校验：缺字段、重复 `key`、`useStore` 在 `src/stores` 中不存在 → **失败退出**。
 
-设计器侧重载 **`VITE_COMPLETION_CONFIG_URL`** 指向的 JSON，或 Reload Extension Host。
+修改白名单后：执行上述 build，再重启 **`pnpm dev`** / Reload 设计器（`VITE_COMPLETION_CONFIG_URL`）。
 
 ---
 
@@ -190,24 +199,17 @@ pnpm run build:lowcode-utils
 
 ### 10.1 主工程：运行态 `this.stores`
 
-**文件**：`OAB/src/lowcode/common/config/lowcode.js`
+**配置**：`OAB/lowcode-utils/manifest.json` → `storeWhitelist`  
+**产物**：`OAB/src/lowcode/common/extensions/stores.js`（由 build 生成）  
+**加载**：`OAB/src/lowcode/common/config/lowcode.js`（glob + `collectStores`）
 
 ```js
+// stores.js（生成物，勿手改）
 import { useLocalStore, useTransactionStore } from '@/stores';
 
-const LOWCODE_STORE_FACTORIES = {
+export const LOWCODE_STORE_FACTORIES = {
     transaction: useTransactionStore,
     local: useLocalStore,
-};
-
-const collectStores = () => {
-    const stores = {};
-    Object.entries(LOWCODE_STORE_FACTORIES).forEach(([key, useStore]) => {
-        try {
-            stores[key] = useStore();
-        } catch { /* ignore */ }
-    });
-    return stores;
 };
 ```
 
@@ -221,11 +223,9 @@ wrap({ stores });
 
 ### 10.2 主工程：补全白名单与构建
 
-**文件**：`OAB/lowcode-utils/scripts/lib/completion-config.mjs` → 合并进 **`buildCompletionConfig()`** 的 `storeMembers`。
-
-**命令**：`pnpm run build:lowcode-utils`（`package.json` 已配置；`build:designer-materials` 末尾也会执行）。
-
-**产物目录**（`lowcode-utils/manifest.json` → `outputs.distDir`）：默认 **`src/lowcode/utils/`**。
+**真源**：`manifest.storeWhitelist` → `buildCompletionConfig(root, manifest)`。  
+**命令**：`pnpm run build:lowcode-utils`（`package.json` 已配置；`build:designer-materials` 末尾也会执行）。  
+**产物目录**（`outputs.distDir`）：默认 **`src/lowcode/utils/`**。
 
 ### 10.3 设计器：补全如何生效
 
@@ -239,19 +239,29 @@ Extension Host 亦可通过 **`useVSCodeBridge`** 注入 `window.TINY_COMPLETION
 
 以新增 **`user`**（`useUserStore`，Pinia id 假设为 `user`）为例：
 
-1. **`lowcode.js`**：import 并在 `LOWCODE_STORE_FACTORIES` 增加 `user: useUserStore`；
-2. **`completion-config.mjs`**：`storeMembers` 增加 `{ name: 'user', detail: '@/stores/user', signature: 'user' }`；
-3. **`pnpm run build:lowcode-utils`**；
-4. Reload 设计器，确认 **`this.stores.`** 出现 `user`；
-5. 在业务 **schema json** 中使用 `this.stores.user...`，**出码**更新 vue；
-6. 主工程预览验证。
+1. **`lowcode-utils/manifest.json`**：在 `storeWhitelist` 增加一项：
+
+```json
+{
+  "key": "user",
+  "useStore": "useUserStore",
+  "module": "@/stores/user",
+  "piniaId": "user"
+}
+```
+
+2. **`pnpm run build:lowcode-utils`**（校验 `useUserStore` 存在于 `src/stores`）；
+3. Reload 设计器，确认 **`this.stores.`** 出现 `user`；
+4. 在业务 **schema json** 中使用 `this.stores.user...`，**出码**更新 vue；
+5. 主工程预览验证。
 
 ### 10.5 联调检查清单
 
 1. Network / 插件注入：能加载最新 **`completion-utils.json`**；
 2. 设计器 Page JS：输入 **`this.stores.`** 可见 `transaction`、`local`，右侧有 `@/stores/...` 文案；
 3. 出码页：**`this.stores.local`** / **`this.stores.transaction`** 可读写，行为与手写 store 一致；
-4. schema **仅改 json**，出码后 vue 与 json 一致，无手改 vue 漂移。
+4. schema **仅改 json**，出码后 vue 与 json 一致，无手改 vue 漂移；
+5. **`extensions/stores.js` 勿手改**；改白名单只动 manifest + rebuild。
 
 ### 10.6 donations 参考（schema 侧）
 
@@ -266,4 +276,4 @@ this.stores.transaction.openResultPage()
 ---
 
 文档维护者：开发团队  
-最后更新：2026-08-10（初版：OAB store 白名单、completion、donations 验证）
+最后更新：2026-08-10（白名单单源：manifest.storeWhitelist → completion + stores.js）
