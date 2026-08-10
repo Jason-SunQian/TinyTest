@@ -153,6 +153,9 @@ this.utils.openTransResult(payload, transStore)
 | `user` | `useUserStore` | `common.user` |
 | `dict` | `useDictStore` | `dict` |
 | `payment` | `usePaymentStore` | `common.payment` |
+| `app` | `useAppStore` | `common.app` |
+| `constant` | `useConstantStore` | `common.constant` |
+| `account` | `useAccountStore` | `common.account` |
 
 ### 9.3 `completion-utils.json` 中 stores 结构
 
