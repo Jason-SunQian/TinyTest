@@ -35,7 +35,7 @@
 | 设计器能否改 TinyEngine 官方 packages | [设计器与 packages 边界约定](./设计器与packages边界约定.md)（**不能**改官方只读 packages；业务改造落在 **designer 工程** `src/`） |
 | Class Name / Uno `!` 前缀 | [公共样式与 UnoCSS 导入设计器方案](./公共样式与UnoCSS导入设计器方案.md) |
 | Page JS 用主工程 utils 补全 | [主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md) |
-| Page JS 用主工程 store | [主工程 store 导入思路](./主工程store导入思路.md) |
+| Page JS 用主工程 store | [主工程 store 导入思路](./主工程store导入思路.md)（公共 store 白名单 16 个已闭环） |
 | 低代码替换业务页入口 / 返回 | **本文 [§11](#11-问题记录低代码页替换入口与返回已解决)**（已解决） |
 
 ---

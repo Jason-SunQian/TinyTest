@@ -59,7 +59,7 @@
 **设计态**
 
 1. OAB 执行 **`pnpm run build:lowcode-utils`** → 更新 `completion-utils.json`（含 `namespaces.stores`，来自同一 `storeWhitelist`）；
-2. 设计器 **`VITE_COMPLETION_CONFIG_URL`** 指向该 JSON（或 Extension Host 预注入 `window.TINY_COMPLETION_CONFIG`）；
+2. **VS Code 插件**读取工作区该 JSON，注入 **`window.TINY_COMPLETION_CONFIG`**（主路径；`VITE_COMPLETION_CONFIG_URL` 为无插件备选）；
 3. **`packages/designer/src/composable/completion.ts`** + **`completion-keywords.ts`**：光标在 `this.stores.` 时读取 `namespaces.stores.members` 做二级补全。
 
 ### 1.4 Page JS 推荐写法
@@ -107,24 +107,31 @@ this.utils.openTransResult(payload, transStore)
 已澄清：
 
 -   **为何不用 `useXxxStore()` 写在 Page JS 里？** Pinia 在事件回调里通常仍可 `useStore()`，但低代码 `wrap` 上下文与手写 setup 不同；运行态统一在 `collectStores()` 实例化，Page JS 只拿 **`this.stores.<短名>` 实例**，更简单、与补全键一致。
--   **短名与 Pinia `$id` 关系**：例如 `transaction` → Pinia id **`common.transaction`**；`local` → **`common.local`**。对外只暴露短名。
+-   **短名与 Pinia `$id` 关系**：例如 `transaction` → **`common.transaction`**；`dict` → **`dict`**；`secure` → **`common.secure`**。对外只暴露短名。
 -   **schema 与 vue**：业务逻辑只改 **`*.json`（page schema）**，再出码；**不要**手改 `views/*.vue`。
 -   **与 utils 共用 JSON**：`namespaces.stores` 与 `namespaces.utils` 在同一份 **`completion-utils.json`**，一次 build 同时更新。
+-   **补全如何进设计器**：VS Code 插件读取工作区 `src/lowcode/utils/completion-utils.json` 注入 `TINY_COMPLETION_CONFIG`；`VITE_COMPLETION_CONFIG_URL` 为无插件备选。
+-   **`encrypt` / `secure`**：PIN 相关低码页需要，已进白名单；使用时勿 `console.log` 明文 PIN，优先 `secure.open` / `final` + `encrypt.*`。
 
 仍可按项目需要讨论：
 
 -   store 白名单是否按模块/环境拆分；
--   是否在 VariableConfigurator 等 UI 中展示 `this.stores.*` 与 schema globalState 的边界。
+-   是否在 VariableConfigurator 等 UI 中展示 `this.stores.*` 与 schema globalState 的边界；
+-   **公共 composables** 是否 / 如何暴露给 Page JS（见 §8）。
 
 ---
 
 ## 8. 后续增强方向（可选）
 
 -   **三级补全**：`this.stores.transaction.` → `setTransResult` / `openResultPage`（需扫描 store 导出或维护方法表）。
--   **自动扫描方法表**：TS Compiler API 读 `defineStore` 的 return 方法（成本高，第一期未做）。
--   **composables**：另文档规划；与 store 类似但需区分「能否在 Page JS 事件里安全调用」。
+-   **自动扫描方法表**：TS Compiler API 读 `defineStore` 的 return 方法（成本高，未做）。
+-   **公共 composables 暴露**（下一步讨论）：
+    -   与 store 不同：composables 常依赖 `setup` / 生命周期 / 组件实例，**不一定**能在 Page JS 事件里直接当「无状态工具」调用；
+    -   需先厘清：哪些可安全挂到 `this.composables` / `this.xxx`，哪些应继续只在出码 SFC / 手写页使用；
+    -   交付形态可参考 store：`manifest` 白名单 + build 产物 + 补全 namespace（或并入现有 completion JSON）。
 
-> **白名单单源（档 B）已落地**：`manifest.storeWhitelist` → `completion-utils.json` + `stores.js`（含生成物文件头注释）。出码 `.vue` 内额外注释未做（价值低）。
+> **白名单单源（档 B）已落地**：`manifest.storeWhitelist` → `completion-utils.json` + `stores.js`。  
+> **公共 store 全量白名单已落地并验证**（16 个，含 `encrypt` / `secure`）。
 
 ---
 
@@ -145,10 +152,10 @@ this.utils.openTransResult(payload, transStore)
 | **补全产物** | `src/lowcode/utils/completion-utils.json`（生成，勿手改） | `namespaces.stores.members` |
 | **加载** | `src/lowcode/common/config/lowcode.js` | `import.meta.glob(.../stores.js)` + `collectStores()` |
 
-**第一期白名单**（与 manifest 一致）
+**当前白名单（16，与 `manifest.storeWhitelist` 一致）**
 
-| 短名 `this.stores.*` | 工厂函数 | Pinia `$id`（signature 说明用） |
-|----------------------|----------|----------------------------------|
+| 短名 `this.stores.*` | 工厂函数 | Pinia `$id` |
+|----------------------|----------|-------------|
 | `transaction` | `useTransactionStore` | `common.transaction` |
 | `local` | `useLocalStore` | `common.local` |
 | `user` | `useUserStore` | `common.user` |
@@ -165,6 +172,8 @@ this.utils.openTransResult(payload, transStore)
 | `introduce` | `useIntroduceStore` | `common.introduce` |
 | `encrypt` | `useEncryptStore` | `common.encrypt` |
 | `secure` | `useSecureStore` | `common.secure` |
+
+> 维护以 **`lowcode-utils/manifest.json`** 为准；上表若与 manifest 不一致，以 manifest + 最近一次 `build:lowcode-utils` 产物为准。
 
 ### 9.3 `completion-utils.json` 中 stores 结构
 
@@ -215,12 +224,32 @@ Build 会校验：缺字段、重复 `key`、`useStore` 在 `src/stores` 中不�
 **加载**：`OAB/src/lowcode/common/config/lowcode.js`（glob + `collectStores`）
 
 ```js
-// stores.js（生成物，勿手改）
-import { useLocalStore, useTransactionStore } from '@/stores';
+// stores.js（生成物，勿手改；成员以 manifest 为准）
+import {
+    useAccountStore,
+    useAgreementStore,
+    useAppStore,
+    useBannerStore,
+    useConstantStore,
+    useDictStore,
+    useDirStore,
+    useEncryptStore,
+    useIntroduceStore,
+    useLimitStore,
+    useLocalStore,
+    usePaymentStore,
+    useSecureStore,
+    useThemeStore,
+    useTransactionStore,
+    useUserStore,
+} from '@/stores';
 
 export const LOWCODE_STORE_FACTORIES = {
     transaction: useTransactionStore,
     local: useLocalStore,
+    // ... 其余短名见 manifest / 生成文件
+    encrypt: useEncryptStore,
+    secure: useSecureStore,
 };
 ```
 
@@ -268,23 +297,18 @@ Extension Host 亦可通过 **`useVSCodeBridge`** 注入 `window.TINY_COMPLETION
 
 ### 10.5 联调检查清单
 
-1. Network / 插件注入：能加载最新 **`completion-utils.json`**；
-2. 设计器 Page JS：输入 **`this.stores.`** 可见 `transaction`、`local`，右侧有 `@/stores/...` 文案；
-3. 出码页：**`this.stores.local`** / **`this.stores.transaction`** 可读写，行为与手写 store 一致；
-4. schema **仅改 json**，出码后 vue 与 json 一致，无手改 vue 漂移；
-5. **`extensions/stores.js` 勿手改**；改白名单只动 manifest + rebuild。
+1. 设计器 Console：`window.TINY_COMPLETION_CONFIG.namespaces.stores.members` 含全部短名（当前 16）；
+2. Page JS：`this.stores.` 补全出现对应短名；
+3. 出码页：抽样验证（如 `user.isLogin`、`dict.getDict`、`secure.open` 方法存在）；PIN 流程勿打明文日志；
+4. schema **仅改 json**，出码后 vue 与 json 一致；
+5. **`extensions/stores.js` 勿手改**；改白名单只动 manifest + `pnpm run build:lowcode-utils`。
 
-### 10.6 donations 参考（schema 侧）
+### 10.6 donations / PIN 参考
 
--   **列表 / 表单页**：`getDonationStore()` → `return this.stores?.local || null`；
--   **确认页提交成功/失败**：
-
-```js
-this.stores.transaction.setTransResult({ ... })
-this.stores.transaction.openResultPage()
-```
+-   **donations**：`this.stores.local`；提交结果 `this.stores.transaction.setTransResult` + `openResultPage`
+-   **PIN**：`this.stores.secure.open` / `validate` / `final`；配合 `this.stores.encrypt.encryptMpin` 等（与手写页同一套 store）
 
 ---
 
 文档维护者：开发团队  
-最后更新：2026-08-10（白名单单源：manifest.storeWhitelist → completion + stores.js）
+最后更新：2026-08-10（公共 store 全量白名单 16 个已验证；含 encrypt/secure）
