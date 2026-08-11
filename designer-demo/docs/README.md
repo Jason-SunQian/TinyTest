@@ -14,6 +14,8 @@
     -   主工程 `utils/` 工具方法 → 清单 JSON → 插件注入 → 设计器 Monaco 补全
 -   **[主工程 store 导入思路](./主工程store导入思路.md)**
     -   主工程 Pinia store → `this.stores.<短名>` 运行态 + `namespaces.stores` 设计器补全
+-   **[主工程 composable 导入思路](./主工程composable导入思路.md)**
+    -   主工程 composable → 统一 `this.composables.<key>` 运行态 + 二/三级补全
 
 ### 国际化相关
 
@@ -148,6 +150,7 @@
 -   **如何添加代码提示关键字？** → [CODE_COMPLETION_GUIDE.md](./CODE_COMPLETION_GUIDE.md#三如何添加新关键字)
 -   **Page JS 如何用主工程 utils？** → [主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md)
 -   **Page JS 如何用主工程 store？** → [主工程 store 导入思路](./主工程store导入思路.md)
+-   **Page JS 如何用主工程 composable？** → [主工程 composable 导入思路](./主工程composable导入思路.md)
 -   **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
 -   **如何迁移插件？** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)
 
