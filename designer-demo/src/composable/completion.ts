@@ -8,7 +8,8 @@ import { useCanvas, useResource } from '@opentiny/tiny-engine-meta-register';
 
 import {
     getAllKeywords,
-    getInjectedNamespaceMembers
+    getInjectedNamespaceMembers,
+    getInjectedNamespaceChildMembers
 } from '@/config/completion-keywords';
 
 type CompletionUtilsConfig = {
@@ -262,6 +263,8 @@ const getRange = (position: any, words: any[]) => ({
 
 type ThisNamespaceMemberContext = {
     namespace: string;
+    /** nested key for this.ns.child.| (e.g. composables.countdown) */
+    childKey?: string;
     prefix: string;
     range: {
         startLineNumber: number;
@@ -272,9 +275,9 @@ type ThisNamespaceMemberContext = {
 };
 
 /**
- * 泛化二级补全上下文解析：光标位于 this.<namespace>.| 或 this.<namespace>.pre|
- *
- * @example this.http.post / this.utils.formatDate
+ * 二级/三级补全上下文：
+ * - this.<namespace>.|
+ * - this.<namespace>.<child>.|  （如 this.composables.countdown.）
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const parseThisNamespaceMemberContext = (
@@ -284,7 +287,27 @@ const parseThisNamespaceMemberContext = (
     const line = model.getLineContent(position.lineNumber);
     const before = line.slice(0, position.column - 1);
 
-    // group1: namespace, group2: prefix（可为空）
+    // Tertiary: this.composables.countdown.| / this.composables.countdown.pre|
+    const nested = before.match(
+        /this\.([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\.(\w*)$/
+    );
+    if (nested) {
+        const [, namespace, childKey, prefixGroup] = nested;
+        const prefix = prefixGroup || '';
+        return {
+            namespace,
+            childKey,
+            prefix,
+            range: {
+                startLineNumber: position.lineNumber,
+                endLineNumber: position.lineNumber,
+                startColumn: position.column - prefix.length,
+                endColumn: position.column
+            }
+        };
+    }
+
+    // Secondary: this.utils.| / this.composables.|
     const m = before.match(/this\.([A-Za-z_$][\w$]*)\.(\w*)$/);
     if (!m) return null;
 
@@ -312,15 +335,17 @@ const getThisNamespaceMemberSuggestions = (
     const ctx = parseThisNamespaceMemberContext(model, position);
     if (!ctx) return null;
 
-    // 运行态动态 utils（来自 appSchemaState.utils）只在 namespace = utils 时并入
+    // 运行态动态 utils（来自 appSchemaState.utils）只在 namespace = utils 且非三级时并入
     const runtimeMembers =
-        ctx.namespace === 'utils'
+        ctx.namespace === 'utils' && !ctx.childKey
             ? (useResource().appSchemaState.utils || []).map((item: any) => ({
                   name: item?.name
               }))
             : [];
 
-    const injectedMembers = getInjectedNamespaceMembers(ctx.namespace);
+    const injectedMembers = ctx.childKey
+        ? getInjectedNamespaceChildMembers(ctx.namespace, ctx.childKey)
+        : getInjectedNamespaceMembers(ctx.namespace);
 
     const byName = new Map<
         string,

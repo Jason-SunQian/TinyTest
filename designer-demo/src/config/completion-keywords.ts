@@ -9,6 +9,7 @@
  * 注意：
  * - 这些关键字是全局的，所有项目都会生效
  * - 如果需要项目特定的工具方法，请使用 Bridge 插件创建，会出现在 this.utils.xxx 下
+ * - 主工程 composable 统一走 this.composables.<key>（见 completion-utils namespaces.composables）
  */
 
 /**
@@ -16,11 +17,12 @@
  * 这些关键字会在代码提示中显示为 this.xxx 的形式
  */
 const customKeywords = [
-    // 项目特定的关键字
     // HTTP 请求工具，如 this.http.post(), this.http.get()
     'http',
     // 路由工具，如 this.router.push(), this.router.goBack()
-    'router'
+    'router',
+    // 主工程 composable 桥接，如 this.composables.countdown.startCountdown()
+    'composables'
 ];
 
 /**
@@ -32,16 +34,27 @@ interface CompletionMemberDefinition {
     signature?: string;
 }
 
+type TinyCompletionNamespaceDef = {
+    members?: CompletionMemberDefinition[];
+    children?: Record<string, { members?: CompletionMemberDefinition[] }>;
+};
+
 type TinyCompletionConfigV2 = {
     version?: string;
-    namespaces?: Record<
-        string,
-        {
-            members?: CompletionMemberDefinition[];
-        }
-    >;
+    namespaces?: Record<string, TinyCompletionNamespaceDef>;
     // 兼容老结构：{ utils: { members }, http: { members } }
     [k: string]: unknown;
+};
+
+const getTinyCompletionConfig = (): TinyCompletionConfigV2 | undefined => {
+    if (typeof window === 'undefined') return undefined;
+    /* eslint-disable @typescript-eslint/naming-convention -- window 注入键名 */
+    return (
+        window as unknown as {
+            TINY_COMPLETION_CONFIG?: TinyCompletionConfigV2;
+        }
+    ).TINY_COMPLETION_CONFIG;
+    /* eslint-enable @typescript-eslint/naming-convention */
 };
 
 /**
@@ -53,16 +66,9 @@ type TinyCompletionConfigV2 = {
 const getInjectedNamespaceMembers = (
     namespace: string
 ): CompletionMemberDefinition[] => {
-    if (!namespace || typeof window === 'undefined') return [];
+    if (!namespace) return [];
 
-    /* eslint-disable @typescript-eslint/naming-convention -- window 注入键名 */
-    const cfg = (
-        window as unknown as {
-            TINY_COMPLETION_CONFIG?: TinyCompletionConfigV2;
-        }
-    ).TINY_COMPLETION_CONFIG;
-    /* eslint-enable @typescript-eslint/naming-convention */
-
+    const cfg = getTinyCompletionConfig();
     if (!cfg || typeof cfg !== 'object') return [];
 
     const fromNamespaces = cfg.namespaces?.[namespace]?.members;
@@ -84,11 +90,62 @@ const getInjectedNamespaceMembers = (
 };
 
 /**
+ * 三级补全：this.composables.countdown.| → children.countdown.members
+ */
+const getInjectedNamespaceChildMembers = (
+    namespace: string,
+    childKey: string
+): CompletionMemberDefinition[] => {
+    if (!namespace || !childKey) return [];
+
+    const cfg = getTinyCompletionConfig();
+    if (!cfg || typeof cfg !== 'object') return [];
+
+    const children = cfg.namespaces?.[namespace]?.children;
+    const members = children?.[childKey]?.members;
+    if (Array.isArray(members) && members.length) {
+        return members.filter(
+            m => typeof m?.name === 'string'
+        ) as CompletionMemberDefinition[];
+    }
+
+    return [];
+};
+
+/**
+ * 从 TINY_COMPLETION_CONFIG 读取可作为 this.<ns> 一级提示的命名空间
+ */
+const getInjectedNamespaceKeywords = (): string[] => {
+    const cfg = getTinyCompletionConfig();
+    if (!cfg || typeof cfg !== 'object') return [];
+
+    const names = new Set<string>();
+    const namespaces = cfg.namespaces;
+    if (namespaces && typeof namespaces === 'object') {
+        for (const [ns, def] of Object.entries(namespaces)) {
+            const members = def?.members;
+            if (ns && Array.isArray(members) && members.length > 0) {
+                names.add(ns);
+            }
+        }
+    }
+
+    // 兼容 v1：顶层 { utils: { members } }
+    for (const [ns, def] of Object.entries(cfg)) {
+        if (ns === 'version' || ns === 'namespaces') continue;
+        const members = (def as { members?: unknown } | undefined)?.members;
+        if (ns && Array.isArray(members) && members.length > 0) {
+            names.add(ns);
+        }
+    }
+
+    return Array.from(names);
+};
+
+/**
  * 获取所有关键字（包括原始关键字和自定义关键字）
- * 如果需要添加更多关键字，可以在这里扩展
  */
 const getAllKeywords = () => {
-    // 原始关键字（来自 packages/common/js/completion.js）
     const originalKeywords = [
         'state',
         'stores',
@@ -105,9 +162,20 @@ const getAllKeywords = () => {
         'dataSourceMap'
     ];
 
-    // 合并原始关键字和自定义关键字，去重
-    return [...new Set([...originalKeywords, ...customKeywords])];
+    return [
+        ...new Set([
+            ...originalKeywords,
+            ...customKeywords,
+            ...getInjectedNamespaceKeywords()
+        ])
+    ];
 };
 
-export { customKeywords, getInjectedNamespaceMembers, getAllKeywords };
+export {
+    customKeywords,
+    getInjectedNamespaceMembers,
+    getInjectedNamespaceChildMembers,
+    getInjectedNamespaceKeywords,
+    getAllKeywords
+};
 export type { CompletionMemberDefinition };

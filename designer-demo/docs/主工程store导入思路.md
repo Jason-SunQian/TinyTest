@@ -95,10 +95,10 @@ this.utils.openTransResult(payload, transStore)
 -   [x] 设计器：`this.stores.` 二级提示（插件注入工作区 JSON）
 -   [x] 白名单单源：`manifest.json` → 补全 + 运行态
 -   [x] donations：`local` / `transaction` 联调
--   [x] 分批扩白名单并验证：`user` `dict` `payment` → `app` `constant` `account` → `dir` `theme` `limit` → `banner` `agreement` `introduce` → `encrypt` `secure`
+-   [x] 分批扩白名单并验证：… → `encrypt` `secure`
 -   [x] 移除 `openTransResult` util
+-   [x] **composableHelpers**：`clipboard`→`this.utils.copyText`，`countdown`→`this.countdown`（manifest 可开关）
 -   [ ] 可选：`this.stores.transaction.` 三级方法补全
--   [ ] 可选：公共 **composables** 暴露（另议；见 §8）
 
 ---
 
@@ -125,10 +125,11 @@ this.utils.openTransResult(payload, transStore)
 
 -   **三级补全**：`this.stores.transaction.` → `setTransResult` / `openResultPage`（需扫描 store 导出或维护方法表）。
 -   **自动扫描方法表**：TS Compiler API 读 `defineStore` 的 return 方法（成本高，未做）。
--   **公共 composables 暴露**（下一步讨论）：
-    -   与 store 不同：composables 常依赖 `setup` / 生命周期 / 组件实例，**不一定**能在 Page JS 事件里直接当「无状态工具」调用；
-    -   需先厘清：哪些可安全挂到 `this.composables` / `this.xxx`，哪些应继续只在出码 SFC / 手写页使用；
-    -   交付形态可参考 store：`manifest` 白名单 + build 产物 + 补全 namespace（或并入现有 completion JSON）。
+-   **公共 composables 暴露**（已落地第一批，见 `manifest.composableHelpers`）：
+    -   **`clipboard`**：`mount: "utils"` → `this.utils.copyText`（来源 `useClipboard`，补全 detail=`composable:useClipboard`）
+    -   **`countdown`**：`mount: "page"` → `this.countdown`（来源 `useCountdown`，每页 `lowcodeWrap` 创建一次）
+    -   开关：manifest 中 `"enabled": false` 即可关闭；产物 `composable-helpers.js`
+    -   其余 composable（`useQuery` / `useKeyboard` 等）仍用 `this.http` / `this.stores` / 物料替代，不整包暴露
 
 > **白名单单源（档 B）已落地**：`manifest.storeWhitelist` → `completion-utils.json` + `stores.js`。  
 > **公共 store 全量白名单已落地并验证**（16 个，含 `encrypt` / `secure`）。
@@ -311,4 +312,4 @@ Extension Host 亦可通过 **`useVSCodeBridge`** 注入 `window.TINY_COMPLETION
 ---
 
 文档维护者：开发团队  
-最后更新：2026-08-10（公共 store 全量白名单 16 个已验证；含 encrypt/secure）
+最后更新：2026-08-11（公共 store 全量 16；composableHelpers：clipboard→utils、countdown→page）
