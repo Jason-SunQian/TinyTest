@@ -16,8 +16,10 @@
     -   主工程 Pinia store → `this.stores.<短名>` 运行态 + `namespaces.stores` 设计器补全
 -   **[主工程 composable 导入思路](./主工程composable导入思路.md)**
     -   主工程 composable → 统一 `this.composables.<key>` 运行态 + 二/三级补全
+-   **[主工程应用级 state 导入思路](./主工程应用级state导入思路.md)**
+    -   模块单例 app state → `this.appState.<key>`（如 mainTabBar）
 -   **[主工程公共能力总结和导入记录](./主工程公共能力总结和导入记录.md)**
-    -   按类别记录 utils / stores / composables / modal 等导入进度与下一步
+    -   按类别记录 utils / stores / composables / appState / modal 等导入进度与下一步
 
 ### 国际化相关
 
@@ -153,6 +155,7 @@
 -   **Page JS 如何用主工程 utils？** → [主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md)
 -   **Page JS 如何用主工程 store？** → [主工程 store 导入思路](./主工程store导入思路.md)
 -   **Page JS 如何用主工程 composable？** → [主工程 composable 导入思路](./主工程composable导入思路.md)
+-   **Page JS 如何用应用级 state？** → [主工程应用级 state 导入思路](./主工程应用级state导入思路.md)
 -   **各类公共能力导入做到哪了？** → [主工程公共能力总结和导入记录](./主工程公共能力总结和导入记录.md)
 -   **如何实现国际化？** → [I18N_WRAPPER_GUIDE.md](./I18N_WRAPPER_GUIDE.md)
 -   **如何迁移插件？** → [PLUGIN_MIGRATION.md](./PLUGIN_MIGRATION.md)

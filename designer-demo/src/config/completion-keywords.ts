@@ -22,7 +22,9 @@ const customKeywords = [
     // 路由工具，如 this.router.push(), this.router.goBack()
     'router',
     // 主工程 composable 桥接，如 this.composables.countdown.startCountdown()
-    'composables'
+    'composables',
+    // 应用级模块单例 state，如 this.appState.mainTabBar.setVisible(false)
+    'appState'
 ];
 
 /**
