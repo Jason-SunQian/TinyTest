@@ -24,7 +24,9 @@ const customKeywords = [
     // 主工程 composable 桥接，如 this.composables.countdown.startCountdown()
     'composables',
     // 应用级模块单例 state，如 this.appState.mainTabBar.setVisible(false)
-    'appState'
+    'appState',
+    // 主工程 modal 白名单，如 this.modal.showPinInput / showCheckOTP
+    'modal'
 ];
 
 /**
