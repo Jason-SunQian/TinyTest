@@ -62,6 +62,34 @@
 
 关闭某项：manifest 设 `"enabled": false` → rebuild。
 
+### 1.4 为何目前只导出 clipboard / countdown？（结论）
+
+**可以先不管 `src/composables/base` 里其余 composable**（`useQuery`、`useMpRouter`、`useKeyboard` 等）。这不是烂尾，而是刻意白名单。
+
+| 问题 | 结论 |
+|------|------|
+| base 里其它要不要现在导入设计器？ | **不用。** |
+| 会影响主工程 / 以后手写开发吗？ | **不会。** 那些 composable 仍在主工程给 Vue / Pinia 用（例如 store 里 `useQuery` + `http.post`）。 |
+| 当前设计器做低代码够不够用？ | **够做常见页**：请求 → `this.http`；跳转 → `this.router`；业务状态 → `this.stores`；工具弹层 → `this.utils`；复制/倒计时 → `this.composables`；壳层 TabBar → `this.appState`。 |
+
+**为何不是「其它都进了 store」**
+
+- `useQuery` ≠ `this.http`：同一请求链路，不同 API。`http` 能发请求；`useQuery` 还带 loading/缓存/语言失效/登出清理等。低代码多数页用 `this.http` + `this.state` 手写子集即可，**不必**整包导入 `useQuery`。
+- `useMpRouter` ≠ 完整等于 `this.router`：同一导航体系；低代码已有 `push` / `back` / `goBack`（部分接自 MpRouter），`changeTab` 等若真需要再补 router 或白名单。
+- 业务数据 / 用户 / 字典 → 才是 **`this.stores.*`** 覆盖的部分。
+- Toast / Picker / 支付等 → 本来就在 **`this.utils`**，不是 composable 缺口。
+
+**只导出这两项的原因**
+
+| 已导出 | 原因 |
+|--------|------|
+| `clipboard` | Page JS 常见，且无等价 `this.*` |
+| `countdown` | OTP/重发倒计时常见，且无等价 `this.*` |
+
+**以后什么时候再加 base 里的项**
+
+低代码页**反复**需要某 composable 的完整语义（例如必须要 `useQuery` 的缓存/失效，或必须要 `changeTab`），且用现有 `this.http` / `this.router` / `this.stores` / `this.utils` 写起来很痛苦时——再进 `composableHelpers`（或优先补 `this.router`）。机制已具备，扩员成本低。
+
 ---
 
 ## 2. 架构与信息流
@@ -262,11 +290,12 @@ setTimeout(() => {
 - [x] 生成器：`COMPOSABLE_FACTORIES` + `COMPOSABLE_MEMBER_ALIASES`
 - [x] 补全：`namespaces.composables` + `children` + 三级解析
 - [x] 第一批：`clipboard`、`countdown` 联调通过
+- [x] 文档明确：`base` 其余 composable 默认不导入设计器；用 `this.http` / `router` / `stores` / `utils` 覆盖常见能力（见 §1.4）
 - [ ] 按业务需要审慎扩白名单（默认仍不导出）
 
-**落地结论**：接线规则唯一——要导出就配 `composableHelpers`，用法永远是 `this.composables.<key>`；扩展时不再判断「进 utils 还是挂一级」。
+**落地结论**：接线规则唯一——要导出就配 `composableHelpers`，用法永远是 `this.composables.<key>`；扩展时不再判断「进 utils 还是挂一级」。**当前设计器做常见低代码页够用；不必把 `composables/base` 整包导入。**
 
 ---
 
 文档维护者：开发团队  
-最后更新：2026-08-11（统一 `this.composables`；clipboard / countdown）
+最后更新：2026-08-17（补充 §1.4：为何只导出 clipboard/countdown）
