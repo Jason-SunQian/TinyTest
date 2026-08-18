@@ -309,18 +309,16 @@ export default {
         const deleteDataSource = () => {
             const execDelete = () =>
                 requestDeleteDataSource(state.dataSource.id)
-                    .then(data => {
-                        if (data) {
-                            requestGenerateDataSource(getAppId());
-                            useNotify({
-                                title: t(
-                                    'designer.datasource.dataSourceDeleteSuccess'
-                                ),
-                                type: 'success'
-                            });
-                            close();
-                            emit('save');
-                        }
+                    .then(() => {
+                        requestGenerateDataSource(getAppId());
+                        useNotify({
+                            title: t(
+                                'designer.datasource.dataSourceDeleteSuccess'
+                            ),
+                            type: 'success'
+                        });
+                        close();
+                        emit('save');
                     })
                     .catch(error => {
                         message({
