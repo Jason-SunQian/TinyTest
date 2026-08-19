@@ -21,18 +21,18 @@
 | 分类 | OAB 源码使用（去重标签） | 已导入且被使用 | 已导入（manifest） | 待导入（源码有用） | 建议废弃/不导入 |
 | ---- | ------------------------ | -------------- | ------------------ | ------------------ | ---------------- |
 | **原子组件 (mr-)** | 55¹ | 39 | 39（manifest 含附属 content） | 16 | 见 2.4 |
-| **业务组件 (mp-)** | 70 | 35 | 37² | 35 | 1（legacy） |
-| **合计** | 125 | 74 | 76 | 51 | — |
+| **业务组件 (mp-)** | 70 | 36 | 38² | 34 | 1（legacy） |
+| **合计** | 125 | 75 | 77 | 50 | — |
 
 ¹ `mr-image` / `mr-img`、`mr-progress` / `mr-progress-bar` 等别名按「已导入」计。  
-² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput` / `MpDictMultipleInput` / `MpTransSummary` / `MpListSkeleton` / `MpCkeditor` / `MpDocumentUpload`（均已联调可用）；另有 `MpCountryMultipleInput`（已导入待测）。
+² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput` / `MpDictMultipleInput` / `MpTransSummary` / `MpListSkeleton` / `MpCkeditor` / `MpDocumentUpload`（均已联调可用）；另有 `MpCountryMultipleInput`、`MpLinkedAccountCards`（已导入待测）。
 
 与 [mobilebanking 跟踪文档](./物料导入进度跟踪.md) 对比（该文档待导入业务约 9～11 个）：
 
 | 差异 | 说明 |
 | ---- | ---- |
-| OAB 业务待导入更多 | 约 **35** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、上传、账户卡等） |
-| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-document-upload`（均已联调可用）；`mp-country-multiple-input`（已导入待测） |
+| OAB 业务待导入更多 | 约 **34** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、摘要弹层、账户选择器等） |
+| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-document-upload`（均已联调可用）；`mp-country-multiple-input`、`mp-linked-account-cards`（已导入待测） |
 | 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-summary-popup`、`mp-refresher-content` 等 |
 
 ---
@@ -137,6 +137,7 @@
 | **mp-list-skeleton** | 4 | List Skeleton | **已联调可用**（2026-07-27）。画布 `mp-list-skeleton-designer.vue`（CSS 骨架条，无 mp-cell）；纯展示无 v-model；`itemNumber`/`descNumber`/`isCard`/`iconRound`/`iconWidth`/`iconHeight`/`title`；插槽 `end`；画布行数 clamp 1～12。 |
 | **mp-ckeditor** | 8 | Ckeditor | **已联调可用**（2026-07-27）。画布 `mp-ckeditor-designer.vue`（轻量桩，不引 ckeditor5/DOMPurify）；纯展示 prop `html`；剥标签后通用实体解码（含 `&nbsp;` 等）；snippet 勿写死长 HTML。 |
 | **mp-document-upload** | 3 | Document Upload | **已联调可用**（2026-07-30）。画布 `mp-document-upload-designer.vue`（title+desc+虚线拍摄区，无原生 SDK）；props：`title`/`desc`/`src`/`captureType`/`testId`；事件 `onSuccess`/`onFail`；无 v-model；相机图标须 extract 主工程 `camera.svg`（同 `i-mr-camera`）+ `icon-secondary`，禁止手写简化 SVG；`src` 通常 Bound `$fileUrl(fileId)`。详见《组件导入注意事项》**MpDocumentUpload**。 |
+| **mp-linked-account-cards** | 3 | Linked Account Cards | **已导入待测**（2026-08-19）。画布 `mp-linked-account-cards-designer.vue`（静态卡 + peek，无 `useSavingStore` / Swiper）；无付款方式 chip（不像 `MpAccountCards`）；`v-model` → `state.mpLinkedAccountCardsN`（AccountItem `{}`）；snippet 勿写死演示账户。与 **`MpAccountCards`（付款选路）**、**`MpLinkedAccountInput`（同一数据下拉）** 成对区分；**不能**用于捐赠付款。 |
 
 ### 4.2 待导入（按低代码开发优先级）
 
@@ -179,7 +180,7 @@
 | ~~**mp-list-skeleton**~~ | 4 | List Skeleton | **已联调可用**，见 4.1.2 |
 | **mp-refresher-content** | 3 | Refresher Content | 与 `mr-refresher` 配套 |
 | ~~**mp-account-cards**~~ | 11 | Account Cards | **已联调可用**，见 4.1.2 |
-| **mp-linked-account-cards** | 3 | Linked Account Cards | 关联账户卡 |
+| ~~**mp-linked-account-cards**~~ | 3 | Linked Account Cards | **已导入待测**，见 4.1.2 |
 | **mp-account-picker** | 3 | Account Picker | 账户选择 |
 | **mp-account-item** | 1 | Account Item | 账户条目 |
 
@@ -215,7 +216,7 @@
 1. **立刻优先**：~~`mp-page` / `mp-container` / `mp-popup` / `mp-dialog`（均已联调可用）~~；按需再补 `mp-popup-container`  
    - P0 页面骨架与弹层壳已齐，可继续推进 P1 表单件。
 2. **金额与账户页（含继续做 donations / transfer 类）**：~~`mp-single-amt` / `mp-date-popup` / `mp-linked-account-input` / `mp-pin-input-simple` / `mp-code-input` / `mp-pin-input` / `mp-branch-input`（已联调可用）~~、各类 `*-input`（P1）  
-   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-country-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-uploader`、`mp-multi-uploader`、`mp-document-upload`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
+   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-linked-account-cards`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-country-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-uploader`、`mp-multi-uploader`、`mp-document-upload`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
 3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、~~`mp-document-upload`（已联调可用）~~、~~`mp-trans-summary`（已联调可用）~~、~~`mp-list-skeleton`（已联调可用）~~。  
 4. **原子侧**：OAB 缺口主要是低频 `mr-*`；优先补 `mr-spinner` 即可，其余按真实低代码页面需要再开。  
 5. **不要优先导入**：`mr-page` / `mr-app` / `mr-router-outlet`、`mp-date-picker-legacy`、**`mp-skeleton`（无源码）**、极低频领域页组件。
@@ -227,7 +228,7 @@
 - 容器/展示：`mp-page`（**物料已联调可用** + 出码根节点处理）、`mp-card`、`mp-text-amt`、`mp-multi-amt`、`mp-donation-pay-account-swiper`、`mp-input`、`mp-avatar`、`mr-button` / `mr-cell*` 等  
 - 结果页：公共 `trans-result` + `businessType: D101`，不依赖额外结果物料  
 
-继续扩展 OAB 其他模块时，**缺口主要是上传/关联账户类与 P1 表单件**，而不是再补一套 donations 专用件。
+继续扩展 OAB 其他模块时，**缺口主要是摘要弹层 / 账户选择器（P2）与低频领域页**，而不是再补一套 donations 专用件。关联账户横滑已有 `mp-linked-account-cards`（待测），勿与付款 `mp-account-cards` 混用。
 
 ---
 
@@ -346,3 +347,5 @@ _补充（2026-07-27）：**mp-ckeditor 已联调可用**——画布/出码比�
 _补充（2026-07-30）：**mp-document-upload 已导入待测**——`mp-document-upload-designer` + entry + manifest；产物 **91** 个组件；证件拍摄卡布局（无原生 `mrBox.captureDocument`）；props `title`/`desc`/`src`/`captureType`/`testId`；事件 `onSuccess(fileId)`/`onFail`；无 v-model；画布点击可切换空/演示预览（不写 schema）。Reload Extension Host 后验收。_
 
 _补充（2026-07-30）：**mp-document-upload 已联调可用**——画布/出码比对通过；相机图标改为 extract 主工程 `camera.svg`（带加号）+ `icon-secondary` 后与运行态一致；由「已导入待测」记入「已联调可用」。经验见《组件导入注意事项》**MpDocumentUpload**。下一步 P2：`mp-summary-popup` 等。_
+
+_补充（2026-08-19）：**mp-linked-account-cards 已导入待测**——`mp-linked-account-cards-designer` + entry + manifest；产物 **92** 个组件；静态卡 + peek（无 `useSavingStore` / Swiper）；无付款方式 chip；`v-model` → `this.state.mpLinkedAccountCardsN`（AccountItem `{}`）；snippet **勿写死**演示账户。与 `MpAccountCards`（`QueryPaymentMethod` 付款选路）不同，本组件走储蓄账户列表，**不能**用于捐赠付款。策略变更需 Reload Extension Host。下一步 P2：`mp-summary-popup` / `mp-account-picker` 等。_
