@@ -1,6 +1,6 @@
 # Ionic 组件导入与桩方案
 
-> 本文档合并了原「Ionic 画布样式问题根因」「Ionic 组件桩方案」「主工程 mr-segment 桩实施指南」「桩样式自注入方案」及「组件导入注意事项」中 mr-segment 相关内容，作为 **Ionic 原子组件（MrSegment、MrSegmentButton、MrLabel 等）** 在设计器画布中的导入与桩实施统一说明。
+> 本文档合并了原「Ionic 画布样式问题根因」「Ionic 组件桩方案」「主工程 mr-segment 桩实施指南」「桩样式自注入方案」及「组件导入注意事项」中 mr-segment 相关内容，作为 **Ionic 原子组件（MrSegment、MrSegmentButton、MrLabel、MrProgressBar、MrSpinner 等）** 在设计器画布中的导入与桩实施统一说明。
 
 ---
 
