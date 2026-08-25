@@ -9,6 +9,7 @@ import { syncMrCheckboxGroupModelValueAndState } from './strategies/mrCheckboxGr
 import { applyMrCollapseExternalDropLoopDemo } from './strategies/mrCollapse';
 import { buildMrFormExternalDropPatch } from './strategies/mrForm';
 import { syncMrRadioGroupModelValueAndState } from './strategies/mrRadioGroup';
+import { syncMrSliderModelValueAndState } from './strategies/mrSlider';
 import { syncMrSwitchModelValueAndState } from './strategies/mrSwitch';
 import { syncMrToggleModelValueAndState } from './strategies/mrToggle';
 import { syncMpBankInputModelValueAndState } from './strategies/mpBankInput';
@@ -38,6 +39,13 @@ import { syncMpTransSummaryTransactionInfoAndState } from './strategies/mpTransS
 
 /* eslint-disable @typescript-eslint/naming-convention -- 组件名键必须与物料 componentName 对齐 */
 const HANDLERS: Record<string, ExternalDropHandler> = {
+    MrSlider: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMrSliderModelValueAndState(props, stateObj);
+        updateSchema({ state: stateObj });
+    },
     MrSwitch: (insertData, { getSchema, updateSchema }) => {
         insertData.props = insertData.props || {};
         const props = insertData.props as Record<string, unknown>;

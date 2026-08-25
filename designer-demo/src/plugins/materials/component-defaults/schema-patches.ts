@@ -32,6 +32,7 @@ import { syncMrCheckboxGroupModelValueAndState } from './strategies/mrCheckboxGr
 import { syncMrCollapseModelValueAndState } from './strategies/mrCollapse';
 import { syncMrFormModelValueAndState } from './strategies/mrForm';
 import { syncMrRadioGroupModelValueAndState } from './strategies/mrRadioGroup';
+import { syncMrSliderModelValueAndState } from './strategies/mrSlider';
 import { syncMrSwitchModelValueAndState } from './strategies/mrSwitch';
 import { syncMrToggleModelValueAndState } from './strategies/mrToggle';
 
@@ -163,6 +164,11 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         const props = (schema.props as Record<string, unknown>) || {};
         if (!schema.props) schema.props = props;
         syncMpTransSummaryTransactionInfoAndState(props, rootState);
+    },
+    MrSlider: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMrSliderModelValueAndState(props, rootState);
     },
     MrSwitch: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};

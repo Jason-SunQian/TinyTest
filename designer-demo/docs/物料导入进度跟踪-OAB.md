@@ -3,7 +3,7 @@
 > 统计 **OAB** 主工程源码中使用的 `<mr-*` / `<mp-*` 组件，对照 `lowcode-materials/manifest.json` 已登记物料，跟踪设计器导入缺口。  
 > 参考文档：[物料导入进度跟踪.md](./物料导入进度跟踪.md)（原 **mobilebanking** 主工程）。  
 > 数据来源：OAB `src/`（**排除** `src/lowcode/`）标签扫描 + `lowcode-materials/manifest.json`。  
-> 统计日期：**2026-07-22**。主工程路径：`/Users/mac/Desktop/Project/2025/OAB`。
+> 统计日期：**2026-08-25**（初稿 2026-07-22）。主工程路径：`/Users/mac/Desktop/Project/2025/OAB`。
 
 ---
 
@@ -13,27 +13,36 @@
 2. 本文只回答：**OAB 业务源码里用到了哪些组件、哪些已进设计器、用低代码继续开发 OAB 时优先补哪些。**
 3. 「使用次数」为模板标签出现次数（含骨架重复），用于**优先级参考**，不是独立页面数。
 4. 设计器内置根节点 `Page` 与物料 **`MpPage`** 不是同一概念：拖入 `MpPage` 可在面板配置 `title` / `bgColor` 等；出码后处理会保证模板根为 `<mp-page>`（未拖时也会把根 `div` 改成 `mp-page`）。
+5. **不导入判定原则（2026-08-25）**：凡符合下列任一情形，**暂时标记为「不导入」**，不进入待办队列——画布上一般**不需要单独拖拽**；设计器展示的是**父组件**或**加载它的完整业务组件**即可：
+   - **子件 / 内部壳**：仅作为某父组件 template 的一部分（如 `mp-popup-container` 之于 `mp-popup`，`mp-account-item` 之于 `mp-account-picker`）。
+   - **已有物料可组合替代**：功能可由已导入父组件 + 现有行展示/按钮拼出（如 `mp-summary-popup` → `MpPopup` + `MpTextAmt` + `MrButton`，参考 donations-confirm）。
+   - **父组件已导入、子件随运行态带出**：如 `mp-account-picker` 随 **`MpAccountInput`** 出码一并存在，不必再立物料。
+   - **框架 / 应用级**：`modalController` 弹窗、`mr-app` / `mr-router-outlet` 等，非页面搭建物料。
+   - **别名或业务侧已有等价物**：如 `mr-image`→`MrImg`、`mr-input`→`MpInput`、`mr-textarea`→`MpTextarea`、`mr-date-picker`→`MpDateInput` 等。
+   - **无运行态源码 / legacy**：如 `mp-skeleton`、`mp-date-picker-legacy`。
+
+   完整清单见 **§3.3（mr）**、**§4.2「不导入」表**、**§4.3（废弃）**。真正「待评估是否导入」的，以 **§4.2 P3 及 §3.2 低频 mr** 中**未**列入不导入表的为准。
 
 ---
 
 ## 二、进度总览
 
-| 分类 | OAB 源码使用（去重标签） | 已导入且被使用 | 已导入（manifest） | 待导入（源码有用） | 建议废弃/不导入 |
-| ---- | ------------------------ | -------------- | ------------------ | ------------------ | ---------------- |
-| **原子组件 (mr-)** | 55¹ | 40 | 40（manifest 含附属 content） | 15 | 见 2.4 |
-| **业务组件 (mp-)** | 70 | 36 | 38² | 34 | 1（legacy） |
-| **合计** | 125 | 76 | 78 | 49 | — |
+| 分类 | OAB 源码使用（去重标签） | 已导入且被使用 | 已导入（manifest） | 待评估导入 | 不导入¹ |
+| ---- | ------------------------ | -------------- | ------------------ | ---------- | ------- |
+| **原子组件 (mr-)** | 55 | 41 | 41 | 8 | 15 |
+| **业务组件 (mp-)** | 71 | 50 | 54 | 12 | 9 |
+| **合计** | 126 | 91 | **95** | **20** | **24** |
 
-¹ `mr-image` / `mr-img`、`mr-progress` / `mr-progress-bar` 等别名按「已导入」计。  
-² OAB 相对原跟踪文档多导入：`MpTextAmt`、`MpDonationPayAccountSwiper`、`MpPage` / `MpContainer` / `MpPopup` / `MpDialog` / `MpSingleAmt` / `MpDatePopup` / `MpLinkedAccountInput` / `MpPinInputSimple` / `MpCodeInput` / `MpPinInput` / `MpBranchInput` / `MpUploader` / `MpMultiUploader` / `MpAccountCards` / `MpCcyInput` / `MpDictMultipleInput` / `MpTransSummary` / `MpListSkeleton` / `MpCkeditor` / `MpDocumentUpload`（均已联调可用）；另有 `MpCountryMultipleInput`、`MpLinkedAccountCards`（已导入待测）。
+¹ **不导入**含：框架/应用级、子件与内部壳、父组件已覆盖、别名等价物、legacy/无源码。见 §一.5。
 
 与 [mobilebanking 跟踪文档](./物料导入进度跟踪.md) 对比（该文档待导入业务约 9～11 个）：
 
 | 差异 | 说明 |
 | ---- | ---- |
-| OAB 业务待导入更多 | 约 **34** 个 mp- 标签在源码出现但未进 manifest（含弹层壳、摘要弹层、账户选择器等） |
-| OAB 已补且可用 | `mp-text-amt`、`mp-donation-pay-account-swiper`、`mp-page`、`mp-container`、`mp-popup`、`mp-dialog`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-pin-input-simple`、`mp-code-input`、`mp-pin-input`、`mp-branch-input`、`mp-uploader`、`mp-multi-uploader`、`mp-account-cards`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-document-upload`（均已联调可用）；`mp-country-multiple-input`、`mp-linked-account-cards`（已导入待测） |
-| 原文档待导入在 OAB 仍缺 | `mp-popup-container`、`mp-summary-popup`、`mp-refresher-content` 等 |
+| **待评估导入（20）** | 源码有用、manifest 仍缺，且**未**归入「不导入」：mr 8 + mp 12 |
+| donations 主工程已覆盖 | 列表/表单/确认页用到的组件均已导入且联调可用 |
+| **不导入（24）** | 子件/内部壳/框架/别名/legacy，画布不单独拖拽；见 §一.5、§3.3、§4.2 |
+| manifest | **95** 个物料；`MrSlider` 已联调可用（2026-08-25） |
 
 ---
 
@@ -43,33 +52,36 @@
 
 与 mobilebanking 侧已测清单基本一致，包括但不限于：
 
-`mr-divider`、`mr-img`、`mr-segment` / `mr-segment-button`、`mr-label`、`mr-button`、`mr-skeleton-text`、`mr-infinite-scroll`(+content)、`mr-header` / `mr-toolbar` / `mr-buttons` / `mr-back-button` / `mr-title`、`mr-content`、`mr-footer`、`mr-searchbar`、`mr-refresher`(+content)、`mr-progress-bar`、`mr-spinner`（**已联调可用**）、`mr-switch`、`mr-collapse`(+item)、`mr-item` / sliding / options / option、`mr-accordion-group` / `mr-accordion`、`mr-radio-group` / `mr-radio`、`mr-checkbox-group` / `mr-checkbox`、`mr-reorder-group` / `mr-reorder`、`mr-cell-group` / `mr-cell`、`mr-toggle`、`mr-form`、`mr-field`（物料保留，业务侧更推荐 `mp-input`）。
+`mr-divider`、`mr-img`、`mr-segment` / `mr-segment-button`、`mr-label`、`mr-button`、`mr-skeleton-text`、`mr-infinite-scroll`(+content)、`mr-header` / `mr-toolbar` / `mr-buttons` / `mr-back-button` / `mr-title`、`mr-content`、`mr-footer`、`mr-searchbar`、`mr-refresher`(+content)、`mr-progress-bar`、`mr-spinner`（**已联调可用**）、`mr-slider`（**已联调可用**）、`mr-switch`、`mr-collapse`(+item)、`mr-item` / sliding / options / option、`mr-accordion-group` / `mr-accordion`、`mr-radio-group` / `mr-radio`、`mr-checkbox-group` / `mr-checkbox`、`mr-reorder-group` / `mr-reorder`、`mr-cell-group` / `mr-cell`、`mr-toggle`、`mr-form`、`mr-field`（物料保留，业务侧更推荐 `mp-input`）。
 
 > 联调结论与画布桩经验仍以 [物料导入进度跟踪.md](./物料导入进度跟踪.md)「五、导入经验」及《组件导入注意事项》为准；换主工程后建议对 OAB 主题 token / 出码链路做抽样回归，不必重复全量导入。
 
-### 3.2 待导入（OAB 源码有使用）
+### 3.2 待评估导入（低频 mr，画布可能单独用到）
 
 | 组件 | 约使用次数 | 建议 | 说明 |
 | ---- | ---------- | ---- | ---- |
-| ~~mr-spinner~~ | 7 | 中 | **已联调可用**（2026-08-20），见补充。 |
-| mr-slider | 5 | 低～中 | 少量业务 |
-| mr-picker-vant | 5 | 低 | 与业务 `mp-*-input` 弹层选择有重叠 |
-| mr-modal | 5 | 低 | 弹层；低代码页更常依赖 `mp-popup` / `mp-dialog` |
+| ~~mr-slider~~ | 5 | — | **已联调可用**（2026-08-25），见 §3.1 |
 | mr-form-renderer | 4 | 低 | 动态表单渲染，场景窄 |
-| mr-input | 3 | 低 | 业务以 `mp-input` 为主 |
 | mr-tabs | 2 | 低 | |
 | mr-menu / mr-menu-button | 2 / 1 | 低 | |
 | mr-badge | 1 | 低 | |
-| mr-date-picker / mr-datetime | 1 / 1 | 低 | 业务侧已有 `mp-date-*` |
-| mr-textarea | 1 | 低 | 业务侧已有 `mp-textarea` |
 
-### 3.3 建议不导入 / 框架级
+> `mr-spinner` 已联调可用。下列已归入 **§3.3 不导入**，不再重复评估：`mr-picker-vant`、`mr-modal`（框架 modal）、`mr-input`（用 `MpInput`）、`mr-date-picker` / `mr-datetime`（用 `mp-date-*`）、`mr-textarea`（用 `MpTextarea`）。
 
-| 组件 | 约使用次数 | 原因 |
-| ---- | ---------- | ---- |
-| mr-page | 7 | 与原文档一致：主工程页面容器已转向 **mp-page**；勿与业务页物料混淆 |
-| mr-app | 1 | 应用根节点，非页面搭建物料 |
-| mr-router-outlet | 4 | 路由出口，非业务拖拽组件 |
+### 3.3 不导入 — 框架级 / 别名 / 已有等价物（mr）
+
+| 组件 | 约使用次数 | 类型 | 原因 |
+| ---- | ---------- | ---- | ---- |
+| mr-page | 7 | 框架 | 页面容器已用 **mp-page** |
+| mr-app | 1 | 框架 | 应用根节点 |
+| mr-router-outlet | 4 | 框架 | 路由出口 |
+| mr-image | 8 | 别名 | 同 **mr-img**（`MrImg` 已导入） |
+| mr-progress | 3 | 别名 | 同 **mr-progress-bar**（已导入） |
+| mr-input | 3 | 等价物 | 业务以 **MpInput** 为主 |
+| mr-textarea | 1 | 等价物 | 业务以 **MpTextarea** 为主 |
+| mr-date-picker / mr-datetime | 1 / 1 | 等价物 | 业务以 **mp-date-*** 为主 |
+| mr-modal | 5 | 框架内部 | `modalController` 等框架弹窗；低代码页用 **MpPopup** / **MpDialog** |
+| mr-picker-vant | 5 | 框架内部 | 框架 picker modal 内部；低代码用各类 **mp-*-input** |
 
 ---
 
@@ -132,14 +144,27 @@
 | **mp-account-cards** | 11 | Account Cards | **已联调可用**（2026-07-23）。画布 `mp-account-cards-designer.vue`（静态卡 + peek，无 paymentStore / Swiper）；三绑定 `v-model` / `v-model:ccy` / `v-model:balance` → `state.mpAccountCardsFormN.{account,ccy,balance}`（`account:{}`，`ccy/balance:''`）；snippet 勿写死演示账户；`sceneType` 必填。 |
 | **mp-ccy-input** | 4 | Ccy Input | **已联调可用**（2026-07-23）。画布 `mp-ccy-input-designer.vue`（对齐 mp-input：无横向 inset、分割线在 cell padding 后、箭头 icon-fourth）；`v-model` → `state.mpCcyInputN`（`''`）；画布点击轮换 OMR/USD/EUR；snippet 勿写死演示币种。 |
 | **mp-dict-multiple-input** | 6 | Dict Multiple Input | **已联调可用**（2026-07-24）。画布 `mp-dict-multiple-input-designer.vue`（对齐 mp-input）；`v-model` → `state.mpDictMultipleInputN`（`[]`）；画布点击累加演示选项至 maxSelection 后清空；snippet 勿写死演示 keys；`dictName` 业务必填。 |
-| **mp-country-multiple-input** | 5 | Country Multiple Input | **已导入待测**（2026-07-24）。画布 `mp-country-multiple-input-designer.vue`（对齐 mp-input）；`v-model` → `state.mpCountryMultipleInputN`（`[]`）；画布点击累加演示国家至 maxSelection 后清空；snippet 勿写死演示国家码；可选 `channelCode`。 |
+| ~~**mp-country-multiple-input**~~ | 5 | Country Multiple Input | **已联调可用**（2026-08-25）。见 4.1.2 原说明。 |
 | **mp-trans-summary** | 4 | Trans Summary | **已联调可用**（2026-07-24）。画布 `mp-trans-summary-designer.vue`；必填 `transactionInfo` → `state.mpTransSummaryN`（`{}`）；列表场景用高级 loop + Bound `item`；点击传参须事件 **额外参数** `["item"]`。详见《组件导入注意事项》**循环列表点击传参**。 |
 | **mp-list-skeleton** | 4 | List Skeleton | **已联调可用**（2026-07-27）。画布 `mp-list-skeleton-designer.vue`（CSS 骨架条，无 mp-cell）；纯展示无 v-model；`itemNumber`/`descNumber`/`isCard`/`iconRound`/`iconWidth`/`iconHeight`/`title`；插槽 `end`；画布行数 clamp 1～12。 |
 | **mp-ckeditor** | 8 | Ckeditor | **已联调可用**（2026-07-27）。画布 `mp-ckeditor-designer.vue`（轻量桩，不引 ckeditor5/DOMPurify）；纯展示 prop `html`；剥标签后通用实体解码（含 `&nbsp;` 等）；snippet 勿写死长 HTML。 |
 | **mp-document-upload** | 3 | Document Upload | **已联调可用**（2026-07-30）。画布 `mp-document-upload-designer.vue`（title+desc+虚线拍摄区，无原生 SDK）；props：`title`/`desc`/`src`/`captureType`/`testId`；事件 `onSuccess`/`onFail`；无 v-model；相机图标须 extract 主工程 `camera.svg`（同 `i-mr-camera`）+ `icon-secondary`，禁止手写简化 SVG；`src` 通常 Bound `$fileUrl(fileId)`。详见《组件导入注意事项》**MpDocumentUpload**。 |
-| **mp-linked-account-cards** | 3 | Linked Account Cards | **已导入待测**（2026-08-19）。画布 `mp-linked-account-cards-designer.vue`（静态卡 + peek，无 `useSavingStore` / Swiper）；无付款方式 chip（不像 `MpAccountCards`）；`v-model` → `state.mpLinkedAccountCardsN`（AccountItem `{}`）；snippet 勿写死演示账户。与 **`MpAccountCards`（付款选路）**、**`MpLinkedAccountInput`（同一数据下拉）** 成对区分；**不能**用于捐赠付款。 |
+| ~~**mp-linked-account-cards**~~ | 3 | Linked Account Cards | **已联调可用**（2026-08-25）。见 4.1.2 原说明；**不能**用于捐赠付款。 |
+| **mp-omr-text** | 5 | OMR Text | **已联调可用**（2026-08-25）。`mp-omr-text-designer` + entry + manifest；产物 **94** 个组件；把文案中字面量 `OMR` 换成币种 SVG（`currentColor`）；props：`content` / `fontSize` / `fontWeight` / `className`；用于 donations 限额蓝字（`donations.amountLimitRange`）等与 `mp-multi-amt` 红字错误提示同款图标；显隐与红字互斥用 schema **`condition`**。 |
 
-### 4.2 待导入（按低代码开发优先级）
+### 4.2 待评估导入 & 不导入清单
+
+> 判定原则见 **§一.5**。下列 **「不导入」** 项：画布不单独拖拽，展示父组件或完整业务组件即可。
+
+#### 不导入 — 子件 / 内部壳 / 父组件已覆盖 / 可组合替代（mp）
+
+| 组件 | 约次数 | 类型 | 说明 |
+| ---- | ------ | ---- | ---- |
+| **mp-popup-container** | 29 | 内部壳 | `MpPopup` 内部标题/内容/底栏；框架 modal 亦直接用。拖 **MpPopup** 即可。 |
+| **mp-summary-popup** | 2 | 可组合 | `MpPopup` + 摘要行 + 按钮；参考 **donations-confirm** 手拼。 |
+| **mp-account-picker** | 3 | 子件 | 内嵌于 **MpAccountInput**；出码随父组件带出。 |
+| **mp-account-item** | 1 | 子件 | 仅 `mp-account-picker` 列表行；父不导则子不导。 |
+| **mp-refresher-content** | 3 | 可替代 | 低代码用已导入 **MrRefresherContent**（donations-list 已验证）。 |
 
 #### P0 — 页面骨架 / 弹层（几乎所有业务页）
 
@@ -148,10 +173,10 @@
 | ~~**mp-page**~~ | 406 | Page | **已联调可用**，见 4.1.2 |
 | ~~**mp-container**~~ | 52 | Container | **已联调可用**，见 4.1.2 |
 | ~~**mp-popup**~~ | 48 | Popup | **已联调可用**，见 4.1.2 |
-| **mp-popup-container** | 27 | Popup Container | 弹层宿主（运行态被 `mp-popup` 内部使用；设计器一般直接用 `mp-popup`） |
+| ~~**mp-popup-container**~~ | 29 | Popup Container | **不导入**（`MpPopup` 已覆盖页面弹层；container 为内部壳 / 框架 modal） |
 | ~~**mp-dialog**~~ | 8 | Dialog | **已联调可用**，见 4.1.2 |
 
-> `mp-page`、`mp-container`、`mp-popup`、`mp-dialog` 均已联调可用。P0 弹层壳完成；按需再补 `mp-popup-container`。
+> `mp-page`、`mp-container`、`mp-popup`、`mp-dialog` 均已联调可用。P0 弹层壳完成；**无需**再补 `mp-popup-container`。
 
 #### P1 — 表单金额 / 账户 / 日期（转账、捐赠、缴费同类页）
 
@@ -166,7 +191,7 @@
 | ~~**mp-branch-input**~~ | 6 | Branch Input | **已联调可用**，见 4.1.2 |
 | ~~**mp-ccy-input**~~ | 4 | Ccy Input | **已联调可用**，见 4.1.2 |
 | ~~**mp-dict-multiple-input**~~ | 6 | Dict Multiple Input | **已联调可用**，见 4.1.2 |
-| ~~**mp-country-multiple-input**~~ | 5 | Country Multiple Input | **已导入待测**，见 4.1.2 |
+| ~~**mp-country-multiple-input**~~ | 5 | Country Multiple Input | **已联调可用**，见 4.1.2 |
 
 #### P2 — 上传 / 摘要 / 列表反馈
 
@@ -176,15 +201,17 @@
 | ~~**mp-uploader**~~ | 8 | Uploader | **已联调可用**，见 4.1.2 |
 | ~~**mp-document-upload**~~ | 3 | Document Upload | **已联调可用**，见 4.1.2 |
 | ~~**mp-trans-summary**~~ | 4 | Trans Summary | **已联调可用**，见 4.1.2 |
-| **mp-summary-popup** | 2 | Summary Popup | 摘要弹层 |
+| ~~**mp-summary-popup**~~ | 2 | Summary Popup | **不导入**（用 `MpPopup` + 行展示组合，见上文） |
 | ~~**mp-list-skeleton**~~ | 4 | List Skeleton | **已联调可用**，见 4.1.2 |
-| **mp-refresher-content** | 3 | Refresher Content | 与 `mr-refresher` 配套 |
+| ~~**mp-refresher-content**~~ | 3 | Refresher Content | **不导入**（低代码用 `MrRefresherContent`） |
 | ~~**mp-account-cards**~~ | 11 | Account Cards | **已联调可用**，见 4.1.2 |
-| ~~**mp-linked-account-cards**~~ | 3 | Linked Account Cards | **已导入待测**，见 4.1.2 |
-| **mp-account-picker** | 3 | Account Picker | 账户选择 |
-| **mp-account-item** | 1 | Account Item | 账户条目 |
+| ~~**mp-linked-account-cards**~~ | 3 | Linked Account Cards | **已联调可用**，见 4.1.2 |
+| ~~**mp-account-picker**~~ | 3 | Account Picker | **不导入**（§4.2） |
+| ~~**mp-account-item**~~ | 1 | Account Item | **不导入**（picker 子件，§4.2） |
 
-#### P3 — 低频 / 领域专用 / 可延后
+#### P3 — 待评估导入（低频 / 领域专用）
+
+> 下列为源码仍缺、且**未**归入不导入表的 mp 组件；仅在做对应模块低代码时再评估。
 
 | 组件 | 约使用次数 | 说明 |
 | ---- | ---------- | ---- |
@@ -200,12 +227,12 @@
 | mp-country / mp-date-dialog | 1 | 与已有 country/date 输入重叠可能大 |
 | mp-saving-account / mp-sigma-page | 1 | 领域页，按模块再导入 |
 
-### 4.3 已废弃 / 不导入
+### 4.3 不导入 — 废弃 / legacy / 无源码（mp）
 
 | 组件 | 约使用次数 | 原因 |
 | ---- | ---------- | ---- |
-| mp-date-picker-legacy | 3 | 已被 `mp-date-picker` / `mp-date-input` 替代（与原文档一致） |
-| **mp-skeleton** | 2 | **无运行态实现**：全仓无 `mp-skeleton.vue`；仅 `saving/.../fixed-produts-list.vue` 与 `savings-produts-list.vue` 各有一处空标签，同页已用 `product-list-skeleton`。勿臆造物料；列表骨架用已导入的 **`MpListSkeleton`**，领域页用各自 `*-skeleton`。 |
+| mp-date-picker-legacy | 3 | 已被 `mp-date-picker` / `mp-date-input` 替代 |
+| **mp-skeleton** | 2 | **无运行态实现**：全仓无 `mp-skeleton.vue`；列表骨架用 **`MpListSkeleton`** |
 
 ---
 
@@ -213,22 +240,25 @@
 
 按「先能搭页 → 再能填单 → 再能弹层上传」推进：
 
-1. **立刻优先**：~~`mp-page` / `mp-container` / `mp-popup` / `mp-dialog`（均已联调可用）~~；按需再补 `mp-popup-container`  
-   - P0 页面骨架与弹层壳已齐，可继续推进 P1 表单件。
-2. **金额与账户页（含继续做 donations / transfer 类）**：~~`mp-single-amt` / `mp-date-popup` / `mp-linked-account-input` / `mp-pin-input-simple` / `mp-code-input` / `mp-pin-input` / `mp-branch-input`（已联调可用）~~、各类 `*-input`（P1）  
-   - 已具备：`mp-page`、`mp-container`、`mp-multi-amt`、`mp-text-amt`、`mp-single-amt`、`mp-date-popup`、`mp-linked-account-input`、`mp-linked-account-cards`、`mp-pin-input-simple`、`mp-pin-input`、`mp-code-input`、`mp-branch-input`、`mp-ccy-input`、`mp-dict-multiple-input`、`mp-country-multiple-input`、`mp-trans-summary`、`mp-list-skeleton`、`mp-ckeditor`、`mp-uploader`、`mp-multi-uploader`、`mp-document-upload`、`mp-account-cards`、`mp-account-input`、`mp-donation-pay-account-swiper`。  
-3. **资料/工单类**：~~`mp-uploader`（已联调可用）~~ / ~~`mp-multi-uploader`（已联调可用）~~、~~`mp-document-upload`（已联调可用）~~、~~`mp-trans-summary`（已联调可用）~~、~~`mp-list-skeleton`（已联调可用）~~。  
-4. **原子侧**：~~优先补 `mr-spinner`~~（**已联调可用**）；其余低频 `mr-*` 按真实低代码页面需要再开。  
-5. **不要优先导入**：`mr-page` / `mr-app` / `mr-router-outlet`、`mp-date-picker-legacy`、**`mp-skeleton`（无源码）**、极低频领域页组件。
+1. **立刻优先**：~~`mp-page` / `mp-container` / `mp-popup` / `mp-dialog`（均已联调可用）~~；**无需** `mp-popup-container`。
+2. **金额与账户页（含继续做 donations / transfer 类）**：P1 表单件已基本齐（含 `mp-country-multiple-input`、`mp-linked-account-cards`、`mp-omr-text` 等 **均已联调可用**）。  
+   - 选账户：用 **`MpAccountInput`** / **`MpAccountCards`** / **`MpDonationPayAccountSwiper`**；**不必**再导 `mp-account-picker`。  
+3. **资料/工单类**：`mp-uploader` / `mp-multi-uploader` / `mp-document-upload` / `mp-trans-summary` / `mp-list-skeleton` / `mp-ckeditor` **均已联调可用**。  
+4. **原子侧**：`mr-spinner` **已联调可用**；其余低频 `mr-*`（slider、modal、tabs 等共 12 个）按真实低代码页面需要再开。  
+5. **跨模块待评估（P3，21 项）**：仅在做对应模块低代码时再议，如 `mp-sheet-model-page`、`mp-message-box`、`mp-time-dialog` 等；**不导入表内组件不再重复评估**。  
+6. **维护时**：新增扫描结果先对照 **§一.5** 判断是否归入「不导入」，再更新 P3 待评估表。
 
 ### 与 donations 低代码的关系（已验证子集）
 
-当前 donations 低代码主要依赖（均已在物料或出码可用）：
+当前 donations 主工程 + 低代码已覆盖的物料（**均已联调可用**）：
 
-- 容器/展示：`mp-page`（**物料已联调可用** + 出码根节点处理）、`mp-card`、`mp-text-amt`、`mp-multi-amt`、`mp-donation-pay-account-swiper`、`mp-input`、`mp-avatar`、`mr-spinner`（列表 loading）、`mr-button` / `mr-cell*` 等  
-- 结果页：公共 `trans-result` + `businessType: D101`，不依赖额外结果物料  
+| 页面 | 主工程组件 | 低代码 schema 对应 | 备注 |
+| ---- | ---------- | ------------------ | ---- |
+| 列表 | `mp-page`、`mp-card`、`mp-avatar`、`mp-ckeditor`、`mr-refresher`(+content)、`mr-spinner`、`mr-button`、`mr-infinite-scroll`(+content) | 同左（`MrRefresherContent` 已导入） | loading 显隐用 schema **`condition`** |
+| 表单 | `mp-page`、`mp-donation-pay-account-swiper`、`mp-card`、`mp-input`、`mp-multi-amt`、`mp-omr-text`、`mr-button` | 低代码暂用 `MpAccountCards` 占位账户区；限额蓝字用 `MpOmrText` | 付款账户 **不建议** 换 `mp-account-cards`（回归面大） |
+| 确认 | `mp-page`、`mp-container`、`mp-avatar`、`mp-text-amt`、`mr-divider`、`mr-button` | `MpCard` + `MpTextAmt` + `MrCell*` | 结果页走公共 `trans-result`，不另导结果物料 |
 
-继续扩展 OAB 其他模块时，**缺口主要是摘要弹层 / 账户选择器（P2）与低频领域页**，而不是再补一套 donations 专用件。关联账户横滑已有 `mp-linked-account-cards`（待测），勿与付款 `mp-account-cards` 混用。
+**donations 链路暂无必须再导入的专用件。** 继续扩展 OAB 其他模块时，缺口主要在 **P2 摘要弹层 / 账户选择器** 与 **低频领域页**（见 §4.2），而不是 donations 再补一批组件。
 
 ---
 
@@ -258,7 +288,7 @@ rg -o --no-filename '<(mr|mp)-[a-z0-9-]+' src --glob '!**/lowcode/**' \
 
 ---
 
-_初稿：2026-07-22；主工程 OAB；扫描排除 `src/lowcode/`；manifest 物料数 70（含 Mr/Mp）。_
+_初稿：2026-07-22；主工程 OAB；扫描排除 `src/lowcode/`；manifest 物料数 **95**（含 Mr/Mp）。_
 
 _补充（2026-07-22）：**mp-page** 已导入（`mp-page-designer` + `entries/mp-page.js` + manifest）；`pnpm run build:designer-materials` 产物 **71** 个组件。_
 
@@ -353,3 +383,13 @@ _补充（2026-08-19）：**mp-linked-account-cards 已导入待测**——`mp-l
 _补充（2026-08-20）：**mr-spinner 已导入待测**——画布桩 `mr-spinner-canvas` + 样式自注入；`entries/mr-components.js` 设计态桩 / 预览 `IonSpinner`；`manifest` + `IonSpinner→MrSpinner` 映射；产物 **93** 个组件；默认 snippet `name="circles"`（对齐 donations-list）。策略变更需 Reload Extension Host / 刷新物料 bundle。_
 
 _补充（2026-08-20）：**mr-spinner 已联调可用**——画布可选中、出码为 `<mr-spinner name="circles" />`；donations-list loading 条件用 schema **`condition`**（不是仅 `show`）才会生成 `v-if`。由「已导入待测」记入「已联调可用」。_
+
+_补充（2026-08-24）：**mp-omr-text 已导入待测**——`mp-omr-text-designer` + entry + manifest；产物 **94** 个组件；把文案中字面量 `OMR` 换成币种 SVG（currentColor）；props：`content` / `fontSize` / `fontWeight` / `className`；用于 donations 限额蓝字等与红字 `mp-single-amt` 内错误提示同款图标。Reload Extension Host / 刷新物料 bundle 后验收。_
+
+_补充（2026-08-25）：**mp-omr-text 已联调可用**——画布可选中、出码 `<mp-omr-text>`；`donations-page` 限额蓝字 Bound `donationAmountLimitRange` + 与红字互斥 `condition` 验证通过；由「已导入待测」记入「已联调可用」。_
+
+_补充（2026-08-25）：**mp-country-multiple-input / mp-linked-account-cards 已联调可用**——由「已导入待测」记入「已联调可用」。_
+
+_补充（2026-08-25）：**不导入判定原则**写入 §一.5——子件/内部壳、父组件已覆盖、可组合替代、框架级、别名等价物、legacy/无源码，统一暂不归入待导入；进度表拆为「待评估导入」与「不导入」。`mr-modal` / `mr-picker-vant` / `mr-input` / `mr-textarea` / `mr-date-picker` 等并入不导入表。_
+
+_补充（2026-08-25）：**mr-slider 已联调可用**——与 `MrSwitch` 一致，设计态/出码均用 **Vant 原生 Slider**（白底圆钮，无默认蓝边 `#button`；业务可按需自配 PFM budget 样式）；`strategies/mrSlider.ts` 拖拽/保存自动 `v-model` → `this.state.mrSliderN`；`manifest` 补 `onUpdate:modelValue` / `onChange`；产物 **95** 个组件；demo 页拖动与样式已与画布对齐。Reload Extension Host / 刷新物料 bundle 后验收。_
