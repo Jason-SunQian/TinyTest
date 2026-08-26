@@ -4,6 +4,7 @@ import type {
 } from '@/plugins/materials/composable/schema-default-patches/types';
 
 import { patchMpIconIconTagToChild } from './strategies/mpIcon';
+import { syncMpAgreementContentDisabledAndState } from './strategies/mpAgreementContent';
 import { syncMpBankInputModelValueAndState } from './strategies/mpBankInput';
 import { syncMpCityInputModelValueAndState } from './strategies/mpCityInput';
 import { syncMpCountryInputModelValueAndState } from './strategies/mpCountryInput';
@@ -144,6 +145,11 @@ const PATCHERS: Record<string, ModelBindingPatcher> = {
         const props = (schema.props as Record<string, unknown>) || {};
         if (!schema.props) schema.props = props;
         syncMpAccountCardsModelPropsAndState(props, rootState);
+    },
+    MpAgreementContent: (schema, rootState) => {
+        const props = (schema.props as Record<string, unknown>) || {};
+        if (!schema.props) schema.props = props;
+        syncMpAgreementContentDisabledAndState(props, rootState);
     },
     MpCcyInput: (schema, rootState) => {
         const props = (schema.props as Record<string, unknown>) || {};

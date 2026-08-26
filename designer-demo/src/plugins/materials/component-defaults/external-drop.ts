@@ -12,6 +12,7 @@ import { syncMrRadioGroupModelValueAndState } from './strategies/mrRadioGroup';
 import { syncMrSliderModelValueAndState } from './strategies/mrSlider';
 import { syncMrSwitchModelValueAndState } from './strategies/mrSwitch';
 import { syncMrToggleModelValueAndState } from './strategies/mrToggle';
+import { syncMpAgreementContentDisabledAndState } from './strategies/mpAgreementContent';
 import { syncMpBankInputModelValueAndState } from './strategies/mpBankInput';
 import { syncMpCityInputModelValueAndState } from './strategies/mpCityInput';
 import { syncMpCountryInputModelValueAndState } from './strategies/mpCountryInput';
@@ -247,6 +248,13 @@ const HANDLERS: Record<string, ExternalDropHandler> = {
         if (applied) {
             updateSchema({ state: stateObj });
         }
+    },
+    MpAgreementContent: (insertData, { getSchema, updateSchema }) => {
+        insertData.props = insertData.props || {};
+        const props = insertData.props as Record<string, unknown>;
+        const stateObj = getClonedPageState(getSchema);
+        syncMpAgreementContentDisabledAndState(props, stateObj);
+        updateSchema({ state: stateObj });
     },
     MpCcyInput: (insertData, { getSchema, updateSchema }) => {
         insertData.props = insertData.props || {};
