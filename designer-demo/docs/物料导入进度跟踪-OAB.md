@@ -31,8 +31,8 @@
 | 分类 | OAB 源码使用（去重标签） | 已导入且被使用 | 已导入（manifest） | 待评估导入 | 不导入¹ |
 | ---- | ------------------------ | -------------- | ------------------ | ---------- | ------- |
 | **原子组件 (mr-)** | 55 | 41 | 41 | 8 | 15 |
-| **业务组件 (mp-)** | 71 | 50 | 57 | 约 8 | 9 |
-| **合计** | 126 | 91 | **98** | **约 16** | **24** |
+| **业务组件 (mp-)** | 71 | 50 | 57 | 约 6 | 11 |
+| **合计** | 126 | 91 | **98** | **约 14** | **26** |
 
 ¹ **不导入**含：框架/应用级、子件与内部壳、父组件已覆盖、别名等价物、legacy/无源码。见 §一.5。
 
@@ -40,10 +40,10 @@
 
 | 差异 | 说明 |
 | ---- | ---- |
-| **待评估导入（约 18）** | 源码有用、manifest 仍缺，且**未**归入「不导入」：mr 低频 + mp **P3 业务**；**不含**仅 example 的 P4 |
+| **待评估导入（约 14）** | 源码有用、manifest 仍缺，且**未**归入「不导入」：mr 低频 + mp **P3 业务**；**不含**仅 example 的 P4 |
 | donations 主工程已覆盖 | 列表/表单/确认页用到的组件均已导入且联调可用 |
-| **不导入（24）** | 子件/内部壳/框架/别名/legacy，画布不单独拖拽；见 §一.5、§3.3、§4.2 |
-| manifest | **98** 个物料；`MpGsBlur` / `MpAgreementContent` **已联调可用**；`mp-bank` 不导入（2026-08-26） |
+| **不导入（26）** | 子件/内部壳/框架/别名/legacy，画布不单独拖拽；见 §一.5、§3.3、§4.2 |
+| manifest | **98** 个物料；`MpGsBlur` / `MpAgreementContent` **已联调可用**；`mp-bank` / `mp-list` / `mp-picker` **不导入**（2026-08-26） |
 
 ---
 
@@ -225,7 +225,8 @@
 | ~~**mp-agreement-content**~~ | 3 | 协议正文 | **已联调可用**（2026-08-26），见 4.1.2 |
 | ~~**mp-bank**~~ | 3 | 银行弹层 | **不导入**（无运行态源码，见 4.3；用已导入 **MpBankInput**） |
 | ~~**mp-gs-blur**~~ | 3 | 高斯模糊装饰（loan / saving） | **已联调可用**（2026-08-26），见 4.1.2 |
-| mp-list / mp-picker | 2 | 列表/选择器变体（transaction / mpayment / insurance 等） |
+| ~~**mp-list**~~ | 2 | 列表 | **不导入**（无运行态源码，见 4.3；用 **MpSelectList** / **MpCell**） |
+| ~~**mp-picker**~~ | 2 | 选择弹层 | **不导入**（无运行态源码，见 4.3；保险页残留标签） |
 | ~~mp-skeleton~~ | 2 | **不导入**：仓库无运行态源码（见 4.3） |
 | mp-country / mp-date-dialog | 1 | 与已有 country/date 输入重叠可能大 |
 | mp-saving-account / mp-sigma-page | 1 | 领域页，按模块再导入 |
@@ -246,6 +247,8 @@
 | mp-date-picker-legacy | 3 | 已被 `mp-date-picker` / `mp-date-input` 替代 |
 | **mp-skeleton** | 2 | **无运行态实现**：全仓无 `mp-skeleton.vue`；列表骨架用 **`MpListSkeleton`** |
 | **mp-bank** | 3 | **已删除**：`src/components/mp-bank.vue` 于 `chore(common): mp-bank-input` 移除；仅剩 `@deprecated Not used` 的 `sc-bank-eft` / `sc-bank-pesalink` 残留标签。业务选银行用已导入 **`MpBankInput`** |
+| **mp-list** | 2 | **已删除**：`src/components/base/mp-list.vue` 于 `fix(card): 修复评论`（e7bb9b15e）移除；仅 `example/comp-list.vue` 注释残留。列表用已导入 **`MpSelectList`** / **`MpCell`**（+ loop） |
+| **mp-picker** | 2 | **已删除**：同提交移除 `src/components/mp-picker.vue`；`insurance/file-claim` 仍有残留标签。弹层选择可用 **`MpPopup` + `MpSelectList`** 或已有 dict/country 输入 |
 
 ---
 
@@ -258,7 +261,7 @@
    - 选账户：用 **`MpAccountInput`** / **`MpAccountCards`** / **`MpDonationPayAccountSwiper`**；**不必**再导 `mp-account-picker`。  
 3. **资料/工单类**：`mp-uploader` / `mp-multi-uploader` / `mp-document-upload` / `mp-trans-summary` / `mp-list-skeleton` / `mp-ckeditor` **均已联调可用**。  
 4. **原子侧**：`mr-spinner` **已联调可用**；其余低频 `mr-*`（slider、modal、tabs 等共 12 个）按真实低代码页面需要再开。  
-5. **跨模块待评估（P3）**：仅在做对应模块低代码时再议，如 `mp-list` / `mp-picker` 等；**不导入表内组件不再重复评估**。`mp-sheet-model-page` / `mp-agreement-content` / `mp-gs-blur` **已联调可用**；`mp-bank` **不导入**（用 `MpBankInput`）。  
+5. **跨模块待评估（P3）**：仅在做对应模块低代码时再议，如 `mp-country` / `mp-date-dialog`、`mp-saving-account` 等；**不导入表内组件不再重复评估**。`mp-sheet-model-page` / `mp-agreement-content` / `mp-gs-blur` **已联调可用**；`mp-bank` / `mp-list` / `mp-picker` **不导入**。  
 6. **仅 example 演示（P4，最低优先）**：如 `mp-message-box`、`mp-time-dialog`——全仓只在 `src/modules/example/` 出现，**无业务刚需，默认不排期**。  
 7. **维护时**：新增扫描结果先对照 **§一.5** 判断是否归入「不导入」；再区分 **业务引用 vs 仅 example**（§一.3 / P4），最后更新 P3 / P4 表。
 
@@ -425,3 +428,5 @@ _补充（2026-08-26）：**mp-bank 不导入**——仓库已无 `mp-bank.vue`�
 _补充（2026-08-26）：**mp-gs-blur 已导入待测**——`mp-gs-blur-designer` + entry + manifest；prop `toggle` + default 插槽；无 v-model 策略（轻量模板）；产物 **98** 个组件。Reload Extension Host / 刷新物料 bundle 后验收。_
 
 _补充（2026-08-26）：**mp-gs-blur 已联调可用**——画布可见（徽章 + 虚线框）、插槽可塞 Text、Blur on 可反馈；踩坑：`props.className` 未 `const props = defineProps` 导致画布空白。经验写入《组件导入注意事项》**MpGsBlur**。下一步 P3：`mp-list` / `mp-picker` 等。_
+
+_补充（2026-08-26）：**mp-list / mp-picker 不导入**——均已删除（`fix(card): 修复评论` e7bb9b15e：`mp-list.vue` / `mp-picker.vue`）。`mp-list` 仅 example 注释残留；`mp-picker` 在 insurance `file-claim` 有残留标签但无源码。列表用 **`MpSelectList` / `MpCell`**；弹层选择用 **`MpPopup` + `MpSelectList`**。归入 §4.3。_
