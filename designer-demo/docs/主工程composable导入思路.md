@@ -1,10 +1,10 @@
 # 主工程 composable 导入思路
 
-> 目的：把主工程（**OAB**）少数确有必要的公共 composable，以统一的 **`this.composables.<key>`** 注入低代码 Page JS，并在设计器 Monaco 提供 **`this.composables.`** 二级 / 三级补全。
+> 目的：把主工程（**OAB**）少数确有必要的公共 composable，以统一的 **`this.composables.<key>`** 注入低代码 Page / **Block** JS，并在设计器 Monaco 提供 **`this.composables.`** 二级 / 三级补全。
 >
-> 约束：设计器侧**不实现** composable 运行态，只消费主工程 `completion-utils.json` 与既有补全机制。Page JS / schema **只改 json**，出码生成 `.vue`，勿手改 `views/*.vue`。
+> 约束：设计器侧**不实现** composable 运行态，只消费主工程 `completion-utils.json` 与既有补全机制。Page JS / schema **只改 json**，出码生成 `.vue`，勿手改 `views/*.vue`（出码会覆盖手写 `import`）。
 >
-> **关联文档**：[主工程低代码资源操作手册](./主工程低代码资源操作手册.md)、[主工程 store 导入思路](./主工程store导入思路.md)、[主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md)、[主工程低代码集成指南-OAB](./主工程低代码集成指南-OAB.md)。
+> **关联文档**：[主工程低代码资源操作手册](./主工程低代码资源操作手册.md)、[主工程 store 导入思路](./主工程store导入思路.md)、[主工程 utils 工具提示导入思路](./主工程utils工具提示导入思路.md)、[主工程低代码集成指南-OAB](./主工程低代码集成指南-OAB.md)、[主工程低代码区块开发思路](./主工程低代码区块开发思路.md)。
 
 ---
 
@@ -16,10 +16,10 @@
    - 路由 → 已有 **`this.router`**
    - UI / 交互 → 优先物料事件与画布组件
 2. 少数能力在 Page JS 高频、且没有等价 API（如剪贴板、OTP 倒计时），需要可控白名单暴露。
-3. **当前状态（已闭环）**：
+3. **当前状态（已闭环 + 可扩）**：
    - 运行态 / 补全统一挂载面：**`this.composables.<key>`**（与 `this.stores.<key>` 同构）
    - 配置单源：`lowcode-utils/manifest.json` → **`composableHelpers`**
-   - 已落地：`clipboard`（`useClipboard`）、`countdown`（`useCountdown`）
+   - 已落地：`clipboard`、`countdown`、**`homeQuickLinks`**（业务 Block 案例，见 §1.5）
 
 ---
 
@@ -31,9 +31,9 @@
 |----|------|
 | Page JS | **`this.composables.<key>`** |
 | 补全一级 | `this.composables`（关键字，与 `stores` / `utils` 并列） |
-| 补全二级 | `this.composables.` → `clipboard` / `countdown` / … |
+| 补全二级 | `this.composables.` → `clipboard` / `countdown` / `homeQuickLinks` / … |
 | 补全三级 | `this.composables.countdown.` → `startCountdown` / `time` / … |
-| 生命周期 | **一律**在 `lowcodeWrap`（页 setup）内 `useXxx()` **一次** |
+| 生命周期 | **一律**在 `lowcodeWrap`（页 / 区块 setup）内 `useXxx()` **一次** |
 
 **已废弃（勿再文档化 / 勿再配置）**
 
@@ -56,21 +56,96 @@
 
 **默认不导出。** 仅当同时满足时才进 `composableHelpers`：
 
-1. Page JS 高频调用；
-2. 没有 `this.http` / `this.stores` / `this.router` / 物料的等价写法；
-3. 可接受「每页一次实例」（含无状态的 clipboard）。
+1. Page / Block JS **反复或关键**调用；
+2. 没有 `this.http` / `this.stores` / `this.router` / 物料的等价写法（或等价写法会踩坑，见 §1.5）；
+3. 可接受「每页 / 每区块一次实例」（含无状态的 clipboard）。
 
 关闭某项：manifest 设 `"enabled": false` → rebuild。
 
-### 1.4 为何目前只导出 clipboard / countdown？（结论）
+### 1.4 使用时机与场景（什么时候该挪到 composable）
 
-**可以先不管 `src/composables/base` 里其余 composable**（`useQuery`、`useMpRouter`、`useKeyboard` 等）。这不是烂尾，而是刻意白名单。
+**结论先说**：可以。以后像 Quick Links 区块案例一样，**有需要时把「必须在 setup 里初始化、又会被出码冲掉 import」的那部分逻辑，抽成 composable，再挂白名单**——这是推荐路径，不是例外。
+
+但 **不是**「业务一复杂就全塞 composable」。先按下面选通道：
+
+```text
+能写在画布 / 简单 state + methods？
+    └─ 是 → 留在 Page/Block JS（优先）
+
+能用现成 this.http / this.stores / this.router / this.utils？
+    └─ 是 → 直接用，不新增 composable
+
+必须 setup 上下文（useI18n / useXxx / storeToRefs 首次创建）
+  或 依赖主工程模块、设计器出码保不住 import？
+    └─ 是 → 抽 composable → composableHelpers → this.composables.<key>
+
+只是跨页共享的纯数据 / Pinia？
+    └─ 优先 this.stores（storeWhitelist），不是 composable
+```
+
+| 场景 | 是否适合 composable | 说明 |
+|------|---------------------|------|
+| 剪贴板、OTP 倒计时 | ✅ | 无等价 `this.*`，Page JS 高频 |
+| Block / Page 要绑主工程 store，且 store setup 含 `useI18n` 等 | ✅ | 必须在 `lowcodeWrap` 内创建；见 `homeQuickLinks` |
+| 复杂同步逻辑（favorite → state、watch、解绑） | ✅ | methods 只调 `bindState` / `unbind`，细节藏在 composable |
+| 一次简单 `this.router.push` | ❌ | 直接写 methods |
+| 已在 `storeWhitelist` 的读写 | ❌ | 用 `this.stores.xxx` |
+| 想在 Block vue 里手写 `import '@/...'` | ❌ | Save 出码会丢；改走 composable / utils |
+
+**和 utils / stores 怎么选（一句话）**
+
+| 能力形态 | 挂哪里 |
+|----------|--------|
+| 无生命周期的工具函数 | `this.utils` |
+| 全局业务状态（Pinia） | `this.stores` |
+| **每页实例 + 常要 setup 钩子 / watch / 解绑** | **`this.composables`** |
+
+### 1.5 案例：`homeQuickLinks`（业务 Block）
+
+来自 [主工程低代码区块开发思路](./主工程低代码区块开发思路.md) 的 Quick Links 简化版。
+
+**为什么必须 composable，而不是 methods 里直接 `import` / 调 store？**
+
+1. `useServicesStore` 内部使用 `useI18n()` → **只能在 setup 首次创建**；写在 `import().then` 或纯异步回调会报错，区块一直骨架。
+2. 设计器 Save 会重写出码 vue：**手写 `import { watchHomeQuickLinks }` 会被冲掉** → `xxx is not defined`。
+3. `lowcodeWrap` 已在 setup 里对白名单 factory 调一次 → `this.composables.homeQuickLinks` **天然 setup-safe**，且 schema methods 里只写这一行，再出码也不丢。
+
+**Page / Block JS 写法**
+
+```js
+function bindQuickLinks() {
+  this.composables.homeQuickLinks.bindState(this.state, t, this.state.limit || 5)
+}
+function unbindQuickLinks() {
+  this.composables.homeQuickLinks.unbind()
+}
+```
+
+**落地文件（便于对照）**
+
+| 角色 | 路径 |
+|------|------|
+| composable | `src/composables/useHomeQuickLinks.ts` |
+| 数据 helper（可选） | `src/lowcode/common/home-quick-links.ts` |
+| manifest | `lowcode-utils/manifest.json` → `composableHelpers` → `homeQuickLinks` |
+| Block | `src/lowcode/block/main/home-quick-links.json` |
+
+**可复用模式（以后业务 Block / 复杂页）**
+
+1. 主工程写 `useXxx`（内部安全地用 store / watch）。
+2. manifest 加一项 → `pnpm run build:lowcode-utils`。
+3. 设计器 Page JS / Block JS 只调用 `this.composables.<key>.*`。
+4. **不要**在出码 vue 上补 `import` 指望长期存活。
+
+### 1.6 为何不是「base 里其它 composable 全进设计器」？（结论）
+
+**可以先不管 `src/composables/base` 里其余项**（`useQuery`、`useMpRouter`、`useKeyboard` 等）。这不是烂尾，而是刻意白名单——**按需扩，不整包灌**。
 
 | 问题 | 结论 |
 |------|------|
-| base 里其它要不要现在导入设计器？ | **不用。** |
-| 会影响主工程 / 以后手写开发吗？ | **不会。** 那些 composable 仍在主工程给 Vue / Pinia 用（例如 store 里 `useQuery` + `http.post`）。 |
-| 当前设计器做低代码够不够用？ | **够做常见页**：请求 → `this.http`；跳转 → `this.router`；业务状态 → `this.stores`；工具弹层 → `this.utils`；复制/倒计时 → `this.composables`；壳层 TabBar → `this.appState`。 |
+| base 里其它要不要现在导入设计器？ | **不用。** 等出现 §1.4 的真实缺口再加。 |
+| 会影响主工程 / 以后手写开发吗？ | **不会。** 那些 composable 仍在主工程给 Vue / Pinia 用。 |
+| 当前设计器做低代码够不够用？ | **够做常见页**；业务向缺口用白名单按需补（如 `homeQuickLinks`）。 |
 
 **为何不是「其它都进了 store」**
 
@@ -79,16 +154,17 @@
 - 业务数据 / 用户 / 字典 → 才是 **`this.stores.*`** 覆盖的部分。
 - Toast / Picker / 支付等 → 本来就在 **`this.utils`**，不是 composable 缺口。
 
-**只导出这两项的原因**
+**已导出项的原因**
 
 | 已导出 | 原因 |
 |--------|------|
 | `clipboard` | Page JS 常见，且无等价 `this.*` |
 | `countdown` | OTP/重发倒计时常见，且无等价 `this.*` |
+| `homeQuickLinks` | 业务 Block：setup 安全绑收藏服务 + 出码不丢 import（§1.5） |
 
-**以后什么时候再加 base 里的项**
+**以后什么时候再加**
 
-低代码页**反复**需要某 composable 的完整语义（例如必须要 `useQuery` 的缓存/失效，或必须要 `changeTab`），且用现有 `this.http` / `this.router` / `this.stores` / `this.utils` 写起来很痛苦时——再进 `composableHelpers`（或优先补 `this.router`）。机制已具备，扩员成本低。
+符合 §1.3 / §1.4：低代码页或 Block **反复**需要某段「setup + 主工程依赖」语义，且用现有 `this.*` 很痛苦或会踩坑时——再进 `composableHelpers`。机制已具备，扩员成本低。
 
 ---
 
@@ -173,6 +249,7 @@ Build 会校验：缺字段、重复 `key`、模块文件不存在、composable 
 |----------------------|-----|----------|
 | `clipboard` | `useClipboard` | `copy(text)` / `copyText(text)`（别名） |
 | `countdown` | `useCountdown` | `startCountdown(interval)`、`remainingTime`、`time` |
+| `homeQuickLinks` | `useHomeQuickLinks` | `bindState(state, t, limit?)`、`unbind()` |
 
 ### 4.1 Page JS 示例
 
@@ -195,6 +272,11 @@ const id = setInterval(() => {
   this.state.otpText = this.composables.countdown.time
   if (this.composables.countdown.remainingTime <= 0) clearInterval(id)
 }, 1000)
+
+// Quick Links 区块：绑收藏服务到 state（见 §1.5）
+this.composables.homeQuickLinks.bindState(this.state, t, this.state.limit || 5)
+// 卸载时
+this.composables.homeQuickLinks.unbind()
 ```
 
 **注意**
@@ -290,12 +372,13 @@ setTimeout(() => {
 - [x] 生成器：`COMPOSABLE_FACTORIES` + `COMPOSABLE_MEMBER_ALIASES`
 - [x] 补全：`namespaces.composables` + `children` + 三级解析
 - [x] 第一批：`clipboard`、`countdown` 联调通过
-- [x] 文档明确：`base` 其余 composable 默认不导入设计器；用 `this.http` / `router` / `stores` / `utils` 覆盖常见能力（见 §1.4）
-- [ ] 按业务需要审慎扩白名单（默认仍不导出）
+- [x] 文档明确：`base` 其余 composable 默认不导入；按 §1.4 时机按需扩（见 §1.6）
+- [x] 业务案例：`homeQuickLinks`（区块 Quick Links，§1.5）
+- [ ] 继续按业务需要审慎扩白名单（默认仍不导出）
 
-**落地结论**：接线规则唯一——要导出就配 `composableHelpers`，用法永远是 `this.composables.<key>`；扩展时不再判断「进 utils 还是挂一级」。**当前设计器做常见低代码页够用；不必把 `composables/base` 整包导入。**
+**落地结论**：接线规则唯一——要导出就配 `composableHelpers`，用法永远是 `this.composables.<key>`。**常见页够用；复杂 Block / setup 敏感逻辑可以（也应该）按需挪到 composable，而不是手写 import。**
 
 ---
 
 文档维护者：开发团队  
-最后更新：2026-08-17（补充 §1.4：为何只导出 clipboard/countdown）
+最后更新：2026-08-28（补充 §1.4 使用时机、§1.5 homeQuickLinks 案例；白名单增加 homeQuickLinks）

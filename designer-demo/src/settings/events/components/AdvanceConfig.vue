@@ -13,7 +13,7 @@
                 />
                 <div
                     v-else
-                    class="binding-state text-ellipsis-multiple"
+                    class="binding-state"
                     :title="condition.value"
                 >
                     {{
@@ -44,7 +44,7 @@
                 />
                 <div
                     v-else
-                    class="binding-state text-ellipsis-multiple"
+                    class="binding-state"
                     :title="state.loopData?.value"
                 >
                     {{
@@ -415,7 +415,7 @@ export default {
         &:not(:last-child) {
             margin-bottom: var(--te-common-vertical-item-spacing-normal);
         }
-        align-items: center;
+        align-items: flex-start;
         display: flex;
         column-gap: 12px;
         color: var(--te-events-advanced-config-text-color);
@@ -425,6 +425,7 @@ export default {
             word-break: keep-all;
             color: var(--te-events-advanced-label-text-color);
             flex-shrink: 0;
+            line-height: 24px;
         }
 
         .advanced-config-form-item {
@@ -434,16 +435,20 @@ export default {
         }
         .binding-state {
             box-sizing: border-box;
+            min-width: 0;
             background: var(--te-events-advanced-binding-state-bg-color);
             color: var(--te-events-advanced-binding-state-text-color);
             border: 1px solid
                 var(--te-events-advanced-binding-state-border-color);
             font-size: 12px;
-            height: 24px;
-            line-height: 14px;
-            padding: 4px 8px;
-            --ellipsis-line: 1;
-            border-radius: var(--te-base-border-radius-1);
+            line-height: 18px;
+            min-height: 24px;
+            height: auto;
+            padding: 4px 12px;
+            word-break: break-word;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            border-radius: 6px;
         }
 
         .advance-config-loop-wrap {
