@@ -550,11 +550,15 @@ export default {
                 const schema = getSchema();
                 // 安全检查：确保 schema 存在
                 if (schema?.id) {
+                    // Slot text lives on node.children; panel reads props.children.
+                    // Must update BOTH — Remove Binding used to only clear node.children,
+                    // then slotChildrenPropsSync resurrected Bound from leftover props.children.
                     operateNode({
                         type: 'updateAttributes',
                         id: schema.id,
                         value: { children: value }
                     });
+                    setProp('children', value, type);
                 } else {
                     // eslint-disable-next-line no-console
                     console.warn(

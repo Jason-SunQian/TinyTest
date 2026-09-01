@@ -59,13 +59,21 @@ export const syncSlotStringChildrenWithPropsChildren = (
     }
 
     if (isJsExpression(props.children)) {
+        // Empty node children after Remove Binding: clear props, do NOT resurrect Bound
         if (
             ch === undefined ||
             ch === null ||
             ch === '' ||
             (typeof ch === 'string' && ch.trim() === '')
         ) {
-            schema.children = props.children;
+            if (setProp) setProp('children', '');
+            else props.children = '';
+            return;
+        }
+        // Non-empty static slot + leftover expression props: prefer the static text
+        if (typeof ch === 'string') {
+            applyChildren(ch);
+            return;
         }
         return;
     }
