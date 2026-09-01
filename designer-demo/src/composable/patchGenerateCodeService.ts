@@ -11,9 +11,30 @@ type GenerateCodeServiceLike = {
         componentsMap: unknown,
         opts?: unknown
     ) => unknown;
-    // eslint-disable-next-line @typescript-eslint/naming-convention -- 历史私有标记名，避免重复打补丁
-    __patchedMpIcon?: boolean;
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- patch guard
+    __patchedGenerateCode?: boolean;
 };
+
+/** Slot-text materials: label lives in default slot, not a real Vue `children` prop. */
+const SLOT_TEXT_COMPONENTS = new Set([
+    'MrButton',
+    'MrLabel',
+    'MrToggle',
+    'MrTitle'
+]);
+
+function cloneJson<T>(value: T): T {
+    return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function isChildrenEmpty(ch: unknown): boolean {
+    return (
+        ch === undefined ||
+        ch === null ||
+        ch === '' ||
+        (Array.isArray(ch) && ch.length === 0)
+    );
+}
 
 function normalizeIconTag(v: unknown): string {
     const s = typeof v === 'string' ? v.trim() : '';
@@ -66,26 +87,88 @@ function patchMpCellNode(node: SchemaNode): void {
     if ('testId' in props) delete props.testId;
 }
 
+/**
+ * MrButton / MrLabel 等：属性面板用 props.children 回显，但出码若带上会变成
+ * children="..." / :children="..." 落到原生 <button>，触发 Vue warn。
+ * 出码前把文案留在节点 children（slot），删掉 props.children。
+ */
+function patchSlotTextNode(node: SchemaNode): void {
+    if (!node || typeof node !== 'object') return;
+    const name = node.componentName;
+    if (!name || !SLOT_TEXT_COMPONENTS.has(name)) return;
+
+    const props =
+        node.props && typeof node.props === 'object' ? node.props : {};
+    node.props = props;
+    if (!('children' in props)) return;
+
+    const propChildren = props.children;
+    if (
+        isChildrenEmpty(node.children) &&
+        propChildren !== undefined &&
+        propChildren !== null &&
+        propChildren !== ''
+    ) {
+        node.children = propChildren;
+    }
+    delete props.children;
+}
+
+/** Same strip as dsl-vue sfc-post-processor (Save 走 generate；此处兜底 toolbar 出码路径). */
+function stripSlotTextChildrenAttrsInCode(code: string): string {
+    const tags = ['mr-button', 'mr-label', 'mr-toggle', 'mr-title'];
+    let next = code;
+    for (const tag of tags) {
+        const openRe = new RegExp(`<${tag}(\\s[^>]*)?(\\/?)>`, 'gi');
+        next = next.replace(openRe, (_m, attrs = '', selfClose = '') => {
+            let a = attrs as string;
+            a = a.replace(
+                /\s+(?:v-bind:|:)?children\s*=\s*(?:"(?:\\.|[^"])*"|'(?:\\.|[^'])*')/g,
+                ''
+            );
+            if (tag === 'mr-button') {
+                a = a.replace(/\s+text\s*=\s*(?:"Button"|'Button')/g, '');
+            } else if (tag === 'mr-label' || tag === 'mr-title') {
+                a = a.replace(
+                    /\s+text\s*=\s*(?:"Label"|'Label'|"Title"|'Title')/g,
+                    ''
+                );
+            }
+            return `<${tag}${a}${selfClose}>`;
+        });
+    }
+    return next;
+}
+
+function postProcessGeneratedCode(result: unknown): unknown {
+    if (typeof result === 'string') {
+        return stripSlotTextChildrenAttrsInCode(result);
+    }
+    return result;
+}
+
 function walkSchema(node: unknown): void {
     if (!node || typeof node !== 'object') return;
     const schemaNode = node as SchemaNode;
     patchMpIconNode(schemaNode);
     patchMpCellNode(schemaNode);
+    patchSlotTextNode(schemaNode);
     const { children } = schemaNode;
     if (Array.isArray(children)) children.forEach(walkSchema);
 }
 
 /**
  * 出码服务补丁：
- * - toolbar「出码」/ block 编译等路径可能不走 useMaterial 的保存/预览补丁
- * - 在 generatePageCode 前统一把 MpIcon.props.iconTag 转成 children 的 <i-*> 节点
+ * - MpIcon.iconTag → children <i-*>
+ * - MrButton 等：出码前去掉 props.children，避免 children 属性落到原生 button
+ * - 对生成字符串再剥一层 mr-button 的 children/text 误属性
  */
 export function patchGenerateCodeServiceForMpIcon(): void {
     const svc = getMetaApi(
         'engine.service.generateCode'
     ) as GenerateCodeServiceLike;
     if (!svc || typeof svc.generatePageCode !== 'function') return;
-    if (svc.__patchedMpIcon === true) return;
+    if (svc.__patchedGenerateCode === true) return;
 
     const orig = svc.generatePageCode.bind(svc);
     svc.generatePageCode = (
@@ -93,12 +176,25 @@ export function patchGenerateCodeServiceForMpIcon(): void {
         componentsMap: unknown,
         opts?: unknown
     ) => {
+        let schemaForCode = schema;
         try {
-            walkSchema(schema);
+            schemaForCode = cloneJson(schema);
+            walkSchema(schemaForCode);
         } catch {
-            // 静默：不影响出码主流程
+            // 静默：不影响出码主流程；clone 失败则尽量对原 schema walk
+            try {
+                walkSchema(schema);
+                schemaForCode = schema;
+            } catch {
+                // ignore
+            }
         }
-        return orig(schema, componentsMap, opts);
+        const result = orig(schemaForCode, componentsMap, opts);
+        try {
+            return postProcessGeneratedCode(result);
+        } catch {
+            return result;
+        }
     };
-    svc.__patchedMpIcon = true;
+    svc.__patchedGenerateCode = true;
 }
