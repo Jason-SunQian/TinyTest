@@ -23,12 +23,12 @@ import { t } from '@/services/i18nService';
 export const validateMonacoEditorData = (
     editor,
     name,
-    { required, language = 'json' } = {},
+    { required, language = 'json' } = {}
 ) => {
     if (!editor?.getEditor || !editor.getValue) {
         return {
             success: false,
-            message: t('designer.state.validateSystemError'),
+            message: t('designer.state.validateSystemError')
         };
     }
 
@@ -36,7 +36,7 @@ export const validateMonacoEditorData = (
     if (required && !content) {
         return {
             success: false,
-            message: t('designer.state.validateRequired', { name }),
+            message: t('designer.state.validateRequired', { name })
         };
     }
 
@@ -46,13 +46,12 @@ export const validateMonacoEditorData = (
         .getMonaco()
         .editor.getModelMarkers({ owner: language })
         .filter(({ resource: { _formatted } }) => _formatted === uri);
-    const messages = markers.map(
-        ({ startLineNumber, startColumn, message }) =>
-            t('designer.state.validateErrorLine', {
-                line: startLineNumber,
-                column: startColumn,
-                message,
-            }),
+    const messages = markers.map(({ startLineNumber, startColumn, message }) =>
+        t('designer.state.validateErrorLine', {
+            line: startLineNumber,
+            column: startColumn,
+            message
+        })
     );
 
     if (messages.length) {
@@ -60,8 +59,8 @@ export const validateMonacoEditorData = (
             success: false,
             message: t('designer.state.validateSyntaxError', {
                 name,
-                messages: messages.join('\n'),
-            }),
+                messages: messages.join('\n')
+            })
         };
     }
 

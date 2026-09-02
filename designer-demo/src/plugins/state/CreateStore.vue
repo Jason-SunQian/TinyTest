@@ -100,7 +100,6 @@ import {
     Collapse as TinyCollapse,
     CollapseItem as TinyCollapseItem
 } from '@opentiny/vue';
-import { MonacoEditor } from '@/components/i18n-wrappers';
 import {
     string2Ast,
     ast2String,
@@ -108,6 +107,7 @@ import {
 } from '@opentiny/tiny-engine-common/js/ast';
 import { verifyJsVarName } from '@opentiny/tiny-engine-common/js/verification';
 
+import { MonacoEditor } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import StateTips from './StateTips.vue';

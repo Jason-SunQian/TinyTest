@@ -44,10 +44,7 @@ function parseFormKey(
     return keys[0];
 }
 
-function ensureForm(
-    rootState: Record<string, unknown>,
-    formKey: string
-): void {
+function ensureForm(rootState: Record<string, unknown>, formKey: string): void {
     const cur = rootState[formKey];
     if (!cur || typeof cur !== 'object' || Array.isArray(cur)) {
         rootState[formKey] = {
@@ -61,8 +58,12 @@ function ensureForm(
     }
     const o = cur as Record<string, unknown>;
     if (!Object.prototype.hasOwnProperty.call(o, 'visible')) o.visible = true;
-    if (!Object.prototype.hasOwnProperty.call(o, 'date') || o.date === '') o.date = null;
-    if (!Object.prototype.hasOwnProperty.call(o, 'endDate') || o.endDate === '') {
+    if (!Object.prototype.hasOwnProperty.call(o, 'date') || o.date === '')
+        o.date = null;
+    if (
+        !Object.prototype.hasOwnProperty.call(o, 'endDate') ||
+        o.endDate === ''
+    ) {
         o.endDate = null;
     }
 }

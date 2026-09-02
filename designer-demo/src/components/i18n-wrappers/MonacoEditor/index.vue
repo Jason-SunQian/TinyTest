@@ -73,7 +73,7 @@ const props = withDefaults(
         options: () => ({}),
         showFormatBtn: false,
         showFullScreenBtn: true
-    },
+    }
 );
 
 const emit = defineEmits<{
@@ -101,15 +101,15 @@ interface EditorApi {
 
 const getInner = (): EditorApi | null => editorRef.value as EditorApi | null;
 const showFormatIcon = computed(
-    () => props.showFormatBtn && props.options?.language === 'json',
+    () => props.showFormatBtn && props.options?.language === 'json'
 );
 const fullscreenIcon = computed(() =>
-    isFullscreen.value ? 'cancel-full-screen' : 'full-screen',
+    isFullscreen.value ? 'cancel-full-screen' : 'full-screen'
 );
 const fullscreenTooltip = computed(() =>
     isFullscreen.value
         ? t('designer.components.monacoEditor.exitFullscreen')
-        : t('designer.components.monacoEditor.fullscreen'),
+        : t('designer.components.monacoEditor.fullscreen')
 );
 const formatCode = () => getInner()?.formatCode?.();
 const toggleFullscreen = () =>
@@ -118,9 +118,15 @@ const onFullscreenChange = (value: boolean) => {
     isFullscreen.value = value;
     emit('fullscreenChange', value);
 };
-const onEditorDidMount = (editor: unknown) => { emit('editorDidMount', editor); };
-const onChange = (value: unknown) => { emit('change', value); };
-const onShortcutSave = (payload: unknown) => { emit('shortcutSave', payload); };
+const onEditorDidMount = (editor: unknown) => {
+    emit('editorDidMount', editor);
+};
+const onChange = (value: unknown) => {
+    emit('change', value);
+};
+const onShortcutSave = (payload: unknown) => {
+    emit('shortcutSave', payload);
+};
 
 const publicApi: EditorApi & { switchFullScreen: (v: boolean) => void } = {
     getEditor: () => getInner()?.getEditor?.(),

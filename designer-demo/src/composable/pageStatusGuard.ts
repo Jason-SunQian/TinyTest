@@ -39,12 +39,12 @@ export const startPageStatusGuard = () => {
 
                 if (shouldForceOccupy(pageStatus.state)) {
                     useLayout().layoutState.pageStatus = getEnsuredCanvasStatus(
-                        ensureOccupier(pageStatus.data),
+                        ensureOccupier(pageStatus.data)
                     );
                 }
             },
             // sync: rewrite Release/Lock before DesignCanvas watcher opens modal when possible
-            { immediate: true, deep: true, flush: 'sync' },
+            { immediate: true, deep: true, flush: 'sync' }
         );
     });
 };

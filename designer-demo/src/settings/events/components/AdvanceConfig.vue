@@ -11,11 +11,7 @@
                     :model-value="condition"
                     @update:model-value="setConfig"
                 />
-                <div
-                    v-else
-                    class="binding-state"
-                    :title="condition.value"
-                >
+                <div v-else class="binding-state" :title="condition.value">
                     {{
                         t('designer.settings.events.advanced.bound', {
                             value: condition.value

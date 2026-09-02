@@ -17,7 +17,10 @@ function getExpr(prop: unknown): string | undefined {
     return typeof v === 'string' ? v.trim() : undefined;
 }
 
-function isManaged(fileExpr: string | undefined, nameExpr: string | undefined): boolean {
+function isManaged(
+    fileExpr: string | undefined,
+    nameExpr: string | undefined
+): boolean {
     if (fileExpr && !RE_FILE.test(fileExpr)) return false;
     if (nameExpr && !RE_NAME.test(nameExpr)) return false;
     return true;

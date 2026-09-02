@@ -6,6 +6,8 @@
 type SnippetChild = {
     snippetName?: string;
     component?: string;
+    // Material protocol i18n keys (not camelCase by design)
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- zh_CN / en_US
     name?: { zh_CN?: string; en_US?: string } | string;
 };
 
@@ -17,8 +19,9 @@ type SnippetGroup = {
 const diagEnabled = () => {
     try {
         if (typeof window === 'undefined') return true;
-        const flag = (window as Window & { localStorage?: Storage })
-            .localStorage?.getItem('TINY_MATERIALS_DEBUG');
+        const flag = (
+            window as Window & { localStorage?: Storage }
+        ).localStorage?.getItem('TINY_MATERIALS_DEBUG');
         // Default ON; set localStorage TINY_MATERIALS_DEBUG=0 to silence
         return flag !== '0' && flag !== 'false';
     } catch {
@@ -114,13 +117,15 @@ export const summarizeSnippetPanel = (groups: SnippetGroup[] | undefined) => {
 };
 
 export const summarizeMaterialPayload = (
-    payload: {
-        components?: unknown[];
-        snippets?: SnippetGroup[];
-        packages?: unknown[];
-        blocks?: unknown[];
-    } | null
-    | undefined
+    payload:
+        | {
+              components?: unknown[];
+              snippets?: SnippetGroup[];
+              packages?: unknown[];
+              blocks?: unknown[];
+          }
+        | null
+        | undefined
 ) => {
     if (!payload || typeof payload !== 'object') {
         return { empty: true };
@@ -130,14 +135,18 @@ export const summarizeMaterialPayload = (
         : [];
     const snippets = Array.isArray(payload.snippets) ? payload.snippets : [];
     const packages = Array.isArray(payload.packages) ? payload.packages : [];
-    const componentNames = (components as Array<{ component?: string | string[] }>)
+    const componentNames = (
+        components as Array<{ component?: string | string[] }>
+    )
         .map(c =>
             Array.isArray(c?.component)
                 ? c.component.join('|')
                 : c?.component || '?'
         )
         .slice(0, 15);
-    const mpComponents = (components as Array<{ component?: string | string[] }>)
+    const mpComponents = (
+        components as Array<{ component?: string | string[] }>
+    )
         .map(c =>
             Array.isArray(c?.component)
                 ? c.component.join('|')

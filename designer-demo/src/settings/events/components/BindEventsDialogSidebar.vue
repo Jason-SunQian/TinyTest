@@ -43,10 +43,9 @@
 /* metaService: engine.setting.event.BindEventsDialogSidebar */
 import { getMetaApi } from '@opentiny/tiny-engine-meta-register';
 import { Search } from '@opentiny/vue';
-
-import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { inject, ref, watchEffect } from 'vue';
 
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import { INVALID_VARNAME_CHAR_RE, NEW_METHOD_TYPE } from './constants';
@@ -65,8 +64,7 @@ export default {
     },
     // eslint-disable-next-line vue/component-api-style
     setup(props) {
-        const { getMethodNameList } =
-            getMetaApi(SCRIPT_PLUGIN_ID) || {};
+        const { getMethodNameList } = getMetaApi(SCRIPT_PLUGIN_ID) || {};
         const { t } = useDesignerI18n();
 
         const searchValue = ref('');

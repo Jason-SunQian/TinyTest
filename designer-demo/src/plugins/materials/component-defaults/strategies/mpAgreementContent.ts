@@ -32,7 +32,10 @@ export function syncMpAgreementContentDisabledAndState(
         return;
     }
 
-    const stateKey = allocateIndexedStateKey(rootState, 'mpAgreementContentDisabled');
+    const stateKey = allocateIndexedStateKey(
+        rootState,
+        'mpAgreementContentDisabled'
+    );
     rootState[stateKey] =
         disabledProp === undefined || disabledProp === ''
             ? true

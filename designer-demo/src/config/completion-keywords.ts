@@ -124,7 +124,7 @@ const getInjectedNamespaceKeywords = (): string[] => {
     if (!cfg || typeof cfg !== 'object') return [];
 
     const names = new Set<string>();
-    const namespaces = cfg.namespaces;
+    const {namespaces} = cfg;
     if (namespaces && typeof namespaces === 'object') {
         for (const [ns, def] of Object.entries(namespaces)) {
             const members = def?.members;

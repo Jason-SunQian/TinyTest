@@ -269,10 +269,10 @@ const highlightMethodFn = name => {
         if (retries <= 0) {
             return;
         }
-        setTimeout(() => applySelection(retries - 1), 50);
+        setTimeout(() => { applySelection(retries - 1); }, 50);
     };
 
-    nextTick(() => applySelection());
+    nextTick(() => { applySelection(); });
 };
 
 export default ({ emit }) => {

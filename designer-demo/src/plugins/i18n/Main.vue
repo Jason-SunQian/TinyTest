@@ -594,10 +594,7 @@ export default {
             }
             const zhData = messages.zh_CN || {};
             const enData = messages.en_US || {};
-            const allI18nKey = [
-                ...Object.keys(zhData),
-                ...Object.keys(enData)
-            ];
+            const allI18nKey = [...Object.keys(zhData), ...Object.keys(enData)];
 
             // Keep canvas locale bag in sync
             if (!i18nResource.messages) {

@@ -39,8 +39,8 @@
                             >{{ row.label }}</span>
                         <template v-if="row.id !== 'body'">
                             <!--
-                              Hidden nodes use eye-invisible (always visible via CSS)
-                              so users can spot / restore them without hovering.
+                                Hidden nodes use eye-invisible (always visible via CSS)
+                                so users can spot / restore them without hovering.
                             -->
                             <svg-icon
                                 :key="`eye-${row.id}-${isNodeVisible(row.id)}`"

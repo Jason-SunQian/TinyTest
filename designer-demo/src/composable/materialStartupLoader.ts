@@ -35,6 +35,16 @@ type ResourceApi = {
 
 type GetMetaApi = (id: string) => unknown;
 
+type PanelSnippetChild = {
+    snippetName?: string;
+    component?: string;
+};
+
+type PanelSnippetGroup = {
+    group?: string;
+    children?: PanelSnippetChild[];
+};
+
 // Claim as early as this module loads in VSCode so App fetchMaterial cannot race ahead
 if (
     typeof window !== 'undefined' &&
@@ -83,14 +93,17 @@ const pickMaterialsPayload = (v: unknown) => {
 /** webview 内相对路径 fetch 会得到空 body */
 const toAbsoluteBundleUrl = (url: string): string => {
     if (/^https?:\/\//.test(url)) return url;
+    /* eslint-disable @typescript-eslint/naming-convention -- window / Vite env globals */
     const win = window as Window & { TINY_DESIGNER_ORIGIN?: string };
+    const viteOrigin = (
+        import.meta as ImportMeta & { env?: { VITE_ORIGIN?: string } }
+    ).env?.VITE_ORIGIN;
     const origin = (
         win.TINY_DESIGNER_ORIGIN ||
-        (typeof import.meta !== 'undefined' &&
-            (import.meta as ImportMeta & { env?: { VITE_ORIGIN?: string } }).env
-                ?.VITE_ORIGIN) ||
+        viteOrigin ||
         'http://localhost:8090'
     ).replace(/\/$/, '');
+    /* eslint-enable @typescript-eslint/naming-convention */
     return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
 };
 
@@ -207,11 +220,15 @@ const ensureInitialMaterialsLoad = async () => {
                 isVsCodeEnv: !!isVsCodeEnv,
                 hasHttpBundles,
                 bundleUrls,
-                hasAddMaterials: typeof materialApi?.addMaterials === 'function',
+                hasAddMaterials:
+                    typeof materialApi?.addMaterials === 'function',
                 caller: materialsDiagCaller()
             });
 
-            if (!materialApi || typeof materialApi.addMaterials !== 'function') {
+            if (
+                !materialApi ||
+                typeof materialApi.addMaterials !== 'function'
+            ) {
                 throw new Error('material service addMaterials not ready');
             }
 
@@ -235,7 +252,8 @@ const ensureInitialMaterialsLoad = async () => {
                 materialsDiag('startup: path=exclusiveColdStart(forceLoad)', {
                     attempt,
                     hasClearHandler: hasMaterialsClearHandler(),
-                    hasMetaClear: typeof materialApi.clearMaterials === 'function'
+                    hasMetaClear:
+                        typeof materialApi.clearMaterials === 'function'
                 });
                 try {
                     // clear/dedupe/panel via same getMetaApi instance as addMaterials
@@ -249,16 +267,21 @@ const ensureInitialMaterialsLoad = async () => {
                                     { error: e }
                                 );
                             }
-                            const ok = await forceLoadFromBundleUrls(getMetaApi);
-                            materialsDiag('startup: forceLoad inside exclusive', {
-                                forceLoadOk: ok,
-                                panelGroups: Array.isArray(
-                                    materialApi.materialState?.components
-                                )
-                                    ? materialApi.materialState!.components
-                                          .length
-                                    : -1
-                            });
+                            const ok = await forceLoadFromBundleUrls(
+                                getMetaApi
+                            );
+                            materialsDiag(
+                                'startup: forceLoad inside exclusive',
+                                {
+                                    forceLoadOk: ok,
+                                    panelGroups: Array.isArray(
+                                        materialApi.materialState?.components
+                                    )
+                                        ? materialApi.materialState!.components
+                                              .length
+                                        : -1
+                                }
+                            );
                         },
                         {
                             // Prefer getMetaApi when present; else session handlers
@@ -273,20 +296,16 @@ const ensureInitialMaterialsLoad = async () => {
                                 ? {
                                       getPanelGroups: () =>
                                           (materialApi.materialState
-                                              ?.components || []) as {
-                                              group?: string;
-                                              children?: {
-                                                  snippetName?: string;
-                                                  component?: string;
-                                              }[];
-                                          }[]
+                                              ?.components ||
+                                              []) as PanelSnippetGroup[]
                                   }
                                 : {}),
                             ...(typeof materialApi.dedupePanelSnippets ===
                             'function'
                                 ? {
-                                      applyDedupe: () =>
-                                          materialApi.dedupePanelSnippets?.()
+                                      applyDedupe: () => {
+                                          materialApi.dedupePanelSnippets?.();
+                                      }
                                   }
                                 : {})
                         }
@@ -348,19 +367,14 @@ const ensureInitialMaterialsLoad = async () => {
                     ? {
                           getPanelGroups: () =>
                               (materialApi.materialState?.components ||
-                                  []) as {
-                                  group?: string;
-                                  children?: {
-                                      snippetName?: string;
-                                      component?: string;
-                                  }[];
-                              }[]
+                                  []) as PanelSnippetGroup[]
                       }
                     : {}),
                 ...(typeof materialApi.dedupePanelSnippets === 'function'
                     ? {
-                          applyDedupe: () =>
-                              materialApi.dedupePanelSnippets?.()
+                          applyDedupe: () => {
+                              materialApi.dedupePanelSnippets?.();
+                          }
                       }
                     : {})
             }
@@ -369,9 +383,7 @@ const ensureInitialMaterialsLoad = async () => {
         releaseMaterialsStartupOwnership();
     }
     // eslint-disable-next-line no-console
-    console.warn(
-        '[Materials] startup auto-load used fallback after retries'
-    );
+    console.warn('[Materials] startup auto-load used fallback after retries');
 };
 
 const setupAssetBundleUpdateListener = () => {

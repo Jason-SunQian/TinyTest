@@ -15,13 +15,13 @@
 
 1. 低代码 Page JS 除 **`this.utils`** 外，还需要读写主工程 **Pinia store**（如 donations 的 `local` / `transaction`，PIN 页的 `secure` / `encrypt`）。
 2. **当前状态（已闭环）**：
-   - 运行态：`this.stores.<短名>` 由 `manifest.storeWhitelist` → `stores.js` → `lowcode.js` 挂载，与 `@/stores` 同源；
-   - 设计态：`this.stores.` 二级补全来自同一白名单写入的 `completion-utils.json`（插件注入 `TINY_COMPLETION_CONFIG`）；
-   - **`src/stores` 下公共 store 已全部进白名单（16 个）**，分批联调验证通过（含 `encrypt` / `secure`）。
+    - 运行态：`this.stores.<短名>` 由 `manifest.storeWhitelist` → `stores.js` → `lowcode.js` 挂载，与 `@/stores` 同源；
+    - 设计态：`this.stores.` 二级补全来自同一白名单写入的 `completion-utils.json`（插件注入 `TINY_COMPLETION_CONFIG`）；
+    - **`src/stores` 下公共 store 已全部进白名单（16 个）**，分批联调验证通过（含 `encrypt` / `secure`）。
 3. **命名约定**：
-   - Page JS 使用 **短名**（`transaction`、`local`、`secure`…），**不再**使用 `this.stores['common.transaction']` 等 Pinia `$id` 字符串键；
-   - 交易结果页：直接 **`this.stores.transaction.setTransResult(...)` + `openResultPage()`**，不再经 `this.utils.openTransResult(..., store)` 中转（该 util 已移除）；
-   - PIN / 加密：走 **`this.stores.secure`** / **`this.stores.encrypt`**；Page JS **勿打印明文 PIN**。
+    - Page JS 使用 **短名**（`transaction`、`local`、`secure`…），**不再**使用 `this.stores['common.transaction']` 等 Pinia `$id` 字符串键；
+    - 交易结果页：直接 **`this.stores.transaction.setTransResult(...)` + `openResultPage()`**，不再经 `this.utils.openTransResult(..., store)` 中转（该 util 已移除）；
+    - PIN / 加密：走 **`this.stores.secure`** / **`this.stores.encrypt`**；Page JS **勿打印明文 PIN**。
 
 ---
 
@@ -29,21 +29,21 @@
 
 ### 1.1 与 `this.utils` 的对比
 
-| 维度 | `this.utils` | `this.stores` |
-|------|--------------|---------------|
-| 真源 | `src/utils/index.ts` → `@/utils` | **`lowcode-utils/manifest.json` → `storeWhitelist`** |
-| 运行态挂载 | `utils.js` + `lowcodeWrap` | **`stores.js`**（工厂表）+ `lowcode.js` → `collectStores()` |
-| 补全数据来源 | 扫描 `utils/index.ts` → `namespaces.utils` | **同一 manifest 白名单** → `namespaces.stores` |
-| 构建命令 | `pnpm run build:lowcode-utils` | **同一命令**（共用 `completion-utils.json` + 生成 `stores.js`） |
-| Page JS 形态 | `this.utils.xxx()` | `this.stores.xxx.method()`（**实例**，非 `useXxxStore()` 工厂） |
+| 维度         | `this.utils`                               | `this.stores`                                                   |
+| ------------ | ------------------------------------------ | --------------------------------------------------------------- |
+| 真源         | `src/utils/index.ts` → `@/utils`           | **`lowcode-utils/manifest.json` → `storeWhitelist`**            |
+| 运行态挂载   | `utils.js` + `lowcodeWrap`                 | **`stores.js`**（工厂表）+ `lowcode.js` → `collectStores()`     |
+| 补全数据来源 | 扫描 `utils/index.ts` → `namespaces.utils` | **同一 manifest 白名单** → `namespaces.stores`                  |
+| 构建命令     | `pnpm run build:lowcode-utils`             | **同一命令**（共用 `completion-utils.json` + 生成 `stores.js`） |
+| Page JS 形态 | `this.utils.xxx()`                         | `this.stores.xxx.method()`（**实例**，非 `useXxxStore()` 工厂） |
 
 ### 1.2 交付物与职责
 
-| 交付物 | 产出位置 | 作用 |
-|--------|----------|------|
-| `completion-utils.json` | OAB `src/lowcode/utils/` | 设计器 Monaco：`namespaces.stores.members`（插件工作区注入） |
-| `stores.js` | OAB `src/lowcode/utils/` → 复制到 `common/extensions/stores.js` | 运行态 `LOWCODE_STORE_FACTORIES` |
-| `lowcode.js` | OAB `src/lowcode/common/config/lowcode.js` | glob 加载 `stores.js`，`collectStores()` 实例化 |
+| 交付物                  | 产出位置                                                        | 作用                                                         |
+| ----------------------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
+| `completion-utils.json` | OAB `src/lowcode/utils/`                                        | 设计器 Monaco：`namespaces.stores.members`（插件工作区注入） |
+| `stores.js`             | OAB `src/lowcode/utils/` → 复制到 `common/extensions/stores.js` | 运行态 `LOWCODE_STORE_FACTORIES`                             |
+| `lowcode.js`            | OAB `src/lowcode/common/config/lowcode.js`                      | glob 加载 `stores.js`，`collectStores()` 实例化              |
 
 **说明**：store 与 utils 同属 **`lowcode-utils`** 构建链路；白名单**只维护** `manifest.json` 的 `storeWhitelist`。
 
@@ -78,9 +78,9 @@ this.stores.transaction.openResultPage()
 **勿用**（已废弃）：
 
 ```js
-this.stores?.['common.local']
-this.stores?.['common.transaction']
-this.utils.openTransResult(payload, transStore)
+this.stores?.['common.local'];
+this.stores?.['common.transaction'];
+this.utils.openTransResult(payload, transStore);
 ```
 
 ---
@@ -141,33 +141,33 @@ this.utils.openTransResult(payload, transStore)
 
 ### 9.2 白名单在哪里改（单源）
 
-| 用途 | 文件（OAB 主工程） | 说明 |
-|------|---------------------|------|
-| **唯一配置** | `lowcode-utils/manifest.json` → **`storeWhitelist`** | `key` / `useStore` / `module` / `piniaId` |
-| **运行态产物** | `src/lowcode/common/extensions/stores.js`（生成，勿手改） | `LOWCODE_STORE_FACTORIES` |
-| **补全产物** | `src/lowcode/utils/completion-utils.json`（生成，勿手改） | `namespaces.stores.members` |
-| **加载** | `src/lowcode/common/config/lowcode.js` | `import.meta.glob(.../stores.js)` + `collectStores()` |
+| 用途           | 文件（OAB 主工程）                                        | 说明                                                  |
+| -------------- | --------------------------------------------------------- | ----------------------------------------------------- |
+| **唯一配置**   | `lowcode-utils/manifest.json` → **`storeWhitelist`**      | `key` / `useStore` / `module` / `piniaId`             |
+| **运行态产物** | `src/lowcode/common/extensions/stores.js`（生成，勿手改） | `LOWCODE_STORE_FACTORIES`                             |
+| **补全产物**   | `src/lowcode/utils/completion-utils.json`（生成，勿手改） | `namespaces.stores.members`                           |
+| **加载**       | `src/lowcode/common/config/lowcode.js`                    | `import.meta.glob(.../stores.js)` + `collectStores()` |
 
 **当前白名单（16，与 `manifest.storeWhitelist` 一致）**
 
-| 短名 `this.stores.*` | 工厂函数 | Pinia `$id` |
-|----------------------|----------|-------------|
-| `transaction` | `useTransactionStore` | `common.transaction` |
-| `local` | `useLocalStore` | `common.local` |
-| `user` | `useUserStore` | `common.user` |
-| `dict` | `useDictStore` | `dict` |
-| `payment` | `usePaymentStore` | `common.payment` |
-| `app` | `useAppStore` | `common.app` |
-| `constant` | `useConstantStore` | `common.constant` |
-| `account` | `useAccountStore` | `common.account` |
-| `dir` | `useDirStore` | `dir` |
-| `theme` | `useThemeStore` | `common.theme` |
-| `limit` | `useLimitStore` | `common.limit` |
-| `banner` | `useBannerStore` | `common.banner` |
-| `agreement` | `useAgreementStore` | `common.agreement` |
-| `introduce` | `useIntroduceStore` | `common.introduce` |
-| `encrypt` | `useEncryptStore` | `common.encrypt` |
-| `secure` | `useSecureStore` | `common.secure` |
+| 短名 `this.stores.*` | 工厂函数              | Pinia `$id`          |
+| -------------------- | --------------------- | -------------------- |
+| `transaction`        | `useTransactionStore` | `common.transaction` |
+| `local`              | `useLocalStore`       | `common.local`       |
+| `user`               | `useUserStore`        | `common.user`        |
+| `dict`               | `useDictStore`        | `dict`               |
+| `payment`            | `usePaymentStore`     | `common.payment`     |
+| `app`                | `useAppStore`         | `common.app`         |
+| `constant`           | `useConstantStore`    | `common.constant`    |
+| `account`            | `useAccountStore`     | `common.account`     |
+| `dir`                | `useDirStore`         | `dir`                |
+| `theme`              | `useThemeStore`       | `common.theme`       |
+| `limit`              | `useLimitStore`       | `common.limit`       |
+| `banner`             | `useBannerStore`      | `common.banner`      |
+| `agreement`          | `useAgreementStore`   | `common.agreement`   |
+| `introduce`          | `useIntroduceStore`   | `common.introduce`   |
+| `encrypt`            | `useEncryptStore`     | `common.encrypt`     |
+| `secure`             | `useSecureStore`      | `common.secure`      |
 
 > 维护以 **`lowcode-utils/manifest.json`** 为准；上表若与 manifest 不一致，以 manifest + 最近一次 `build:lowcode-utils` 产物为准。
 
@@ -177,14 +177,22 @@ this.utils.openTransResult(payload, transStore)
 
 ```json
 {
-  "namespaces": {
-    "stores": {
-      "members": [
-        { "name": "transaction", "detail": "@/stores/transaction", "signature": "common.transaction" },
-        { "name": "local", "detail": "@/stores/local", "signature": "common.local" }
-      ]
+    "namespaces": {
+        "stores": {
+            "members": [
+                {
+                    "name": "transaction",
+                    "detail": "@/stores/transaction",
+                    "signature": "common.transaction"
+                },
+                {
+                    "name": "local",
+                    "detail": "@/stores/local",
+                    "signature": "common.local"
+                }
+            ]
+        }
     }
-  }
 }
 ```
 
@@ -237,7 +245,7 @@ import {
     useSecureStore,
     useThemeStore,
     useTransactionStore,
-    useUserStore,
+    useUserStore
 } from '@/stores';
 
 export const LOWCODE_STORE_FACTORIES = {
@@ -245,7 +253,7 @@ export const LOWCODE_STORE_FACTORIES = {
     local: useLocalStore,
     // ... 其余短名见 manifest / 生成文件
     encrypt: useEncryptStore,
-    secure: useSecureStore,
+    secure: useSecureStore
 };
 ```
 
@@ -279,10 +287,10 @@ Extension Host 亦可通过 **`useVSCodeBridge`** 注入 `window.TINY_COMPLETION
 
 ```json
 {
-  "key": "user",
-  "useStore": "useUserStore",
-  "module": "@/stores/user",
-  "piniaId": "user"
+    "key": "user",
+    "useStore": "useUserStore",
+    "module": "@/stores/user",
+    "piniaId": "user"
 }
 ```
 

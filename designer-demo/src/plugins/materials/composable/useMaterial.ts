@@ -121,24 +121,14 @@ const getMaterialStore = (): MaterialStore => {
 };
 const materialStore = getMaterialStore();
 
-// 这里存放所有TinyVue组件、原生HTML、内置组件的缓存，包含了物料插件面板里所有显示的组件，也包含了没显示的一些联动组件
-const resource = materialStore.resource;
-
-// 这里涉及到区块发布后的更新问题，所以需要单独缓存区块
-const blockResource = materialStore.blockResource;
-
-/** 组件名 -> 其所在 bundle 的 base URL（用于解析脚本绝对路径，避免主工程物料脚本被错误拼到设计器 origin） */
-const componentBundleBaseMap = materialStore.componentBundleBaseMap;
+const { resource, blockResource, componentBundleBaseMap, materialState } =
+    materialStore;
 
 /** Session lock lives in materialsSession.ts (shared with materialStartupLoader). */
 const getHasBuiltinMaterials = () => materialStore.hasBuiltinMaterials;
 const setHasBuiltinMaterials = (v: boolean) => {
     materialStore.hasBuiltinMaterials = v;
 };
-
-// 这里存放的是物料插件面板里所有显示的组件
-// 物料依赖的包
-const materialState = materialStore.materialState;
 
 const applyDedupeToPanel = () => {
     const next = dedupeSnippetGroups(materialState.components as any);
@@ -150,13 +140,8 @@ const applyDedupeToPanel = () => {
 };
 
 const runExclusiveColdStart = async (work: () => Promise<void>) => {
-    await runExclusiveColdStartSession(work, {
-        clear: () => {
-            clearMaterials();
-        },
-        getPanelGroups: () => materialState.components as any,
-        applyDedupe: () => applyDedupeToPanel()
-    });
+    // clear / getPanel / dedupe come from registerMaterialsSessionHandlers
+    await runExclusiveColdStartSession(work);
     setHasBuiltinMaterials(true);
 };
 
@@ -296,7 +281,9 @@ const clearMaterials = () => {
 registerMaterialsSessionHandlers({
     clear: clearMaterials,
     getPanelGroups: () => materialState.components as any,
-    applyDedupe: () => applyDedupeToPanel()
+    applyDedupe: () => {
+        applyDedupeToPanel();
+    }
 });
 
 const clearBlockResources = () => {
@@ -1296,11 +1283,14 @@ const normalizeMaterialAssetUrls = (
  */
 const addMaterials = (materials: Material, bundleUrl?: string) => {
     if (isMaterialsWriteBlocked()) {
-        materialsDiag('addMaterials: blocked (startup ownership / session ready)', {
-            bundleUrl: bundleUrl ?? '(builtin/no-url)',
-            payload: summarizeMaterialPayload(materials),
-            caller: materialsDiagCaller()
-        });
+        materialsDiag(
+            'addMaterials: blocked (startup ownership / session ready)',
+            {
+                bundleUrl: bundleUrl ?? '(builtin/no-url)',
+                payload: summarizeMaterialPayload(materials),
+                caller: materialsDiagCaller()
+            }
+        );
         return;
     }
     materialsDiag('addMaterials', {
@@ -1443,9 +1433,7 @@ const fetchMaterial = async () => {
                     status: response.status,
                     reason:
                         response.status === 'rejected'
-                            ? String(
-                                  (response as PromiseRejectedResult).reason
-                              )
+                            ? String((response as PromiseRejectedResult).reason)
                             : null
                 });
                 return;
@@ -1489,11 +1477,12 @@ const fetchMaterial = async () => {
                         e
                     );
                 }
-            } else if (console?.warn) {
+            } else {
                 const keys =
                     response.value && typeof response.value === 'object'
                         ? Object.keys(response.value as any)
                         : [];
+                // eslint-disable-next-line no-console
                 console.warn(
                     '[Materials] bundle 结构不符合预期，未找到 materials:',
                     bundleUrl,

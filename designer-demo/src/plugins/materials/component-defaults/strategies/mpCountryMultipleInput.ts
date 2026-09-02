@@ -32,7 +32,10 @@ export function syncMpCountryMultipleInputModelValueAndState(
         return;
     }
 
-    const stateKey = allocateIndexedStateKey(rootState, 'mpCountryMultipleInput');
+    const stateKey = allocateIndexedStateKey(
+        rootState,
+        'mpCountryMultipleInput'
+    );
     rootState[stateKey] = Array.isArray(mv) ? mv : [];
     props.modelValue = {
         type: 'JSExpression',

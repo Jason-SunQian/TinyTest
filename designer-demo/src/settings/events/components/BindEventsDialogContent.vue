@@ -68,10 +68,9 @@
 import { VueMonaco } from '@opentiny/tiny-engine-common';
 import { getMetaApi } from '@opentiny/tiny-engine-meta-register';
 import { Input, Checkbox } from '@opentiny/vue';
-
-import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { inject } from 'vue';
 
+import { SCRIPT_PLUGIN_ID } from '@/constants/plugin-ids';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import {
@@ -94,8 +93,7 @@ export default {
     },
     // eslint-disable-next-line
     setup() {
-        const { getMethodNameList } =
-            getMetaApi(SCRIPT_PLUGIN_ID) || {};
+        const { getMethodNameList } = getMetaApi(SCRIPT_PLUGIN_ID) || {};
         const { t } = useDesignerI18n();
 
         const context = inject('context');

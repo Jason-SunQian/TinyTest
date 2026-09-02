@@ -34,9 +34,9 @@ import {
     Collapse as TinyCollapse,
     CollapseItem as TinyCollapseItem
 } from '@opentiny/vue';
-import { PluginPanel } from '@/components/i18n-wrappers';
 import { useLayout } from '@opentiny/tiny-engine-meta-register';
 
+import { PluginPanel } from '@/components/i18n-wrappers';
 import { useDesignerI18n } from '@/services/i18nService';
 
 import AdvanceConfig from './components/AdvanceConfig.vue';

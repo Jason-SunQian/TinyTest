@@ -38,7 +38,9 @@ function isPageLockTip(options: ConfirmOptions): boolean {
 /**
  * Returns a partial Modal API for Object.assign via initHook(HOOK_NAME.useModal, …).
  */
-export function createPageLockAwareModal(): { confirm: (options: ConfirmOptions) => void } {
+export function createPageLockAwareModal(): {
+    confirm: (options: ConfirmOptions) => void;
+} {
     const registered = useModal() as {
         confirm: (options: ConfirmOptions) => void;
     };
@@ -53,11 +55,11 @@ export function createPageLockAwareModal(): { confirm: (options: ConfirmOptions)
                 // eslint-disable-next-line no-console
                 console.info(
                     '[designer] suppressed page-lock confirm:',
-                    messageToText(options.message),
+                    messageToText(options.message)
                 );
                 return;
             }
-            return baseConfirm(options);
-        },
+            baseConfirm(options);
+        }
     };
 }

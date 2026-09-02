@@ -48,10 +48,7 @@
                 placement="top"
                 :open-delay="OPEN_DELAY.Default"
             >
-                <public-icon
-                    name="internationalization"
-                    @click="openPopover"
-                />
+                <public-icon name="internationalization" @click="openPopover" />
             </tiny-tooltip>
         </template>
     </tiny-popover>

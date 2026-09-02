@@ -231,7 +231,9 @@ export default {
 
         .tiny-tabs__nav-scroll .tiny-tabs__active-bar {
             height: 3px;
-            background-color: var(--te-datasource-settings-tabs-item-color-active);
+            background-color: var(
+                --te-datasource-settings-tabs-item-color-active
+            );
         }
 
         .tiny-tabs__content {
@@ -286,7 +288,9 @@ export default {
         .tiny-tabs__nav-wrap-not-separator::after {
             z-index: 2;
             margin-bottom: 16px;
-            background-color: var(--te-datasource-settings-tabs-border-color) !important;
+            background-color: var(
+                --te-datasource-settings-tabs-border-color
+            ) !important;
         }
     }
 

@@ -55,7 +55,7 @@ const getSessionStore = (): MaterialsSessionStore => {
 };
 const sessionStore = getSessionStore();
 
-export const claimMaterialsStartupOwnership = () => {
+const claimMaterialsStartupOwnership = () => {
     if (!sessionStore.startupOwnership) {
         sessionStore.startupOwnership = new Promise<void>(resolve => {
             sessionStore.resolveStartupOwnership = resolve;
@@ -65,7 +65,7 @@ export const claimMaterialsStartupOwnership = () => {
     return sessionStore.startupOwnership;
 };
 
-export const releaseMaterialsStartupOwnership = () => {
+const releaseMaterialsStartupOwnership = () => {
     if (sessionStore.resolveStartupOwnership) {
         sessionStore.resolveStartupOwnership();
         sessionStore.resolveStartupOwnership = null;
@@ -74,7 +74,7 @@ export const releaseMaterialsStartupOwnership = () => {
     sessionStore.startupOwnership = null;
 };
 
-export const awaitMaterialsStartupOwnership = async () => {
+const awaitMaterialsStartupOwnership = async () => {
     if (sessionStore.startupOwnership) {
         materialsDiag('startupOwnership: await');
         await sessionStore.startupOwnership;
@@ -86,7 +86,7 @@ export const awaitMaterialsStartupOwnership = async () => {
  * writer may call addMaterials/initBuiltin. Prevents 2x/3x panel stacking when
  * App fetchResource / TinyEngine race with forceLoad.
  */
-export const isMaterialsWriteBlocked = () => {
+const isMaterialsWriteBlocked = () => {
     if (sessionStore.exclusiveWriterDepth > 0) return false;
     if (sessionStore.startupOwnership) return true;
     if (sessionStore.materialsSessionReady) return true;
@@ -94,7 +94,7 @@ export const isMaterialsWriteBlocked = () => {
 };
 
 /** useMaterial registers real clear/panel hooks here (getMetaApi may strip them). */
-export const registerMaterialsSessionHandlers = (
+const registerMaterialsSessionHandlers = (
     handlers: MaterialsSessionHandlers
 ) => {
     sessionStore.sessionHandlers = {
@@ -103,34 +103,34 @@ export const registerMaterialsSessionHandlers = (
     };
 };
 
-export const hasMaterialsClearHandler = () =>
+const hasMaterialsClearHandler = () =>
     typeof sessionStore.sessionHandlers.clear === 'function';
 
 /** @deprecated use registerMaterialsSessionHandlers */
-export const registerMaterialsClearHandler = (fn: () => void) => {
+const registerMaterialsClearHandler = (fn: () => void) => {
     sessionStore.sessionHandlers.clear = fn;
 };
 
-export const isMaterialsSessionReady = () => sessionStore.materialsSessionReady;
+const isMaterialsSessionReady = () => sessionStore.materialsSessionReady;
 
-export const getMaterialsSessionGate = () => sessionStore.materialsSessionGate;
+const getMaterialsSessionGate = () => sessionStore.materialsSessionGate;
 
-export const resetMaterialsSession = () => {
+const resetMaterialsSession = () => {
     sessionStore.materialsSessionReady = false;
 };
 
-export const markMaterialsSessionReady = () => {
+const markMaterialsSessionReady = () => {
     sessionStore.materialsSessionReady = true;
     materialsDiag('markMaterialsSessionReady');
 };
 
-export const awaitMaterialsSessionGate = async () => {
+const awaitMaterialsSessionGate = async () => {
     if (sessionStore.materialsSessionGate) {
         await sessionStore.materialsSessionGate;
     }
 };
 
-export const hasMainProjectSnippetsIn = (groups: SnippetGroup[]) =>
+const hasMainProjectSnippetsIn = (groups: SnippetGroup[]) =>
     groups.some(
         g =>
             g.group === '业务组件' ||
@@ -140,8 +140,8 @@ export const hasMainProjectSnippetsIn = (groups: SnippetGroup[]) =>
             )
     );
 
-export const dedupeSnippetGroups = (groups: SnippetGroup[]): SnippetGroup[] => {
-    const childKey = (c: SnippetChild & { schema?: { componentName?: string } }) =>
+const dedupeSnippetGroups = (groups: SnippetGroup[]): SnippetGroup[] => {
+    const childKey = (c: SnippetChild) =>
         c.snippetName || c.component || c.schema?.componentName;
 
     const merged = new Map<string, SnippetGroup>();
@@ -192,7 +192,7 @@ const applyPanelDedupe = () => {
  * Wait for any in-flight load, then clear + load exactly once.
  * fetchMaterial joins the same gate and will not addMaterials again after ready.
  */
-export const runExclusiveColdStart = async (
+const runExclusiveColdStart = async (
     work: () => Promise<void>,
     options?: MaterialsSessionHandlers
 ) => {
@@ -202,13 +202,13 @@ export const runExclusiveColdStart = async (
     }
 
     const panel = options?.getPanelGroups?.() || readPanel();
-    if (
-        sessionStore.materialsSessionReady &&
-        hasMainProjectSnippetsIn(panel)
-    ) {
-        materialsDiag('runExclusiveColdStart: already ready with main project', {
-            panel: summarizeSnippetPanel(panel)
-        });
+    if (sessionStore.materialsSessionReady && hasMainProjectSnippetsIn(panel)) {
+        materialsDiag(
+            'runExclusiveColdStart: already ready with main project',
+            {
+                panel: summarizeSnippetPanel(panel)
+            }
+        );
         if (options?.applyDedupe) {
             options.applyDedupe();
         } else {
@@ -251,7 +251,7 @@ export const runExclusiveColdStart = async (
 };
 
 /** Used by fetchMaterial when no exclusive cold start claimed the gate yet. */
-export const runInMaterialsSessionGate = async (work: () => Promise<void>) => {
+const runInMaterialsSessionGate = async (work: () => Promise<void>) => {
     if (sessionStore.materialsSessionReady) {
         materialsDiag('sessionGate: skip (ready)');
         return;
@@ -275,4 +275,23 @@ export const runInMaterialsSessionGate = async (work: () => Promise<void>) => {
         }
     })();
     await sessionStore.materialsSessionGate;
+};
+
+export {
+    awaitMaterialsSessionGate,
+    awaitMaterialsStartupOwnership,
+    claimMaterialsStartupOwnership,
+    dedupeSnippetGroups,
+    getMaterialsSessionGate,
+    hasMainProjectSnippetsIn,
+    hasMaterialsClearHandler,
+    isMaterialsSessionReady,
+    isMaterialsWriteBlocked,
+    markMaterialsSessionReady,
+    registerMaterialsClearHandler,
+    registerMaterialsSessionHandlers,
+    releaseMaterialsStartupOwnership,
+    resetMaterialsSession,
+    runExclusiveColdStart,
+    runInMaterialsSessionGate
 };

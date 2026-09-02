@@ -106,8 +106,7 @@ export default {
         const { activePlugin } = useLayout();
         const { pageState, canvasApi, setCurrentSchema, getCurrentSchema } =
             useCanvas();
-        const { getMethods, saveMethod } =
-            getMetaApi(SCRIPT_PLUGIN_ID) || {};
+        const { getMethods, saveMethod } = getMetaApi(SCRIPT_PLUGIN_ID) || {};
         const { publish } = useMessage();
 
         const state = reactive({

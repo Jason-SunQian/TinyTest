@@ -136,7 +136,6 @@ import { useDesignerI18n } from '@/services/i18nService';
 import BindEventsDialog, { open as openDialog } from './BindEventsDialog.vue';
 import AddEventsDialog from './AddEventsDialog.vue';
 
-
 export default {
     components: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -162,7 +161,6 @@ export default {
         const { commonEvents = {} } = getMergeMeta(
             'engine.setting.event'
         ).options;
-
 
         // 事件名称
         // 事件绑定的处理方法对象
@@ -246,7 +244,7 @@ export default {
                     const eventArgs =
                         (typeof value === 'string' &&
                             !params &&
-                            (/\((.+)\)$/.exec(value))?.[1]?.split(',')) ||
+                            /\((.+)\)$/.exec(value)?.[1]?.split(',')) ||
                         params;
                     const action = {
                         eventName,

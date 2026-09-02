@@ -132,10 +132,10 @@ import {
     Collapse as TinyCollapse,
     CollapseItem as TinyCollapseItem
 } from '@opentiny/vue';
-import { MonacoEditor } from '@/components/i18n-wrappers';
 import { verifyJsVarName } from '@opentiny/tiny-engine-common/js/verification';
 import * as Monaco from 'monaco-editor';
 
+import { MonacoEditor } from '@/components/i18n-wrappers';
 import { initCompletion } from '@/composable/completion';
 import { useDesignerI18n } from '@/services/i18nService';
 
@@ -313,7 +313,7 @@ export default {
             }
             return validateMonacoEditorData(
                 variableEditor.value,
-                t('designer.state.initialData'),
+                t('designer.state.initialData')
             );
         };
 

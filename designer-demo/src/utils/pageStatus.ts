@@ -10,7 +10,7 @@ import { ENABLE_PAGE_LOCK_GUARD } from '@/config/featureFlags';
 
 const FALLBACK_OCCUPIER = {
     id: '__local__',
-    username: 'Local User',
+    username: 'Local User'
 };
 const { PAGE_STATUS } = constants;
 

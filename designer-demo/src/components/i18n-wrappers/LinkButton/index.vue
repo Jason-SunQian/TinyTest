@@ -7,8 +7,8 @@
                     {{ tips }}
                 </div>
                 <!--
-                  Hide "View Details": links go to opentiny.design help-center,
-                  but target=_blank is often blocked / no-op in VS Code webview.
+                    Hide "View Details": links go to opentiny.design help-center,
+                    but target=_blank is often blocked / no-op in VS Code webview.
                 -->
             </template>
             <svg-icon name="plugin-icon-plugin-help" />

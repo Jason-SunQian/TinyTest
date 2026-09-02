@@ -5,14 +5,16 @@
 ---
 
 ### 目标
-- 保留核心能力：逻辑与行为与官方一致或兼容
-- 可快速替换：通过 Registry 覆盖官方入口
-- 可本地二开：在 `designer-demo/src` 内管理代码与资源
-- 统一国际化：使用 `useDesignerI18n` 钩子，词条集中管理
+
+-   保留核心能力：逻辑与行为与官方一致或兼容
+-   可快速替换：通过 Registry 覆盖官方入口
+-   可本地二开：在 `designer-demo/src` 内管理代码与资源
+-   统一国际化：使用 `useDesignerI18n` 钩子，词条集中管理
 
 ---
 
 ### 迁移原则
+
 1. 入口替换优先：不强求目录完全一致，能覆盖入口即可
 2. 尽量零侵入：保留原逻辑、少量适配
 3. 类型兜底：必要时使用 `.d.ts` 提供 TS 声明
@@ -21,6 +23,7 @@
 ---
 
 ### 推荐目录结构（示例：Save 工具栏）
+
 ```
 designer-demo/src/toolbars/save/
   ├─ Main.vue         # 入口组件（自定义 UI + 逻辑包装）
@@ -32,19 +35,21 @@ designer-demo/src/toolbars/save/
 ---
 
 ### 注册表覆盖（Registry）
+
 在 `designer-demo/registry.ts` 中直接替换官方 META_APP 入口：
+
 ```ts
-import { META_SERVICE, META_APP } from '@opentiny/tiny-engine-meta-register'
-import CustomSave from './src/toolbars/save/Main.vue'
+import { META_SERVICE, META_APP } from '@opentiny/tiny-engine-meta-register';
+import CustomSave from './src/toolbars/save/Main.vue';
 
 export default {
-  [META_APP.Save]: {
-    id: 'engine.toolbars.customSave',
-    title: 'Save',
-    icon: 'save',
-    entry: CustomSave
-  }
-}
+    [META_APP.Save]: {
+        id: 'engine.toolbars.customSave',
+        title: 'Save',
+        icon: 'save',
+        entry: CustomSave
+    }
+};
 ```
 
 > 要点：自定义 ID，避免与官方 ID 冲突；entry 可直接指向 Vue 组件文件。
@@ -52,30 +57,34 @@ export default {
 ---
 
 ### 国际化策略（强烈推荐）
+
 统一使用 `src/services/i18nService.ts` 提供的钩子：
 
 ```ts
-import { useDesignerI18n } from '@/services/i18nService'
+import { useDesignerI18n } from '@/services/i18nService';
 
-const { t } = useDesignerI18n()
+const { t } = useDesignerI18n();
 ```
 
-- 词条文件：`src/i18n/zh-CN.json`、`src/i18n/en-US.json`
-- 在应用创建前合并词条：
-  - `registry.ts` 或 `src/main.ts` 调用 `loadDesignerI18n()`
-- 防警告：内部对 `t` 做了 `te(key)` 存在性判断，无词条时不报错
+-   词条文件：`src/i18n/zh-CN.json`、`src/i18n/en-US.json`
+-   在应用创建前合并词条：
+    -   `registry.ts` 或 `src/main.ts` 调用 `loadDesignerI18n()`
+-   防警告：内部对 `t` 做了 `te(key)` 存在性判断，无词条时不报错
 
 > 说明：TinyEngine 内部仍可能在部分位置调用其内置 `t`；我们方案会优先使用自定义 `t` 并合并词条，兼顾“可控”和“少警告”。
 
 ---
 
 ### 类型支持（如遇到 TS 报错）
+
 在 `src/types/` 下添加 `.d.ts`：
-- `tiny-engine-common.d.ts`：声明 `VueMonaco`、`ToolbarBase`、`handlePageUpdate` 等
-- `tiny-engine-meta-register.d.ts`：声明 `useCanvas`、`useMessage`、`META_APP` 等
-- `tiny-engine-utils.d.ts`：声明 `constants`
+
+-   `tiny-engine-common.d.ts`：声明 `VueMonaco`、`ToolbarBase`、`handlePageUpdate` 等
+-   `tiny-engine-meta-register.d.ts`：声明 `useCanvas`、`useMessage`、`META_APP` 等
+-   `tiny-engine-utils.d.ts`：声明 `constants`
 
 并在 `tsconfig.json` 中包含：
+
 ```json
 "include": [
   "src/types/**/*.d.ts",
@@ -88,42 +97,47 @@ const { t } = useDesignerI18n()
 ---
 
 ### 迁移步骤（示例：Save 插件）
+
 1. 拷贝官方核心代码到 `src/toolbars/save/`
 2. 修正导入：统一从 `@opentiny/tiny-engine-meta-register`、`@opentiny/tiny-engine-common` 导入
 3. 引用官方能力：如保存调用 `@opentiny/tiny-engine-common/js/http` 的 `handlePageUpdate`
 4. i18n：模板/脚本统一 `const { t } = useDesignerI18n()`；下拉/列表文案使用 `computed` 确保切换生效
 5. 注册表替换入口（见上）
 6. 本地运行验证：
-   - 保存成功/刷新后持久化
-   - 语言切换生效
-   - 控制台无类型报错
+    - 保存成功/刷新后持久化
+    - 语言切换生效
+    - 控制台无类型报错
 
 ---
 
 ### 常见问题与解法
-- 引用报红、类型缺失：在 `src/types` 增加 `.d.ts`
-- i18n 弹警告：使用 `useDesignerI18n().t`，并在 `loadDesignerI18n()` 合并词条
-- 保存失败（mock 环境）：核对接口路由（如 `/app-center/api/pages/update/:id`）与参数结构
-- 事件联动：通过 `useMessage().publish/subscribe` 触发/监听（如 `page-saved`）
-- **迁完后某按钮「没反应」**：多半是 `activePlugin` / `getMetaApi` 仍指向官方 `META_APP.*`，而 `registry` 已换成 `engine.plugins.custom*`。系统排查见 **[迁移插件功能失效排查指南](./迁移插件功能失效排查指南.md)**（含 Locate Code 案例与 ID 映射表）
+
+-   引用报红、类型缺失：在 `src/types` 增加 `.d.ts`
+-   i18n 弹警告：使用 `useDesignerI18n().t`，并在 `loadDesignerI18n()` 合并词条
+-   保存失败（mock 环境）：核对接口路由（如 `/app-center/api/pages/update/:id`）与参数结构
+-   事件联动：通过 `useMessage().publish/subscribe` 触发/监听（如 `page-saved`）
+-   **迁完后某按钮「没反应」**：多半是 `activePlugin` / `getMetaApi` 仍指向官方 `META_APP.*`，而 `registry` 已换成 `engine.plugins.custom*`。系统排查见 **[迁移插件功能失效排查指南](./迁移插件功能失效排查指南.md)**（含 Locate Code 案例与 ID 映射表）
 
 ---
 
 ### 迁移清单（Checklist）
-- [ ] 入口组件与逻辑就位（`Main.vue`、`js/index.ts`）
-- [ ] Registry 覆盖官方入口（`[META_APP.X]: false` + 自定义 id，或直接替换 entry）
-- [ ] **全仓替换**对该插件的 `getMetaApi(META_APP.X)` / `activePlugin(PLUGIN_NAME.X)` / `fixed-name`（改用自定义 id 或 `src/constants/plugin-ids.ts`）
-- [ ] **拷贝/编写插件根目录 `meta.js`**（含正确 `id`）。文件里若有 `/* metaService: ... */` 而目录向上找不到 `meta.js`，Vite 会刷屏 `找不到对应的meta.js`（一般不影响运行，但应补齐）
-- [ ] i18n 词条补齐并合并
-- [ ] TS 声明补齐（如需）
-- [ ] 保存/刷新/提示验证通过
-- [ ] 跨插件联动验证（如 Events → Script Locate Code）
-- [ ] 控制台无阻断性报错
+
+-   [ ] 入口组件与逻辑就位（`Main.vue`、`js/index.ts`）
+-   [ ] Registry 覆盖官方入口（`[META_APP.X]: false` + 自定义 id，或直接替换 entry）
+-   [ ] **全仓替换**对该插件的 `getMetaApi(META_APP.X)` / `activePlugin(PLUGIN_NAME.X)` / `fixed-name`（改用自定义 id 或 `src/constants/plugin-ids.ts`）
+-   [ ] **拷贝/编写插件根目录 `meta.js`**（含正确 `id`）。文件里若有 `/* metaService: ... */` 而目录向上找不到 `meta.js`，Vite 会刷屏 `找不到对应的meta.js`（一般不影响运行，但应补齐）
+-   [ ] i18n 词条补齐并合并
+-   [ ] TS 声明补齐（如需）
+-   [ ] 保存/刷新/提示验证通过
+-   [ ] 跨插件联动验证（如 Events → Script Locate Code）
+-   [ ] 控制台无阻断性报错
 
 ---
 
 ### 自动化建议
+
 可编写脚本，将下列操作自动化：
+
 1. 从 `packages` 扫描指定插件，复制核心文件到 `designer-demo/src/{plugins|toolbars}/<name>`
 2. 注入/更新 `registry.ts` 的覆盖项（使用自定义 ID）
 3. 扫描模板/脚本中的文案，生成 i18n 词条草稿合并至 `src/i18n/*.json`
@@ -132,15 +146,15 @@ const { t } = useDesignerI18n()
 ---
 
 ### 参考实现（节选）
-- Save 插件：
-  - 入口：`src/toolbars/save/Main.vue`
-  - 逻辑：`src/toolbars/save/js/index.ts`
-  - 入口替换：`registry.ts` `[META_APP.Save]`
-  - 保存：`handlePageUpdate(updateParams)`（import 自 `@opentiny/tiny-engine-common/js/http`）
+
+-   Save 插件：
+    -   入口：`src/toolbars/save/Main.vue`
+    -   逻辑：`src/toolbars/save/js/index.ts`
+    -   入口替换：`registry.ts` `[META_APP.Save]`
+    -   保存：`handlePageUpdate(updateParams)`（import 自 `@opentiny/tiny-engine-common/js/http`）
 
 ---
 
 ### 结语
+
 本方案已在 `Save` 工具栏验证可用，后续迁移其它插件时复用相同流程与钩子，显著降低适配成本并提升一致性。
-
-

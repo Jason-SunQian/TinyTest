@@ -159,7 +159,9 @@ export default {
             const raw = materialState.components.filter(
                 item => item.children?.length
             );
-            return dedupeSnippetGroups(raw as any) as typeof raw;
+            return dedupeSnippetGroups(
+                raw as Parameters<typeof dedupeSnippetGroups>[0]
+            ) as typeof raw;
         });
 
         type Component = typeof componentsWithChildren.value[number];

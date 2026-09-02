@@ -35,10 +35,7 @@ import {
     watch,
     nextTick
 } from 'vue';
-import {
-    BlockDescription,
-    BlockLinkField
-} from '@opentiny/tiny-engine-common';
+import { BlockDescription, BlockLinkField } from '@opentiny/tiny-engine-common';
 import {
     useCanvas,
     useProperty,
