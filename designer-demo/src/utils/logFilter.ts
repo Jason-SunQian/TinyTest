@@ -51,6 +51,8 @@ export function setupLogFilter() {
     const opts: LogFilterOptions = {
         allow: [
             /^\[Materials\]/,
+            /^\[MaterialsDiag\]/,
+            /^\[BundleUrls\]/,
             /^\[useResource\]/,
             /^\[RedoUndo\]/,
             /SecurityError/i,

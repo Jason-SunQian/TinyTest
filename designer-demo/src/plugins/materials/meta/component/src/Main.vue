@@ -13,14 +13,18 @@
         <tiny-collapse v-model="state.activeName" class="lowcode-scrollbar">
             <tiny-collapse-item
                 v-for="(item, index) in state.components"
-                :key="item.group"
+                :key="`${item.group}__${index}`"
                 :title="getComponentLabel(item)"
                 :name="index"
             >
                 <ul class="component-group" :style="{ gridTemplateColumns }">
                     <template
-                        v-for="child in item.children"
-                        :key="child.component"
+                        v-for="(child, childIdx) in item.children"
+                        :key="
+                            child.snippetName ||
+                            child.component ||
+                            `${item.group}-${childIdx}`
+                        "
                     >
                         <canvas-drag-item
                             v-if="!child.hidden && getComponentName(child)"
@@ -96,6 +100,7 @@ import { useMaterial, useCanvas } from '@opentiny/tiny-engine-meta-register';
 
 import { useDesignerI18n } from '@/services/i18nService';
 import { getMaterialsBaseFromBundleUrls } from '@/composable/loadRuntimeFromBundles';
+import { dedupeSnippetGroups } from '@/composable/materialsSession';
 
 export default {
     components: {
@@ -148,9 +153,14 @@ export default {
         }
         const panelState = inject('panelState', {}) as PanelState;
 
-        const componentsWithChildren = computed(() =>
-            materialState.components.filter(item => item.children.length)
-        );
+        const componentsWithChildren = computed(() => {
+            // Always present a deduped view — guards against store races and
+            // duplicate group entries that share the same group id.
+            const raw = materialState.components.filter(
+                item => item.children?.length
+            );
+            return dedupeSnippetGroups(raw as any) as typeof raw;
+        });
 
         type Component = typeof componentsWithChildren.value[number];
 
@@ -335,19 +345,12 @@ export default {
                         child.name.en;
 
                     // 如果 en_US 不存在或者是中文，尝试从翻译映射表获取
+                    // NOTE: do NOT mutate child during render — that triggers deep
+                    // watchers and can multiply panel items with bad v-for keys.
                     if (!enName || /[\u4e00-\u9fa5]/.test(enName)) {
                         const zhName = child.name.zh_CN;
                         if (zhName && TRANSLATION_MAP[zhName]) {
                             enName = TRANSLATION_MAP[zhName];
-                            // 动态更新 child.name.en_US，以便后续使用
-                            // eslint-disable-next-line max-depth, camelcase
-                            if (
-                                !child.name.en_US ||
-                                /[\u4e00-\u9fa5]/.test(child.name.en_US)
-                            ) {
-                                // eslint-disable-next-line camelcase
-                                child.name.en_US = enName;
-                            }
                         }
                     }
 
@@ -531,14 +534,14 @@ export default {
             );
         };
 
+        // Shallow sync only — deep watch + render-time mutations previously
+        // re-entered updates and, with undefined child.component keys, drew 3x items.
         watch(
-            () => componentsWithChildren.value,
+            componentsWithChildren,
             value => {
                 state.components = fetchComponents(value, state.searchValue);
             },
-            {
-                deep: true
-            }
+            { immediate: true }
         );
 
         // 监听语言变化，重新计算组件列表

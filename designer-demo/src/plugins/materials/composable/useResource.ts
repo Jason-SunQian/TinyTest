@@ -303,6 +303,11 @@ const fetchAppState = async () => {
 const fetchResource = async ({ isInit = true } = {}) => {
     // eslint-disable-next-line no-console
     console.log('[useResource] fetchResource start', { isInit });
+    // eslint-disable-next-line no-console
+    console.log('[MaterialsDiag] fetchResource', {
+        isInit,
+        note: 'App.vue or startup may call this'
+    });
     let id = '';
     let type = '';
     try {

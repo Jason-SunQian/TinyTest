@@ -32,6 +32,24 @@ import {
     getMaterialsBaseFromBundleUrls
 } from '@/composable/loadRuntimeFromBundles';
 import {
+    materialsDiag,
+    materialsDiagCaller,
+    summarizeMaterialPayload,
+    summarizeSnippetPanel
+} from '@/composable/materialsDiag';
+import {
+    awaitMaterialsSessionGate,
+    awaitMaterialsStartupOwnership,
+    dedupeSnippetGroups,
+    isMaterialsSessionReady,
+    isMaterialsWriteBlocked,
+    markMaterialsSessionReady,
+    registerMaterialsSessionHandlers,
+    resetMaterialsSession,
+    runExclusiveColdStart as runExclusiveColdStartSession,
+    runInMaterialsSessionGate
+} from '@/composable/materialsSession';
+import {
     getDesignerMaterialBaseUrl,
     toAbsoluteMaterialUrl
 } from '@/utils/designerOrigin';
@@ -66,26 +84,90 @@ import { syncSlotStringChildrenWithPropsChildren } from './slotChildrenPropsSync
 const { camelize, capitalize, deepClone } = utils;
 const { MATERIAL_TYPE } = constants;
 
+/**
+ * Force a process-wide singleton. Vite can evaluate this module twice (alias vs
+ * relative), which previously left panel writes on one state and clear on another
+ * → Materials panel 2x/3x and hasMainProject:false.
+ */
+const MATERIAL_STORE_KEY = '__TINY_ENGINE_MATERIAL_STORE__';
+type MaterialStore = {
+    resource: Map<string, Resource>;
+    blockResource: Map<string, BlockResource>;
+    componentBundleBaseMap: Map<string, string>;
+    materialBundleLoadTimestamp: number | null;
+    hasBuiltinMaterials: boolean;
+    materialState: MaterialState;
+};
+const getMaterialStore = (): MaterialStore => {
+    const g = globalThis as typeof globalThis & {
+        [MATERIAL_STORE_KEY]?: MaterialStore;
+    };
+    if (!g[MATERIAL_STORE_KEY]) {
+        g[MATERIAL_STORE_KEY] = {
+            resource: new Map<string, Resource>(),
+            blockResource: new Map<string, BlockResource>(),
+            componentBundleBaseMap: new Map<string, string>(),
+            materialBundleLoadTimestamp: null,
+            hasBuiltinMaterials: false,
+            materialState: reactive<MaterialState>({
+                components: [],
+                blocks: [],
+                componentsDepsMap: { scripts: [], styles: new Set() },
+                packages: []
+            })
+        };
+    }
+    return g[MATERIAL_STORE_KEY]!;
+};
+const materialStore = getMaterialStore();
+
 // 这里存放所有TinyVue组件、原生HTML、内置组件的缓存，包含了物料插件面板里所有显示的组件，也包含了没显示的一些联动组件
-const resource = new Map<string, Resource>();
+const resource = materialStore.resource;
 
 // 这里涉及到区块发布后的更新问题，所以需要单独缓存区块
-const blockResource = new Map<string, BlockResource>();
+const blockResource = materialStore.blockResource;
 
 /** 组件名 -> 其所在 bundle 的 base URL（用于解析脚本绝对路径，避免主工程物料脚本被错误拼到设计器 origin） */
-const componentBundleBaseMap = new Map<string, string>();
+const componentBundleBaseMap = materialStore.componentBundleBaseMap;
 
-/** 远程 bundle 加载时的时间戳，用于脚本/样式 URL 加 _t 避免强缓存导致用旧 chunk 名 404 */
-let materialBundleLoadTimestamp: number | null = null;
+/** Session lock lives in materialsSession.ts (shared with materialStartupLoader). */
+const getHasBuiltinMaterials = () => materialStore.hasBuiltinMaterials;
+const setHasBuiltinMaterials = (v: boolean) => {
+    materialStore.hasBuiltinMaterials = v;
+};
 
 // 这里存放的是物料插件面板里所有显示的组件
 // 物料依赖的包
-const materialState = reactive<MaterialState>({
-    components: [],
-    blocks: [],
-    componentsDepsMap: { scripts: [], styles: new Set() },
-    packages: []
-});
+const materialState = materialStore.materialState;
+
+const applyDedupeToPanel = () => {
+    const next = dedupeSnippetGroups(materialState.components as any);
+    materialState.components.splice(
+        0,
+        materialState.components.length,
+        ...(next as typeof materialState.components)
+    );
+};
+
+const runExclusiveColdStart = async (work: () => Promise<void>) => {
+    await runExclusiveColdStartSession(work, {
+        clear: () => {
+            clearMaterials();
+        },
+        getPanelGroups: () => materialState.components as any,
+        applyDedupe: () => applyDedupeToPanel()
+    });
+    setHasBuiltinMaterials(true);
+};
+
+const markColdStartComplete = () => {
+    markMaterialsSessionReady();
+    setHasBuiltinMaterials(true);
+    applyDedupeToPanel();
+    materialsDiag('markColdStartComplete', {
+        panel: summarizeSnippetPanel(materialState.components)
+    });
+};
 
 const getSnippet = (component: string) => {
     let schema: Schema = {};
@@ -208,7 +290,14 @@ const clearMaterials = () => {
     materialState.blocks = [];
     resource.clear();
     componentBundleBaseMap.clear();
+    setHasBuiltinMaterials(false);
+    resetMaterialsSession();
 };
+registerMaterialsSessionHandlers({
+    clear: clearMaterials,
+    getPanelGroups: () => materialState.components as any,
+    applyDedupe: () => applyDedupeToPanel()
+});
 
 const clearBlockResources = () => {
     blockResource.clear();
@@ -473,10 +562,17 @@ const addComponentSnippets = (
             // 以便远程主工程 bundle 正确覆盖内置 mock（含 icon/script 等字段）
             const target = snippetsMap.get(snippetGroup.group)!;
             snippetGroup.children.forEach(nextChild => {
-                const nextKey = nextChild.snippetName || nextChild.component;
+                const nextKey =
+                    nextChild.snippetName ||
+                    nextChild.component ||
+                    (nextChild as { schema?: { componentName?: string } })
+                        .schema?.componentName;
                 const idx = target.children.findIndex(existing => {
                     const existingKey =
-                        existing.snippetName || existing.component;
+                        existing.snippetName ||
+                        existing.component ||
+                        (existing as { schema?: { componentName?: string } })
+                            .schema?.componentName;
                     return existingKey && existingKey === nextKey;
                 });
                 if (idx >= 0) {
@@ -484,6 +580,19 @@ const addComponentSnippets = (
                 } else {
                     target.children.push(nextChild);
                 }
+            });
+            // Collapse any accidental duplicate keys left in the group
+            const seen = new Set<string>();
+            target.children = target.children.filter(child => {
+                const key =
+                    child.snippetName ||
+                    child.component ||
+                    (child as { schema?: { componentName?: string } }).schema
+                        ?.componentName;
+                if (!key) return true;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
             });
         } else {
             // 先应用翻译，再克隆
@@ -563,7 +672,7 @@ const getBundleBaseUrlForComponent = (name: string): string | null =>
 
 /** 返回用于缓存破坏的查询串（如 _t=123），供 block 按需加载脚本时拼到 URL */
 const getMaterialCacheBustParam = (): string => {
-    const t = materialBundleLoadTimestamp ?? Date.now();
+    const t = materialStore.materialBundleLoadTimestamp ?? Date.now();
     return `_t=${t}`;
 };
 
@@ -702,7 +811,7 @@ const getCanvasDeps = (materialContents?: Record<string, string> | null) => {
 
     const appendCacheBust = (u: string) => {
         if (!u.startsWith('http://') && !u.startsWith('https://')) return u;
-        const t = materialBundleLoadTimestamp ?? Date.now();
+        const t = materialStore.materialBundleLoadTimestamp ?? Date.now();
         return `${u}${u.includes('?') ? '&' : '?'}_t=${t}`;
     };
     const scriptUrl = (
@@ -1186,7 +1295,21 @@ const normalizeMaterialAssetUrls = (
  * @param bundleUrl 该 bundle 的 URL（如 http://localhost:3060/bundle.json），用于解析组件脚本 base
  */
 const addMaterials = (materials: Material, bundleUrl?: string) => {
-    if (bundleUrl) materialBundleLoadTimestamp = Date.now();
+    if (isMaterialsWriteBlocked()) {
+        materialsDiag('addMaterials: blocked (startup ownership / session ready)', {
+            bundleUrl: bundleUrl ?? '(builtin/no-url)',
+            payload: summarizeMaterialPayload(materials),
+            caller: materialsDiagCaller()
+        });
+        return;
+    }
+    materialsDiag('addMaterials', {
+        bundleUrl: bundleUrl ?? '(builtin/no-url)',
+        payload: summarizeMaterialPayload(materials),
+        panelBefore: summarizeSnippetPanel(materialState.components),
+        caller: materialsDiagCaller()
+    });
+    if (bundleUrl) materialStore.materialBundleLoadTimestamp = Date.now();
     const bundleBaseFromUrl =
         typeof bundleUrl === 'string'
             ? bundleUrl.replace(/\/[#?].*$/, '').replace(/\/[^/]*$/, '')
@@ -1213,6 +1336,11 @@ const addMaterials = (materials: Material, bundleUrl?: string) => {
     );
     addComponents(normalized, bundleBase, !!bundleUrl);
     addBlocks(normalized.blocks);
+    applyDedupeToPanel();
+    materialsDiag('addMaterials: after', {
+        bundleUrl: bundleUrl ?? '(builtin/no-url)',
+        panelAfter: summarizeSnippetPanel(materialState.components)
+    });
 };
 
 const getMaterial = (
@@ -1294,70 +1422,94 @@ const getMaterialsRes = async () => {
 };
 
 const fetchMaterial = async () => {
-    const bundleUrls = getBundleUrls();
-    const materials = await getMaterialsRes();
-    materials.forEach((response, index) => {
-        if (response.status !== 'fulfilled' || !response.value) return;
-        const pickMaterialsPayload = (v: any): Material | undefined => {
-            if (!v || typeof v !== 'object') return undefined;
-            // 兼容多种返回包裹：
-            // 1) { materials }
-            // 2) { data: { materials } }              (浏览器 axios 直接拿到 bundle.json，preResponse 返回 bundle.data)
-            // 3) { data: <bundle.json> }              (插件代理可能额外包一层 data)
-            // 4) { data: { data: <bundle.json> } }    (代理再包裹一层)
-            const candidate =
-                v.materials ||
-                v?.data?.materials ||
-                v?.data?.data?.materials ||
-                v?.data?.data?.data?.materials ||
-                v?.data ||
-                v?.data?.data;
-            // 关键：很多 bundle.json 顶层就是 Material（直接含 components/packages/blocks），不是 { materials: ... }
-            const isMaterialLike = (x: any) =>
-                x &&
-                typeof x === 'object' &&
-                (Array.isArray(x.components) ||
-                    Array.isArray(x.blocks) ||
-                    Array.isArray(x.packages));
-            if (isMaterialLike(v)) return v as Material;
-            if (isMaterialLike(candidate)) return candidate as Material;
-            return undefined;
-        };
-        const materialsPayload = pickMaterialsPayload(response.value);
-        const bundleUrl =
-            typeof bundleUrls[index] === 'string'
-                ? bundleUrls[index]
-                : undefined;
-        if (materialsPayload) {
-            try {
-                addMaterials(materialsPayload, bundleUrl);
-            } catch (e) {
-                // eslint-disable-next-line no-console
-                console.warn('[Materials] addMaterials 失败:', bundleUrl, e);
+    // VSCode + HTTP: wait for startup exclusive so we don't load once then stack again
+    await awaitMaterialsStartupOwnership();
+    if (isMaterialsSessionReady()) {
+        materialsDiag('fetchMaterial: skip (session ready)');
+        return;
+    }
+    await runInMaterialsSessionGate(async () => {
+        const bundleUrls = getBundleUrls();
+        materialsDiag('fetchMaterial: start', {
+            bundleUrls,
+            caller: materialsDiagCaller(),
+            panelBefore: summarizeSnippetPanel(materialState.components)
+        });
+        const materials = await getMaterialsRes();
+        materials.forEach((response, index) => {
+            if (response.status !== 'fulfilled' || !response.value) {
+                materialsDiag('fetchMaterial: url not fulfilled', {
+                    url: bundleUrls[index],
+                    status: response.status,
+                    reason:
+                        response.status === 'rejected'
+                            ? String(
+                                  (response as PromiseRejectedResult).reason
+                              )
+                            : null
+                });
+                return;
             }
-            // eslint-disable-next-line no-console
-        } else if (console?.warn) {
-            /* eslint-disable no-console -- 诊断 bundle 返回结构不符合预期 */
-            const keys =
-                response.value && typeof response.value === 'object'
-                    ? Object.keys(response.value as any)
-                    : [];
-            console.warn(
-                '[Materials] bundle 结构不符合预期，未找到 materials:',
-                bundleUrl,
-                'keys=',
-                keys
-            );
-            /* eslint-enable no-console */
-        }
+            const pickMaterialsPayload = (v: any): Material | undefined => {
+                if (!v || typeof v !== 'object') return undefined;
+                const candidate =
+                    v.materials ||
+                    v?.data?.materials ||
+                    v?.data?.data?.materials ||
+                    v?.data?.data?.data?.materials ||
+                    v?.data ||
+                    v?.data?.data;
+                const isMaterialLike = (x: any) =>
+                    x &&
+                    typeof x === 'object' &&
+                    (Array.isArray(x.components) ||
+                        Array.isArray(x.blocks) ||
+                        Array.isArray(x.packages));
+                if (isMaterialLike(v)) return v as Material;
+                if (isMaterialLike(candidate)) return candidate as Material;
+                return undefined;
+            };
+            const materialsPayload = pickMaterialsPayload(response.value);
+            const bundleUrl =
+                typeof bundleUrls[index] === 'string'
+                    ? bundleUrls[index]
+                    : undefined;
+            materialsDiag('fetchMaterial: each url', {
+                url: bundleUrl,
+                payload: summarizeMaterialPayload(materialsPayload)
+            });
+            if (materialsPayload) {
+                try {
+                    addMaterials(materialsPayload, bundleUrl);
+                } catch (e) {
+                    // eslint-disable-next-line no-console
+                    console.warn(
+                        '[Materials] addMaterials 失败:',
+                        bundleUrl,
+                        e
+                    );
+                }
+            } else if (console?.warn) {
+                const keys =
+                    response.value && typeof response.value === 'object'
+                        ? Object.keys(response.value as any)
+                        : [];
+                console.warn(
+                    '[Materials] bundle 结构不符合预期，未找到 materials:',
+                    bundleUrl,
+                    'keys=',
+                    keys
+                );
+            }
+        });
+        updateCanvasDeps();
+        applyDedupeToPanel();
+        materialsDiag('fetchMaterial: done', {
+            panelAfter: summarizeSnippetPanel(materialState.components)
+        });
     });
-    updateCanvasDeps();
 };
 
-/**
- * 获取区块保存的依赖信息，合并到appSchemaState.thirdPartyDeps
- * @param {object} dependencies 区块保存的依赖信息
- */
 const getBlockDeps = (
     dependencies: { scripts?: Dependency[]; styles?: any[] } = {}
 ) => {
@@ -1445,7 +1597,22 @@ const initMaterial = ({
     isInit = true,
     appData = {}
 }: InitMaterialOptions = {}) => {
-    initBuiltinMaterial();
+    materialsDiag('initMaterial', {
+        isInit,
+        caller: materialsDiagCaller(),
+        panelBefore: summarizeSnippetPanel(materialState.components),
+        hasBuiltinMaterials: getHasBuiltinMaterials(),
+        sessionReady: isMaterialsSessionReady(),
+        writeBlocked: isMaterialsWriteBlocked()
+    });
+    if (!getHasBuiltinMaterials()) {
+        if (isMaterialsWriteBlocked()) {
+            materialsDiag('initMaterial: skip builtins (write blocked)');
+        } else {
+            initBuiltinMaterial();
+            setHasBuiltinMaterials(true);
+        }
+    }
     if (isInit) {
         appData.componentsMap?.forEach(component => {
             if (component.dependencies) {
@@ -1690,15 +1857,58 @@ const generateNode = ({ type, component }) => {
     return schema;
 };
 const refreshMaterial = async () => {
-    // 清理画布内 block import 缓存，否则旧的失败结果会一直复用，表现为“物料已进 store 但仍全红”
+    materialsDiag('refreshMaterial: start', {
+        caller: materialsDiagCaller(),
+        panelBefore: summarizeSnippetPanel(materialState.components)
+    });
     try {
         updateBlockCompileCache();
     } catch {
         // ignore
     }
-    clearMaterials();
-    initMaterial();
-    await fetchMaterial();
+    await awaitMaterialsSessionGate();
+    resetMaterialsSession();
+    setHasBuiltinMaterials(false);
+    await runExclusiveColdStart(async () => {
+        setHasBuiltinMaterials(false);
+        initMaterial();
+        // Bypass session-ready short-circuit: load bundles inside exclusive work
+        const bundleUrls = getBundleUrls();
+        const materials = await getMaterialsRes();
+        materials.forEach((response, index) => {
+            if (response.status !== 'fulfilled' || !response.value) return;
+            const v: any = response.value;
+            const candidate =
+                v.materials ||
+                v?.data?.materials ||
+                v?.data?.data?.materials ||
+                v?.data?.data?.data?.materials ||
+                v?.data ||
+                v?.data?.data;
+            const isMaterialLike = (x: any) =>
+                x &&
+                typeof x === 'object' &&
+                (Array.isArray(x.components) ||
+                    Array.isArray(x.blocks) ||
+                    Array.isArray(x.packages));
+            const materialsPayload = isMaterialLike(v)
+                ? (v as Material)
+                : isMaterialLike(candidate)
+                ? (candidate as Material)
+                : undefined;
+            const bundleUrl =
+                typeof bundleUrls[index] === 'string'
+                    ? bundleUrls[index]
+                    : undefined;
+            if (materialsPayload) {
+                addMaterials(materialsPayload, bundleUrl);
+            }
+        });
+        updateCanvasDeps();
+    });
+    materialsDiag('refreshMaterial: done', {
+        panelAfter: summarizeSnippetPanel(materialState.components)
+    });
 };
 
 /**
@@ -1804,6 +2014,7 @@ export default function useMaterialExport() {
         getBundleBaseUrlForComponent,
         getMaterialCacheBustParam,
         addMaterials,
+        dedupePanelSnippets: applyDedupeToPanel,
         getCanvasDeps,
         updateCanvasDeps,
         getConfigureMap,
@@ -1813,6 +2024,8 @@ export default function useMaterialExport() {
         updateBlockCompileCache,
         getComponentsByGroup,
         refreshMaterial,
+        markColdStartComplete,
+        runExclusiveColdStart,
         getComponentList,
         getComponentDetail,
         patchSchemaWithMaterialDefaults,
